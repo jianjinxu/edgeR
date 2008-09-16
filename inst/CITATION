@@ -1,0 +1,14 @@
+citHeader("The methods within the code package can be cited as:")
+
+citEntry(entry="incollection",
+    title = "Moderated statistical tests for assessing differences in tag abundance.",
+    year = 2007,
+
+textVersion =
+    paste("Robinson MD, Smyth GK. 'Moderated statistical tests for assessing differences in tag abundance.' Bioinformatics. 2007 Nov 1;23(21):2881-7"))
+
+citFooter("This free open-source software implements academic
+research by the authors and co-workers. If you use it,
+please support the project by citing the appropriate
+journal articles.")
+

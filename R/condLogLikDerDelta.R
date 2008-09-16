@@ -1,0 +1,51 @@
+
+
+condLogLikDerDelta<-function(y,delta,grid=TRUE,der=1,doSum=TRUE) {
+  # delta is 1/(1+r) below ... 1/delta-1=r
+  # der is derivative (0th deriv is the function)
+  # if grid=T, calculates the likelihood (derivatives) at a grid of deltas
+  # if grid=F, length(delta)=nrow(y) and a different delta is used for each row
+  if (is.vector(y)) {
+    n<-length(y)
+    t<-sum(y)
+    g<-1    
+    y<-matrix(y,nrow=1)
+  } else {
+    t<-rowSums(y,na.rm=TRUE)
+    n<-rowSums(!is.na(y))
+    g<-dim(y)[1]
+  }
+  logliks<-matrix(rep(0,length(delta)*g),nrow=g)
+  if (grid==TRUE) {
+    for (i in seq(along=delta)) {
+      d<-delta[i]
+      r<-(1/d)-1
+      if (der==1) {
+        ll<-condLogLikDerSize(y,r,der=1)*(-d^(-2))
+      } else if(der==2) {
+        ll<-condLogLikDerSize(y,r,der=1)*2*(d^(-3))+condLogLikDerSize(y,r,der=2)*(d^(-4))
+      } else if(der==0) {
+        ll<-condLogLikDerSize(y,r,der=0)
+      }
+      logliks[,i]<-ll
+    }
+  } else {
+      if( !(length(delta)==1 | length(delta)==nrow(y)) )
+	    stop("When grid=FALSE, delta must be  length 1 or nrow(y)")
+      r<-(1/delta)-1
+      if (der==1) {
+        ll<-condLogLikDerSize(y,r,der=1)*(-d^(-2))
+      } else if(der==2) {
+        ll<-condLogLikDerSize(y,r,der=1)*2*(d^(-3))+condLogLikDerSize(y,r,der=2)*(d^(-4))
+      } else if(der==0) {
+        ll<-condLogLikDerSize(y,r,der=0)
+      }
+      logliks<-matrix(ll,nrow=nrow(y))
+  }
+  if (doSum) {
+    return(colSums(logliks))
+  } else {
+    return(logliks)
+  }
+}
+

@@ -1,0 +1,143 @@
+\documentclass{article}
+
+\usepackage{amsmath}
+\usepackage{amscd}
+\usepackage[tableposition=top]{caption}
+\usepackage{ifthen}
+\usepackage[utf8]{inputenc}
+\topmargin 0in
+\headheight 0in
+\headsep 0in
+\oddsidemargin 0in
+\evensidemargin 0in
+\textwidth 176mm
+\textheight 215mm
+
+
+\begin{document}
+
+%\VignetteIndexEntry{Using edgeR -- differential expression for digital gene expression datasets}
+
+\title{\texttt{edgeR}: Methods for differential expression \\ in digital gene expression datasets}
+\author{Mark Robinson \\ \texttt{mrobinson@wehi.edu.au}}
+\maketitle
+
+\section{Introduction}
+
+\noindent This document gives a brief introduction and overview of the R Bioconductor package \texttt{edgeR}, which provides statistical routines for determining differential expression in digital gene expression data.  The routines can be applied equally to SAGE, CAGE,  Illumina/Solexa, 454 or ABI SOLiD experiments.  In fact, the methods may be useful in other experiments where counts are observed.
+
+R packages for the processing of raw data files for digital gene expression (DGE) datasets are still in development stages (e.g. \texttt{ShortRead}) at time of writing.      The methods presented here require a simple \texttt{DGEList} object that contains three pieces of information:
+\begin{enumerate}
+\item \texttt{data}: a table of counts where each row represents a gene/exon (or whatever genomic feature is being tracked) and each column is a different sample.
+\item \texttt{group}: a vector (with length equal to the number of columns of \texttt{data}) denoting the experimental group.
+\item \texttt{lib.size} (same length as \texttt{group}): the total number of reads sequenced for each sample.
+\end{enumerate}
+
+We now discuss a couple examples.
+
+\section{Moderated negative binomial dispersions}
+
+The basic model we use for DGE data is based on the negative binomial distribution.  The model is very flexible.  For example, if $Y$ is distributed as $NB(\mu,\phi)$, then the expected value of $Y$ is $\mu$ and the variance is $\mu + \mu^2 \cdot \phi$, thus giving sufficient flexibility for many scenarios in observing count data.
+
+The observed data can be denoted as $Y_{gij}$ where $g$ is the gene (tag, exon, etc.), $i$ is the experimental group and $j$ is the index of the replicate.  We can model the counts as
+\[  Y_{gij} \sim NB(M_j \cdot p_{gi}, \phi_g) \]
+where $p_{gi}$ represents the proportion of the sequenced sample for group $i$ that is tag $g$ and $M_j$ represents the library size.  It is of interest to find genes where, for example, $p_{g1}$ is significantly different from $p_{g2}$.  The parameter $\phi_g$ is the overdispersion (relative to the Poisson) and represents the biological, or sample-to-sample variability.   The methods we developed moderate the dispersion estimates towards a common dispersion, much like how the \texttt{limma} package moderates the variances in the analysis of microarray data.
+
+To illustrate the methods, we generate some count data.  Here, I have sampled from a negative binomial distribution and created the list object that is necessary for the moderated dispersion functions:
+<<rawdata>>=
+library(edgeR)
+set.seed(101)
+n<-200
+lib.sizes<-c(40000,50000,38000,40000)
+p<-runif(n,min=.0001,.001)
+mu<-outer(p,lib.sizes)
+mu[1:5,3:4]<-mu[1:5,3:4]*8
+y<-matrix(rnbinom(4*n,size=4,mu=mu),nrow=n)
+rownames(y)<-paste("tag",1:nrow(y),sep=".")
+y[1:10,]
+d<-new("DGEList",list(data=y,group=rep(1:2,each=2),lib.size=lib.sizes))
+d
+names(d)
+@
+
+To run the moderated analysis, we first need to determine how much moderation is necessary.  For this, we use an empirical Bayes rule and involves calculating a weight parameter $\alpha$.  Following this, the main function to do the statistical testing is called \texttt{deDGE}.
+<<moderation>>=
+alpha<-alpha.approxeb(d)
+alpha
+ms<-deDGE(d,alpha=alpha$alpha)
+ms
+@
+
+It may be informative to look at the data via MA plots, as is commonly done in the analysis of microarray experiments.  In addition, we can highlight those genes that are determined to be differentially expressed (above, we made 5 tags have a much higher mean, and these are highlighted in blue).  To do this, you can call the commands:
+<<MAplot,fig=TRUE>>=
+adj.p<-p.adjust(ms$exact,"fdr")
+k<-(adj.p<.05)
+plot( (log2(ms$ps$p1)+log2(ms$ps$p2))/2, log2(ms$ps$p2/ms$ps$p1), pch=19, xlab="A",ylab="M",col=c("black","blue")[k+1])
+@
+
+Also, we may want to look at distributions of the counts to see the effect of different total numbers of reads.  An easy way to do this is:
+<<boxplot,fig=TRUE>>=
+boxplot(as.data.frame(sqrt(d$data)))
+@
+
+Or, you can have a look at the output, according to:
+<<topTags>>=
+topTags(ms)
+@
+
+\section{Poisson example}
+
+It has been observed that in some high-throughput (or deep) sequencing approaches that not a great deal of overdispersion is observed.  Specifically, the means and variances appear to be very close to each other, suggesting the Poisson distribution is a good fit.  Methods within the \texttt{edgeR} package may still be useful, including the quantile adjustment (effectively a normalization) and the exact testing routines.
+
+To illustrate this, we sample Poisson data and show how you would use the routines.  First, need to quantile-adjust the data.  In doing this, we set the overdispersion parameter $\phi$ to 0 ($r=1000$) and adjust the data.  To observe that it does a normalization of sorts, we can again look at boxplots.
+
+<<poisson,fig=TRUE>>=
+set.seed(101)
+y<-matrix(rpois(4*n,lambda=mu),nrow=n)
+d<-new("DGEList",list(data=y,group=rep(1:2,each=2),lib.size=lib.sizes))
+qA<-quantileAdjust(d,r.init=1000,n.iter=1)
+par(mfrow=c(1,2))
+boxplot(as.data.frame(sqrt(d$data)))
+boxplot(as.data.frame(sqrt(qA$pseudo)))
+@
+
+Now, we can call the \texttt{exactTestNB} function directly on the {\em pseudo}-data, again setting the overdispersion parameter such that it really represents a Poisson distribution and viewing the data as before.
+
+<<poissonstats,fig=TRUE>>=
+f<-exactTestNB(qA$pseudo,d$group,qA$N*qA$ps$p,r=1000)
+adj.p<-p.adjust(f,"fdr")
+k<-(adj.p<.05)
+p1<-qA$ps$p1
+p2<-qA$ps$p2
+plot( (log2(p1)+log2(p2))/2, log2(p2/p1), pch=19, xlab="A",ylab="M",col=c("black","blue")[k+1])
+@
+
+\section{Future improvements and extension}
+
+Here, we list some improvements that are planned for the \texttt{edgeR} package:
+
+\begin{enumerate}
+\item As the packages for the processing of raw high-throughput sequencing data become more mature, \texttt{edgeR} will need to adapt and operate on different objects.  As shown above, \texttt{edgeR} operates on a simple list object containing simple data summaries which will  presumably be readily available from pre-processing steps.
+\item At present, the package only does 2-sample comparisons.  The methods are straightforward to extend to multiple samples, but other considerations will need to be made and further development is required.
+\item Some speed improvements have been made but as the datasets become larger, some further optimizations may be necessary.
+\end{enumerate}
+
+%<<setupfiles>>=
+%getwd()
+%dir("")
+%@
+
+\section{References}
+
+See the following manuscripts for further details:
+
+\begin{enumerate}
+
+\item Robinson MD, Smyth GK. {\em Moderated statistical tests for assessing differences in tag abundance.}{\bf Bioinformatics}. 2007 Nov 1;23(21):2881-7.
+
+\item Robinson MD, Smyth GK. {\em Small-sample estimation of negative binomial dispersion, with applications to SAGE data.} {\bf Biostatistics}. 2008 Apr;9(2):321-32.
+
+\end{enumerate}
+
+\end{document}
+
