@@ -1,6 +1,7 @@
 \name{DGEList-class}
 \docType{class}
 \alias{DGEList-class}
+\alias{DGEList}
 \alias{show,DGEList-method}
 \title{Digital Gene Expression data - class}
 

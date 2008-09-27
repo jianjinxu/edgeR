@@ -55,7 +55,7 @@ mu[1:5,3:4]<-mu[1:5,3:4]*8
 y<-matrix(rnbinom(4*n,size=4,mu=mu),nrow=n)
 rownames(y)<-paste("tag",1:nrow(y),sep=".")
 y[1:10,]
-d<-new("DGEList",list(data=y,group=rep(1:2,each=2),lib.size=lib.sizes))
+d<-DGEList(data=y,group=rep(1:2,each=2),lib.size=lib.sizes)  # call constructor
 d
 names(d)
 @
