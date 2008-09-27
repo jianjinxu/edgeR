@@ -30,3 +30,10 @@ setMethod("show","deDGEList",
     cat(class(object),": ",ncol(ms$pseudo)," samples, adjusted to library size of ",object$M,"\n",sep="")
   })
 
+
+DGEList <- function(data=matrix(0), lib.size=integer(0), group=factor(), ...)
+{
+  new("DGEList",list(data=data, lib.size=lib.size, group=group, ...))
+}
+
+
