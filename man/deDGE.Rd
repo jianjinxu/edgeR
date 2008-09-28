@@ -23,7 +23,7 @@ deDGE(object,alpha=0.5,verbose=TRUE)
 \examples{
 # generate raw data from NB, create list object
 y<-matrix(rnbinom(20,size=1,mu=10),nrow=5)
-d<-new("DGEList",list(data=y,group=rep(1:2,each=2),lib.size=rep(c(1000:1001),2)))
+d<-DGEList(data=y,group=rep(1:2,each=2),lib.size=rep(c(1000:1001),2))
 
 # find alpha and call main procedure to find differences
 alpha<-alpha.approxeb(d)

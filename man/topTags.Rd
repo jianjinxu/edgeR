@@ -24,7 +24,7 @@ topTags(object,n=10,adj.method= "BH")
 \examples{
 # generate raw data from NB, create list object
 y<-matrix(rnbinom(80,size=1,mu=10),nrow=20)
-d<-new("DGEList",list(data=y,group=rep(1:2,each=2),lib.size=rep(c(1000:1001),2)))
+d<-DGEList(data=y,group=rep(1:2,each=2),lib.size=rep(c(1000:1001),2))
 rownames(d$data)<-paste("tagno",1:nrow(d$data),sep=".")
 
 # find alpha and call main procedure to find differences
