@@ -94,7 +94,7 @@ To illustrate this, we sample Poisson data and show how you would use the routin
 <<poisson,fig=TRUE>>=
 set.seed(101)
 y<-matrix(rpois(4*n,lambda=mu),nrow=n)
-d<-new("DGEList",list(data=y,group=rep(1:2,each=2),lib.size=lib.sizes))
+d<-DGEList(data=y,group=rep(1:2,each=2),lib.size=lib.sizes)
 qA<-quantileAdjust(d,r.init=1000,n.iter=1)
 par(mfrow=c(1,2))
 boxplot(as.data.frame(sqrt(d$data)))
