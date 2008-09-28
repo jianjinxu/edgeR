@@ -37,3 +37,8 @@ DGEList <- function(data=matrix(0), lib.size=integer(0), group=factor(), ...)
 }
 
 
+getData <- function(object)
+{
+  object$data
+}
+
