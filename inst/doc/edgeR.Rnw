@@ -106,7 +106,7 @@ Now, we can call the \texttt{exactTestNB} function directly on the {\em pseudo}-
 <<poissonstats,fig=TRUE>>=
 adj.p<-p.adjust(ms$exact,"fdr")
 k<-(adj.p<.05)
-plotMA(col=c("black","blue")[k+1])
+plotMA(ms,col=c("black","blue")[k+1])
 topTags(ms)
 #p1<-qA$ps$p1
 #p2<-qA$ps$p2
