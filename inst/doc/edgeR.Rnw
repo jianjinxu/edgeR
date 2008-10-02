@@ -107,6 +107,7 @@ Now, we can call the \texttt{exactTestNB} function directly on the {\em pseudo}-
 adj.p<-p.adjust(ms$exact,"fdr")
 k<-(adj.p<.05)
 plotMA(col=c("black","blue")[k+1])
+topTags(ms)
 #p1<-qA$ps$p1
 #p2<-qA$ps$p2
 #plot( (log2(p1)+log2(p2))/2, log2(p2/p1), pch=19, xlab="A",ylab="M",col=c("black","blue")[k+1])

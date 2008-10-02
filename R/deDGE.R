@@ -7,7 +7,7 @@ deDGE<-function(object,alpha=500,doPoisson=FALSE,verbose=TRUE) {
   k1<-object$group==g[1]; k2<-object$group==g[2]
   object$data<-as.matrix(object$data)
   if(doPoisson) {
-    if (verbose) cat("Calculating shrinkage overdispersion parameters.\n")
+    if (verbose) cat("Quantile adjusting as Poisson.\n")
     qA<-quantileAdjust(object,r.init=1000,n.iter=1)
   } else {
     if (verbose) cat("Calculating shrinkage overdispersion parameters.\n")
