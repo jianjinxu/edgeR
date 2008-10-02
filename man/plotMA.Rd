@@ -8,7 +8,7 @@
 \description{Plots }
 
 \usage{ 
-plotMA(object,xlab="A",ylab="M",pch=19,...)
+plotMA(object,xlab="A",ylab="M",ylim=NULL,pch=19,...)
 }
 \arguments{ 
 
@@ -17,6 +17,8 @@ plotMA(object,xlab="A",ylab="M",pch=19,...)
 \item{xlab}{x-axis label}
 
 \item{ylab}{y-axis label}
+
+\item{ylim}{limits on y-axis, if left at \code{NULL}, scaled to be symmetric about 0}
 
 \item{pch}{plot character}
 
