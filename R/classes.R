@@ -30,6 +30,8 @@ setMethod("show","deDGEList",
     cat(class(object),": ",ncol(ms$pseudo)," samples, adjusted to library size of ",object$M,"\n",sep="")
   })
 
+setGeneric("plotMA", function(object, xlab = "A", ylab = "M", pch = 19, ...) standardGeneric("plotMA"))
+
 
 DGEList <- function(data=matrix(0), lib.size=integer(0), group=factor(), ...)
 {

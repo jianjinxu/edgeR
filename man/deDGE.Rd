@@ -7,7 +7,7 @@
 \description{Runs weighted likelihood calculation for moderated estimates of dispersion, and tests for differences in 'tag' abundance between groups}
 
 \usage{ 
-deDGE(object,alpha=0.5,verbose=TRUE)
+deDGE(object,alpha=0.5,doPoisson=FALSE,verbose=TRUE)
 }
 
 \arguments{ 
@@ -15,7 +15,9 @@ deDGE(object,alpha=0.5,verbose=TRUE)
 
 \item{alpha}{weight to put on the individual tag's likelihood}
 
-\item{verbose}{whether to write comments, default \code{true}}
+\item{doPoisson}{logical, whether to fit Poisson model instead of Negative Binomial, default \code{FALSE}}
+
+\item{verbose}{logical, whether to write comments, default \code{TRUE}}
 }
 
 \value{ \code{deDGEList} with elements \code{lr} (likelihood ratio test), \code{r} (estimates of 1/overdispersion), \code{ps} (list containing proportion estimates)}

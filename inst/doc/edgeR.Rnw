@@ -72,7 +72,7 @@ It may be informative to look at the data via MA plots, as is commonly done in t
 <<MAplot,fig=TRUE>>=
 adj.p<-p.adjust(ms$exact,"fdr")
 k<-(adj.p<.05)
-plot( (log2(ms$ps$p1)+log2(ms$ps$p2))/2, log2(ms$ps$p2/ms$ps$p1), pch=19, xlab="A",ylab="M",col=c("black","blue")[k+1])
+plotMA( ms, col=c("black","blue")[k+1])
 @
 
 Also, we may want to look at distributions of the counts to see the effect of different total numbers of reads.  An easy way to do this is:
@@ -95,21 +95,21 @@ To illustrate this, we sample Poisson data and show how you would use the routin
 set.seed(101)
 y<-matrix(rpois(4*n,lambda=mu),nrow=n)
 d<-DGEList(data=y,group=rep(1:2,each=2),lib.size=lib.sizes)
-qA<-quantileAdjust(d,r.init=1000,n.iter=1)
+ms<-deDGE(d,doPoisson=TRUE)
 par(mfrow=c(1,2))
 boxplot(as.data.frame(sqrt(d$data)))
-boxplot(as.data.frame(sqrt(qA$pseudo)))
+boxplot(as.data.frame(sqrt(ms$pseudo)))
 @
 
 Now, we can call the \texttt{exactTestNB} function directly on the {\em pseudo}-data, again setting the overdispersion parameter such that it really represents a Poisson distribution and viewing the data as before.
 
 <<poissonstats,fig=TRUE>>=
-f<-exactTestNB(qA$pseudo,d$group,qA$N*qA$ps$p,r=1000)
-adj.p<-p.adjust(f,"fdr")
+adj.p<-p.adjust(ms$exact,"fdr")
 k<-(adj.p<.05)
-p1<-qA$ps$p1
-p2<-qA$ps$p2
-plot( (log2(p1)+log2(p2))/2, log2(p2/p1), pch=19, xlab="A",ylab="M",col=c("black","blue")[k+1])
+plotMA(col=c("black","blue")[k+1])
+#p1<-qA$ps$p1
+#p2<-qA$ps$p2
+#plot( (log2(p1)+log2(p2))/2, log2(p2/p1), pch=19, xlab="A",ylab="M",col=c("black","blue")[k+1])
 @
 
 \section{Future improvements and extension}
