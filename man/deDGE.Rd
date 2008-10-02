@@ -7,7 +7,7 @@
 \description{Runs weighted likelihood calculation for moderated estimates of dispersion, and tests for differences in 'tag' abundance between groups}
 
 \usage{ 
-deDGE(object,alpha=0.5,doPoisson=FALSE,verbose=TRUE)
+deDGE(object,alpha=500,doPoisson=FALSE,verbose=TRUE)
 }
 
 \arguments{ 
