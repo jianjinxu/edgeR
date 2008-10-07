@@ -8,7 +8,8 @@ exactTestNB<-function(y,g,mus,r,verbose=TRUE) {
   if (length(mus)==1) { mus<-rep(mus,nrow(y1)) }
   if (length(r)==1) { r<-rep(r,nrow(y1)) }
   if (verbose) cat("Calculating Fisher exact p-values (dot=1000):")
-  N<-floor(rowSums(y))
+  N<-round(rowSums(y))
+  #N<-floor(rowSums(y))
   for (i in 1:length(pvals)) {
     ind<-0:N[i]
     p.top<-dnbinom(ind,size=n1*r[i],mu=n1*mus[i])*dnbinom(N[i]-ind,size=n2*r[i],mu=n2*mus[i])
