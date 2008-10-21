@@ -5,10 +5,11 @@ estimatePs<-function(y1,y2,lib.size1,lib.size2,r,tol=1e-10,maxit=30) {
     y2<-matrix(y2,nrow=1)
   }
   y<-cbind(y1,y2)
+  onev<-rep(1,nrow(y1))
   lib.size<-c(lib.size1,lib.size2)
-  this.p1<-rowMeans(y1/matrix(rep(1,nrow(y1)),ncol=1) %*% lib.size1)
-  this.p2<-rowMeans(y2/matrix(rep(1,nrow(y2)),ncol=1) %*% lib.size2)
-  this.p<-rowMeans(y/matrix(rep(1,nrow(y)),ncol=1) %*% lib.size)
+  this.p1<-rowMeans(y1/outer(onev,lib.size1))
+  this.p2<-rowMeans(y2/outer(onev,lib.size2))
+  this.p<-rowMeans(y/outer(onev,lib.size))
   a<-rowSums(y1)
   b<-rowSums(y2)
   min.val<-8.783496e-16
