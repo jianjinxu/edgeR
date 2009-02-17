@@ -1,18 +1,19 @@
 \name{plotMA}
 
 \alias{plotMA}
-\alias{plotMA,deDGEList-method}
 
 \title{MA-like plot for deDGEList objects}
 
-\description{Plots }
+\description{Plots M (log-abundance ratio) against A (log-average abundance) for two groups}
 
 \usage{ 
-plotMA(object,xlab="A",ylab="M",ylim=NULL,pch=19,...)
+plotMA(object,pair=c(1,2),xlab="A",ylab="M",ylim=NULL,pch=19,...)
 }
 \arguments{ 
 
 \item{object}{\code{deDGEList} object, as output from \code{deDGE}}
+
+\item{pair}{pair of groups to be plotted; default plots groups 1 and 2}
 
 \item{xlab}{x-axis label}
 
@@ -30,7 +31,7 @@ plotMA(object,xlab="A",ylab="M",ylim=NULL,pch=19,...)
 
 \seealso{\code{deDGE}}
 
-\author{Mark Robinson}
+\author{Mark Robinson, Davis McCarthy}
 
 \examples{
 # generate raw data from NB, create list object

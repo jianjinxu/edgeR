@@ -8,12 +8,12 @@
 
 
 \usage{ 
-findMaxD2(x, alpha = 0.5, grid = TRUE, tol = 1e-05, n.iter = 5, grid.length = 200)
+findMaxD2(object, alpha = 0.5, grid = TRUE, tol = 1e-05, n.iter = 10, grid.length = 200)
 }
 
 \arguments{ 
 
-\item{x}{list with elements \code{data}, \code{lib.size} and \code{group}}
+\item{object}{list containing the raw data with elements \code{data} (table of counts), \code{group} (vector indicating group) and \code{lib.size} (vector of library sizes)}
 
 \item{alpha}{weight given to common likelihood, set to 0 for individual estimates or large (e.g. 100) for common likelihood}
 
@@ -23,12 +23,13 @@ findMaxD2(x, alpha = 0.5, grid = TRUE, tol = 1e-05, n.iter = 5, grid.length = 20
 
 \item{n.iter}{if \code{grid=FALSE}, number of Newton-Rhapson iterations}
 
-\item{grid.length}{length of the grid to maximize over; default \code{200}}
+\item{grid.length}{length of the grid over which to maximize; default \code{200}}
 
 }
 
-\value{ list with elements \code{lr} (likelihood ratio test), \code{r} (estimates of 1/overdispersion), \code{ps} (list containing proportion estimates)}
-\author{Mark Robinson}
+\value{ vector of the values of delta that maximize the negative binomial likelihood for each tag  (where delta = \code{phi / (phi+1)} and \code{phi} is the overdispersion parameter) }
+
+\author{Mark Robinson, Davis McCarthy}
 \examples{
 y<-matrix(rnbinom(1000,mu=10,size=2),ncol=4)
 d<-list(data=y,group=c(1,1,2,2),lib.size=c(1000:1003))

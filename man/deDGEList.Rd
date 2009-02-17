@@ -10,13 +10,12 @@ A simple list-based class for storing results of differential expression analysi
 
 \section{Slots/List Components}{
 Objects of this class contain the following list components:
-\tabular{ll}{
-  \code{ps}:\tab list containing estimates of \code{p} parameter.\cr
-  \code{r}:\tab numeric vector of size parameter (\code{1/phi}) where \code{phi} is negative binomial dispersion.\cr
-  \code{pseudo}:\tab numeric matrix with the pseudo-counts.\cr
-  \code{M}:\tab numeric scalar with the library size that pseudo counts are mapped to.\cr
-  \code{exact}:\tab numeric vector of exact p-values (unadjusted).\cr
-}
+  \code{ps}: list containing estimates of \code{p} parameter.
+  \code{r}: numeric vector of size parameter (\code{1/phi}) where \code{phi} is negative binomial dispersion.
+  \code{pseudo}: numeric matrix with the pseudo-counts.
+  \code{group}: vector giving the experimental group/condition.
+  \code{M}: numeric scalar with the library size that pseudo counts are mapped to.
+  
 }
 
 \section{Methods}{
@@ -24,7 +23,7 @@ This class inherits directly from class \code{list} so any operation appropriate
 \code{deDGEList} objects also have a \code{show} method.
 }
 
-\author{Mark Robinson}
+\author{Mark Robinson, Davis McCarthy}
 
 \keyword{classes}
 

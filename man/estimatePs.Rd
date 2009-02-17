@@ -7,17 +7,11 @@
 \description{Estimate expression proportions (maximum likelihood with size fixed) based on negative binomial for each tag and sample group (only 2 groups implemented at this point)}
 
 \usage{ 
-estimatePs(y1, y2, lib.size1, lib.size2, r, tol = 1e-10, maxit = 30) 
+estimatePs(object, r, tol = 1e-10, maxit = 30) 
 }
 \arguments{ 
 
-\item{y1}{matrix of counts for first group}
-
-\item{y2}{matrix of counts for second group}
-
-\item{lib.size1}{vector of library sizes for first group}
-
-\item{lib.size2}{vector of library sizes for second group}
+\item{object}{list containing the raw data with elements \code{data} (table of counts), \code{group} (vector indicating group) and \code{lib.size} (vector of library sizes)}
 
 \item{r}{size parameter of negative binomial}
 
@@ -26,13 +20,14 @@ estimatePs(y1, y2, lib.size1, lib.size2, r, tol = 1e-10, maxit = 30)
 \item{maxit}{maximum number of iterations}
 }
 
-\value{ list with elements \code{p} (overall proportion), \code{p1} (estimates for first group), \code{p2} (estimates for second group)}
+\value{ list with elements \code{p.common} (vector giving overall proportion for each tag), \code{p.group} (matrix with columns giving estimates of proportions for different groups)}
 
-\author{Mark Robinson}
+\author{Mark Robinson, Davis McCarthy}
 
 \examples{
-y1<-matrix(rnbinom(10,size=1,mu=10),nrow=5)
-y2<-matrix(rnbinom(10,size=1,mu=5),nrow=5)
-ps<-estimatePs(y1,y2,c(1000,1001),c(1000,1001),r=1)
+set.seed(0)
+y<-matrix(rnbinom(40,size=1,mu=10),ncol=4)
+d<-list(data=y,group=rep(1:2,each=2),lib.size=rep(c(1000:1001),2))
+ps<-estimatePs(d,r=1)
 }
 \keyword{file}

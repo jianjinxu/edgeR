@@ -16,9 +16,9 @@ alpha.approxeb(object, verbose=TRUE)
 \item{verbose}{whether to write comments, default \code{true}}
 }
 
-\value{ \code{EBList} object with elements \code{p} (overall proportion), \code{p1} (estimates for first group), \code{p2} (estimates for second group)}
+\value{ \code{EBList} object with elements \code{sigma2.0.est} (numeric scale \code{sigma_0^2} estimate), \code{alpha} (estimate for the prior weight, alpha), \code{scores} (likelihood scores), \code{infos} (Fisher expected information), \code{quantileAdjusted} (list from output of \code{quantileAdjust})}
 
-\author{Mark Robinson}
+\author{Mark Robinson, Davis McCarthy}
 
 \examples{
 y<-matrix(rnbinom(20,size=1,mu=10),nrow=5)

@@ -4,28 +4,28 @@
 
 \title{Conditional log-likelihood in terms of delta}
 
-\description{Conditional log-likelihood paramterized in terms of delta (\code{phi / (phi+1)}) }
+\description{Conditional log-likelihood parameterized in terms of delta (\code{phi / (phi+1)}) }
 
 \usage{ 
 condLogLikDerDelta(y, delta, grid = TRUE, der = 1, doSum = TRUE) 
 }
 \arguments{ 
 
-\item{y}{matrix with count data (or pseudo-data)}
+\item{y}{matrix with count data (or pseudodata)}
 
 \item{delta}{delta (\code{phi / (phi+1)})parameter of negative binomial}
 
 \item{grid}{logical, whether to calculate a grid over the values of delta}
 
-\item{der}{derative, either 0 (the function), 1 (first derivative) or 2 (second derivative)}
+\item{der}{derivative, either 0 (the function), 1 (first derivative) or 2 (second derivative)}
 
 \item{doSum}{logical, whether to sum over samples or not (default \code{TRUE}}
 
 }
 
-\value{ vector of matrix of function/derivative evaluations}
+\value{ vector or matrix of function/derivative evaluations}
 
-\author{Mark Robinson}
+\author{Mark Robinson, Davis McCarthy}
 
 \examples{
 y1<-matrix(rnbinom(10,size=1,mu=10),nrow=5)

@@ -20,14 +20,14 @@ logLikDerP(p, y, lib.size, r, der = 0)
 
 \item{r}{size parameter of negative binomial distribution}
 
-\item{der}{derative, either 0 (the function), 1 (first derivative) or 2 (second derivative)}
+\item{der}{derivative, either 0 (the function), 1 (first derivative) or 2 (second derivative)}
 
 }
 
 \value{ vector of evaluations}
 
 
-\author{Mark Robinson}
+\author{Mark Robinson, Davis McCarthy}
 
 \examples{
 y<-matrix(rnbinom(20,size=1.5,mu=10),nrow=5)

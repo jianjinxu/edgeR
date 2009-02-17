@@ -11,13 +11,12 @@ getData(object)
 }
 \arguments{ 
 
-\item{object}{matrix of counts for first group}
-
+\item{object}{list containing the raw data with elements \code{data} (table of counts), \code{group} (vector indicating group) and \code{lib.size} (vector of library sizes)}
 }
 
 \value{ matrix of data (presumably integers) }
 
-\author{Mark Robinson}
+\author{Mark Robinson, Davis McCarthy}
 
 \examples{
 # generate raw data from NB, create list object

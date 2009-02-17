@@ -7,22 +7,21 @@
 \description{Conditional log-likelihood paramterized in terms of size (\code{1 / phi}) }
 
 \usage{ 
-condLogLikDerSize(y,r,der=1)
+condLogLikDerSize(y, r, der=1)
 }
 \arguments{ 
 
-\item{y}{list containing the raw data with elements \code{data} (table of counts), \code{group} (vector indicating group) and \code{lib.size} (vector of library sizes)}
+\item{y}{matrix with count data (or pseudodata)}
 
 \item{r}{size parameter of negative binomial distribution}
 
-\item{der}{derative, either 0 (the function), 1 (first derivative) or 2 (second derivative)}
+\item{der}{derivative, either 0 (the function), 1 (first derivative) or 2 (second derivative)}
 
 }
 
-\value{ vector of matrix of function/derivative evaluations}
+\value{ vector or matrix of function/derivative evaluations}
 
-
-\author{Mark Robinson}
+\author{Mark Robinson, Davis McCarthy}
 
 \examples{
 y1<-matrix(rnbinom(10,size=1,mu=10),nrow=5)

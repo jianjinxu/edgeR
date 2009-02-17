@@ -18,7 +18,7 @@ quantileAdjust(object, N = prod(object$lib.size)^(1/ncol(object$data)), alpha = 
 
 \item{alpha}{weight to put on the individual tag's likelihood}
 
-\item{null.hypothesis}{logical, whether to calculate the means and percentile under the null hypothesis; default is \code{TRUE}}
+\item{null.hypothesis}{logical, whether to calculate the means and percentile under the null hypothesis; default is \code{FALSE}}
 
 \item{n.iter}{number of iterations in estimating the size parameter}
 
@@ -31,7 +31,7 @@ quantileAdjust(object, N = prod(object$lib.size)^(1/ncol(object$data)), alpha = 
 
 \value{list containing several elements used in downstream function calls.  \code{r} is the dispersion estimate, \code{pseudo} is the quantile-adjusted pseudodata, \code{ps} is a list containing the abundance estimates, \code{N} is the common library size and \code{p} and \code{mu} are the percentiles and means, respectively that the quantile is based on }
 
-\author{Mark Robinson}
+\author{Mark Robinson, Davis McCarthy}
 
 \examples{
 set.seed(0)

@@ -27,10 +27,10 @@ setMethod("show","EBList",
 
 setMethod("show","deDGEList",
   function(object) {
-    cat(class(object),": ",ncol(object$pseudo)," samples, adjusted to library size of ",object$M,"\n",sep="")
+    cat(class(object),": ",ncol(object$pseudo)," samples, ",length(unique(object$group))," groups, adjusted to library size of ",object$M,"\n",sep="")
   })
 
-setGeneric("plotMA", function(object, xlab = "A", ylab = "M", ylim=NULL, pch = 19, ...) standardGeneric("plotMA"))
+#setGeneric("plotMA", function(object, pair=c(1,2), xlab = "A", ylab = "M", ylim=NULL, pch = 19, ...) standardGeneric("plotMA"))
 
 
 DGEList <- function(data=matrix(0), lib.size=integer(0), group=factor(), ...)
@@ -41,8 +41,6 @@ DGEList <- function(data=matrix(0), lib.size=integer(0), group=factor(), ...)
     stop("Length of 'group' must equal number of columns in 'data'")
   if (!is.factor(group))
     group<-as.factor(group)
-  if (length(levels(group)) != 2)
-    warning("Implementation is only for 2 groups at this stage")
   new("DGEList",list(data=as.matrix(data), lib.size=lib.size, group=group, ...))
 }
 

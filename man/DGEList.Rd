@@ -11,11 +11,9 @@ A simple list-based class for storing read counts from digital gene expression t
 
 \section{Slots/List Components}{
 Objects of this class contain the following list components:
-\tabular{ll}{
-  \code{data}:\tab numeric matrix containing the read counts.\cr
-  \code{lib.size}:\tab numeric vector containing the total number of reads for each library (column of \code{code}).\cr
-  \code{group}:\tab vector giving the experimental group/condiction.\cr
-}
+  \code{data}: numeric matrix containing the read counts.
+  \code{lib.size}: numeric vector containing the total number of reads for each library (column of \code{code}).
+  \code{group}: vector giving the experimental group/condition.
 }
 
 \section{Methods}{

@@ -7,28 +7,31 @@
 \description{An exact test for differences between two negative binomial groups}
 
 \usage{ 
-exactTestNB(y, g, mus, r, verbose=TRUE)
+exactTestNB(pseudo, group, pair=c(1,2), mus, r, verbose=TRUE)
 }
 
 \arguments{ 
 
-\item{y}{data (e.g. quantile adjusted pseudodata) to compute Fisher exact statistics on}
+\item{pseudo}{data (e.g. quantile adjusted pseudodata) on which to compute Fisher exact statistics}
 
-\item{g}{group indicator, must be same length as nrow(y)}
+\item{group}{group indicator, must be same length as ncol(pseudo)}
+
+\item{pair}{pair of groups to be compared; default compares groups 1 and 2}
 
 \item{mus}{vector of means under the null hypothesis (of no difference between groups)}
 
 \item{r}{preset or estimated negative binomial \code{size} parameter.  If you want to run a Poisson test, set r very large (e.g. 1000)}
 
-\item{verbose}{whether to write comments, default \code{true}}
+\item{verbose}{whether to write comments, default \code{TRUE}}
 }
 
-\value{ list with elements \code{lr} (likelihood ratio test), \code{r} (estimates of 1/overdispersion), \code{ps} (list containing proportion estimates)}
-\author{Mark Robinson}
+\value{ vector of p-values}
+
+\author{Mark Robinson, Davis McCarthy}
 \examples{
 y<-matrix(rnbinom(20,mu=10,size=1.5),nrow=5)
 group<-c(1,1,2,2)
 mus<-rep(10,5)
-f<-exactTestNB(y,group,mus,r=1.5)
+f<-exactTestNB(y,group,pair=c(1,2),mus,r=1.5)
 }
 \keyword{algebra}

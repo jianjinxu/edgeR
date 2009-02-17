@@ -70,9 +70,10 @@ ms
 
 It may be informative to look at the data via MA plots, as is commonly done in the analysis of microarray experiments.  In addition, we can highlight those genes that are determined to be differentially expressed (above, we made 5 tags have a much higher mean, and these are highlighted in blue).  To do this, you can call the commands:
 <<MAplot,fig=TRUE,height=6,width=8>>=
-adj.p<-p.adjust(ms$exact,"fdr")
-k<-(adj.p<.05)
-plotMA( ms, col=c("black","blue")[k+1])
+#adj.p<-p.adjust(ms$exact,"fdr")
+#k<-(adj.p<.05)
+#plotMA( ms, col=c("black","blue")[k+1])
+plotMA( ms )
 @
 
 Also, we may want to look at distributions of the counts to see the effect of different total numbers of reads.  An easy way to do this is:
@@ -104,9 +105,10 @@ boxplot(as.data.frame(sqrt(ms$pseudo)))
 Again, the same functions can be used to access the results:
 
 <<poissonstats,fig=TRUE,height=6,width=8>>=
-adj.p<-p.adjust(ms$exact,"fdr")
-k<-(adj.p<.05)
-plotMA(ms,col=c("black","blue")[k+1])
+#adj.p<-p.adjust(ms$exact,"fdr")
+#k<-(adj.p<.05)
+#plotMA(ms,col=c("black","blue")[k+1])
+plotMA(ms)
 topTags(ms)
 @
 

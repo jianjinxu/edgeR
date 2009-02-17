@@ -11,13 +11,11 @@ A simple list-based class for storing results of the approximate empirical Bayes
 
 \section{Slots/List Components}{
 Objects of this class contain the following list components:
-\tabular{ll}{
-  \code{sigma2.0.est}:\tab numeric scale \code{sigma_0^2} estimate.\cr
-  \code{alpha}:\tab numeric scalar alpha estimate.\cr
-  \code{score}:\tab numeric scalar (likelihood) score.\cr
-  \code{inos}:\tab numeric vector containing the (likelihood) information.\cr
-  \code{exact}:\tab list containing info with respect to quantile adjustment.\cr
-}
+  \code{sigma2.0.est}: numeric scale \code{sigma_0^2} estimate.
+  \code{alpha}: numeric scalar alpha estimate.
+  \code{scores}: numeric scalar (likelihood) score.
+  \code{infos}: numeric vector containing the (likelihood) information for each tag.
+  \code{quantileAdjusted}: list from output of \code{quantileAdjust}).
 }
 
 \section{Methods}{
@@ -25,7 +23,7 @@ This class inherits directly from class \code{list} so any operation appropriate
 \code{EBList} objects also have a \code{show} method.
 }
 
-\author{Mark Robinson}
+\author{Mark Robinson, Davis McCarthy}
 
 \keyword{classes}
 
