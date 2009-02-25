@@ -8,7 +8,8 @@ quantileAdjust<-function(object,N=prod(object$lib.size)^(1/ncol(object$data)),al
 	nrows<-nrow(object$data)
 	lib.size<-object$lib.size
 	group<-object$group
-	k<-unique(group)
+	#k<-unique(group)
+	k <- levels(group)
 	y<-splitIntoGroups(object)
 	p<-matrix(0,nrow=nrows,ncol=ncol(object$data))
 	mu<-matrix(0,nrow=nrows,ncol=ncol(object$data))

@@ -2,7 +2,8 @@
 # A function to calculate the approximate expected information
 approx.expected.info<-function(object,d,qA,robust=FALSE) {
 	group<-object$group
-	k<-unique(group)
+	k <- levels(group)
+	#k<-unique(group)
 	obs.inf<-rep(0,nrow(object$data))
 	for(i in 1:length(k)) {
 			obs.inf<-obs.inf+condLogLikDerDelta(qA$pseudo[,group==k[i]],d,der=2,doSum=FALSE)*(-1)
