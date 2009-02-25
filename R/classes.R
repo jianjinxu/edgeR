@@ -27,7 +27,7 @@ setMethod("show","EBList",
 
 setMethod("show","deDGEList",
   function(object) {
-    cat(class(object),": ",ncol(object$pseudo)," samples, ",length(unique(object$group))," groups, adjusted to library size of ",object$M,"\n",sep="")
+    cat(class(object),": ",ncol(object$pseudo)," samples, ",length(levels(object$group))," groups, adjusted to library size of ",object$M,"\n",sep="")
   })
 
 #setGeneric("plotMA", function(object, pair=c(1,2), xlab = "A", ylab = "M", ylim=NULL, pch = 19, ...) standardGeneric("plotMA"))

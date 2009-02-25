@@ -3,9 +3,6 @@
 deDGE<-function(object,alpha=500,doPoisson=FALSE,verbose=TRUE) {
 	if (!is(object,"DGEList"))
 		stop("Currently supports DGEList objects")
-	#g<-unique(object$group)
-	#k1<-object$group==g[1]; k2<-object$group==g[2]
-	
 	object$data<-as.matrix(object$data)
 	if(doPoisson) {
 		if (verbose) cat("Quantile adjusting as Poisson.\n")

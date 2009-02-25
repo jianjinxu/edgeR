@@ -6,45 +6,44 @@ estimatePs<-function(object,r,tol=1e-10,maxit=30) {
 	nrows<-nrow(object$data)
 	lib.size<-object$lib.size
 	group<-object$group
-	#k<-unique(group)
-	k <- levels(group)
+	levs.group <- levels(group)
 	onev<-rep(1,nrows)
 	y<-splitIntoGroups(object)
 	cat(names(y),"\n")
-	cat(k,"\n")
+	cat(levs.group,"\n")
 	
-	this.p.group<-matrix(0,nrow=nrows,ncol=length(k), dimnames=list(NULL,k))
-	for(i in 1:length(k)) {
-		this.p.group[,i]<-rowMeans(y[[i]]/outer(onev,lib.size[group==k[i]]))
+	this.p.group<-matrix(0,nrow=nrows,ncol=length(levs.group), dimnames=list(NULL,levs.group))
+	for(i in 1:length(levs.group)) {
+		this.p.group[,i]<-rowMeans(y[[i]]/outer(onev,lib.size[group==levs.group[i]]))
 	}
 	this.p.com<-rowMeans(object$data/outer(onev,lib.size))
-	rsums<-matrix(0,nrow=nrows,ncol=length(k))
-	for(i in 1:length(k)) {
+	rsums<-matrix(0,nrow=nrows,ncol=length(levs.group))
+	for(i in 1:length(levs.group)) {
 		rsums[,i]<-rowSums(y[[i]])
 	}
 	min.val<-8.783496e-16
 	for(i in 1:maxit) { # do 10 Newton method steps
 		d1p.com<-logLikDerP(this.p.com,object$data,lib.size,r,der=1)
-		d1p<-matrix(0,nrow=nrows,ncol=length(k))
-		for(i in 1:length(k)) {
-			d1p[,i]<-logLikDerP(this.p.group[,i],y[[i]],lib.size[group==k[i]],r,der=1)
+		d1p<-matrix(0,nrow=nrows,ncol=length(levs.group))
+		for(i in 1:length(levs.group)) {
+			d1p[,i]<-logLikDerP(this.p.group[,i],y[[i]],lib.size[group==levs.group[i]],r,der=1)
 			d1p[rsums[,i]==0,i]<-min.val
 		}
 		mx<-max(abs(c(d1p.com,d1p)))
 		if( mx < tol ) { break }
-		d2p<-matrix(0,nrow=nrows,ncol=length(k))
+		d2p<-matrix(0,nrow=nrows,ncol=length(levs.group))
 		d2p.com<-logLikDerP(this.p.com,object$data,lib.size,r,der=2)
-		d2p<-matrix(0,nrow=nrows,ncol=length(k))
-		for(i in 1:length(k)) {
-			d2p[,i]<-logLikDerP(this.p.group[,i],y[[i]],lib.size[group==k[i]],r,der=2)
+		d2p<-matrix(0,nrow=nrows,ncol=length(levs.group))
+		for(i in 1:length(levs.group)) {
+			d2p[,i]<-logLikDerP(this.p.group[,i],y[[i]],lib.size[group==levs.group[i]],r,der=2)
 			d2p[rsums[,i]==0,i]<-min.val
 		}
 		this.p.com<-this.p.com-d1p.com/d2p.com
 		this.p.com[this.p.com<=0 | this.p.com>=1]<-1/(max(lib.size)*10)
-		for(i in 1:length(k)) {
+		for(i in 1:length(levs.group)) {
 			this.p.group[,i]<-this.p.group[,i]-d1p[,i]/d2p[,i]
 			this.p.group[rsums[,i]==0,i]<-min.val
-			this.p.group[(this.p.group[,i]<=0 | this.p.group[,i]>=1),i]<-1/(max(lib.size[group==k[i]])*10)
+			this.p.group[(this.p.group[,i]<=0 | this.p.group[,i]>=1),i]<-1/(max(lib.size[group==levs.group[i]])*10)
 		}
 	}
 	return(list(p.common=this.p.com,p.group=this.p.group))

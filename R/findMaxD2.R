@@ -3,6 +3,7 @@
 findMaxD2<-function(object,alpha=0.5,grid=TRUE,tol=1e-05,n.iter=10,grid.length=200) {
 	# this calculates delta as combined version of overall and individual
 	nrows<-nrow(object$data)
+	levs.group<-levels(object$group)
 	y<-splitIntoGroups(object)
 	onev<-rep(1,nrows)
 	if(grid) {  # do a grid search, since some likelihoods may be monotone, not amenable to NR

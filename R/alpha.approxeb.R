@@ -4,14 +4,14 @@ alpha.approxeb<-function(object,verbose=TRUE) {
 	if (!is(object,"DGEList"))
 		stop("Currently supports DGEList objects")
 	group<-object$group
-	k<-levels(group)
+	levs.group<-levels(group)
 	qA<-quantileAdjust(object,alpha=10,null.hypothesis=TRUE,verbose=verbose)  # alpha large to make common estimator
 	d<-1/(1+qA$r[1])  # common delta
 	scores<-0
-	for(i in 1:length(k)) {
-	    if (sum( group==k[i] ) > 1) {
-		  #cat(k[i],sum(group==k[i]),"\n")
-		  scores<-scores+condLogLikDerDelta(qA$pseudo[,group==k[i]],d,der=1,doSum=TRUE)
+	for(i in 1:length(levs.group)) {
+		if (sum( group==levs.group[i] ) > 1) {
+			#cat(levs.group[i],sum(group==levs.group[i]),"\n")
+			scores<-scores+condLogLikDerDelta(qA$pseudo[,group==levs.group[i]],d,der=1,doSum=TRUE)
 		}
 	}
 	exp.inf<-approx.expected.info(object,d,qA)

@@ -3,7 +3,7 @@
 splitIntoGroups<-function(object) {
 	nrows<-nrow(object$data)
 	y<-lapply(split(t(object$data),object$group), FUN=function(u) matrix(u,nrow=nrows,byrow=TRUE))
-	for(i in 1:length(unique(object$group))) {
+	for(i in 1:length(levels(object$group))) {
 		rownames(y[[i]])<-rownames(object$data)
 	}
 	y

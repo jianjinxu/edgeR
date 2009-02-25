@@ -8,8 +8,7 @@ quantileAdjust<-function(object,N=prod(object$lib.size)^(1/ncol(object$data)),al
 	nrows<-nrow(object$data)
 	lib.size<-object$lib.size
 	group<-object$group
-	#k<-unique(group)
-	k <- levels(group)
+	levs.group<-levels(group)
 	y<-splitIntoGroups(object)
 	p<-matrix(0,nrow=nrows,ncol=ncol(object$data))
 	mu<-matrix(0,nrow=nrows,ncol=ncol(object$data))
@@ -22,14 +21,14 @@ quantileAdjust<-function(object,N=prod(object$lib.size)^(1/ncol(object$data)),al
 		rprev<-r
 		ps<-estimatePs(object,r)
 		if (null.hypothesis==TRUE) {
-			for(i in 1:length(k)) {
-				p[,group==k[i]]<-pnbinom(y[[i]]-1,size=r,mu=outer(ps$p.common,lib.size[group==k[i]]))+dnbinom(y[[i]],size=r,mu=outer(ps$p.common,lib.size[group==k[i]]))/2
-				mu[,group==k[i]]<-outer(ps$p.common,rep(N,sum(group==k[i])))
+			for(i in 1:length(levs.group)) {
+				p[,group==levs.group[i]]<-pnbinom(y[[i]]-1,size=r,mu=outer(ps$p.common,lib.size[group==levs.group[i]]))+dnbinom(y[[i]],size=r,mu=outer(ps$p.common,lib.size[group==levs.group[i]]))/2
+				mu[,group==levs.group[i]]<-outer(ps$p.common,rep(N,sum(group==levs.group[i])))
 			}
 		} else {
-			for(i in 1:length(k)) {
-				p[,group==k[i]]<-pnbinom(y[[i]]-1,size=r,mu=outer(ps$p.group[,i],lib.size[group==k[i]]))+dnbinom(y[[i]],size=r,mu=outer(ps$p.group[,i],lib.size[group==k[i]]))/2
-				mu[,group==k[i]]<-outer(ps$p.group[,i],rep(N,sum(group==k[i])))
+			for(i in 1:length(levs.group)) {
+				p[,group==levs.group[i]]<-pnbinom(y[[i]]-1,size=r,mu=outer(ps$p.group[,i],lib.size[group==levs.group[i]]))+dnbinom(y[[i]],size=r,mu=outer(ps$p.group[,i],lib.size[group==levs.group[i]]))/2
+				mu[,group==levs.group[i]]<-outer(ps$p.group[,i],rep(N,sum(group==levs.group[i])))
 			}
 		}
 		#pseudo<-interpolateHelper(cbind(mu1,mu2),cbind(p1,p2),r,cbind(object$data[,k1],object$data[,k2]),verbose=verbose)
