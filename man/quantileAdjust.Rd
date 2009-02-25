@@ -36,7 +36,7 @@ quantileAdjust(object, N = prod(object$lib.size)^(1/ncol(object$data)), alpha = 
 \examples{
 set.seed(0)
 y<-matrix(rnbinom(40,size=1,mu=10),ncol=4)
-d<-list(data=y,group=rep(1:2,each=2),lib.size=rep(c(1000:1001),2))
+d<-DGEList(data=y,group=rep(1:2,each=2),lib.size=rep(c(1000:1001),2))
 qA<-quantileAdjust(d,alpha=100)
 }
 \keyword{file}

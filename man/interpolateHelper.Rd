@@ -29,7 +29,7 @@ interpolateHelper(mu, p, r, count.max, verbose=TRUE)
 
 \examples{
 y<-matrix(rnbinom(10000,size=2,mu=10),ncol=4)
-d<-list(data=y,group=rep(1:2,each=2),lib.size=rep(c(1000,1010),2))
+d<-DGEList(data=y,group=rep(1:2,each=2),lib.size=rep(c(1000,1010),2))
 ps<-estimatePs(d,r=2)
 N<-prod(d$lib.size)^(1/ncol(d$data))
 perc<-pnbinom(d$data-1,size=2,mu=outer(ps$p.common,d$lib.size))+dnbinom(d$data,size=2,mu=outer(ps$p.common,d$lib.size))/2

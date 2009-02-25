@@ -26,7 +26,7 @@ tau2.0.objective(tau2.0, info.g, score.g)
 
 \examples{
 y<-matrix(rnbinom(20,size=1,mu=10),nrow=5)
-x<-list(data=y,group=rep(1:2,each=2),lib.size=rep(1000:1001,each=2))
+x<-DGEList(data=y,group=rep(1:2,each=2),lib.size=rep(1000:1001,each=2))
 scores <- condLogLikDerDelta(y, delta=0.5, der = 1, doSum = TRUE) 
 qA <- quantileAdjust(x, alpha = 10, null.hypothesis = TRUE)
 exp.inf <- approx.expected.info(x, d=0.5, qA)

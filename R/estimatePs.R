@@ -10,9 +10,12 @@ estimatePs<-function(object,r,tol=1e-10,maxit=30) {
 	k <- levels(group)
 	onev<-rep(1,nrows)
 	y<-splitIntoGroups(object)
+	cat(names(y),"\n")
+	cat(k,"\n")
+	
 	this.p.group<-matrix(0,nrow=nrows,ncol=length(k), dimnames=list(NULL,k))
 	for(i in 1:length(k)) {
-		this.p.group[,i]<-rowMeans(y[[k[i]]]/outer(onev,lib.size[group==k[i]]))
+		this.p.group[,i]<-rowMeans(y[[i]]/outer(onev,lib.size[group==k[i]]))
 	}
 	this.p.com<-rowMeans(object$data/outer(onev,lib.size))
 	rsums<-matrix(0,nrow=nrows,ncol=length(k))

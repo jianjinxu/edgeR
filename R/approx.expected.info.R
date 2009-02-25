@@ -6,7 +6,9 @@ approx.expected.info<-function(object,d,qA,robust=FALSE) {
 	#k<-unique(group)
 	obs.inf<-rep(0,nrow(object$data))
 	for(i in 1:length(k)) {
+	    if (sum( group==k[i] ) > 1) {
 			obs.inf<-obs.inf+condLogLikDerDelta(qA$pseudo[,group==k[i]],d,der=2,doSum=FALSE)*(-1)
+		}
 	}
 	t<-rowSums(qA$pseudo)
 	if (robust) {

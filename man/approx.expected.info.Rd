@@ -29,7 +29,7 @@ approx.expected.info(object, d, qA, robust = FALSE)
 \examples{
 set.seed(0)
 y<-matrix(rnbinom(40,size=1,mu=10),ncol=4)
-d<-list(data=y,group=rep(1:2,each=2),lib.size=rep(c(1000:1001),2))
+d<-DGEList(data=y,group=rep(1:2,each=2),lib.size=rep(c(1000:1001),2))
 qA<-quantileAdjust(d,alpha=100)
 exp.inf<-approx.expected.info(d,1/(1 + qA$r[1]),qA)
 }

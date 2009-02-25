@@ -31,7 +31,7 @@ logLikDerP(p, y, lib.size, r, der = 0)
 
 \examples{
 y<-matrix(rnbinom(20,size=1.5,mu=10),nrow=5)
-d<-list(data=y,group=rep(1:2,each=2),lib.size=rep(c(1000:1001),2))
+d<-DGEList(data=y,group=rep(1:2,each=2),lib.size=rep(c(1000:1001),2))
 
 this.p<-rowMeans( y/ outer(rep(1,nrow(y)),d$lib.size) )
 d1p<-logLikDerP(this.p,y,d$lib.size,r=1.5,der=1)

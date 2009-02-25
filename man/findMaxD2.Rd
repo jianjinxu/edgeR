@@ -32,7 +32,7 @@ findMaxD2(object, alpha = 0.5, grid = TRUE, tol = 1e-05, n.iter = 10, grid.lengt
 \author{Mark Robinson, Davis McCarthy}
 \examples{
 y<-matrix(rnbinom(1000,mu=10,size=2),ncol=4)
-d<-list(data=y,group=c(1,1,2,2),lib.size=c(1000:1003))
+d<-DGEList(data=y,group=c(1,1,2,2),lib.size=c(1000:1003))
 cml1<-findMaxD2(d,alpha=10)
 cml2<-findMaxD2(d,alpha=0)
 }
