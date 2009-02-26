@@ -33,15 +33,21 @@ setMethod("show","deDGEList",
 #setGeneric("plotMA", function(object, pair=c(1,2), xlab = "A", ylab = "M", ylim=NULL, pch = 19, ...) standardGeneric("plotMA"))
 
 
-DGEList <- function(data=matrix(0), lib.size=integer(0), group=factor(), ...)
+DGEList <- function(data=matrix(0), lib.size=integer(0), group=factor(), ...) 
 {
-  if (ncol(data) != length(lib.size))
-    stop("Length of 'lib.size' must equal number of columns in 'data'")
-  if (ncol(data) != length(group))
-    stop("Length of 'group' must equal number of columns in 'data'")
-  if (!is.factor(group))
-    group<-as.factor(group)
-  new("DGEList",list(data=as.matrix(data), lib.size=lib.size, group=group, ...))
+	if (ncol(data) != length(lib.size))
+		stop("Length of 'lib.size' must equal number of columns in 'data'")
+	if (ncol(data) != length(group))
+		stop("Length of 'group' must equal number of columns in 'data'")
+	if (!is.factor(group))
+		group<-as.factor(group)
+	if(!is.matrix(data)) 
+		data<-as.matrix(data)
+	if(length(colnames(data)) < ncol(data)) {
+			colnames(data)<-paste("sample",c(1:ncol(data)),sep=".")
+	}
+	o <- order(group)
+	new("DGEList",list(data=data[,o], lib.size=lib.size[o], group=as.factor(group[o]),...))
 }
 
 
