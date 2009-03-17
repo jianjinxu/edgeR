@@ -17,7 +17,7 @@ alpha.approxeb<-function(object,verbose=TRUE) {
 	exp.inf<-approx.expected.info(object,d,qA)
 	sigma2.0.est<-optimize(tau2.0.objective,c(0,500),info.g=exp.inf,score.g=scores)$min
 	alpha<-1/(sigma2.0.est*nrow(object$data)*mean(exp.inf))
-	new("EBList",list(sigma2.0.est=sigma2.0.est,alpha=alpha,scores=scores,infos=exp.inf,quantileAdjusted=qA))
+	new("EBList",list(sigma2.0.est=sigma2.0.est,alpha=alpha,scores=scores,infos=exp.inf,quantileAdjusted=qA, common.dispersion.delta=d, common.dispersion=d/(1-d)))
 }
 
 
