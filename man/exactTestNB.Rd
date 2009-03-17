@@ -30,7 +30,7 @@ exactTestNB(pseudo, group, pair=c(1,2), mus, r, verbose=TRUE)
 \author{Mark Robinson, Davis McCarthy}
 \examples{
 y<-matrix(rnbinom(20,mu=10,size=1.5),nrow=5)
-group<-c(1,1,2,2)
+group<-factor(c(1,1,2,2))
 mus<-rep(10,5)
 f<-exactTestNB(y,group,pair=c(1,2),mus,r=1.5)
 }
