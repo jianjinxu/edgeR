@@ -7,7 +7,7 @@
 \description{An exact test for differences between two negative binomial groups}
 
 \usage{ 
-exactTestNB(pseudo, group, pair=c(1,2), mus, r, verbose=TRUE)
+exactTestNB(pseudo, group, pair, mus, r, verbose=TRUE)
 }
 
 \arguments{ 
@@ -16,7 +16,7 @@ exactTestNB(pseudo, group, pair=c(1,2), mus, r, verbose=TRUE)
 
 \item{group}{group indicator, must be same length as ncol(pseudo)}
 
-\item{pair}{pair of groups to be compared; default compares groups 1 and 2}
+\item{pair}{pair of groups to be compared}
 
 \item{mus}{vector of means under the null hypothesis (of no difference between groups)}
 

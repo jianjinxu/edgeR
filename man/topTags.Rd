@@ -7,13 +7,13 @@
 \description{Displays/Returns the top DE tags in a data frame}
 
 \usage{ 
-topTags(object,pair=c(1,2),n=10,adj.method= "BH", verbose=TRUE)
+topTags(object,pair,n=10,adj.method= "BH", verbose=TRUE)
 }
 
 \arguments{ 
 \item{object}{\code{deDGEList}, output from \code{deDGE}}
 
-\item{pair}{pair of groups to be compared; default compares groups 1 and 2}
+\item{pair}{pair of groups to be compared}
 
 \item{n}{number of tags to display/return}
 

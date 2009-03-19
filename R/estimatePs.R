@@ -9,8 +9,8 @@ estimatePs<-function(object,r,tol=1e-10,maxit=30) {
 	levs.group <- levels(group)
 	onev<-rep(1,nrows)
 	y<-splitIntoGroups(object)
-	cat(names(y),"\n")
-	cat(levs.group,"\n")
+	#cat(names(y),"\n")
+	#cat(levs.group,"\n")
 	
 	this.p.group<-matrix(0,nrow=nrows,ncol=length(levs.group), dimnames=list(NULL,levs.group))
 	for(i in 1:length(levs.group)) {

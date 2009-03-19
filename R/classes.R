@@ -17,7 +17,15 @@ representation("list")
 
 setMethod("show","DGEList",
   function(object) {
-    cat(class(object),": ",nrow(object$data)," rows, ",ncol(object$data)," libraries\n",sep="")
+    cat(class(object),":\n",sep="")
+	cat("$data\n")
+	print(object$data[1:5,])
+	cat(nrow(object$data)-5,"more rows ...\n")
+	
+	cat("\n$lib.size\n")
+	print(object$lib.size)
+	cat("\n$group\n")
+	print(object$group)
   })
 
 setMethod("show","EBList",

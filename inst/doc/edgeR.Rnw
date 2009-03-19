@@ -43,21 +43,27 @@ The observed data can be denoted as $Y_{gij}$ where $g$ is the gene (tag, exon, 
 \[  Y_{gij} \sim NB(M_j \cdot p_{gi}, \phi_g) \]
 where $p_{gi}$ represents the proportion of the sequenced sample for group $i$ that is tag $g$ and $M_j$ represents the library size.  It is of interest to find genes where, for example, $p_{g1}$ is significantly different from $p_{g2}$.  The parameter $\phi_g$ is the overdispersion (relative to the Poisson) and represents the biological, or sample-to-sample variability.   The methods we developed moderate the dispersion estimates towards a common dispersion, much like how the \texttt{limma} package moderates the variances in the analysis of microarray data.
 
-To illustrate the methods, we generate some count data.  Here, I have sampled from a negative binomial distribution and created the list object that is necessary for the moderated dispersion functions:
+To illustrate the methods, we use the Zhang et al. (1997) SAGE dataset.  First, we read in the raw data:
 <<rawdata>>=
 library(edgeR)
-set.seed(101)
-n<-200
-lib.sizes<-c(40000,50000,38000,40000)
-p<-runif(n,min=.0001,.001)
-mu<-outer(p,lib.sizes)
-mu[1:5,3:4]<-mu[1:5,3:4]*8
-y<-matrix(rnbinom(4*n,size=4,mu=mu),nrow=n)
-rownames(y)<-paste("tag",1:nrow(y),sep=".")
-y[1:10,]
-d<-DGEList(data=y,group=rep(1:2,each=2),lib.size=lib.sizes)  # call constructor
+WD <- getwd()
+dataPath <- paste(.find.package("edgeR"),"data",sep="/")
+fn <- dir(dataPath, "txt")
+fn
+setwd(dataPath)
+head(read.table(fn[1],header=TRUE))
+dataList <- readDGE(fn,header=TRUE)
+setwd(WD)
+@
+
+\texttt{dataList} is a \texttt{list} object with elements for the table of counts and the library sizes.  We need to add to this a `group' variable which specifies the experimental condition and then we create a \texttt{DGEList} object that is the container for digital gene expression data.  Note that your raw data may come from a different source (e.g. another R object), but the \texttt{DGEList} needs the 3 pieces of information mentioned above.
+<<createDGEList>>=
+cls <- gsub("[0-9]","",colnames(dataList$data))
+cls
+keep <- rowSums(dataList$data > 8)  # to keep the compute time lower
+sum(keep)
+d<-DGEList(data=dataList$data[keep,],group=cls,lib.size=dataList$lib.size)  # call constructor
 d
-names(d)
 @
 
 To run the moderated analysis, we first need to determine how much moderation is necessary.  For this, we use an empirical Bayes rule and involves calculating a weight parameter $\alpha$.  Following this, the main function to do the statistical testing is called \texttt{deDGE}.
@@ -83,7 +89,7 @@ boxplot(as.data.frame(sqrt(d$data)))
 
 Or, you can have a look at the output, according to:
 <<topTags>>=
-topTags(ms)
+#topTags(ms)
 @
 
 \section{Poisson example}
@@ -94,6 +100,9 @@ To illustrate this, we sample Poisson data and run \texttt{deDGE} with the \text
 
 <<poisson,fig=TRUE,width=7,height=4>>=
 set.seed(101)
+n <- 100
+mu <- 10
+lib.sizes <- c(10,8,14,10)*1000
 y<-matrix(rpois(4*n,lambda=mu),nrow=n)
 d<-DGEList(data=y,group=rep(1:2,each=2),lib.size=lib.sizes)
 ms<-deDGE(d,doPoisson=TRUE)
