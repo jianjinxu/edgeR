@@ -60,7 +60,7 @@ setwd(WD)
 <<createDGEList>>=
 cls <- gsub("[0-9]","",colnames(dataList$data))
 cls
-keep <- rowSums(dataList$data > 8)  # to keep the compute time lower
+keep <- rowSums(dataList$data) > 8  # to keep the compute time lower
 sum(keep)
 d<-DGEList(data=dataList$data[keep,],group=cls,lib.size=dataList$lib.size)  # call constructor
 d
@@ -68,73 +68,81 @@ d
 
 To run the moderated analysis, we first need to determine how much moderation is necessary.  For this, we use an empirical Bayes rule and involves calculating a weight parameter $\alpha$.  Following this, the main function to do the statistical testing is called \texttt{deDGE}.
 <<moderation>>=
-alpha<-alpha.approxeb(d)
+alpha <- alpha.approxeb(d)
 alpha
-ms<-deDGE(d,alpha=alpha$alpha)
+ms <- deDGE(d,alpha=alpha$alpha)
 ms
 @
 
-It may be informative to look at the data via MA plots, as is commonly done in the analysis of microarray experiments.  In addition, we can highlight those genes that are determined to be differentially expressed (above, we made 5 tags have a much higher mean, and these are highlighted in blue).  To do this, you can call the commands:
+It may be informative to look at the data via logRatio vs. Abundance (or M vs. A) plots, as is commonly done in the analysis of microarray experiments for 2-group comparisons.  In addition, we can highlight those genes that are determined to be differentially expressed (here, using a 5\% FDR multiple testing correction).  To do this, you can call the commands:
 <<MAplot,fig=TRUE,height=6,width=8>>=
-#adj.p<-p.adjust(ms$exact,"fdr")
-#k<-(adj.p<.05)
-#plotMA( ms, col=c("black","blue")[k+1])
-plotMA( ms )
+exactP <- exactTestNB(ms$pseudo, ms$group, pair=c("Tu","NC"), ms$M * ms$ps$p.common,  ms$r, verbose=TRUE)
+exactPadj <- p.adjust(exactP,"fdr")
+k <- (exactPadj<.05)
+plotMA( ms, xlim=c(-16,-5), ylim=c(-6,6), xlab="Relative Abundance", ylab="log Ratio", col=c("black","blue")[k+1])
 @
 
-Also, we may want to look at distributions of the counts to see the effect of different total numbers of reads.  An easy way to do this is:
-<<boxplot,fig=TRUE,height=6,width=8>>=
-boxplot(as.data.frame(sqrt(d$data)))
-@
+%Also, we may want to look at distributions of the counts to see the effect of different total numbers of reads.  An easy way to do this is:
+%<<boxplot,fig=TRUE,height=6,width=8>>=
+%boxplot(as.data.frame(d$data^.2))
+%boxplot(as.data.frame(ms$pseudo^.2))
+%@
 
-Or, you can have a look at the output, according to:
+Or, you can have a look at the sorted list of differential expression calls, according to:
 <<topTags>>=
-#topTags(ms)
+topTags(ms)
 @
 
 \section{Poisson example}
 
-It has been observed that in some high-throughput (or deep) sequencing approaches that not a great deal of overdispersion is observed.  Specifically, the means and variances appear to be very close to each other, suggesting the Poisson distribution is a good fit.  Methods within the \texttt{edgeR} package may still be useful, including the quantile adjustment (effectively a normalization) and the exact testing routines.
+It has been observed that in some deep sequencing approaches that not a great deal of overdispersion is observed.  Specifically, the means and variances appear to be very close to each other, suggesting the Poisson distribution is a good fit.  Methods within the \texttt{edgeR} package may still be useful, including the quantile adjustment (effectively a normalization) and the exact testing routines.
 
-To illustrate this, we sample Poisson data and run \texttt{deDGE} with the \texttt{doPoisson} argument set to \texttt{TRUE}.  The data is quantile-adjusted and the exact test is invoked after first setting the dispersion parameter to 0.  To observe that it does a normalization of sorts, we can again look at boxplots.
+To illustrate this, we sample Poisson data and run \texttt{deDGE} with the \texttt{doPoisson} argument set to \texttt{TRUE}.  The data is quantile-adjusted and when the exact test is invoked, the dispersion parameter to 0.  For example:
 
-<<poisson,fig=TRUE,width=7,height=4>>=
+<<poisson,width=7,height=4>>=
 set.seed(101)
-n <- 100
-mu <- 10
-lib.sizes <- c(10,8,14,10)*1000
+n <- 1000
+lib.sizes<-c(40000,50000,38000,40000)
+p<-runif(n,min=.0001,.001)
+mu<-outer(p,lib.sizes)
+mu[1:5,3:4]<-mu[1:5,3:4]*8
 y<-matrix(rpois(4*n,lambda=mu),nrow=n)
-d<-DGEList(data=y,group=rep(1:2,each=2),lib.size=lib.sizes)
-ms<-deDGE(d,doPoisson=TRUE)
-par(mfrow=c(1,2))
-boxplot(as.data.frame(sqrt(d$data)))
-boxplot(as.data.frame(sqrt(ms$pseudo)))
+dP<-DGEList(data=y,group=rep(1:2,each=2),lib.size=lib.sizes)
+msP<-deDGE(dP,doPoisson=TRUE)
+msP
 @
 
-Again, the same functions can be used to access the results:
+And you can proceed as before:
 
 <<poissonstats,fig=TRUE,height=6,width=8>>=
-#adj.p<-p.adjust(ms$exact,"fdr")
-#k<-(adj.p<.05)
-#plotMA(ms,col=c("black","blue")[k+1])
-plotMA(ms)
-topTags(ms)
+topTags(msP)
+plotMA(msP,col=c( rep("blue",5), rep("black",n-5) ))
 @
 
 \section{Future improvements and extension}
 
-Here, we list some improvements that are planned for the \texttt{edgeR} package:
+Here, we list some improvements/extensions that are planned for the \texttt{edgeR} package:
 
 \begin{enumerate}
 \item As the packages for the processing of raw high-throughput sequencing data become more mature, \texttt{edgeR} may need to adapt and operate on different objects.  As shown above, \texttt{edgeR} operates on a simple object containing simple data summaries which will  presumably be readily available from pre-processing steps.
-\item At present, the package only does 2-sample comparisons.  The methods are straightforward to extend to multiple samples, but other considerations will need to be made and further development is required.
-\item Some speed improvements have been made but as the datasets become larger, some further optimizations may be necessary.
+\item Some speed improvements have been made but as the datasets become larger, some further optimizations may be necessary.  We are exploring various ways to do this.
+\item The current quantile-based normalization assumes the library sizes as fixed.  Depending on the circumstances of the samples in question, it may be necessary to explore something like an {\em effective} library size.
 \end{enumerate}
 
 %<<setupfiles>>=
 %getwd()
 %dir("")
 %@
+
+\section{Setup}
+
+This vignette was built on:
+
+<<setup>>=
+sessionInfo()
+@
+
+
 
 \section{References}
 

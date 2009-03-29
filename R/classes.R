@@ -35,7 +35,24 @@ setMethod("show","EBList",
 
 setMethod("show","deDGEList",
   function(object) {
-    cat(class(object),": ",ncol(object$pseudo)," samples, ",length(levels(object$group))," groups, adjusted to library size of ",object$M,"\n",sep="")
+    nmore <- nrow(object$pseudo)-5
+    cat(class(object),":\n",sep="")
+
+	cat("$ps$p.common\n")
+	print(object$ps$p.common[1:5])
+	cat(nmore,"more elements ...\n")
+
+	cat("\n$ps$p.group\n")
+	print(object$ps$p.group[1:5,])
+	cat(nmore,"more rows ...\n")
+	
+	cat("\n$r\n")
+	print(object$r[1:5])
+	cat(nmore,"more elements ...\n")
+	cat("\n$group\n")
+	print(object$group)
+	cat("\n$M\n")
+	print(object$M)
   })
 
 #setGeneric("plotMA", function(object, pair=c(1,2), xlab = "A", ylab = "M", ylim=NULL, pch = 19, ...) standardGeneric("plotMA"))
