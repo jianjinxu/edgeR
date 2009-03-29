@@ -93,6 +93,8 @@ Or, you can have a look at the sorted list of differential expression calls, acc
 topTags(ms)
 @
 
+The above procedure will work for experiments with more than 2 groups as well.  At present, the testing can only be done in a pairwise fashion.  Therefore, with multiple groups you will need to specify the pair of groups to do the testing on.
+
 \section{Poisson example}
 
 It has been observed that in some deep sequencing approaches that not a great deal of overdispersion is observed.  Specifically, the means and variances appear to be very close to each other, suggesting the Poisson distribution is a good fit.  Methods within the \texttt{edgeR} package may still be useful, including the quantile adjustment (effectively a normalization) and the exact testing routines.
@@ -127,6 +129,7 @@ Here, we list some improvements/extensions that are planned for the \texttt{edge
 \item As the packages for the processing of raw high-throughput sequencing data become more mature, \texttt{edgeR} may need to adapt and operate on different objects.  As shown above, \texttt{edgeR} operates on a simple object containing simple data summaries which will  presumably be readily available from pre-processing steps.
 \item Some speed improvements have been made but as the datasets become larger, some further optimizations may be necessary.  We are exploring various ways to do this.
 \item The current quantile-based normalization assumes the library sizes as fixed.  Depending on the circumstances of the samples in question, it may be necessary to explore something like an {\em effective} library size.
+\item We are exploring more general testing procedures.
 \end{enumerate}
 
 %<<setupfiles>>=

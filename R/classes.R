@@ -30,7 +30,11 @@ setMethod("show","DGEList",
 
 setMethod("show","EBList",
   function(object) {
-    cat(class(object),": alpha=",object$alpha,"\n",sep="")
+    cat(class(object),":\n",sep="")
+	cat("$alpha\n")
+	print(object$alpha)
+	cat("\n$common.dispersion\n")
+	print(object$common.dispersion)
   })
 
 setMethod("show","deDGEList",
