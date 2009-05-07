@@ -7,7 +7,7 @@
 \description{An exact test for differences between two negative binomial groups}
 
 \usage{ 
-exactTestNB(pseudo, group, pair, mus, r, verbose=TRUE)
+exactTestNB(pseudo, group, pair=1:2, mus, r, verbose=TRUE)
 }
 
 \arguments{ 

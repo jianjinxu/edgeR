@@ -1,7 +1,8 @@
 # Written by Mark Robinson, edited by Davis McCarthy, February 2009
 # A function to calculate P-values using Fisher's exact test for the Negative Binomial distribution
-exactTestNB<-function(pseudo,group,pair,mus,r,verbose=TRUE) {
+exactTestNB<-function(pseudo,group,pair=1:2,mus,r,verbose=TRUE) {
 	nrows<-nrow(pseudo)
+        group <- as.factor(group)
 	levs.group<-levels(group)
 	ngroups<-length(levs.group)
 	if( sum(pair[1]==levs.group)==0 | sum(pair[2]==levs.group)==0 ) 
