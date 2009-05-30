@@ -62,19 +62,38 @@ setMethod("show","deDGEList",
 #setGeneric("plotMA", function(object, pair=c(1,2), xlab = "A", ylab = "M", ylim=NULL, pch = 19, ...) standardGeneric("plotMA"))
 
 
-DGEList <- function(data=matrix(0), lib.size=integer(0), group=factor(), ...) 
+DGEList <- function(data=matrix(0), lib.size=NULL, group=factor(), verbose=FALSE, ...) 
 {
-	if (ncol(data) != length(lib.size))
-		stop("Length of 'lib.size' must equal number of columns in 'data'")
 	if (ncol(data) != length(group))
 		stop("Length of 'group' must equal number of columns in 'data'")
 	if (!is.factor(group))
 		group<-as.factor(group)
 	if(!is.matrix(data)) 
 		data<-as.matrix(data)
+        if(is.null(lib.size)) {
+                lib.size <- colSums(data)
+                warning("Calculating library sizes from total number of reads for each library.")
+        }
 	if(length(colnames(data)) < ncol(data)) {
 			colnames(data)<-paste("sample",c(1:ncol(data)),sep=".")
 	}
+	if (ncol(data) != length(lib.size))
+		stop("Length of 'lib.size' must equal number of columns in 'data'")
+        # remove rows which are all 0
+        allZeros <- rowSums(data,na.rm=TRUE)==0
+        if( sum(allZeros) > 0) {
+          data <- data[!allZeros,]
+          warning("Removing ", sum(allZeros)," rows that all have zero counts.")
+        }
+        if( verbose ) {
+          cat("----------------------------------------\n")
+          cat("Breakdown of TOTAL counts by ZERO counts\n")
+          cat("----------------------------------------\n")
+          tab <-  table( cut(rowSums(data),breaks=c((0:9)+.5,1e6)), rowSums(data==0), dnn=c("rowWiseCountSum","nbrOfZeroObserations") )
+          print(tab)
+          cat("----------------------------------------\n")
+        }
+
 	o <- order(group)
 	new("DGEList",list(data=data[,o], lib.size=lib.size[o], group=as.factor(group[o]),...))
 }

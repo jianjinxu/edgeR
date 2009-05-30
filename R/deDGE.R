@@ -12,6 +12,7 @@ deDGE<-function(object,alpha=500,doPoisson=FALSE,verbose=TRUE) {
 		qA<-quantileAdjust(object,alpha=alpha,verbose=verbose)
 	}
 	rownames(qA$pseudo)<-rownames(object$data)
+	colnames(qA$pseudo)<-paste("pseudo",colnames(object$data),sep=".")
 	new("deDGEList",(list(ps=qA$ps,r=qA$r,pseudo=qA$pseudo,group=object$group,M=qA$N)))
 }
 
