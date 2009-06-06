@@ -47,7 +47,7 @@ To illustrate the methods, we use the Zhang et al. (1997) SAGE dataset.  First, 
 <<rawdata>>=
 library(edgeR)
 WD <- getwd()
-dataPath <- paste(.find.package("edgeR"),"data",sep="/")
+dataPath <- file.path(.find.package("edgeR"),"data")
 fn <- dir(dataPath, "txt")
 fn
 setwd(dataPath)
