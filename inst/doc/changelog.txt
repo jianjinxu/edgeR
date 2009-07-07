@@ -1,3 +1,7 @@
+7 July 2009, edgeR 1.3.4
+
+- Biobase package is imported rather than depended (loaded)
+
 1 June 2009, edgeR 1.3.3
 
 - paste() replaced with file.path() in vignette.
