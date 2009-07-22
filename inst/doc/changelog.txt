@@ -1,3 +1,7 @@
+23 July 2009, edgeR 1.3.5
+
+- asserted the $r element to be large when doPoisson=TRUE
+
 7 July 2009, edgeR 1.3.4
 
 - Biobase package is imported rather than depended (loaded)

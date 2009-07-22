@@ -7,6 +7,7 @@ deDGE<-function(object,alpha=500,doPoisson=FALSE,verbose=TRUE) {
 	if(doPoisson) {
 		if (verbose) cat("Quantile adjusting as Poisson.\n")
 		qA<-quantileAdjust(object,r.init=1000,n.iter=1)
+                qA$r <- rep(1000, length(qA$r))
 	} else {
 		if (verbose) cat("Calculating shrinkage overdispersion parameters.\n")
 		qA<-quantileAdjust(object,alpha=alpha,verbose=verbose)
