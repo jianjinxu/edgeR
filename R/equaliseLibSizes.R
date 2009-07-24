@@ -1,7 +1,6 @@
+equaliseLibSizes <- function(object, phi=0, N=prod(object$lib.size)^(1/ncol(object$data)), null.hypothesis=TRUE, verbose=TRUE)
 # Davis McCarthy, July 2009
 # A function that simply adjusts the counts for library size for a fixed value of the dispersion parameter
-
-equaliseLibSizes <- function(object, phi=0, N=prod(object$lib.size)^(1/ncol(object$data)), null.hypothesis=TRUE, verbose=TRUE)
 {
 	if (length(phi) > 1 & sum(phi==0) > 0)
 		stop("Currently cannot support phi with length > 1 containing exact zeroes\n")

@@ -1,7 +1,8 @@
 
+interpolateHelper<-function(mu,p,r,count.max,verbose=TRUE)
 # Written by Mark Robinson, edited by Davis McCarthy, February 2009
 # A function to produce the pseudo-data required
-interpolateHelper<-function(mu,p,r,count.max,verbose=TRUE) {
+{
 	if(length(r)==1) { 
 		r<-matrix(r,nrow=nrow(mu),ncol=ncol(mu)) 
 	}
