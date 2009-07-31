@@ -41,3 +41,53 @@ equaliseLibSizes <- function(object, phi=0, N=prod(object$lib.size)^(1/ncol(obje
 	pseudo
 }
 
+qpoispm <- function (p, lambda, lower.tail = TRUE, log.p = FALSE)
+#	Poor man's qpois function, avoiding unnecessary Inf values
+#	Gordon Smyth
+#	31 July 2009
+{
+	q1 <- qnorm(p, mean=lambda, sd=sqrt(lambda), lower.tail=lower.tail, log.p=log.p)
+	q2 <- qgamma(p, shape=lambda, lower.tail=lower.tail, log.p=log.p)
+	(q1+q2)/2-0.5
+}
+
+qnbinompm <- function (p, mean, dispersion=0, lower.tail = TRUE, log.p = FALSE)
+#	Poor man's qnbinom function, avoiding unnecessary Inf values
+#	Parametrized in terms of mean and the over-dispersion parameter
+#	Gordon Smyth
+#	31 July 2009
+{
+	r <- 1+dispersion*mean
+	v <- mean*r
+	q1 <- qnorm(p, mean=mean, sd=sqrt(v), lower.tail=lower.tail, log.p=log.p)
+	q2 <- qgamma(p, shape=mean/r, scale=r, lower.tail=lower.tail, log.p=log.p)
+	(q1+q2)/2-0.5
+}
+
+q2qnbinompm <- function (x, input.mean, output.mean, dispersion=0)
+#	Poor man's nbinom quantile adjustment function
+#	Parametrized in terms of mean and the over-dispersion parameter
+#	Gordon Smyth
+#	31 July 2009
+{
+	ri <- 1+dispersion*input.mean
+	vi <- input.mean*ri
+	ro <- 1+dispersion*output.mean
+	vo <- output.mean*ro
+	i <- (x >= input.mean)
+	j <- !i
+	p1 <- p2 <- q1 <- q2 <- x
+	if(any(i)) {
+		p1[i] <- pnorm(x[i], mean=input.mean[i], sd=sqrt(vi[i]), lower.tail=FALSE, log.p=TRUE)
+		p2[i] <- pgamma(x[i], shape=input.mean[i]/ri[i], scale=ri[i], lower.tail=FALSE, log.p=TRUE)
+		q1[i] <- qnorm(p1[i], mean=output.mean[i], sd=sqrt(vo[i]), lower.tail=FALSE, log.p=TRUE)
+		q2[i] <- qgamma(p2[i], shape=output.mean[i]/ro[i], scale=ro[i], lower.tail=FALSE, log.p=TRUE)
+	}
+	if(any(j)) {
+		p1[j] <- pnorm(x[j], mean=input.mean[j], sd=sqrt(vi[j]), lower.tail=TRUE, log.p=TRUE)
+		p2[j] <- pgamma(x[j], shape=input.mean[j]/ri[j], scale=ri[j], lower.tail=TRUE, log.p=TRUE)
+		q1[j] <- qnorm(p1[j], mean=output.mean[j], sd=sqrt(vo[j]), lower.tail=TRUE, log.p=TRUE)
+		q2[j] <- qgamma(p2[j], shape=output.mean[j]/ro[j], scale=ro[j], lower.tail=TRUE, log.p=TRUE)
+	}
+	(q1+q2)/2
+}
