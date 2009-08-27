@@ -1,7 +1,7 @@
-
+topTags<-function(object,pair=NULL,n=10,adj.method= "BH",verbose=TRUE) 
+{
 # Written by Mark Robinson, edited by Davis McCarthy, February 2009
 # A function that displays a summary table of the n most differentially expressed tags, judged on p-value
-topTags<-function(object,pair=NULL,n=10,adj.method= "BH",verbose=TRUE) {
 	if (!is(object,"deDGEList"))
 		stop("Currently only supports deDGEList objects.")
 	levs.group<-levels(object$group)

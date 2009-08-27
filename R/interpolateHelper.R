@@ -1,4 +1,3 @@
-
 interpolateHelper<-function(mu,p,r,count.max,verbose=TRUE)
 # Written by Mark Robinson, edited by Davis McCarthy, February 2009
 # A function to produce the pseudo-data required
