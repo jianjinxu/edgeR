@@ -1,5 +1,5 @@
 Package: edgeR
-Version: 1.3.5
+Version: 1.3.6
 Date: 2009/07/24
 Title: Empirical analysis of digital gene expression data in R
 Author: Mark Robinson <mrobinson@wehi.edu.au>, Davis McCarthy <dmccarthy@wehi.edu.au>, Gordon Smyth <smyth@wehi.edu.au>
@@ -9,4 +9,4 @@ Imports: Biobase
 Suggests: MASS
 biocViews: Bioinformatics, DifferentialExpression, Statistics
 Description: Estimation and Testing for Differential Expression in Multiple Digital Gene Expression Libraries.
-License: LGPL version 2 or newer
+License: LGPL (>= 2)
