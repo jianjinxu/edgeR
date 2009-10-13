@@ -2,8 +2,10 @@
 
 #  All functions exported other than those starting with "."
 exportPattern("^[^\\.]")
-exportPattern("\\.findMaxD2")
 
-exportClasses("DGEList","deDGEList","EBList")
+exportClasses("DGEList","deDGEList","EBList","TopTags")
 exportMethods("show")
 
+importFrom(limma, removeExt, trimWhiteSpace)
+importClassesFrom(limma, "LargeDataObject")
+importMethodsFrom(limma, "show")

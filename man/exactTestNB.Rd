@@ -1,5 +1,4 @@
 \name{exactTestNB}
-
 \alias{exactTestNB}
 
 \title{An exact test for differences between two negative binomial groups}
@@ -7,12 +6,12 @@
 \description{An exact test for differences between two negative binomial groups}
 
 \usage{ 
-exactTestNB(pseudo, group, pair=1:2, mus, r, verbose=TRUE)
+exactTestNB(pseudo, group, pair=1:2, mus, r)
 }
 
 \arguments{ 
 
-\item{pseudo}{data (e.g. quantile adjusted pseudodata) on which to compute Fisher exact statistics}
+\item{pseudo}{counts (e.g. quantile adjusted pseudocounts) on which to compute Fisher-like exact statistics}
 
 \item{group}{group indicator, must be same length as ncol(pseudo)}
 
@@ -20,9 +19,7 @@ exactTestNB(pseudo, group, pair=1:2, mus, r, verbose=TRUE)
 
 \item{mus}{vector of means under the null hypothesis (of no difference between groups)}
 
-\item{r}{preset or estimated negative binomial \code{size} parameter.  If you want to run a Poisson test, set r very large (e.g. 1000)}
-
-\item{verbose}{whether to write comments, default \code{TRUE}}
+\item{r}{preset or estimated negative binomial \code{size} parameter (\code{size} = \code{1/phi} where \code{phi} is the dispersion parameter in the NB model).  If you want to run a Poisson test, set r very large (e.g. 1000)}
 }
 
 \value{ vector of p-values}

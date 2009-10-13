@@ -1,17 +1,16 @@
 \name{condLogLikDerDelta}
-
 \alias{condLogLikDerDelta}
 
 \title{Conditional log-likelihood in terms of delta}
 
-\description{Conditional log-likelihood parameterized in terms of delta (\code{phi / (phi+1)}) }
+\description{Conditional negative binomial log-likelihood parameterized in terms of delta (\code{phi / (phi+1)}) }
 
 \usage{ 
 condLogLikDerDelta(y, delta, grid = TRUE, der = 1, doSum = TRUE) 
 }
 \arguments{ 
 
-\item{y}{matrix with count data (or pseudodata)}
+\item{y}{matrix with count data (or pseudocounts)}
 
 \item{delta}{delta (\code{phi / (phi+1)})parameter of negative binomial}
 

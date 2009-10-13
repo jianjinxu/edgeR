@@ -5,6 +5,11 @@ setClass("deDGEList",
 representation("list")
 )
 
+setClass("de4DGEList",
+#  Updated Linear model fit (Sep 2009)
+representation("list")
+)
+
 setClass("DGEList",
 #  Linear model fit
 representation("list")
@@ -15,92 +20,70 @@ setClass("EBList",
 representation("list")
 )
 
-setMethod("show","DGEList",
-  function(object) {
-    cat(class(object),":\n",sep="")
-	cat("$data\n")
-	print(object$data[1:5,])
-	cat(nrow(object$data)-5,"more rows ...\n")
-	
-	cat("\n$lib.size\n")
-	print(object$lib.size)
-	cat("\n$group\n")
-	print(object$group)
-  })
+setClass("SmoothList",
+#  Linear model fit (Sep 2009)
+representation("list")
+)
 
-setMethod("show","EBList",
-  function(object) {
-    cat(class(object),":\n",sep="")
-	cat("$alpha\n")
-	print(object$alpha)
-	cat("\n$common.dispersion\n")
-	print(object$common.dispersion)
-  })
+setClass("TopTags",
+representation("list")
+)
 
-setMethod("show","deDGEList",
-  function(object) {
-    nmore <- nrow(object$pseudo)-5
-    cat(class(object),":\n",sep="")
+setMethod("show", "TopTags", function(object) {
+	if(length(object$comparison)) cat("Comparison of groups: ", object$comparison[2],"-",object$comparison[1],"\n")
+	colnames(object$table) <- c("logConc","logFC","PValue","FDR")
+	if(object$adjust.method %in%  c("holm", "hochberg", "hommel", "bonferroni")) colnames(object$table)[4] <- "FWER"
+	if(object$adjust.method=="none") object$table$FDR <- NULL
+	print(object$table)
+})
 
-	cat("$ps$p.common\n")
-	print(object$ps$p.common[1:5])
-	cat(nmore,"more elements ...\n")
+setIs("DGEList","LargeDataObject")
+setIs("EBList","LargeDataObject")
+setIs("SmoothList","LargeDataObject")
+setIs("deDGEList","LargeDataObject")
+setIs("de4DGEList","LargeDataObject")
 
-	cat("\n$ps$p.group\n")
-	print(object$ps$p.group[1:5,])
-	cat(nmore,"more rows ...\n")
-	
-	cat("\n$r\n")
-	print(object$r[1:5])
-	cat(nmore,"more elements ...\n")
-	cat("\n$group\n")
-	print(object$group)
-	cat("\n$M\n")
-	print(object$M)
-  })
-
-#setGeneric("plotMA", function(object, pair=c(1,2), xlab = "A", ylab = "M", ylim=NULL, pch = 19, ...) standardGeneric("plotMA"))
-
-
-DGEList <- function(data=matrix(0), lib.size=NULL, group=factor(), verbose=FALSE, ...) 
+DGEList <- function(counts=matrix(0), lib.size=NULL, group=factor(), verbose=FALSE, ...) 
 {
-	if (ncol(data) != length(group))
-		stop("Length of 'group' must equal number of columns in 'data'")
+	if (ncol(counts) != length(group))
+		stop("Length of 'group' must equal number of columns in 'counts'")
 	if (!is.factor(group))
 		group<-as.factor(group)
-	if(!is.matrix(data)) 
-		data<-as.matrix(data)
+	if(!is.matrix(counts)) 
+		counts<-as.matrix(counts)
         if(is.null(lib.size)) {
-                lib.size <- colSums(data)
+                lib.size <- colSums(counts)
                 warning("Calculating library sizes from total number of reads for each library.")
         }
-	if(length(colnames(data)) < ncol(data)) {
-			colnames(data)<-paste("sample",c(1:ncol(data)),sep=".")
+	if(length(colnames(counts)) < ncol(counts)) {
+			colnames(counts)<-paste("sample",c(1:ncol(counts)),sep=".")
 	}
-	if (ncol(data) != length(lib.size))
-		stop("Length of 'lib.size' must equal number of columns in 'data'")
+	if (ncol(counts) != length(lib.size))
+		stop("Length of 'lib.size' must equal number of columns in 'counts'")
         # remove rows which are all 0
-        allZeros <- rowSums(data,na.rm=TRUE)==0
-        if( sum(allZeros) > 0) {
-          data <- data[!allZeros,]
-          warning("Removing ", sum(allZeros)," rows that all have zero counts.")
-        }
-        if( verbose ) {
-          cat("----------------------------------------\n")
-          cat("Breakdown of TOTAL counts by ZERO counts\n")
-          cat("----------------------------------------\n")
-          tab <-  table( cut(rowSums(data),breaks=c((0:9)+.5,1e6)), rowSums(data==0), dnn=c("rowWiseCountSum","nbrOfZeroObserations") )
-          print(tab)
-          cat("----------------------------------------\n")
-        }
-
-	o <- order(group)
-	new("DGEList",list(data=data[,o], lib.size=lib.size[o], group=as.factor(group[o]),...))
+    allZeros <- rowSums(counts,na.rm=TRUE)==0
+    if( sum(allZeros) > 0) {
+    	counts <- counts[!allZeros,]
+        warning("Removing ", sum(allZeros)," rows that all have zero counts.")
+    }
+    if( verbose ) {
+    	cat("----------------------------------------\n")
+    	cat("Breakdown of TOTAL counts by ZERO counts\n")
+    	cat("----------------------------------------\n")
+    	tab <-  table( cut(rowSums(counts),breaks=c((0:9)+.5,1e6)), rowSums(counts==0), dnn=c("rowWiseCountSum","nbrOfZeroObserations") )
+    	print(tab)
+    	cat("----------------------------------------\n")
+    }
+    counts <- counts
+    samples <- data.frame(group=as.factor(group), lib.size=lib.size)
+	x <- list(samples=samples, counts=counts, ...)
+	row.names(x$samples) <- colnames(x$counts)
+	new("DGEList",x)
 }
 
 
-getData <- function(object)
+getCounts <- function(object)
 {
-  object$data
+  object$counts
 }
 

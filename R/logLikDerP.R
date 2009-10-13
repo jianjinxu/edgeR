@@ -1,7 +1,7 @@
+logLikDerP<-function(p,y,lib.size,r,der=0) 
 # Written by Mark Robinson, edited by Davis McCarthy, February 2009
 # A function calculating derivatives of the log-likelihood w.r.t. p (assuming r known)
-logLikDerP<-function(p,y,lib.size,r,der=0) {
-	# log-likelihood (assuming r known), derivatives w.r.t. p
+{
 	if (is.vector(y)) {
 		y<-matrix(y,nrow=1)
 	}

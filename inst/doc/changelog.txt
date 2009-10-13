@@ -1,3 +1,15 @@
+12 October 2009, edgeR 1.3.7
+
+- updated of most functions; several new capabilities added (e.g. subsetting of DGEList and TopTags objects)
+- vignette radically overhauled, now with three case studies (SAGE, deep-sequenced short tag and RNA-seq data)n
+
+
+9 September 2009, edgeR 1.3.6
+
+- very substantial overhaul of most functions; greatly increased speed; accuracy should also be improved
+- new functions: commonCondLogLikDerDelta, de4DGE, equalizeLibSizes, estimateCommonDisp, estimateDispIter, estimateSmoothing, estimateTagwiseDisp, plotFC, q2qnbinompm, q2qpoispm,weightedCondLogLikDerDelta 
+- estimateSmoothing and de4DGE replace alpha.approxeb and deDGE as the functions a user will use to analyze data
+
 23 July 2009, edgeR 1.3.5
 
 - asserted the $r element to be large when doPoisson=TRUE

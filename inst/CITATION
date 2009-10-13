@@ -1,11 +1,15 @@
 citHeader("The methods within the code package can be cited as:")
 
-citEntry(entry="incollection",
-    title = "Moderated statistical tests for assessing differences in tag abundance.",
-    year = 2007,
-
-textVersion =
-    paste("Robinson MD, Smyth GK. 'Moderated statistical tests for assessing differences in tag abundance.' Bioinformatics. 2007 Nov 1;23(21):2881-7"))
+citEntry(
+   entry="article",
+   title = "Moderated statistical tests for assessing differences in tag abundance",
+   author = "Mark D Robinson and Gordon K Smyth",
+   journal = "Bioinformatics",
+   volume = 23,
+   pages = 2881-2887,
+   year = 2007,
+	textVersion = "Robinson MD and Smyth GK (2007). Moderated statistical tests for assessing differences in tag abundance. Bioinformatics 23, 2881-2887"
+)
 
 citFooter("This free open-source software implements academic
 research by the authors and co-workers. If you use it,

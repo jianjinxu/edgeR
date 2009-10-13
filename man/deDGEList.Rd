@@ -11,7 +11,7 @@ A simple list-based class for storing results of differential expression analysi
 \section{Slots/List Components}{
 Objects of this class contain the following list components:
   \code{ps}: list containing estimates of \code{p} parameter.
-  \code{r}: numeric vector of size parameter (\code{1/phi}) where \code{phi} is negative binomial dispersion.
+  \code{r}: numeric vector of size parameter (\code{1/phi}) where \code{phi} is negative binomial dispersion).
   \code{pseudo}: numeric matrix with the pseudo-counts.
   \code{group}: vector giving the experimental group/condition.
   \code{M}: numeric scalar with the library size that pseudo counts are mapped to.

@@ -1,48 +1,64 @@
 \name{topTags}
-
 \alias{topTags}
+\alias{TopTags-class}
+\alias{show,TopTags-method}
+\alias{[.TopTags}
 
-\title{Displays the top differentially expressed tags in a table}
+\title{Table of the Top Differentially Expressed Tags}
 
-\description{Displays/Returns the top DE tags in a data frame}
+\description{Extracts the top DE tags in a data frame for a given pair of groups, ranked by p-value or absolute log-fold change.}
 
 \usage{ 
-topTags(object,pair,n=10,adj.method= "BH", verbose=TRUE)
+topTags(object, n=10, adjust.method="BH", sort.by="p.value")
 }
 
 \arguments{ 
-\item{object}{\code{deDGEList}, output from \code{deDGE}}
-
-\item{pair}{pair of groups to be compared}
+\item{object}{a \code{data.frame} containing the elements \code{logConc} (log-average concentration/abundance), \code{logFC} (log-abundance ratio, i.e. fold change) and \code{p.value} (exact p-value for differential expression using the NB model) for the two groups being compared, as output from \code{exactTest}}
 
 \item{n}{number of tags to display/return}
 
-\item{adj.method}{method used to adjust P-values, using \code{p.adjust}}
+\item{adjust.method}{method used to adjust p-values for multiple testing, passed on to \code{p.adjust}}
 
-\item{verbose}{whether to write comments, default \code{TRUE}}
+\item{sort.by}{character string, indicating whether tags should be sorted by p-value (\code{"p.value"}) or absolute log-fold change (\code{"logFC"}).}
 }
 
-\value{ Data frame containing the relative level of expression, log fold changes, unadjusted and adjusted P-values}
+\value{an object of class \code{TopTags} containing the following elements for the top \code{n} most differentially expressed tags as determined by \code{sort.by}.
+There is a show method for this class.
+	\item{table}{a data frame containing the elements \code{logConc}, the log-average concentration/abundance for each tag in the two groups being compared, \code{logFC}, the log-abundance ratio, i.e. fold change, for each tag in the two groups being compared, \code{p.value}, exact p-value for differential expression using the NB model, \code{adj.p.val}, the p-value adjusted for multiple testing as found using \code{p.adjust} using the method specified}
+	\item{comparison}{a vector giving the names of the two groups being compared} 
+}
 
-\author{Mark Robinson, Davis McCarthy}
+\author{Mark Robinson, Davis McCarthy, Gordon Smyth}
 \examples{
-# generate raw data from NB, create list object
-y<-matrix(rnbinom(80,size=1,mu=10),nrow=20)
-d<-DGEList(data=y,group=rep(1:2,each=2),lib.size=rep(c(1000:1001),2))
-rownames(d$data)<-paste("tagno",1:nrow(d$data),sep=".")
+# generate raw counts from NB, create list object
+y <- matrix(rnbinom(80,size=1,mu=10),nrow=20)
+d <- DGEList(counts=y,group=rep(1:2,each=2),lib.size=rep(c(1000:1001),2))
+rownames(d$counts) <- paste("tag",1:nrow(d$counts),sep=".")
 
-# find alpha and call main procedure to find differences
-alpha<-alpha.approxeb(d)
-ms<-deDGE(d,alpha=alpha$alpha)
+# estimate common dispersion and find differences in expression
+d<-estimateCommonDisp(d)
+de<-exactTest(d)
 
 # look at top 10
-topTags(ms)
+topTags(de)
+# Can specify how many tags to view
+tp <- topTags(de, n=15)
+# Here we view top 15
+tp
+# Or order by fold change instead
+topTags(de,sort.by="logFC")
 }
 
 \references{
 Robinson MD, Smyth GK. 'Small-sample estimation of negative binomial dispersion, with applications to SAGE data.' Biostatistics. 2008 Apr;9(2):321-32.
 
 Robinson MD, Smyth GK. 'Moderated statistical tests for assessing differences in tag abundance.' Bioinformatics. 2007 Nov 1;23(21):2881-7.
+}
+
+\seealso{
+\code{\link{exactTest}}, \code{\link{p.adjust}}.
+
+Analogous to \code{\link[limma:toptable]{topTable}} in the limma package.
 }
 
 \keyword{algebra}

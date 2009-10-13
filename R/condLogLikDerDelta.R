@@ -1,10 +1,11 @@
+condLogLikDerDelta<-function(y,delta,grid=TRUE,der=1,doSum=TRUE) 
 # Written by Mark Robinson, edited by Davis McCarthy, February 2009
 # A function to calculate derivatives of the log-likelihood function, where delta is 1/(1+r)
-condLogLikDerDelta<-function(y,delta,grid=TRUE,der=1,doSum=TRUE) {
-	# delta is 1/(1+r) below ... 1/delta-1=r
-	# der is derivative (0th deriv is the function)
-	# if grid=T, calculates the likelihood (derivatives) at a grid of deltas
-	# if grid=F, length(delta)=nrow(y) and a different delta is used for each row	
+# delta is 1/(1+r) below ... 1/delta-1=r
+# der is derivative (0th deriv is the function)
+# if grid=T, calculates the likelihood (derivatives) at a grid of deltas
+# if grid=F, length(delta)=nrow(y) and a different delta is used for each row	
+{
 	if (is.vector(y)) {
 		n<-length(y)
 		t<-sum(y)

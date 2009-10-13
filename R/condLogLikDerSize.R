@@ -1,8 +1,10 @@
+condLogLikDerSize<-function(y,r,der=1) 
+# Calculate derivatives of the conditional log-likelihood function l_g{r}
+# with respect to r=1/phi (phi is the dispersion parameter)
+# der is derivative (0th deriv is the function)
+# For a single group of replicate libraries, all of the same total size
 # Written by Mark Robinson
-# A function to calculate derivatives of the conditional log-likelihood function l_g{r}, where r=1/phi
-condLogLikDerSize<-function(y,r,der=1) {
-	# der is derivative (0th deriv is the function)
-	# this is with the parameterization with r = 1/phi
+{
 	if (is.vector(y)) {
 		n<-length(y)
 		t<-sum(y)
