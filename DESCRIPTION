@@ -9,4 +9,4 @@ Imports: limma
 Suggests: MASS
 biocViews: Bioinformatics, DifferentialExpression, Statistics
 Description: Estimation and Testing for Differential Expression in Multiple Digital Gene Expression Libraries.
-License: LGPL version 2 or newer
+License: LGPL (>= 2)
