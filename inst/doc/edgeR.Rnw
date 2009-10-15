@@ -16,7 +16,7 @@
 
 %\VignetteIndexEntry{edgeR User's Guide}
 
-\title{\texttt{edgeR}: Methods for differential expression \\ in digital gene expression datasets}
+\title{\texttt{edgeR}: differential expression analysis \\ of digital gene expression data}
 \author{Mark Robinson \\ \texttt{mrobinson@wehi.edu.au}
 \and
 Davis McCarthy \\ \texttt{dmccarthy@wehi.edu.au}
@@ -38,11 +38,9 @@ library(edgeR)
 
 R packages for the processing of raw data files for digital gene expression (DGE) datasets are still in development stages (e.g. \texttt{ShortRead}) at time of writing.      The methods presented here require a simple \texttt{DGEList} object that contains three pieces of information:
 \begin{enumerate}
-%\item \texttt{data}: a table of counts where each row represents a gene/exon (or whatever genomic feature is being tracked) and each column is a different sample.
-\item \texttt{counts}: a table of counts where each row represents a gene/exon (or whatever genomic feature is being tracked) and each column is a different sample.
-%\item \texttt{group}: a vector (with length equal to the number of columns of \texttt{data}) denoting the experimental group.
-\item \texttt{group}: a vector (with length equal to the number of columns of \texttt{counts}) denoting the experimental group.
-\item \texttt{lib.size} (same length as \texttt{group}): the total number of reads sequenced for each sample.
+\item \texttt{counts}: a matrix of counts where each row represents a gene/exon (or whatever genomic feature is being tracked) and each column is a different sample.
+\item \texttt{group}: a factor (with length equal to the number of columns of \texttt{counts}) denoting the experimental group.
+\item \texttt{lib.size}: vector of the same length as \texttt{group} giving the total number of reads sequenced for each sample.
 \end{enumerate}
 
 \section{Reading data}

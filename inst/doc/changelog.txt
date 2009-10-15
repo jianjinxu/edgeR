@@ -3,7 +3,6 @@
 - updated of most functions; several new capabilities added (e.g. subsetting of DGEList and TopTags objects)
 - vignette radically overhauled, now with three case studies (SAGE, deep-sequenced short tag and RNA-seq data)n
 
-
 9 September 2009, edgeR 1.3.6
 
 - very substantial overhaul of most functions; greatly increased speed; accuracy should also be improved
