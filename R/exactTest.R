@@ -23,7 +23,7 @@ exactTest<-function(object,pair=NULL, common.disp=TRUE)
 	else 
 		dispersion <- object$tagwise.dispersion
         if( is.null(dispersion) )
-		stop("Need a non-null dispersion.  Perhaps you have not estimateCommonDisp() or estimateTagwiseDisp()?")
+		stop("Need a non-null dispersion.  Perhaps you have not run estimateCommonDisp() or estimateTagwiseDisp()?")
 	q2q.pair <- equalizeLibSizes(obj.pair,disp=dispersion,null.hypothesis=TRUE)
 	mus <- object$common.lib.size*q2q.pair$conc$conc.common
 	exact.pvals<-exactTestNB(q2q.pair$pseudo,obj.pair$samples$group,pair,mus,r=1/dispersion)
