@@ -7,10 +7,11 @@ exactTest<-function(object,pair=NULL, common.disp=TRUE)
 	if(is.null(pair)) {
 		pair<-levels(as.factor(c(levs.group[1],levs.group[2])))
 	} else if(!is.factor(pair)) {
-		pair<-levels(as.factor(pair))
+		pair<-as.factor(pair)
+		#pair<-levels(as.factor(pair))
 	}
 	if( sum(pair[1]==levs.group)==0 | sum(pair[2]==levs.group)==0 ) 
-		stop("At least one element of given pair is not a group.\n Groups are: ",levs.group,"\n")
+		stop("At least one element of given pair is not a group.\n Groups are: ",paste(levs.group, collapse=" "),"\n")
 	cat("Comparison of groups: ",pair[2],"-",pair[1],"\n")
 	
 	this.pair<-( pair[1]==object$samples$group | pair[2]==object$samples$group )
@@ -21,6 +22,8 @@ exactTest<-function(object,pair=NULL, common.disp=TRUE)
 		dispersion <- object$common.dispersion 
 	else 
 		dispersion <- object$tagwise.dispersion
+        if( is.null(dispersion) )
+		stop("Need a non-null dispersion.  Perhaps you have not estimateCommonDisp() or estimateTagwiseDisp()?")
 	q2q.pair <- equalizeLibSizes(obj.pair,disp=dispersion,null.hypothesis=TRUE)
 	mus <- object$common.lib.size*q2q.pair$conc$conc.common
 	exact.pvals<-exactTestNB(q2q.pair$pseudo,obj.pair$samples$group,pair,mus,r=1/dispersion)

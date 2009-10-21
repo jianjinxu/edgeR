@@ -5,7 +5,10 @@ estimateTagwiseDisp <- function(object, prior.n=10, tol=1e-06, grid=TRUE, grid.l
 # Now uses optimize instead of a grid search to estimate delta when not using NR methd - improves speed of function
 {
 	ntags<-nrow(object$counts)
-	levs.group<-levels(object$samples$group)
+        group <- object$samples$group
+	if( all(table(group)==1) )
+		stop("Cannot estimate tagwise dispersion with no replication.")
+	levs.group<-levels(group)
 	y<-splitIntoGroups(new("DGEList",list(counts=object$pseudo.alt,samples=object$samples)))
 	delta <- rep(0,ntags)
 	onev<-rep(1,ntags)
