@@ -18,4 +18,5 @@ maPlot <- function(x,y, smearWidth=1, col=NULL, allCol="black", lowCol="orange",
     }
     plot(A,M,col=col,...)
     points(A[de.tags],M[de.tags],col=deCol,...)
+    invisible(list(A=A,M=M,w=w))
 }
