@@ -26,7 +26,8 @@ readDGE <- function(files,path=NULL,columns=c(1,2),...)
 		x$counts[aa,i] <- d[[i]][,columns[2]]
 	}
 	x$samples$lib.size <- colSums(x$counts)
-	x$samples$group <- factor(x$samples$group)
+        if(!is.null(x$samples$group))
+	    x$samples$group <- factor(x$samples$group)
 	row.names(x$samples) <- colnames(x$counts)
 	new("DGEList",x)
 }
