@@ -19,6 +19,12 @@ estimateSmoothing(object,verbose=TRUE)
 	\item{prior.n}{scalar; estimate of the prior weight, i.e. the smoothing parameter that indicates the weight to put on the common likelihood compared to the individual tag's likelihood; prior.n of 10 means that the common likelihood is given 10 times the weight of the individual tag/gene's likelihood in the estimation of the tag/genewise dispersion}
 }
 
+\details{We are not recommending this function for routine use at the moment,
+as it has given unexpected results on some deep-sequenced data sets.
+It should be considered experimental.
+We are instead recommending that \code{prior.n} be chosen by the user.
+Values in the range 10-50 give good results in practice.}
+
 \author{Mark Robinson, Davis McCarthy}
 
 \examples{
