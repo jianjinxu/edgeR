@@ -1,4 +1,8 @@
-maPlot <- function(x,y, smearWidth=1, col=NULL, allCol="black", lowCol="orange", deCol="red",de.tags=NULL, ...) {
+maPlot <- function(x,y, normalize=FALSE, smearWidth=1, col=NULL, allCol="black", lowCol="orange", deCol="red",de.tags=NULL, ...) {
+    if(normalize) {
+      x <- x/sum(x)
+      y <- y/sum(y)
+    }
     A <- (log2(x)+log2(y))/2
     M <- log2(y) - log2(x)
     if( range(x)[2] > 1 ) {

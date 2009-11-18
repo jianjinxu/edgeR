@@ -9,12 +9,13 @@ plots log fold change versus log concentration (or, M versus A) for count data
 To represent counts that were low (e.g. zero in 1 library and non-zero in the other) in one of the two conditions, a 'smear' of points at low A value is presented.
 }
 \usage{
-maPlot(x, y, smearWidth = 1, col = NULL, allCol = "black", lowCol = "orange", deCol="red", de.tags=NULL, ...)
+maPlot(x, y, normalize=FALSE, smearWidth = 1, col = NULL, allCol = "black", lowCol = "orange", deCol="red", de.tags=NULL, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{x}{vector of counts or concentrations (group 1)}
   \item{y}{vector of counts or concentrations (group 2)}
+  \item{normalize}{logical, whether to divide \code{x} and \code{y} vectors by their sum}
   \item{smearWidth}{width of the smear}
   \item{col}{vector of colours for the points (if \code{NULL}, uses \code{allCol} and \code{lowCol})}
   \item{allCol}{colour of the non-smeared points}
