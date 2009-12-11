@@ -1,7 +1,7 @@
 \name{calcNormFactors}
 \Rdversion{1.1}
 \alias{calcNormFactors}
-\title{Calculates normalization factors for a matrix of count data}
+\title{Calculates Normalization Factors for a Matrix of Count Data}
 \description{
 Using a reference sample, calculate the normalization factors, over and above accounting for library size. 
 }
@@ -20,7 +20,7 @@ calcNormFactors(dataMatrix, refColumn = 1, logratioTrim = .3, sumTrim = 0.05, do
 \details{
 The weighted trimmed mean of M values (to the reference) is used as the normalization factor, where the weights are from the delta method on Binomial data (more details to come).
 
-The normalization factor the the reference sample will always be 1.
+The normalization factor for the reference sample will always be 1.
 }
 \value{
 vector with length \code{ncol(dataMatrix)} giving the relative normalization factors

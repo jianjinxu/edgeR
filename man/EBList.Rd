@@ -3,7 +3,7 @@
 \alias{EBList-class}
 \alias{show,EBList-method}
 
-\title{differential expression of Digital Gene Expression data - class}
+\title{Differential Expression of Digital Gene Expression data - class}
 
 \description{
 A simple list-based class for storing results of the approximate empirical Bayes rule parameters

@@ -1,7 +1,7 @@
 \name{commonCondLogLikDerDelta}
 \alias{commonCondLogLikDerDelta}
 
-\title{Common conditional log-likelihood in terms of delta}
+\title{Conditional Log-Likelihoods in Terms of Delta}
 
 \description{Common conditional log-likelihood parameterized in terms of delta (\code{phi / (phi+1)}) }
 
@@ -22,6 +22,11 @@ commonCondLogLikDerDelta(y, delta, der = 0, doSum = FALSE)
 
 \value{ numeric scalar of function/derivative evaluated at given delta}
 
+
+\details{
+The common conditional log-likelihood is constructed by summing over all of the individual tag conditional log-likelihoods. The common conditional log-likelihood is taken as a function of the dispersion parameter (\code{phi}), and here parameterized in terms of delta (\code{phi / (phi+1)}). The value of delta that maximizes the common conditional log-likelihood is converted back to the \code{phi} scale, and this value is the estimate of the common dispersion parameter used by all tags.
+}
+
 \author{Davis McCarthy}
 
 \examples{
@@ -31,4 +36,10 @@ y<-splitIntoGroups(d)
 ll1<-commonCondLogLikDerDelta(y,delta=0.5,der=0,doSum=FALSE)
 ll2<-commonCondLogLikDerDelta(y,delta=0.5,der=1)
 }
+
+\seealso{
+\code{\link{estimateCommonDisp}} is the user-level function for estimating the common dispersion parameter.
+}
+
+
 \keyword{file}

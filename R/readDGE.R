@@ -1,6 +1,6 @@
-readDGE <- function(files,path=NULL,columns=c(1,2),...) 
+readDGE <- function(files,path=NULL,columns=c(1,2),group=NULL,...) 
 #	Read and collate a set of DGE data files, one library per file
-#	Last modified 7 October 2009.
+#	Last modified 4 December 2009.
 {
 	x <- list()
 	if(is.data.frame(files)) {
@@ -9,11 +9,16 @@ readDGE <- function(files,path=NULL,columns=c(1,2),...)
 	} else {
 		x$samples <- data.frame(files=as.character(files),stringsAsFactors=FALSE)
 	}
+	if(!is.null(group)) x$samples$group <- group
+	if(!is.null(x$samples$group)) x$samples$group <- as.factor(x$samples$group)
 	d <- taglist <- list()
 	for (fn in files) {
 		if(!is.null(path)) fn <- file.path(path,fn)
 		d[[fn]] <- read.delim(fn,...,stringsAsFactors=FALSE)
 		taglist[[fn]] <- as.character(d[[fn]][,columns[1]])
+		if(any(duplicated(taglist[[fn]]))) {
+			stop(paste("Repeated tag sequences in",fn)) 
+		}
 	}
 	tags <- unique(unlist(taglist))
 	ntags <- length(tags)
@@ -26,8 +31,7 @@ readDGE <- function(files,path=NULL,columns=c(1,2),...)
 		x$counts[aa,i] <- d[[i]][,columns[2]]
 	}
 	x$samples$lib.size <- colSums(x$counts)
-        if(!is.null(x$samples$group))
-	    x$samples$group <- factor(x$samples$group)
 	row.names(x$samples) <- colnames(x$counts)
+	x$genes <- NULL
 	new("DGEList",x)
 }

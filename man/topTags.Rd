@@ -13,13 +13,20 @@ topTags(object, n=10, adjust.method="BH", sort.by="p.value")
 }
 
 \arguments{ 
-\item{object}{a \code{data.frame} containing the elements \code{logConc} (log-average concentration/abundance), \code{logFC} (log-abundance ratio, i.e. fold change) and \code{p.value} (exact p-value for differential expression using the NB model) for the two groups being compared, as output from \code{exactTest}}
+\item{object}{a \code{deDGEList} object,  as output from \code{exactTest}, containing the elements:
+	\code{table}: data frame containing the log-concentration (i.e. expression level), the log-fold change in expression between the two groups/conditions and the exact p-value for differential expression, for each tag.
+	
+	
+	\code{comparison}: vector giving the two experimental groups/conditions being compared.
+	
+  	\code{genes}: data frame containing information about each transcript (can be \code{NULL}).
+}
 
-\item{n}{number of tags to display/return}
+\item{n}{scalar, number of tags to display/return}
 
-\item{adjust.method}{method used to adjust p-values for multiple testing, passed on to \code{p.adjust}}
+\item{adjust.method}{character string stating the method used to adjust p-values for multiple testing, passed on to \code{p.adjust}}
 
-\item{sort.by}{character string, indicating whether tags should be sorted by p-value (\code{"p.value"}) or absolute log-fold change (\code{"logFC"}).}
+\item{sort.by}{character string, indicating whether tags should be sorted by p-value (\code{"p.value"}) or absolute log-fold change (\code{"logFC"}); default is to sort by p-value.}
 }
 
 \value{an object of class \code{TopTags} containing the following elements for the top \code{n} most differentially expressed tags as determined by \code{sort.by}.

@@ -1,7 +1,7 @@
 \name{quantileAdjust}
 \alias{quantileAdjust}
 
-\title{Normalizes a dataset by using a quantile adjustment}
+\title{Normalizes a Dataset by Using a Quantile Adjustment}
 
 \description{The function adjusts (you might say normalizes) a dataset, creating pseudocounts that represents quantile-adjusted counts as if all samples had the same library size, while estimating the dispersion parameter.}
 
@@ -11,7 +11,7 @@ quantileAdjust(object, N = prod(object$samples$lib.size)^(1/ncol(object$counts))
 }
 \arguments{ 
 
-\item{object}{list containing the raw counts with elements \code{counts} (table of counts), \code{group} (vector indicating group) and \code{lib.size} (vector of library sizes)}
+\item{object}{list containing the raw counts with elements \code{counts} (table of counts), \code{group} (factor indicating group) and \code{lib.size} (numeric vector of library sizes)}
 
 \item{N}{library size to normalize to; default is the geometric mean of the original library sizes}
 
@@ -36,6 +36,11 @@ quantileAdjust(object, N = prod(object$samples$lib.size)^(1/ncol(object$counts))
 	\item{p}{percentiles on which the quantile is based}
 	\item{mu}{means on which the quantile is based}
 }
+
+\details{
+An older function, no longer called by the functions recommended to carry out analysis of DGE data, namely \code{\link{estimateCommonDisp}}, \code{\link{estimateTagwiseDisp}} and \code{\link{exactTest}}. No longer recommended for use.
+}
+
 
 \author{Mark Robinson, Davis McCarthy}
 

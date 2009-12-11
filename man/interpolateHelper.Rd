@@ -1,7 +1,7 @@
 \name{interpolateHelper}
 \alias{interpolateHelper}
 
-\title{Quantile Adjustment interpolator}
+\title{Quantile Adjustment Interpolator}
 
 \description{Helper function to interpolate the quantile function. This is the function that actually generates the pseudocounts required by quantileAdjust to adjust (normalise) the library sizes and estimate the dispersion parameter. Given fixed values of the estimated mean (mu) and proportion in the library (p) for each tag, as well as a fixed (tagwise or common) value for the dispersion parameter (r), the function interpolates linearly the quantiles used as pseudocounts. If any value of r is infinite (corresponding to phi=0, the dispersion parameter for the negative binomial model), then a Poisson model is used, as setting phi=0 in the negative binomial model is equivalent to using a Poisson model. Otherwise, quantiles are calculated from the negative binomial distribution. }
 
@@ -22,7 +22,11 @@ interpolateHelper(mu, p, r, count.max, verbose=TRUE)
 \item{verbose}{whether to write comments, default \code{true}}
 }
 
-\value{matrix with quantile-adjusted pseudocounts }
+\value{numeric matrix of quantile-adjusted pseudocounts }
+
+\details{
+An older function, no longer called by the functions recommended to carry out analysis of DGE data, namely \code{\link{estimateCommonDisp}}, \code{\link{estimateTagwiseDisp}} and \code{\link{exactTest}}. 
+}
 
 \author{Mark Robinson, Davis McCarthy}
 
@@ -35,4 +39,10 @@ perc<-pnbinom(d$counts-1,size=2,mu=outer(conc$conc.common,d$samples$lib.size))+d
 maxcounts<-apply(d$counts,1,max)
 pseudo<-interpolateHelper(outer(conc$conc.common,rep(N,4)),perc,r=2,maxcounts)
 }
+
+\seealso{
+The function \code{\link{q2qnbinom}} now performs the quantile-adjustment to equalize library sizes and generate pseudocounts - this newer function is faster and more accurate.
+}
+
+
 \keyword{algebra}

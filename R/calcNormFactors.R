@@ -14,9 +14,9 @@ calcNormFactors <- function(dataMatrix, refColumn=1, logratioTrim=.3, sumTrim=0.
 
   nO <- sum(obs)
   nR <- sum(ref)
-  logR <- log2((obs/nO)/(ref/nR))         # log ratio of expression, accounting for library size
-  absE <- log2(obs/nO) + log2(ref/nR)     # absolute expression
-  v <- (nO-obs)/nO/obs + (nR-ref)/nR/ref  # estimated asymptotic variance
+  logR <- log2((obs/nO)/(ref/nR))          # log ratio of expression, accounting for library size
+  absE <- (log2(obs/nO) + log2(ref/nR))/2  # absolute expression
+  v <- (nO-obs)/nO/obs + (nR-ref)/nR/ref   # estimated asymptotic variance
   
   # remove infinite values, cutoff based on A
   fin <- is.finite(logR) & is.finite(absE) & (absE > Acutoff)

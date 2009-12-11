@@ -5,7 +5,7 @@ equalizeLibSizes <- function(object, disp=0, N=prod(object$samples$lib.size)^(1/
 	nrows<-nrow(object$counts)
 	ncols<-ncol(object$counts)
 	lib.size<-object$samples$lib.size
-	group<-object$samples$group
+	group<-as.factor(object$samples$group)
 	levs.group<-levels(group)
 	y<-splitIntoGroups(object)
 	if(length(disp)==1 && disp==0) {

@@ -1,7 +1,7 @@
 \name{estimateCommonDisp}
 \alias{estimateCommonDisp}
 
-\title{Estimates the negative binomial common dispersion by maximizing the negative binomial conditional common likelihood}
+\title{Estimates the Negative Binomial Common Dispersion by Maximizing the Negative Binomial Conditional Common Likelihood}
 
 \description{Maximizes the negative binomial conditional common likelihood to give the estimate of the common dispersion across all tags for the unadjusted counts provided. }
 
@@ -12,9 +12,9 @@ estimateCommonDisp(object, tol=1e-06)
 
 \arguments{ 
 
-\item{object}{\code{DGEList} object with elements \code{counts} (table of unadjusted counts), \code{group} (vector indicating group) and \code{lib.size} (vector of library sizes)}
+\item{object}{\code{DGEList} object with (at least) elements \code{counts} (table of unadjusted counts), and \code{samples} (vector indicating group) and \code{lib.size} (vector of library sizes)}
 
-\item{tol}{tolerance for \code{optimize}}
+\item{tol}{numeric scalar providing the tolerance to be passed to \code{optimize}; default value is \code{1e-06}}
 }
 
 \value{ \code{estimateCommonDisp} produces an object of class \code{DGEList} with the following components.
@@ -38,4 +38,9 @@ y<-matrix(rnbinom(1000,mu=10,size=2),ncol=4)
 d<-DGEList(counts=y,group=c(1,1,2,2),lib.size=c(1000:1003))
 cmdisp<-estimateCommonDisp(d)
 }
+
+\seealso{
+\code{\link{estimateTagwiseDisp}} can be used to estimate a value for the dispersion parameter for each tag/transcript. The estimates are stabilized by squeezing the estimates towards the common value calculated by \code{estimateCommonDisp}.
+}
+
 \keyword{algebra}

@@ -1,9 +1,9 @@
 \name{weightedCondLogLikDerDelta}
 \alias{weightedCondLogLikDerDelta}
 
-\title{Weighted conditional log-likelihood in terms of delta}
+\title{Weighted Conditional Log-Likelihood in Terms of Delta}
 
-\description{Weighted conditional log-likelihood parameterized in terms of delta (\code{phi / (phi+1)}) for a given tag/gene - maximized to find the smoothed estimate of the dispersion parameter}
+\description{Weighted conditional log-likelihood parameterized in terms of delta (\code{phi / (phi+1)}) for a given tag/gene - maximized to find the smoothed (moderated) estimate of the dispersion parameter}
 
 \usage{ 
 weightedCondLogLikDerDelta(y, delta, tag, prior.n=10, ntags=nrow(y[[1]]), der=0, doSum=FALSE)
@@ -27,6 +27,11 @@ weightedCondLogLikDerDelta(y, delta, tag, prior.n=10, ntags=nrow(y[[1]]), der=0,
 }
 
 \value{ numeric scalar of function/derivative evaluated for the  given tag/gene and delta}
+
+\details{
+This function computes the weighted conditional log-likelihood for a given tag, parameterized in terms of delta. The value of delta that maximizes the weighted conditional log-likelihood is converted back to the \code{phi} scale, and this value is the estimate of the smoothed (moderated) dispersion parameter for that particular tag. The delta scale for convenience (delta is bounded between 0 and 1). 
+}
+
 
 \author{Mark Robinson, Davis McCarthy}
 

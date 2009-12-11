@@ -1,9 +1,9 @@
 \name{condLogLikDerSize}
 \alias{condLogLikDerSize}
 
-\title{Log-likelihood of the common dispersion for a single equalized group.}
+\title{Log-Likelihood of the Common Dispersion for a Single Equalized Group}
 
-\description{Derivatives of the conditional negative-binomial log-likelihood with respect to the common dispersion parameter, for a single group of replicate libraries of the same size.
+\description{Derivatives of the conditional negative-binomial log-likelihood (for each tag/transcript) with respect to the common dispersion parameter, for a single group of replicate libraries of the same size.
 Parameterized in terms of size or precision (\code{1/phi}).}
 
 \usage{condLogLikDerSize(y, r, der=1)}
@@ -14,9 +14,11 @@ Parameterized in terms of size or precision (\code{1/phi}).}
 \item{der}{order of derivative required, either 0 (the function), 1 (first derivative) or 2 (second derivative)}
 }
 
-\details{The library sizes must be equalized before running this function.}
+\value{vector of function/derivative evaluations, one for each transcript}
 
-\value{vector derivative evaluations, one for each transcript}
+\details{The library sizes must be equalized before running this function. This function carries out the actual mathematical computations for the conditional log-likelihood and its derivatives, calculating the conditional log-likelihood for each tag/transcript.
+}
+
 
 \author{Mark Robinson, Davis McCarthy}
 

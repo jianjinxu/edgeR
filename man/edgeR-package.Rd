@@ -4,7 +4,7 @@
 \alias{edgeR-package}
 \title{Empirical analysis of digital gene expression data in R}
 \description{
-edgeR is a library for the analysis of digital gene expression data arising from RNA sequencing technologies such as SAGE, CAGE or RNA-seq, with emphasis on testing for differential expression.
+edgeR is a library for the analysis of digital gene expression data arising from RNA sequencing technologies such as SAGE, CAGE, Tag-seq or RNA-seq, with emphasis on testing for differential expression.
 
 Particular strengths of the package include the ability to estimate biological variation between replicate libraries, and to conduct exact tests of significance which are suitable for small counts.
 The package is able to make use of even minimal numbers of replicates.

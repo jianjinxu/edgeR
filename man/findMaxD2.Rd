@@ -1,7 +1,7 @@
 \name{findMaxD2}
 \alias{findMaxD2}
 
-\title{Maximizes the negative binomial likelihood}
+\title{Maximizes the Negative Binomial Likelihood}
 
 \description{Maximizes the negative binomial likelihood (a weighted version using the common likelihood given weight alpha) for each tag}
 
@@ -27,6 +27,11 @@ findMaxD2(object, alpha = 0.5, grid = TRUE, tol = 1e-05, n.iter = 10, grid.lengt
 }
 
 \value{ vector of the values of delta that maximize the negative binomial likelihood for each tag  (where delta = \code{phi / (phi+1)} and \code{phi} is the overdispersion parameter) }
+
+\details{
+An older function, no longer called by the functions recommended to carry out analysis of DGE data, namely \code{\link{estimateCommonDisp}}, \code{\link{estimateTagwiseDisp}} and \code{\link{exactTest}}.
+}
+
 
 \author{Mark Robinson, Davis McCarthy}
 \examples{

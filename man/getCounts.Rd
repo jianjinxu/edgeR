@@ -1,7 +1,7 @@
 \name{getCounts}
 \alias{getCounts}
 
-\title{Extract table of counts from DGEList object}
+\title{Extract Table of Counts from DGEList Object}
 
 \description{Returns the \code{counts} slot of a DGEList object}
 
@@ -10,10 +10,10 @@ getCounts(object)
 }
 \arguments{ 
 
-\item{object}{list containing the raw counts with elements \code{counts} (table of counts), \code{group} (vector indicating group) and \code{lib.size} (vector of library sizes)}
+\item{object}{\code{DGEList} object containing (at least) the elements \code{counts} (table of raw counts), \code{group} (factor indicating group) and \code{lib.size} (numeric vector of library sizes)}
 }
 
-\value{ matrix of counts (presumably integers) }
+\value{\code{getCounts} returns a matrix of counts (presumably integers) }
 
 \author{Mark Robinson, Davis McCarthy}
 
@@ -24,4 +24,9 @@ d<-DGEList(counts=y,group=rep(1:2,each=2),lib.size=rep(c(1000:1001),2))
 # should be 5x4
 print(dim(getCounts(d)))
 }
+
+\seealso{
+\code{\link{DGEList}} for more information about the \code{DGEList} class.
+}
+
 \keyword{file}

@@ -2,7 +2,7 @@
 
 \alias{alpha.approxeb}
 
-\title{Estimate the prior weight, alpha}
+\title{Estimate the Prior Weight, Alpha}
 
 \description{Estimate the prior weight, using an approximate empirical Bayes rule}
 
@@ -17,6 +17,10 @@ alpha.approxeb(object, verbose=TRUE)
 }
 
 \value{ \code{EBList} object with elements \code{sigma2.0.est} (numeric scale \code{sigma_0^2} estimate), \code{alpha} (estimate for the prior weight, alpha), \code{scores} (likelihood scores), \code{infos} (Fisher expected information), \code{quantileAdjusted} (list from output of \code{quantileAdjust})}
+
+\details{
+An older function, no longer called by the functions recommended to carry out analysis of DGE data, namely \code{\link{estimateCommonDisp}}, \code{\link{estimateTagwiseDisp}} and \code{\link{exactTest}}. Estimation of the prior weight should now be done using \code{\link{estimateSmoothing}}, if at all.
+}
 
 \author{Mark Robinson, Davis McCarthy}
 

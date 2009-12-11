@@ -1,34 +1,43 @@
 \name{plotSmear}
 \Rdversion{1.1}
 \alias{plotSmear}
+\alias{plotFC}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
-plots log fold change versus log concentration (or, M versus A) for count data
+Plots log-Fold Change versus log-Concentration (or, M versus A) for Count Data
 }
 \description{
-To represent counts that were low (e.g. zero in 1 library and non-zero in the other) in one of the two conditions, a 'smear' of points at low A value is presented.
+Both of these functions plot the log-fold change (i.e. the log of the ratio of expression levels for each tag between two experimential groups) against the log-concentration (i.e. the overall average expression level for each tag across the two groups). To represent counts that were low (e.g. zero in 1 library and non-zero in the other) in one of the two conditions, a 'smear' of points at low A value is presented in \code{plotSmear}.
 }
 \usage{
 plotSmear(object, pair = NULL, de.tags=NULL, xlab = "logConc", ylab = "logFC", pch = 19, cex = 0.2, smearWidth = 0.5, panel.first=grid(), ...)
+plotFC(de.object,xlab="logConc",ylab="logFC",ylim=NULL,pch=19,cex=0.2,...)
+
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{object}{object to plot data from (uses $conc element)}
+  \item{object}{\code{DGEList} object to plot data from (uses $conc element)}
+  \item{de.object}{\code{deDGEList} object , as output from \code{exactTest}}
   \item{pair}{pair of experimental conditions to plot (if \code{NULL}, the first two conditions are used)}
   \item{de.tags}{rownames for tags identified as being differentially expressed; use \code{exactTest} to identify DE genes}
   \item{xlab}{x-label of plot}
   \item{ylab}{y-label of plot}
-  \item{pch}{plotting character}
-  \item{cex}{character expansion factor}
+  \item{pch}{scalar or vector giving the character(s) to be used in the plot; default value of \code{19} gives a round point.}
+  \item{cex}{character expansion factor, numerical value giving the amount by which plotting text and symbols should be magnified relative to the default; default \code{cex=0.2} to make the plotted points smaller}
   \item{smearWidth}{width of the smear}
   \item{panel.first}{an expression to be evaluated after the plot axes are set up but before any plotting takes place; the default \code{grid()} draws a background grid to aid interpretation of the plot}
+  \item{ylim}{vector of length two giving limits on y-axis, if left at \code{NULL}, scaled to be symmetric about 0}
   \item{\dots}{further arguments passed on to \code{plot}}
 }
+
+\value{A plot to the current device}
+
 \details{
-The points to be smeared are identified as being equal to the minimum estimated concentration in one of the two groups.  The smear is created by using random uniform numbers of width \code{smearWidth} to the left of the minimum A.
+While both functions do essentially the same thing, \code{plotSmear} is a more sophisticated and superior way to produce an 'MA plot'. \code{plotFC} is an earlier and rawer version of the plotting function and has difficulty dealing with tags which have a total count of zero for one of the groups---this issue is resolved in \code{plotSmear} by adding the 'smear' of points at low A value. The points to be smeared are identified as being equal to the minimum estimated concentration in one of the two groups.  The smear is created by using random uniform numbers of width \code{smearWidth} to the left of the minimum A. \code{plotSmear} also allows easy highlighting of differentially expressed (DE) tags, and the use of \code{plotSmear} is strongly recommended over \code{plotFC}.
 }
-\value{a plot to the current device}
-\author{Mark Robinson}
+
+
+\author{Mark Robinson, Davis McCarthy}
 
 \seealso{
 \code{\link{maPlot}}
@@ -36,9 +45,18 @@ The points to be smeared are identified as being equal to the minimum estimated 
 \examples{
 y <- matrix(rnbinom(10000,mu=5,size=2),ncol=4)
 d <- DGEList(counts=y, group=rep(1:2,each=2), lib.size=colSums(y))
+rownames(d$counts) <- paste("tag",1:nrow(d$counts),sep=".")
 d <- estimateCommonDisp(d)
 plotSmear(d)
 
+# find differential expression
+de<-exactTest(d)
+
+# plot it
+plotFC(de)
+# highlighting the top 500 most DE tags
+de.tags <- rownames(topTags(de, n=500)$table)
+plotSmear(d, de.tags=de.tags)
+
 }
-% Add one or more standard keywords, see file 'KEYWORDS' in the
-% R documentation directory.
+\keyword{file}

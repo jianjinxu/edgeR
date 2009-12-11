@@ -1,9 +1,9 @@
 \name{subsetting}
 \alias{subsetting}
 \alias{[.DGEList}
-\title{Subset DGEist Objects}
+\title{Subset DGEList Objects}
 \description{
-Extract a subset of an \code{DGEList} object.
+Extract a subset of a \code{DGEList} object.
 }
 \usage{
 \method{[}{DGEList}(object, i, j, \ldots)

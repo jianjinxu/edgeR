@@ -5,10 +5,8 @@ estimateTagwiseDisp <- function(object, prior.n=10, tol=1e-06, grid=TRUE, grid.l
 # Now uses optimize instead of a grid search to estimate delta when not using NR methd - improves speed of function
 {
 	ntags<-nrow(object$counts)
-        group <- object$samples$group
-	if( all(table(group)==1) )
-		stop("Cannot estimate tagwise dispersion with no replication.")
-	levs.group<-levels(group)
+	group<-object$samples$group<-as.factor(object$samples$group)
+	levs.group<-levels(object$samples$group)
 	y<-splitIntoGroups(new("DGEList",list(counts=object$pseudo.alt,samples=object$samples)))
 	delta <- rep(0,ntags)
 	onev<-rep(1,ntags)
@@ -35,7 +33,7 @@ estimateTagwiseDisp <- function(object, prior.n=10, tol=1e-06, grid=TRUE, grid.l
 	}
 	if(verbose) cat("\n")
 	tagwise.dispersion <- delta/(1-delta)
-	new("DGEList",list(samples=object$samples, common.dispersion=object$common.dispersion, prior.n=prior.n, tagwise.dispersion=tagwise.dispersion, counts=object$counts, pseudo.alt=object$pseudo.alt, conc=object$conc, common.lib.size=object$common.lib.size))
+	new("DGEList",list(samples=object$samples, common.dispersion=object$common.dispersion, prior.n=prior.n, tagwise.dispersion=tagwise.dispersion, counts=object$counts, pseudo.alt=object$pseudo.alt, genes=object$genes, conc=object$conc, common.lib.size=object$common.lib.size))
 }
 
 

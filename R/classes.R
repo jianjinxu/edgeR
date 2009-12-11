@@ -20,30 +20,24 @@ setClass("EBList",
 representation("list")
 )
 
-setClass("SmoothList",
-#  Linear model fit (Sep 2009)
-representation("list")
-)
-
 setClass("TopTags",
 representation("list")
 )
 
 setMethod("show", "TopTags", function(object) {
 	if(length(object$comparison)) cat("Comparison of groups: ", object$comparison[2],"-",object$comparison[1],"\n")
-	colnames(object$table) <- c("logConc","logFC","PValue","FDR")
-	if(object$adjust.method %in%  c("holm", "hochberg", "hommel", "bonferroni")) colnames(object$table)[4] <- "FWER"
+	#colnames(object$table) <- c("logConc","logFC","PValue","FDR")
+	if(object$adjust.method %in%  c("holm", "hochberg", "hommel", "bonferroni")) colnames(object$table)[ncol(object$table)] <- "FWER"
 	if(object$adjust.method=="none") object$table$FDR <- NULL
 	print(object$table)
 })
 
 setIs("DGEList","LargeDataObject")
 setIs("EBList","LargeDataObject")
-setIs("SmoothList","LargeDataObject")
 setIs("deDGEList","LargeDataObject")
 setIs("de4DGEList","LargeDataObject")
 
-DGEList <- function(counts=matrix(0), lib.size=NULL, group=factor(), verbose=FALSE, ...) 
+DGEList <- function(counts=matrix(0), lib.size=NULL, group=factor(), genes=NULL, verbose=FALSE, ...) 
 {
 	if (ncol(counts) != length(group))
 		stop("Length of 'group' must equal number of columns in 'counts'")
@@ -51,10 +45,10 @@ DGEList <- function(counts=matrix(0), lib.size=NULL, group=factor(), verbose=FAL
 		group<-as.factor(group)
 	if(!is.matrix(counts)) 
 		counts<-as.matrix(counts)
-        if(is.null(lib.size)) {
-                lib.size <- colSums(counts)
-                warning("Calculating library sizes from total number of reads for each library.")
-        }
+    if(is.null(lib.size)) {
+        lib.size <- colSums(counts)
+        warning("Calculating library sizes from total number of reads for each library.")
+    }
 	if(length(colnames(counts)) < ncol(counts)) {
 			colnames(counts)<-paste("sample",c(1:ncol(counts)),sep=".")
 	}
@@ -78,6 +72,7 @@ DGEList <- function(counts=matrix(0), lib.size=NULL, group=factor(), verbose=FAL
     samples <- data.frame(group=as.factor(group), lib.size=lib.size)
 	x <- list(samples=samples, counts=counts, ...)
 	row.names(x$samples) <- colnames(x$counts)
+	x$genes <- as.data.frame(genes, stringsAsFactors=FALSE)
 	new("DGEList",x)
 }
 

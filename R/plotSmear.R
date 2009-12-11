@@ -13,7 +13,7 @@ plotSmear <- function (object, pair=NULL, de.tags=NULL, xlab="logConc", ylab="lo
   col2 <- match(pair[2], levs.group)
 
   if( !(any(names(object) %in% "conc")) )
-    stop("'conc' is not an element of input object.  Try running estimateCommDisp() first.")
+    stop("'conc' is not an element of input object.  Try running estimateCommonDisp() first.")
   D <-  object$conc$conc.group
 
   ylab <- paste(ylab, ":", paste(pair[c(2,1)], collapse="-"), paste="")
