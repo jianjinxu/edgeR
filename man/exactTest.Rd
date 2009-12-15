@@ -8,8 +8,7 @@
 
 \usage{ 
 exactTest(object,pair=NULL, common.disp=TRUE)
-exactTest.matrix(pseudo,group,pair=NULL,mus,r) 
-
+exactTest.matrix(y1,y2,mus,r) 
 }
 
 \arguments{ 
@@ -20,21 +19,22 @@ exactTest.matrix(pseudo,group,pair=NULL,mus,r)
 
 \item{common.disp}{logical, if \code{TRUE}, then testing carried out using common dispersion for each tag/gene, if \code{FALSE} then tag-wise estimates of the dispersion parameter are used; default \code{TRUE}}
 
-\item{pseudo}{numeric matrix of counts (e.g. quantile adjusted pseudocounts) on which to compute exact statistics; rows are transcripts and columns are samples/libraries}
+\item{y1}{numeric matrix of counts for one of the two given experimental groups to be tested for differences. Libraries are assumed to be equal in size - e.g. adjusted pseudocounts from the output of \code{\link{equalizeLibSizes}}.}
 
-\item{group}{vector or factor indicating to which group the samples/libraries belong; must be same length as \code{ncol(pseudo)}}
+\item{y2}{numeric matrix of counts for one of the two given experimental groups to be tested for differences. Libraries are assumed to be equal in size - e.g. adjusted pseudocounts from the output of \code{\link{equalizeLibSizes}}. Must have the same number of rows as \code{y1}.}
 
-\item{mus}{vector of count means for each transcript under the null hypothesis (of no difference between groups)}
+\item{mus}{vector of count means for each tag/transcript under the null hypothesis (of no difference between groups)}
 
-\item{r}{vector of negative binomial \code{size} parameter values (\code{size} = \code{1/phi} where \code{phi} is the dispersion parameter in the NB model); if \code{r} is of length 1, then a common value of the dispersion is used for all transcripts, otherwise, must be a vector with length equal to the number of rows of \code{pseudo}.  If you want to run a Poisson test, set r very large (e.g. 1000)}
+\item{r}{vector of negative binomial \code{size} parameter values (\code{size} = \code{1/phi} where \code{phi} is the dispersion parameter in the NB model); if \code{r} is of length 1, then a common value of the dispersion is used for all transcripts, otherwise, must be a vector with length equal to the number of rows of \code{y1} and \code{y2}.  If you want to run a Poisson test, set r very large (e.g. 1000)}
 
 }
 
-\value{\code{exactTest} produces an object of class \code{deDGEList} containing the following elements.
-	\item{table}{a data frame containing the elements \code{logConc}, the log-average concentration/abundance for each tag in the two groups being compared, \code{logFC}, the log-abundance ratio, i.e. fold change, for each tag in the two groups being compared, \code{p.value}, exact p-value for differential expression using the NB model}
-	\item{comparison}{a vector giving the names of the two groups being compared} 
-	\item{genes}{a data frame containing information about each transcript; taken from \code{object} and can be \code{NULL}}
-\code{exactTest.matrix} produces a numeric vector of exact p-values with length equal to the number of transcripts, taken to be the number of rows of \code{pseudo}.
+\value{
+\code{exactTest} produces an object of class \code{deDGEList} containing the following elements.
+\item{table}{a data frame containing the elements \code{logConc}, the log-average concentration/abundance for each tag in the two groups being compared, \code{logFC}, the log-abundance ratio, i.e. fold change, for each tag in the two groups being compared, \code{p.value}, exact p-value for differential expression using the NB model}
+\item{comparison}{a vector giving the names of the two groups being compared} 
+\item{genes}{a data frame containing information about each transcript; taken from \code{object} and can be \code{NULL}}
+\code{exactTest.matrix} produces a numeric vector of exact p-values with length equal to the number of transcripts, taken to be the number of rows of \code{y1}.
 }
 
 \details{
@@ -60,8 +60,9 @@ de<-exactTest(d)
 # example using exactTest.matrix directly
 y<-matrix(rnbinom(20,mu=10,size=1.5),nrow=5)
 group<-factor(c(1,1,2,2))
+y<-splitIntoGroupsPseudo(y,group,pair=c(1,2))
 mus<-rep(10,5)
-f<-exactTest.matrix(y,group,pair=c(1,2),mus,r=1.5)
+f<-exactTest.matrix(y$y1,y$y2,mus,r=1.5)
 }
 
 \seealso{

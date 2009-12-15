@@ -1,28 +1,22 @@
-exactTest.matrix<-function(pseudo,group,pair=NULL,mus,r) 
-# Written by Mark Robinson, edited by Davis McCarthy, February 2009
+exactTest.matrix<-function(y1,y2,mus,r) 
+# Written by Mark Robinson, last modified by Davis McCarthy, 15 December 2009
 # A function to calculate P-values using a Fisher-like exact test for the Negative Binomial distribution
+# y1 and y2 are matrices of counts for two given experimental groups (libraries are assumed to be equal in size - adjusted pseudocounts in the edgeR context)
+# mus is a vector giving the estimated expected value of the count for each tag under the null hypothesis of no difference between the two groups (i.e. common library size * common concentration)
+# r is the size parameter for the NB distribution (r = 1/phi) - can be either the same or different for each tag
 {
-	nrows<-nrow(pseudo)
-    group <- as.factor(group)
-	levs.group<-levels(group)
-	ngroups<-length(levs.group)
-	if(is.null(pair)) {
-		pair<-levels(as.factor(c(levs.group[1],levs.group[2])))
-	} else if(!is.factor(pair)) {
-		pair<-levels(as.factor(pair))
-	}
-	if( sum(pair[1]==levs.group)==0 | sum(pair[2]==levs.group)==0 ) 
-		stop("At least one element of given pair is not a group\n")
-	y<-splitIntoGroupsPseudo(pseudo,group,pair)
+	if(nrow(y1)!=nrow(y2))
+		stop("Number of rows of y1 not equal to number of rows of y2\n")
+	nrows<-nrow(y1)
 	pvals<-rep(NA,nrows)
-	v<-cbind(rowSums(y$y1),rowSums(y$y2))
-	n1<-ncol(y$y1)
-	n2<-ncol(y$y2)
-	if (length(mus)==1) { mus<-rep(mus,nrows) }
-	if (length(r)==1) { r<-rep(r,nrows) }
+	v<-cbind(rowSums(y1),rowSums(y2))
+	n1<-ncol(y1)
+	n2<-ncol(y2)
+	if (length(mus)==1) 
+		mus<-rep(mus,nrows)
+	if (length(r)==1)
+		r<-rep(r,nrows)
 	N<-ceiling(rowSums(v))
-	#N<-round(rowSums(y))
-	#N<-floor(rowSums(y))
 	for (i in 1:length(pvals)) {
 		ind<-0:N[i]
 		p.top<-dnbinom(ind,size=n1*r[i],mu=n1*mus[i])*dnbinom(N[i]-ind,size=n2*r[i],mu=n2*mus[i])

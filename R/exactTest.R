@@ -1,5 +1,5 @@
 exactTest<-function(object,pair=NULL, common.disp=TRUE)
-# Written by by Davis McCarthy, September 2009
+# Written by by Davis McCarthy, September 2009, last modified 15 December 2009
 # Calculates exact p-values for the differential expression levels of tags in the two groups being compared
 {
 	if (!is(object,"DGEList")) stop("Currently only supports DGEList objects as the object argument.")
@@ -22,8 +22,8 @@ exactTest<-function(object,pair=NULL, common.disp=TRUE)
 		dispersion <- object$tagwise.dispersion
 	q2q.pair <- equalizeLibSizes(obj.pair,disp=dispersion,null.hypothesis=TRUE)
 	mus <- object$common.lib.size*q2q.pair$conc$conc.common
-	exact.pvals<-exactTest.matrix(q2q.pair$pseudo,obj.pair$samples$group,pair,mus,r=1/dispersion)
-	
+	y<-splitIntoGroupsPseudo(q2q.pair$pseudo,group.pair,pair)
+	exact.pvals<- exactTest.matrix(y$y1,y$y2,mus,r=1/dispersion)
 	logConc<-(log2(q2q.pair$conc$conc.group[,pair[1]==levs.pair])+log2(q2q.pair$conc$conc.group[,pair[2]==levs.pair]))/2
 	logFC<-log2(q2q.pair$conc$conc.group[,pair[2]==levs.pair]/q2q.pair$conc$conc.group[,pair[1]==levs.pair])
 	de.out<-data.frame(logConc=logConc, logFC=logFC, p.value=exact.pvals)
