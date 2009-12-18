@@ -3,6 +3,7 @@ exactTest<-function(object,pair=NULL, common.disp=TRUE)
 # Calculates exact p-values for the differential expression levels of tags in the two groups being compared
 {
 	if (!is(object,"DGEList")) stop("Currently only supports DGEList objects as the object argument.")
+	if (is.null(object$common.dispersion) && is.null(object$tagwise.dispersion)) stop("Value(s) for the dispersion parameter must be specified. Try running estimateCommonDisp() and/or estimateTagwiseDisp() before exactTest().")
 	object$samples$group <- as.factor(object$samples$group)
 	levs.group<-levels(object$samples$group)
 	if (is.null(pair))
