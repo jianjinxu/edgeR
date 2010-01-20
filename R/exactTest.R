@@ -10,8 +10,9 @@ exactTest<-function(object,pair=NULL, common.disp=TRUE)
 		pair <- levs.group[1:2]
 	if( !all(pair %in% levs.group) )
 		stop("At least one element of given pair is not a group.\n Groups are: ", paste(levs.group, collapse=" "), "\n")
-	stopifnot(length(pair)==2)
-	
+	if(length(pair)!=2) stop("Pair must be of length 2.")
+	if(is.numeric(pair)) pair <- levels(object$samples$group)[pair]
+	else pair <- as.character(pair)	
 	this.pair<-( object$samples$group %in% pair )
 	cat("Comparison of groups: ",as.vector(pair[2]),"-",as.vector(pair[1]),"\n")
 	group.pair <- factor(as.vector(object$samples$group[this.pair]))

@@ -72,7 +72,9 @@ DGEList <- function(counts=matrix(0), lib.size=NULL, group=factor(), genes=NULL,
     samples <- data.frame(group=as.factor(group), lib.size=lib.size)
 	x <- list(samples=samples, counts=counts, ...)
 	row.names(x$samples) <- colnames(x$counts)
-	x$genes <- as.data.frame(genes, stringsAsFactors=FALSE)
+	if(is.null(genes)) x$genes <- NULL
+	else if(nrow(as.data.frame(genes))==nrow(x$counts)) x$genes <- as.data.frame(genes, stringsAsFactors=FALSE)
+	else stop("Number of rows in the annotation object 'genes' is not equal to the number of rows in the matrix of counts.\n Must have an annotation for each gene/tag, if annotation is to be used.")
 	new("DGEList",x)
 }
 
