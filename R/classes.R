@@ -37,47 +37,42 @@ setIs("EBList","LargeDataObject")
 setIs("deDGEList","LargeDataObject")
 setIs("de4DGEList","LargeDataObject")
 
-DGEList <- function(counts=matrix(0), lib.size=NULL, group=factor(), genes=NULL, verbose=FALSE, ...) 
+DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, group=factor(), genes=NULL, remove.zeros=TRUE) 
+#	Construct DGEList object from components, with some checking
+#	Last modified  22 Jan 2010
 {
-	if (ncol(counts) != length(group))
+	counts <- as.matrix(counts)
+	nlib <- ncol(counts)
+	ntags <- nrow(counts)
+	if(nlib>0 & is.null(colnames(counts)))
+		colnames(counts) <- paste("sample",1:ncol(counts),sep=".")
+	group <- as.factor(group)
+	if(nlib != length(group))
 		stop("Length of 'group' must equal number of columns in 'counts'")
-	if (!is.factor(group))
-		group<-as.factor(group)
-	if(!is.matrix(counts)) 
-		counts<-as.matrix(counts)
-    if(is.null(lib.size)) {
-        lib.size <- colSums(counts)
-        warning("Calculating library sizes from total number of reads for each library.")
-    }
-	if(length(colnames(counts)) < ncol(counts)) {
-			colnames(counts)<-paste("sample",c(1:ncol(counts)),sep=".")
+	if(is.null(lib.size)) {
+		lib.size <- colSums(counts)
+		message("Calculating library sizes from total number of reads for each library.")
+	} else {
+		if(nlib != length(lib.size))
+			stop("Length of 'lib.size' must equal number of columns in 'counts'")
 	}
-	if (ncol(counts) != length(lib.size))
-		stop("Length of 'lib.size' must equal number of columns in 'counts'")
-        # remove rows which are all 0
-    allZeros <- rowSums(counts,na.rm=TRUE)==0
-    if( sum(allZeros) > 0) {
-    	counts <- counts[!allZeros,]
-        warning("Removing ", sum(allZeros)," rows that all have zero counts.")
-    }
-    if( verbose ) {
-    	cat("----------------------------------------\n")
-    	cat("Breakdown of TOTAL counts by ZERO counts\n")
-    	cat("----------------------------------------\n")
-    	tab <-  table( cut(rowSums(counts),breaks=c((0:9)+.5,1e6)), rowSums(counts==0), dnn=c("rowWiseCountSum","nbrOfZeroObserations") )
-    	print(tab)
-    	cat("----------------------------------------\n")
-    }
-    counts <- counts
-    samples <- data.frame(group=as.factor(group), lib.size=lib.size)
-	x <- list(samples=samples, counts=counts, ...)
-	row.names(x$samples) <- colnames(x$counts)
-	if(is.null(genes)) x$genes <- NULL
-	else if(nrow(as.data.frame(genes))==nrow(x$counts)) x$genes <- as.data.frame(genes, stringsAsFactors=FALSE)
-	else stop("Number of rows in the annotation object 'genes' is not equal to the number of rows in the matrix of counts.\n Must have an annotation for each gene/tag, if annotation is to be used.")
-	new("DGEList",x)
+	samples <- data.frame(group=group,lib.size=lib.size)
+	row.names(samples) <- colnames(counts)
+	x <- new("DGEList",list(samples=samples,counts=counts))
+	if(!is.null(genes)) {
+		genes <- as.data.frame(genes, stringsAsFactors=FALSE)
+		if(nrow(genes) != nrow(x$counts)) stop("counts and genes have different nrows")
+		x$genes <- genes
+	}
+	if(remove.zeros) {
+   	allZeros <- rowSums(counts,na.rm=TRUE)==0
+   	if(any(allZeros)) {
+			x <- x[!allZeros,]
+			warning("Removing",sum(allZeros),"rows that all have zero counts.")
+		}
+	}
+	x
 }
-
 
 getCounts <- function(object)
 {
