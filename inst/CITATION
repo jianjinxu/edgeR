@@ -2,6 +2,17 @@ citHeader("The methods within the code package can be cited as:")
 
 citEntry(
    entry="article",
+   title = "edgeR: a Bioconductor package for differential expression analysis of digital gene expression data",
+   author = "Mark D Robinson and Davis J McCarthy and Gordon K Smyth",
+   journal = "Bioinformatics",
+   volume = 26,
+   pages = 139-140,
+   year = 2010,
+   textVersion = "Robinson MD, McCarthy DJ and Smyth GK (2010). edgeR: a Bioconductor package for differential expression analysis of digital gene expression data. Bioinformatics 26, 139-140"
+)
+
+citEntry(
+   entry="article",
    title = "Moderated statistical tests for assessing differences in tag abundance",
    author = "Mark D Robinson and Gordon K Smyth",
    journal = "Bioinformatics",
@@ -10,6 +21,18 @@ citEntry(
    year = 2007,
 	textVersion = "Robinson MD and Smyth GK (2007). Moderated statistical tests for assessing differences in tag abundance. Bioinformatics 23, 2881-2887"
 )
+
+citEntry(
+   entry="article",
+   title = "Small-sample estimation of negative binomial dispersion, with applications to SAGE data",
+   author = "Mark D Robinson and Gordon K Smyth",
+   journal = "Biostatistics",
+   volume = 9,
+   pages = 321-332,
+   year = 2008,
+   textVersion = "Robinson MD and Smyth GK (2008). Small-sample estimation of negative binomial dispersion, with applications to SAGE data. Biostatistics, 9, 321-332"
+)
+
 
 citFooter("This free open-source software implements academic
 research by the authors and co-workers. If you use it,

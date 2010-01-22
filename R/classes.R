@@ -51,7 +51,7 @@ DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, group=factor(), genes=N
 		stop("Length of 'group' must equal number of columns in 'counts'")
 	if(is.null(lib.size)) {
 		lib.size <- colSums(counts)
-		message("Calculating library sizes from total number of reads for each library.")
+		message("Calculating library sizes from column totals.")
 	} else {
 		if(nlib != length(lib.size))
 			stop("Length of 'lib.size' must equal number of columns in 'counts'")

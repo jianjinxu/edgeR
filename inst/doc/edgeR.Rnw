@@ -36,20 +36,22 @@ The package can easily be loaded into an \texttt{R} session:
 library(edgeR)
 @
 
-R packages for the processing of raw data files for digital gene expression (DGE) datasets are still in development stages (e.g. \texttt{ShortRead}) at time of writing.      The methods presented here require a simple \texttt{DGEList} object that contains three pieces of information:
-\begin{enumerate}
-\item \texttt{counts}: a matrix of counts where each row represents a gene/exon (or whatever genomic feature is being tracked) and each column is a different sample.
-\item \texttt{group}: a factor (with length equal to the number of columns of \texttt{counts}) denoting the experimental group.
-\item \texttt{lib.size}: vector of the same length as \texttt{group} giving the total number of reads sequenced for each sample.
-\end{enumerate}
+R packages for the processing of raw data files for digital gene expression (DGE) datasets are still in development stages (e.g. \texttt{ShortRead}) at time of writing.   The methods presented here require a  \texttt{DGEList} object as a starting point.
+
+% that contains three pieces of information:
+%\begin{enumerate}
+%\item \texttt{counts}: a matrix of counts where each row represents a gene/exon (or whatever genomic feature is being tracked) and each column is a different sample.
+%\item \texttt{group}: a factor (with length equal to the number of columns of \texttt{counts}) denoting the experimental group.
+%\item \texttt{lib.size}: vector of the same length as \texttt{group} giving the total number of reads sequenced for each sample.
+%\end{enumerate}
 
 \section{Reading data}
 
 We assume that the data are stored in one of two formats. Either there is a single file containing a table of counts with the first column containing the tag identifiers and the remaining columns containing the tag counts for each library sequenced, or there is an individual file for each library, each with first column for tag identifiers and second column for counts. 
 
-If the counts for all libraries are stored in a single file, then an appriopriate in-built \texttt{R} function (such as \texttt{read.delim} or \texttt{read.csv}) can be used to read the table of counts into \texttt{R}. The library sizes are the column sums from the table of counts, and thus can be easily obtained. 
+If the counts for all libraries are stored in a single file, then an appriopriate in-built \texttt{R} function (such as \texttt{read.delim} or \texttt{read.csv}) can be used to read the table of counts into \texttt{R}. The library sizes can be the column sums from the table of counts, and thus easily obtained, or the user can specify the the library sizes throught \texttt{lib.size} argument of the \texttt{DGEList()} constructor.  See the help documentation (\texttt{?DGEList} or \texttt{?"DGEList-class"}) or the examples below for further details.
 
-If the counts are stored in separate files, then, given a vector containing the filenames the \texttt{edgeR} function \texttt{readDGE} will read in the data from the individual files, collate the counts into a table and compute the library sizes and return a \texttt{DGEList} object containing the data ready. 
+If the counts are stored in separate files, then, given a vector containing the filenames the \texttt{edgeR} function \texttt{readDGE} will read in the data from the individual files, collate the counts into a table and compute the library sizes and return a \texttt{DGEList} object.  See the help documentation (\texttt{?readDGE}) or the examples below for further details.
 
 \section{Moderated negative binomial dispersions}
 
