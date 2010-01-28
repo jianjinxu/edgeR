@@ -10,6 +10,8 @@
 \usepackage{natbib}
 \usepackage{Sweave}
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+\newcommand{\edgeR}{\textsf{edgeR}}
+\newcommand{\limma}{\textsf{limma}}
 
 
 \begin{document}
@@ -44,6 +46,20 @@ R packages for the processing of raw data files for digital gene expression (DGE
 %\item \texttt{group}: a factor (with length equal to the number of columns of \texttt{counts}) denoting the experimental group.
 %\item \texttt{lib.size}: vector of the same length as \texttt{group} giving the total number of reads sequenced for each sample.
 %\end{enumerate}
+
+
+\section{How to get help}
+
+Most questions about \edgeR\ will hopefully be answered by the documentation or references.
+The authors of the package always appreciate receiving reports of bugs in the package functions or in the documentation.
+The same goes for well-considered suggestions for improvements.
+
+Other questions about how to use \edgeR\ are best sent to the Bioconductor mailing list \url{bioconductor@stat.math.ethz.ch}.
+To subscribe to the mailing list, see \url{https://stat.ethz.ch/mailman/listinfo/bioconductor}.
+Please send requests for general assistance and advice to the mailing list rather than to the individual authors.
+Users posting to the mailing list for the first time may find it helpful to read the 
+helpful posting guide at \url{http://www.bioconductor.org/doc/postingGuide.html}.
+
 
 \section{Reading data}
 
