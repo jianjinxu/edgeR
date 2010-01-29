@@ -19,15 +19,15 @@ Mark Robinson <mrobinson@wehi.edu.au>, Davis McCarthy <dmccarthy@wehi.edu.au>, G
 }
 
 \references{
-  Robinson MD, McCarthy DJ and Smyth GK (2010). edgeR: a Bioconductor
-  package for differential expression analysis of digital gene
-  expression data. Bioinformatics 26, 139-140
-
   Robinson MD and Smyth GK (2007). Moderated statistical tests for
-  assessing differences in tag abundance. Bioinformatics 23, 2881-2887
+  assessing differences in tag abundance. \emph{Bioinformatics} 23, 2881-2887
 
   Robinson MD and Smyth GK (2008). Small-sample estimation of negative
-  binomial dispersion, with applications to SAGE data. Biostatistics,
+  binomial dispersion, with applications to SAGE data. \emph{Biostatistics},
   9, 321-332
+
+  Robinson MD, McCarthy DJ and Smyth GK (2010). edgeR: a Bioconductor
+  package for differential expression analysis of digital gene
+  expression data. \emph{Bioinformatics} 26, 139-140
 }
 \keyword{package}
