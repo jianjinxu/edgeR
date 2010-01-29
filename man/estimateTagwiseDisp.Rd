@@ -38,6 +38,10 @@ estimateTagwiseDisp(object, prior.n=10, tol=1e-06, grid=TRUE, grid.length=200, v
 	\item{common.lib.size}{the common library size to which the count libraries have been adjusted}
 }
 
+\references{
+Robinson MD and Smyth GK (2007). Moderated statistical tests for
+assessing differences in tag abundance. \emph{Bioinformatics} 23, 2881-2887
+}
 
 \author{Mark Robinson, Davis McCarthy}
 \examples{

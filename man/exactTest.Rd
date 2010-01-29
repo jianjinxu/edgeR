@@ -45,8 +45,14 @@ For each transcript, conditioning on the total sum of counts within each group a
 
 }
 
+\references{
+Robinson MD and Smyth GK (2008). Small-sample estimation of negative
+binomial dispersion, with applications to SAGE data.
+\emph{Biostatistics}, 9, 321-332
+}
 
 \author{Mark Robinson, Davis McCarthy}
+
 \examples{
 # generate raw counts from NB, create list object
 y<-matrix(rnbinom(80,size=1,mu=10),nrow=20)

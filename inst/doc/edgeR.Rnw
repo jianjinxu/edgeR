@@ -9,9 +9,12 @@
 \textheight 215mm
 \usepackage{natbib}
 \usepackage{Sweave}
+\usepackage{url}
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
 \newcommand{\edgeR}{\textsf{edgeR}}
 \newcommand{\limma}{\textsf{limma}}
+\newcommand{\code}[1]{{\small\texttt{#1}}}
+\newcommand{\R}{\textsf{R}}
 
 
 \begin{document}
@@ -26,7 +29,7 @@ Davis McCarthy \\ \texttt{dmccarthy@wehi.edu.au}
 Gordon K.\ Smyth}
 % Please increment date when working on this document, so that
 % date shows genuine change date, not merely date of compile.
-\date{12 October 2009}
+\date{29 January 2010}
 \maketitle
 
 \section{Introduction}
@@ -51,9 +54,11 @@ R packages for the processing of raw data files for digital gene expression (DGE
 \section{How to get help}
 
 Most questions about \edgeR\ will hopefully be answered by the documentation or references.
+Every function mentioned in this guide has its own help page.
+For example, a detailed description of the arguments and output of the \code{exactTest} function can be read by typing \code{?exactTest} or \code{help(exactTest)} at the \R\ prompt.
+
 The authors of the package always appreciate receiving reports of bugs in the package functions or in the documentation.
 The same goes for well-considered suggestions for improvements.
-
 Other questions about how to use \edgeR\ are best sent to the Bioconductor mailing list \url{bioconductor@stat.math.ethz.ch}.
 To subscribe to the mailing list, see \url{https://stat.ethz.ch/mailman/listinfo/bioconductor}.
 Please send requests for general assistance and advice to the mailing list rather than to the individual authors.
