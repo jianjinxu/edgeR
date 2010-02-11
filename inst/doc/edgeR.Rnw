@@ -29,7 +29,7 @@ Davis McCarthy \\ \texttt{dmccarthy@wehi.edu.au}
 Gordon K.\ Smyth}
 % Please increment date when working on this document, so that
 % date shows genuine change date, not merely date of compile.
-\date{29 January 2010}
+\date{12 February 2010}
 \maketitle
 
 \section{Introduction}
@@ -57,7 +57,7 @@ helpful posting guide at \url{http://www.bioconductor.org/doc/postingGuide.html}
 %R packages for the processing of raw data files for digital gene expression (DGE) datasets are still in development stages (e.g. \texttt{ShortRead}) at time of writing.
 
 \edgeR\ requires three pieces of information:
-begin{enumerate}
+\begin{enumerate}
 \item
 \texttt{counts}: a matrix of counts where each row represents a gene/exon (or whatever genomic feature is being tracked) and each column is a different sample.
 The row names are transcript IDs.
@@ -1868,6 +1868,7 @@ To illustrate this, we sample Poisson data and run \texttt{de4DGE} with the \tex
 Nevertheless, an analysis using the Poisson distribution can be carried out as follows:
 
 <<poisson,width=7,height=4>>=
+library(edgeR)
 set.seed(101)
 n <- 10000
 lib.sizes <- c(40000,50000,38000,40000)
