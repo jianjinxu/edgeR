@@ -1,23 +1,25 @@
 \name{exactTest}
 \alias{exactTest}
-\alias{exactTest.matrix}
+\alias{exactTest.
 
 \title{An Exact Test for Differences between Two Negative Binomial Groups}
 
 \description{Carry out an exact test for differences between two negative binomial groups, based on conditioning on sums of (quantile-adjusted pseudo-)counts; calculations performed by \code{exactTest.matrix}}
 
 \usage{ 
-exactTest(object,pair=NULL, common.disp=TRUE)
-exactTest.matrix(y1,y2,mus,r) 
+exactTest(object,pair=NULL,disp=NULL,common.disp=TRUE)
+exactTest.matrix(y1,y2,mus,r)
 }
 
 \arguments{ 
 
-\item{object}{a \code{DGEList} object, output of \code{estimateCommonDisp}, on which to compute Fisher-like exact statistics for the pair of groups specified}
+\item{object}{a \code{DGEList} object, output of \code{estimateCommonDisp}, on which to compute Fisher-like exact statistics for the pair of groups specified.}
 
-\item{pair}{vector of length two, either numeric or character, providing the pair of groups to be compared; if a character vector, then should be the names of two groups (e.g. two levels of \code{object$samples$group}); if numeric, then groups to be compared are chosen by finding the levels of \code{object$samples$group} corresponding to those numeric values and using those levels as the groups to be compared; if \code{NULL}, then first two levels of \code{object$samples$group} (a factor) are used}
+\item{pair}{vector of length two, either numeric or character, providing the pair of groups to be compared; if a character vector, then should be the names of two groups (e.g. two levels of \code{object$samples$group}); if numeric, then groups to be compared are chosen by finding the levels of \code{object$samples$group} corresponding to those numeric values and using those levels as the groups to be compared; if \code{NULL}, then first two levels of \code{object$samples$group} (a factor) are used.}
 
-\item{common.disp}{logical, if \code{TRUE}, then testing carried out using common dispersion for each tag/gene, if \code{FALSE} then tag-wise estimates of the dispersion parameter are used; default \code{TRUE}}
+\item{disp}{optional vector either of length 1 or the same length as the number of tags. If not \code{NULL} (default), then the supplied value(s) will be used as the dispersion parameter for calculating p-values for differential expression. If \code{NULL}, then either the common or tagwise dispersion estimates from the \code{DGEList} object will be used, according to the value of \code{common.disp}. If \code{disp} is zero, then p-values are equivalent to exact Poisson rather than NB p-values.}
+
+\item{common.disp}{logical, if \code{TRUE}, then testing carried out using common dispersion for each tag/gene, if \code{FALSE} then tag-wise estimates of the dispersion parameter are used; default \code{TRUE}.}
 
 \item{y1}{numeric matrix of counts for one of the two given experimental groups to be tested for differences. Libraries are assumed to be equal in size - e.g. adjusted pseudocounts from the output of \code{\link{equalizeLibSizes}}.}
 
@@ -46,9 +48,7 @@ For each transcript, conditioning on the total sum of counts within each group a
 }
 
 \references{
-Robinson MD and Smyth GK (2008). Small-sample estimation of negative
-binomial dispersion, with applications to SAGE data.
-\emph{Biostatistics}, 9, 321-332
+Robinson MD and Smyth GK (2008). Small-sample estimation of negative binomial dispersion, with applications to SAGE data. \emph{Biostatistics}, 9, 321-332
 }
 
 \author{Mark Robinson, Davis McCarthy}
