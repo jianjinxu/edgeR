@@ -1,6 +1,6 @@
 \name{exactTest}
 \alias{exactTest}
-\alias{exactTest.
+\alias{exactTest.matrix}
 
 \title{An Exact Test for Differences between Two Negative Binomial Groups}
 
@@ -76,3 +76,4 @@ Computing p-values for differential expression for each transcript between two (
 }
 
 \keyword{algebra}
+
