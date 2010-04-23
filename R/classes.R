@@ -68,7 +68,7 @@ DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, group=factor(), genes=N
    	allZeros <- rowSums(counts,na.rm=TRUE)==0
    	if(any(allZeros)) {
 			x <- x[!allZeros,]
-			warning("Removing",sum(allZeros),"rows that all have zero counts.")
+			warning("Removing ",sum(allZeros)," rows that all have zero counts.")
 		}
 	}
 	x
