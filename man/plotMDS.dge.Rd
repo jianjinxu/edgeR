@@ -1,11 +1,11 @@
 \title{Multidimensional scaling plot of SAGE data}
-\name{plotMDS2}
-\alias{plotMDS2}
+\name{plotMDS.dge}
+\alias{plotMDS.dge}
 \description{
 Plot the sample relations based on Multidimensional Scaling.
 }
 \usage{
-plotMDS2(x, top=500, col=NULL, cex=1, dim.plot=c(1,2), ndim=max(dim.plot),...)
+plotMDS.dge(x, top=500, col=NULL, cex=1, dim.plot=c(1,2), ndim=max(dim.plot),...)
 }
 \arguments{
   \item{x}{any matrix or \code{DGEList} object.}
@@ -38,10 +38,10 @@ counts <- rnbinom(6000, size = 5, mu = x)
 m <- matrix(counts, 1000, 6)
 rownames(m) <- paste("Gene",1:1000)
 m[1:300,4:6] <- m[1:300,4:6] + 10
-plotMDS2(m)
+plotMDS.dge(m)
 
 # Indexes of samples are plotted.
-plotMDS2(m,  col=c(rep("black",3), rep("red",3)) )
+plotMDS.dge(m,  col=c(rep("black",3), rep("red",3)) )
 }
 
 \keyword{hplot}

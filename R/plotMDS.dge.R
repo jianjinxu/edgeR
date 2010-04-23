@@ -1,4 +1,4 @@
-plotMDS2 <- function (x, top=500, col=NULL, cex=1, dim.plot=c(1, 2), ndim=max(dim.plot), ...) 
+plotMDS.dge <- function (x, top=500, col=NULL, cex=1, dim.plot=c(1, 2), ndim=max(dim.plot), ...) 
 {
     if (is.matrix(x)){
           x <- DGEList(counts = x, group = c(rep("1", ncol(x))))
