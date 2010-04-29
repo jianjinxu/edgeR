@@ -29,7 +29,7 @@ Davis McCarthy \\ \texttt{dmccarthy@wehi.edu.au}
 Gordon K.\ Smyth}
 % Please increment date when working on this document, so that
 % date shows genuine change date, not merely date of compile.
-\date{12 February 2010}
+\date{24 April 2010}
 \maketitle
 
 \section{Introduction}
@@ -161,11 +161,12 @@ The pseudocounts are calculated using a quantile-to-quantile method for the nega
 \end{Sinput}
 \begin{Soutput}
 [1] "samples"           "common.dispersion" "counts"           
-[4] "pseudo.alt"        "conc"              "common.lib.size"  
+[4] "pseudo.alt"        "genes"             "conc"             
+[7] "common.lib.size"  
 \end{Soutput}
 \end{Schunk}
 
-The output of \texttt{estimateCommonDisp} is a DGEList object with several new elements. The element \texttt{common.dispersion}, as the name suggests, provides the estimate of the common dispersion, and \texttt{pseudo.alt} gives the pseudocounts calculated under the alternative hypothesis. The element \texttt{conc} gives the estimates of the overall concentration of each tag across all of the original samples (\texttt{conc\$conc.common}) and the estimate of the concentration of each tag within each group (\texttt{conc\$conc.group}). The element \texttt{common.lib.size} gives the library size to which the original libraries have been adjusted in the pseudocounts. 
+The output of \texttt{estimateCommonDisp} is a DGEList object with several new elements. The element \texttt{common.dispersion}, as the name suggests, provides the estimate of the common dispersion, and \texttt{pseudo.alt} gives the pseudocounts calculated under the alternative hypothesis. The element \texttt{genes} contains the information about gene/tag identifiers. The element \texttt{conc} gives the estimates of the overall concentration of each tag across all of the original samples (\texttt{conc\$conc.common}) and the estimate of the concentration of each tag within each group (\texttt{conc\$conc.group}). The element \texttt{common.lib.size} gives the library size to which the original libraries have been adjusted in the pseudocounts. 
 
 We see in the output below that the total number of counts in each library of the pseudocounts agrees well with the common library size, as desired. 
 
@@ -222,7 +223,7 @@ Comparison of groups:  Tu - NC
 > names(de.com)
 \end{Sinput}
 \begin{Soutput}
-[1] "table"      "comparison"
+[1] "table"      "comparison" "genes"   
 \end{Soutput}
 \begin{Sinput}
 > names(de.com$table)
@@ -232,7 +233,8 @@ Comparison of groups:  Tu - NC
 \end{Soutput}
 \end{Schunk}
 
-The object produced by \texttt{exactTest} contains two elements: \texttt{table} and \texttt{comparison}. The element \texttt{de.com\$comparison} contains a vector giving the names of the two groups compared. The table\texttt{de.com\$table} contains the elements \texttt{logConc}, which gives the overall concentration for a tag across the two groups being compared, \texttt{logFC}, which gives the log-fold change difference for the counts between the groups and \texttt{p.value} gives the exact $p$-values computed.
+The object produced by \texttt{exactTest} contains three elements:
+\texttt{table}, \texttt{comparison} and \texttt{genes}. The element \texttt{de.com\$comparison} contains a vector giving the names of the two groups compared. The table\texttt{de.com\$table} contains the elements \texttt{logConc}, which gives the overall concentration for a tag across the two groups being compared, \texttt{logFC}, which gives the log-fold change difference for the counts between the groups and \texttt{p.value} gives the exact $p$-values computed.
 
 The results of the NB exact test can be accessed conveniently using the \texttt{topTags} function applied to the object produced by \texttt{exactTest}. The user can specify the number, \texttt{n}, of tags for which they would like to see the differential expression information, ranked by $p$-value (default) or fold change. As the same test is conducted for many thousands of tags, adjusting the $p$-values for multiple testing is recommended. The desired adjustment method can be supplied by the user, with the default method being Benjamini and Hochberg's approach for controlling the false discovery rate (FDR)~\citep{Benjamini95}. The table below shows the top $10$ DE genes ranked by $p$-value.
 
@@ -380,32 +382,38 @@ In Figure~\ref{fig:Zhang_FC1}, the $264$ tags identified as differentially expre
 
 
 \subsection{Analysing the data using moderated tagwise dispersions}
-\subsubsection{Estimating the tagwise dispersion}
+\subsubsection{Moderating the tagwise dispersion}
 An extension to simply using the common dispersion for each tag is to estimate the dispersion separately for each tag, while `squeezing' these estimates towards the common dispersion estimate in order to improve inference by sharing information between tags. This type of analysis can also be carried out in few steps using the \texttt{edgeR} package.
 
 As noted earlier, the dispersion parameter is the overdispersion relative to the Poisson, and represents the biological, or sample-to-sample variability. The methods we developed moderate the dispersion estimates towards a common dispersion, much like how the \texttt{limma} package moderates the variances in the analysis of microarray data.
 
-To run the moderated analysis, we need to determine how much moderation is necessary. For this, we can use an empirical Bayes rule that involves calculating a weight parameter $\textrm{prior.n}$. However, for many applications (especially if the estimated smoothing parameter is large), using the common dispersion for all tags will give excellent results. 
+The amount of moderation done is determined by the value of a weight
+parameter \texttt{prior.n}. The value for \texttt{prior.n} corresponds
+to the number of individual tags equivalent to the weight given to the
+common likelihood. Thus, the higher \texttt{prior.n}, the more
+strongly the individual dispersion estimates are moderated, or
+`squeezed', towards the common value. To run the moderated analysis, we need to determine how much
+moderation is necessary. How best to do this is still an open research
+question, but we currently recommend selecting a value for the weight parameter \texttt{prior.n} \emph{a
+  priori} and have found that very good results can be obtained this way.
 
-In order to determine how much moderation is necessary, we require an estimate of the dispersion parameter, so we use the common dispersion estimate from \texttt{estimateCommonDisp}. The smoothing parameter, \texttt{prior.n} can then be calculated. As we see below, for this dataset the estimate of the smoothing parameter is very large, so if we were to use this large value for the weight parameter we would moderate the tagwise dispersion estimates so strongly that it would be equivalent to using the common dispersion estimate.
-
-\begin{Schunk}
-\begin{Sinput}
-> prior.n <- estimateSmoothing(d)
-> prior.n
-\end{Sinput}
-\begin{Soutput}
-[1] 29481
-\end{Soutput}
-\end{Schunk}
-
-Alternatively, the value for the weight parameter \texttt{prior.n} can be selected \emph{a priori}, instead of being estimated. In an experiment such as that we consider here, in which we have just four samples, two in each group, and thus two degrees of freedom for estimating the dispersion parameter, setting the \texttt{prior.n} to be relatively large should be appropriate, so that individual tagwise dispersion estimates are `squeezed' quite strongly towards the common dispersion. Here, we choose \texttt{prior.n} to be $100$. This means that the common likelihood receives the weight of $100$ individual tags, so there will be a reasonable degree of `squeezing', but there is still scope to estimate an individual dispersion for each gene.
+In an experiment such as that we consider here, in which we
+have just four samples, two in each group, and thus two degrees of
+freedom for estimating the dispersion parameter. Standard tagwise
+dispersion estimates are likely to be unreliable, so we want to give a
+reasonable weight to the common likelihood. We need to choose a value
+for \texttt{prior.n} such that individual tagwise dispersion estimates are `squeezed' quite strongly
+towards the common dispersion. Here, we choose a moderate amount of
+smoothing---we let \texttt{prior.n} be $10$. This means that the
+common likelihood receives the weight of $10$ individual tags, so
+there will be a reasonable degree of `squeezing', but there is still
+ample scope to estimate an individual dispersion for each gene.
 
 The function \texttt{estimateTagwiseDisp} produces a DGEList object that contains all of the elements present in the object produced by \texttt{estimateCommonDisp}, as well as the value for \texttt{prior.n} used (\texttt{d\$prior.n}) and the tagwise dispersion estimates (\texttt{d\$tagwise.dispersion}), as we see below.
 
 \begin{Schunk}
 \begin{Sinput}
-> d <- estimateTagwiseDisp(d, prior.n = 100)
+> d <- estimateTagwiseDisp(d, prior.n = 10)
 \end{Sinput}
 \begin{Soutput}
 Using grid search to estimate tagwise dispersion. 
@@ -428,19 +436,22 @@ Using grid search to estimate tagwise dispersion.
 > head(d$tagwise.dispersion)
 \end{Sinput}
 \begin{Soutput}
-[1] 0.99002 0.12528 0.08252 0.22934 0.11896 0.15795
+[1] 2.612336 0.065168 0.001001 0.268445 0.053908 0.112720
 \end{Soutput}
 \end{Schunk}
 
-It is interesting to consider the distribution of the tagwise dispersion estimates. As we can see from the output below, the tagwise dispersion estimates range from a minimum of $0.08$ to a maximum of $0.99$, but the tags in the middle two quartiles of the tagwise dispersion estimates have dispersion estimates just slightly larger than the common dispersion estimate.
+It is interesting to consider the distribution of the tagwise
+dispersion estimates. As we can see from the output below, the tagwise
+dispersion estimates range from a minimum of $0.001$ to a maximum of
+$3.41$. The range of dispersions is therefore large, but the tags in the middle two quartiles of the tagwise dispersion estimates have dispersion estimates just slightly smaller than the common dispersion estimate.
 
 \begin{Schunk}
 \begin{Sinput}
 > summary(d$tagwise.dispersion)
 \end{Sinput}
 \begin{Soutput}
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
- 0.0825  0.2000  0.2000  0.2000  0.2000  0.9900 
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+0.0010 0.1926 0.1998 0.2132 0.1998 3.4120 
 \end{Soutput}
 \begin{Sinput}
 > d$common.dispersion
@@ -450,8 +461,43 @@ It is interesting to consider the distribution of the tagwise dispersion estimat
 \end{Soutput}
 \end{Schunk}
 
+\subsubsection{Estimating smoothing using an approximate eBayes rule}
+For this, we can use an empirical Bayes rule that involves calculating a weight parameter $\textrm{prior.n}$. However, for many applications (especially if the estimated smoothing parameter is large), using the common dispersion for all tags will give excellent results. 
+
+In order to determine how much moderation is necessary, we require an
+estimate of the dispersion parameter, so we use the common dispersion
+estimate from \texttt{estimateCommonDisp}. The smoothing parameter,
+\texttt{prior.n} can then be calculated. As we see below, for this dataset the estimate of the smoothing parameter is very large. This estimate arises from the fact that the estimate of the overdispersion
+of the likelihood scores (a critical aspect of the algorithm for estimating the amount of smoothing required) is strictly zero. In this
+circumstance the algorithm is indicating that we should be using a common dispersion, and so returns a very large suggested value for
+\texttt{prior.n}. If we were to use this large value for the weight parameter we would moderate the tagwise dispersion estimates so strongly that it would be equivalent to using the common dispersion estimate.
+
+\begin{Schunk}
+\begin{Sinput}
+> prior.n <- estimateSmoothing(d)
+\end{Sinput}
+\begin{Soutput}
+  Warning message:
+In .odls(scores.g = scores, info.g = exp.inf) :
+  Estimate of overdispersion of likelihood scores is strictly zero.
+ Returning min val close to zero (1e-08).
+\end{Soutput}
+\begin{Sinput}
+> prior.n
+\end{Sinput}
+\begin{Soutput}
+[1] 182665666
+\end{Soutput}
+\end{Schunk}
+
+
 \subsubsection{Testing}
-The testing procedures when using tagwise dispersion estimates are carried out exactly as for the common dispersion, as described above, but we add the argument \texttt{common.disp=FALSE} to the call to \texttt{exactTest}.
+The testing procedures when using tagwise dispersion estimates are
+carried out exactly as for the common dispersion, as described above,
+but we add the argument \texttt{common.disp=FALSE} to the call to
+\texttt{exactTest}. Here we
+carry out the testing using the tagwise dispersion estimates
+calculated using a \texttt{prior.n} value of ten.
 
 \begin{Schunk}
 \begin{Sinput}
@@ -462,7 +508,15 @@ Comparison of groups:  Tu - NC
 \end{Soutput}
 \end{Schunk}
 
-The output below shows that when using tagwise dispersions, the \texttt{edgeR} package still identifies a lot of differential expression between the normal colon cell group and the primary CR cancer cell group. The top DE tags are given very small $p$-values, even after adjusting for multiple testing. As with the analysis using the common dispersion, all of the top tags have a large fold change, indicating that these changes in expression are likely to be biologically meaningful. We note that the ranking is different, however, and not all of the top ten tags according to using the common dispersion are found to be among the top ten tags using tagwise dispersions.
+The output below shows that when using tagwise dispersions, the
+\texttt{edgeR} package still identifies a lot of differential
+expression between the normal colon cell group and the primary CR
+cancer cell group---indeed the $p$-values of the top tags are even
+smaller than the top tags based on the common dispersion. This arises
+because the moderated tagwise dispersions can be much smaller than the
+common dispersion, and tags with smaller dispersions will have smaller
+p-values than the same tags with $p$-values computed using a common
+dispersion. As with the analysis using the common dispersion, all of the top tags have a large fold change, indicating that these changes in expression are likely to be biologically meaningful. We note that the ranking is different, however, and not all of the top ten tags according to using the common dispersion are found to be among the top ten tags using tagwise dispersions.
 
 \begin{Schunk}
 \begin{Sinput}
@@ -470,23 +524,30 @@ The output below shows that when using tagwise dispersions, the \texttt{edgeR} p
 \end{Sinput}
 \begin{Soutput}
 Comparison of groups:  Tu - NC 
-           logConc   logFC    PValue       FDR
-AGCTGTTCCC -28.240  43.553 1.541e-10 8.855e-06
-TCACCGGTCA -11.130  -4.229 3.892e-09 1.118e-04
-GTCATCACCA -30.421 -39.189 7.815e-08 1.497e-03
-TAAATTGCAA -11.390  -4.244 1.846e-07 2.355e-03
-CTTGGGTTTT -29.879  40.274 2.049e-07 2.355e-03
-TAATTTTTGC -13.735   5.741 4.550e-07 4.356e-03
-CTTGACATAC -30.687 -38.658 5.735e-07 4.378e-03
-ATTTCAAGAT -13.747  -5.893 6.097e-07 4.378e-03
-TGCTCCTACC  -9.985  -2.722 7.139e-07 4.407e-03
-GTGCGCTGAG -30.672  38.688 7.671e-07 4.407e-03
+           logConc  logFC    PValue       FDR
+CTAAGACTTC  -7.191 -1.419 3.610e-56 2.074e-51
+TGCTCCTACC  -9.985 -2.722 2.690e-21 7.726e-17
+GTGCTGAATG -10.385 -2.459 6.358e-18 1.218e-13
+CGCTGTGGGG -11.303 -2.982 2.311e-16 3.319e-12
+GGGGTCAGGG  -9.639  1.934 1.928e-15 2.215e-11
+GATGACCCCC -11.900 -3.603 4.097e-15 3.923e-11
+TTATGGGATC -11.724  3.122 8.147e-14 6.065e-10
+TCACCGGTCA -11.130 -4.229 8.446e-14 6.065e-10
+ATGCGGGAGA -11.720 -2.797 5.618e-12 3.586e-08
+GGCTGGGGGC -10.209 -1.701 1.012e-11 5.816e-08
 \end{Soutput}
 \end{Schunk}
 
 The table below shows the raw counts for the tags that \texttt{edgeR} has identified as the most differentially expressed using tagwise dispersions. For these genes there seems to be very large differences between the groups, suggesting that the DE genes identified are truly differentially expressed, and not false positives. 
 
-We note that in general, when using tagwise dispersions, the counts are more consistent within groups, as using tagwise dispersions instead of the common dispersion penalises tags which are highly variable within groups. The smaller the value selected for \texttt{prior.n}, the more highly variable tags will be penalised, as there is less `squeezing' of the tagwise dispersions towards the common value.
+We note that in general, when using tagwise dispersions, the counts
+are more consistent within groups, as using tagwise dispersions
+instead of the common dispersion penalises tags which are highly
+variable within groups. The smaller the value selected for
+\texttt{prior.n}, the more highly variable tags will be penalised, as
+there is less `squeezing' of the tagwise dispersions towards the
+common value. This effect is seen clearly in the table below (compare
+this with the corresponding table for the analysis using the common dispersion).
 
 \begin{Schunk}
 \begin{Sinput}
@@ -494,61 +555,61 @@ We note that in general, when using tagwise dispersions, the counts are more con
 > d$counts[detags.tgw, ]
 \end{Sinput}
 \begin{Soutput}
-           GSM728 GSM729 GSM755 GSM756
-AGCTGTTCCC      0      0    119   1011
-TCACCGGTCA    118     75      6      5
-GTCATCACCA     35     20      0      0
-TAAATTGCAA    103     59      3      6
-CTTGGGTTTT      0      0     21     97
-TAATTTTTGC      0      1     37     21
-CTTGACATAC     18     20      0      0
-ATTTCAAGAT     35     21      0      1
+  GSM728 GSM729 GSM755 GSM756
+CTAAGACTTC    559    558    248    199
 TGCTCCTACC    140    113     22     19
-GTGCGCTGAG      0      0     18     23
+GTGCTGAATG     96     79     17     17
+CGCTGTGGGG     58     53      6      9
+GGGGTCAGGG     27     37    134    127
+GATGACCCCC     42     49      3      5
+TTATGGGATC      6      4     48     45
+TCACCGGTCA    118     75      6      5
+ATGCGGGAGA     39     39      6      6
+GGCTGGGGGC     75     77     26     24
 \end{Soutput}
 \end{Schunk}
 
 Of course, we can sort the top table differently, as we did earlier.
 
-We see in the output below that $254$ genes are significantly differentially expressed according to \texttt{edgeR} when using the tagwise dispersion estimates (ten fewer than when using the common dispersion). Of those tags, $87$ are up-regulated in the cancer cells compared with the normal cells and $167$ are down-regulated in the cancer cells compared with normal cells. These proportions of up- and down-regulated tags are similar to those found using the common dispersion, but there is a slightly higher proportion of down-regulated tags in those identified as DE using tagwise dispersions.
+We see in the output below that $309$ genes are significantly differentially expressed according to \texttt{edgeR} when using the tagwise dispersion estimates (ten fewer than when using the common dispersion). Of those tags, $100$ are up-regulated in the cancer cells compared with the normal cells and $209$ are down-regulated in the cancer cells compared with normal cells. These proportions of up- and down-regulated tags are similar to those found using the common dispersion, but there is a slightly higher proportion of down-regulated tags in those identified as DE using tagwise dispersions.
 
 \begin{Schunk}
 \begin{Sinput}
 > sum(de.tgw$table$p.value < 0.01)
 \end{Sinput}
 \begin{Soutput}
-[1] 254
+[1] 309
 \end{Soutput}
 \begin{Sinput}
-> top254 <- topTags(de.tgw, n = 254)
-> sum(top254$table$logFC > 0)
+> toptgw <- topTags(de.tgw, n = sum(de.tgw$table$p.value < 0.01))
+> sum(toptgw$table$logFC > 0)
 \end{Sinput}
 \begin{Soutput}
-[1] 87
+[1] 100
 \end{Soutput}
 \begin{Sinput}
-> sum(top254$table$logFC < 0)
+> sum(toptgw$table$logFC < 0)
 \end{Sinput}
 \begin{Soutput}
-[1] 167
+[1] 209
 \end{Soutput}
 \end{Schunk}
 
-Furthermore, we see below that $28$ tags ($0.05$\% of the total number) have a $p$-value of less than $0.05$ after adjusting for multiple testing using the~\citet{Benjamini95} method for controlling the FDR, which is strong evidence for differential expression.
+Furthermore, we see below that $72$ tags ($0.13$\% of the total number) have a $p$-value of less than $0.05$ after adjusting for multiple testing using the~\citet{Benjamini95} method for controlling the FDR, which is strong evidence for differential expression.
 
 \begin{Schunk}
 \begin{Sinput}
 > sum(p.adjust(de.tgw$table$p.value, method = "BH") < 0.05)
 \end{Sinput}
 \begin{Soutput}
-[1] 28
+[1] 72
 \end{Soutput}
 \begin{Sinput}
 > mean(p.adjust(de.tgw$table$p.value, method = "BH") < 0.05) * 
 +     100
 \end{Sinput}
 \begin{Soutput}
-[1] 0.04874
+[1] 0.1253307
 \end{Soutput}
 \end{Schunk}
 
@@ -558,17 +619,18 @@ Shown below is the code for producing the default fold-change plot using \texttt
 
 \begin{Schunk}
 \begin{Sinput}
-> detags254 <- rownames(topTags(de.tgw, n = 254)$table)
+> detags.tgw <- rownames(topTags(de.tgw, n = sum(de.tgw$table$p.value
+< 0.01) )$table)
 \end{Sinput}
-\end{Schunk}
+s\end{Schunk}
 \begin{Schunk}
 \begin{Sinput}
-> plotSmear(d, de.tags = detags254, main = "FC plot using tagwise dispersions")
+> plotSmear(d, de.tags = detags.tgw, main = "FC plot using tagwise dispersions")
 > abline(h = c(-2, 2), col = "dodgerblue")
 \end{Sinput}
 \end{Schunk}
 
-In Figure~\ref{fig:Zhang_FC2}, the $254$ tags identified as differentially expressed (i.e.~those identified as significant ($p$-value less than $0.01$) by \texttt{edgeR} using the tagwise dispersions) are highlighted in red. We see that the pattern of differential expression using tagwise dispersions that we see in Figure~\ref{fig:Zhang_FC2} is very similar to that obtained using the common dispersion that we saw in Figure~\ref{fig:Zhang_FC1}.
+In Figure~\ref{fig:Zhang_FC2}, the $309$ tags identified as differentially expressed (i.e.~those identified as significant ($p$-value less than $0.01$) by \texttt{edgeR} using the tagwise dispersions) are highlighted in red. We see that the pattern of differential expression using tagwise dispersions that we see in Figure~\ref{fig:Zhang_FC2} is very similar to that obtained using the common dispersion that we saw in Figure~\ref{fig:Zhang_FC1}.
 
 \begin{figure}[ht]
 \begin{center}
@@ -948,24 +1010,23 @@ The code for producing the default fold-change plot, with the top $500$ most DE 
 
 
 \subsection{Analysis using moderated tagwise dispersions}
-\subsubsection{Estimating the tagwise dispersion}
+\subsubsection{Moderating the tagwise dispersion}
 An extension to simply using the common dispersion for each tag is to estimate the dispersion separately for each tag, while `squeezing' these estimates towards the common dispersion estimate in order to improve inference by sharing information between tags. This type of analysis can also be carried out in few steps using the \texttt{edgeR} package.
 
-To run the moderated analysis, we need to determine how much moderation is necessary. As discussed in the SAGE case study, we can use an empirical Bayes rule that involves calculating a weight parameter $\textrm{prior.n}$. However, for many applications (especially if the estimated smoothing parameter is large), using the common dispersion for all tags will give excellent results. 
+To run the moderated analysis, we need to determine how much
+moderation is necessary. As discussed in the SAGE case study, above,
+we currently recommend choosing a
+value for \texttt{prior.n} \emph{a priori} that will provide an
+appropriate balance between the common and tagwise dispersion
+values. This moderation can improve the analysis by giving higher
+levels of significance to tags which have more consistent counts
+within groups (and therefore lower within-group variance) and reducing
+the significance of tags which have one extremely large count in one
+library, which can otherwise dominate the statistical assessment of
+differential expression. 
 
-The smoothing parameter, \texttt{prior.n} can then be calculated using the function \texttt{estimateSmoothing}, which takes the \texttt{DGEList} object produced by \texttt{estimateCommonDisp} as its argument. As we see below, for this dataset the estimate of the smoothing parameter is very large, so if we were to use this large value for the weight parameter we would moderate the tagwise dispersion estimates so strongly that it would be equivalent to using the common dispersion estimate.
 
-\begin{Schunk}
-\begin{Sinput}
-> prior.n <- estimateSmoothing(d)
-> prior.n
-\end{Sinput}
-\begin{Soutput}
-[1] 15399.17
-\end{Soutput}
-\end{Schunk}
-
-Alternatively, the value for the weight parameter \texttt{prior.n} can be selected \emph{a priori}, instead of being estimated. In an experiment such as that we consider here, in which we have eight samples and thus six degrees of freedom for estimating the dispersion parameter, setting the \texttt{prior.n} to be ten should be appropriate. This means that the common likelihood receives the weight of ten individual tags, so there will be a reasonable degree of `squeezing' towards the common dispersion estimate, but there is still enough scope to estimate an individual dispersion for each gene.
+In an experiment such as that we consider here, in which we have eight samples and thus six degrees of freedom for estimating the dispersion parameter, setting the \texttt{prior.n} to be ten should be appropriate. This means that the common likelihood receives the weight of ten individual tags, so there will be a reasonable degree of `squeezing' towards the common dispersion estimate, but there is still enough scope to estimate an individual dispersion for each tag.
 
 The function \texttt{estimateTagwiseDisp} produces a DGEList object that contains all of the elements present in the object produced by \texttt{estimateCommonDisp}, as well as the value for \texttt{prior.n} used (\texttt{d\$prior.n}) and the tagwise dispersion estimates (\texttt{d\$tagwise.dispersion}), as we see below.
 
@@ -1016,8 +1077,45 @@ It is interesting to consider the distribution of the tagwise dispersion estimat
 \end{Soutput}
 \end{Schunk}
 
+
+\subsubsection{Estimating the smoothing parameter using an approximate
+  eBayes rule}
+Although we recommend using a fixed value for the \texttt{prior.n}
+parameter, chosen \emph{a priori}, there is an alternative
+approach. \citet{Robinson07} have developed an approximate empirical
+Bayes algorithm for estimating the smoothing parameter, and this
+method is implemented in \edgeR. The smoothing parameter, \texttt{prior.n} can be calculated using
+the function \texttt{estimateSmoothing}, which takes the
+\texttt{DGEList} object produced by \texttt{estimateCommonDisp} as its
+argument. As we see below, for this dataset the estimate of the
+smoothing parameter is very small, so if we were to use this small
+value for the weight parameter we would moderate the tagwise
+dispersion estimates hardly at all. It would be equivalent to using
+the unmoderated tagwise dispersion estimates, which we do not trust as
+there are not enough samples to estimate the tagwise dispersions
+reliably. We will be much better off with greater moderation of the
+tagwise dispersions, as outlined above. At this time, it is
+recommended that the approximate
+empirical Bayes method for estimating the smoothing parameter be used
+as a guide, but not as a routine part of DGE analysis.
+
+\begin{Schunk}
+\begin{Sinput}
+> prior.n <- estimateSmoothing(d)
+> prior.n
+\end{Sinput}
+\begin{Soutput}
+[1] 0.0008078916
+\end{Soutput}
+\end{Schunk}
+
+
 \subsubsection{Testing}
-Once we have an estimate of the common dispersion and/or estimates of the tagwise dispersions, we can proceed with testing procedures for determining differential expression using \texttt{exactTest}.
+Once we have an estimate of the common dispersion and/or estimates of
+the tagwise dispersions, we can proceed with testing procedures for
+determining differential expression using \texttt{exactTest}. Here we
+carry out the testing using the tagwise dispersion estimates
+calculated using a \texttt{prior.n} value of ten.
 
 By default, \texttt{exactTest} uses the common dispersion, but by adding the argument \texttt{common.disp=FALSE}, tagwise dispersion estimates will be used instead.
 
@@ -1350,7 +1448,7 @@ above. We can produce an MDS plot for the Li Data using the command below.
 
 \begin{Schunk}
 \begin{Sinput}
-> plotMDS.dge[width=0.9\textwidth]](d.Li, main="MDS Plot for Li Data",xlim=c(-0.4,0.8))
+> plotMDS.dge(d.Li, main="MDS Plot for Li Data",xlim=c(-0.4,0.8))
 \end{Sinput}
 \end{Schunk}
 
@@ -1364,7 +1462,7 @@ between the samples we can proceed to the DE analysis of the data.
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics[height=0.4\textheight]{edgeR_case_study_Li_MDSplot.pdf}
+\includegraphics[width=0.9\textwidth]{edgeR_case_study_Li_MDSplot.pdf}
 \caption{Multidimensional scaling (MDS) plot for the Li data, showin
   the relations between the samples in two dimensions. From this plot,
   Lane 8 may be identified easily as an outlier, but we note that the
@@ -1659,24 +1757,27 @@ The code for producing the default fold-change plot, with the top $500$ most DE 
 
 
 \subsection{Analysis using moderated tagwise dispersions}
-\subsubsection{Estimating the tagwise dispersion}
+\subsubsection{Moderating the tagwise dispersion}
 As discussed in the previous case studies, an extension to simply using the common dispersion for each tag is to estimate the dispersion separately for each tag, while `squeezing' these estimates towards the common dispersion estimate. The goal of this moderation of the dispersion estimates is to improve inference by sharing information between tags. This type of analysis can be carried out in few steps using the \texttt{edgeR} package.
 
-To run the moderated analysis, we need to determine how much moderation is necessary. As discussed in the SAGE case study, we can use an empirical Bayes rule that involves calculating a weight parameter $\textrm{prior.n}$. However, for many applications (especially if the estimated smoothing parameter is large), using the common dispersion for all tags will give excellent results. 
+To run the moderated analysis, we need to determine how much
+moderation is necessary. As discussed above, we currently prefer to
+choose a sensible value for the smoothing parameter \emph{a priori},
+although we do have an algorithm developed by \citet{Robinson07} for estimating the smoothing
+parameter as an approximate eBayes rule.
 
-The smoothing parameter, \texttt{prior.n} can then be calculated using the function \texttt{estimateSmoothing}, which takes the \texttt{DGEList} object produced by \texttt{estimateCommonDisp} as its argument. As we see below, for this dataset the estimate of the smoothing parameter is very small, so if we were to use this tiny value for the weight parameter we would moderate the tagwise dispersion estimates so little that it would be equivalent to using just using the tagwise dispersion for each gene without any `squeezing' at all towards the common dispersion. 
-
-\begin{Schunk}
-\begin{Sinput}
-> prior.n <- estimateSmoothing(d)
-> prior.n
-\end{Sinput}
-\begin{Soutput}
-[1] 0.0008377133
-\end{Soutput}
-\end{Schunk}
-
-As we only have seven libraries, a small sample size, we should not be too confident about the accuracy of the tagwise dispersions. Therefore it is recommended to use a larger value for \texttt{prior.n}, which can be selected \emph{a priori}, instead of being estimated. In an experiment such as that we consider here, in which we have seven samples and thus five degrees of freedom for estimating the dispersion parameter, setting the \texttt{prior.n} to be ten should be appropriate. This means that the common likelihood receives the weight of ten individual tags, so there will be a reasonable degree of `squeezing' towards the common dispersion estimate, but there is still enough scope to allow flexibility with the individual dispersion for each gene.
+As we only have seven libraries, a small sample size, we should not be
+too confident about the accuracy of the tagwise dispersions. Therefore
+it is recommended to use a larger value for \texttt{prior.n}, which
+can be selected \emph{a priori}, instead of being estimated. In an
+experiment such as this, the seven samples mean that we have five
+degrees of freedom for estimating the dispersion parameter. Thus,
+setting the \texttt{prior.n} to be ten (as we have done previously)
+should be appropriate. This means that the common likelihood receives
+the weight of ten individual tags. Therefore, there will be a
+reasonable degree of `squeezing' towards the common dispersion
+estimate, but still enough scope to allow flexibility when estimatig
+the individual dispersion for each gene.
 
 The function \texttt{estimateTagwiseDisp} produces a DGEList object that contains all of the elements present in the object produced by \texttt{estimateCommonDisp}, as well as the value for \texttt{prior.n} used (\texttt{d\$prior.n}) and the tagwise dispersion estimates (\texttt{d\$tagwise.dispersion}), as we see below. Here we set \texttt{grid.length=500} for greater precision in the tagwise dispersion estimates.
 
@@ -1727,8 +1828,48 @@ It is interesting to consider the distribution of the tagwise dispersion estimat
 \end{Soutput}
 \end{Schunk}
 
+\subsubsection{Estimating the smoothing parameter as an approximate eBayes rule}
+As discussed in the SAGE and Tag-seq case studies, we can use an approximate
+empirical Bayes rule that involves calculating a weight parameter
+$\textrm{prior.n}$. However, for many applications (especially if the
+estimated smoothing parameter is large), using the common dispersion
+for all tags will give excellent results. Also, if the estimated
+smoothing parameter is very small, then we prefer to select a larger
+smoothing parameter to squeeze the (in general unreliable) tagwise
+dispersion estimates towards the common value and thus stabilize these
+estimates. We currently recommend that the \texttt{prior.n} value
+given by \texttt{estimateSmoothing} be used as a guide, but not
+routinely in analysis.
+
+The function \texttt{estimateSmoothing} estimates the smoothing
+parameter \texttt{prior.n} and takes the \texttt{DGEList} object
+produced by \texttt{estimateCommonDisp} as its argument. As we see
+below, for this dataset the estimate of the smoothing parameter is
+very small. If we were to use this tiny value for the weight parameter
+we would moderate the tagwise dispersion estimates so little that it
+would be equivalent to using just using the tagwise dispersion for
+each gene without any `squeezing' at all towards the common
+dispersion. As the unmoderated tagwise dispersion estimates will be
+unreliable in experiments with small sample sizes, we recommend
+selecting a larger value for \texttt{prior.n}, as outlined above.
+
+\begin{Schunk}
+\begin{Sinput}
+> prior.n <- estimateSmoothing(d)
+> prior.n
+\end{Sinput}
+\begin{Soutput}
+[1] 0.002132353
+\end{Soutput}
+\end{Schunk}
+
+
 \subsubsection{Testing}
-Once we have an estimate of the common dispersion and/or estimates of the tagwise dispersions, we can proceed with testing procedures for determining differential expression using \texttt{exactTest}.
+Once we have an estimate of the common dispersion and/or estimates of
+the tagwise dispersions, we can proceed with testing procedures for
+determining differential expression using \texttt{exactTest}. Here we
+carry out the testing using the tagwise dispersion estimates
+calculated using a \texttt{prior.n} value of ten.
 
 By default, \texttt{exactTest} uses the common dispersion, but by adding the argument \texttt{common.disp=FALSE}, tagwise dispersion estimates will be used instead.
 
@@ -1743,7 +1884,7 @@ Comparison of groups:  DHT - Control
 
 The output below shows that when using tagwise dispersions, the \texttt{edgeR} package still identifies a huge amount of differential expression between the control group and the DHT-treated group. The top DE tags are given even smaller $p$-values than using the common dispersion---many, many orders of magnitude smaller. 
 
-As with the analysis using the common dispersion, all of the top genes have large fold change, indicating that these changes in expression are likely to be biologically meaningful. Again, all of the top genes are up-regulated in the DHT-treated group compared with the control group. We note that the ranking of the tags is similar, with seven of the top ten genes using the common dispersion to be found among the top ten genes using tagwise dispersions.
+As with the analysis using the common dispersion, all of the top genes have large fold changes, indicating that these changes in expression are likely to be biologically meaningful. Again, all of the top genes are up-regulated in the DHT-treated group compared with the control group. We note that the ranking of the tags is similar, with seven of the top ten genes using the common dispersion to be found among the top ten genes using tagwise dispersions.
 
 \begin{Schunk}
 \begin{Sinput}
@@ -1789,7 +1930,13 @@ ENSG00000137404 -33.44594 -33.14022 5.612659e-07 9.183854e-06
 
 The tables below shows the quantile-adjusted counts (i.e. counts for equalised library sizes) for the genes that \texttt{edgeR} has identified as the most differentially expressed, using the common dispersion and tagwise dispersions. For these tags, using both methods, there seem to be very large differences between the groups, suggesting that the DE genes identified are truly differentially expressed, and not false positives. 
 
-We saw for \citet{THoen:2008p9}'s data how much more consistent the counts \emph{within} groups are for the top tags identified using tagwise dispersions compared with those identified using the common dispersion. This effect is not nearly as pronounced here.
+We saw for \citet{THoen:2008p9}'s data how much more consistent the
+counts \emph{within} groups are for the top tags identified using
+tagwise dispersions compared with those identified using the common
+dispersion. This effect is not nearly as pronounced here, as the
+differences between groups for the top ten tags are so profound, but
+we do note that there is a great deal of consistency in the counts
+within groups for these top tags.
 
 \begin{Schunk}
 \begin{Sinput}

@@ -1,11 +1,11 @@
 plotMDS.dge <- function (x, top=500, col=NULL, cex=1, dim.plot=c(1, 2), ndim=max(dim.plot), ...) 
 {
     if (is.matrix(x)){
-          x <- DGEList(counts = x, group = c(rep("1", ncol(x))))
-          colnames(x$counts) <- 1:dim(x$counts)[2]
+        x <- DGEList(counts = x, group = c(rep("1", ncol(x))))
+        colnames(x$counts) <- 1:dim(x$counts)[2]
     }
     if (!is(x, "DGEList"))
-          stop("Currently supports DGEList object and matrix")
+        stop("Currently supports DGEList object and matrix")
     mx <- as.matrix(x$counts)
     labels <- colnames(x$counts)
     nprobes <- nrow(mx)
