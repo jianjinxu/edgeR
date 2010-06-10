@@ -22,11 +22,11 @@ exactTest<-function(object, pair=NULL, dispersion=NULL, common.disp=TRUE)
 	group.pair <- factor(as.vector(object$samples$group[this.pair]))
 	levs.pair <- levels(group.pair)
 	obj.pair <- DGEList(counts=object$counts[,this.pair], group=group.pair, lib.size=object$samples$lib.size[this.pair])
+        tags.retained <- rownames(object$counts) %in% rownames(obj.pair$counts)
         if(!is.null(dispersion)) {
           if( length(dispersion)!=1 && length(dispersion)!=nrow(object$counts) )
             stop("Dispersion provided by user must have length either 1 or the number of tags in the DGEList object.\n")
           if( length(dispersion)==nrow(object$counts) ) {
-            tags.retained <- rownames(object$counts) %in% rownames(obj.pair$counts)
             if( sum(tags.retained)!=nrow(object$counts) )
               dispersion <- dispersion[tags.retained]
           }
@@ -48,5 +48,5 @@ exactTest<-function(object, pair=NULL, dispersion=NULL, common.disp=TRUE)
 	logFC<-log2(q2q.pair$conc$conc.group[,pair[2]==levs.pair]/q2q.pair$conc$conc.group[,pair[1]==levs.pair])
 	de.out<-data.frame(logConc=logConc, logFC=logFC, p.value=exact.pvals)
 	rownames(de.out) <- rownames(obj.pair$counts)
-	new("deDGEList",list(table=de.out, comparison=pair, genes=object$genes))
+	new("deDGEList",list(table=de.out, comparison=pair, genes=object$genes[tags.retained,]))
 }

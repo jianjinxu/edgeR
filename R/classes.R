@@ -62,6 +62,7 @@ DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, group=factor(), genes=N
 	if(!is.null(genes)) {
 		genes <- as.data.frame(genes, stringsAsFactors=FALSE)
 		if(nrow(genes) != nrow(x$counts)) stop("counts and genes have different nrows")
+                rownames(genes) <- rownames(counts)
 		x$genes <- genes
 	}
 	if(remove.zeros) {
