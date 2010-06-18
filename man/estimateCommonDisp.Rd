@@ -7,7 +7,7 @@
 
 
 \usage{ 
-estimateCommonDisp(object, tol=1e-06)
+estimateCommonDisp(object, tol=1e-06, rowsum.filter=5)
 }
 
 \arguments{ 
@@ -15,6 +15,8 @@ estimateCommonDisp(object, tol=1e-06)
 \item{object}{\code{DGEList} object with (at least) elements \code{counts} (table of unadjusted counts), and \code{samples} (vector indicating group) and \code{lib.size} (vector of library sizes)}
 
 \item{tol}{numeric scalar providing the tolerance to be passed to \code{optimize}; default value is \code{1e-06}}
+
+\item{rowsum.filter}{numeric scalar giving a value for the filtering out of low abundance tags in the estimation of the common dispersion. Only tags with total sum of counts above this value are used in the estimation of the common dispersion. Low abundance tags can adversely affect the estimation of the common dispersion, so this argument allows the user to select an appropriate filter threshold for the tag abundance.}
 }
 
 \value{ \code{estimateCommonDisp} produces an object of class \code{DGEList} with the following components.
@@ -31,7 +33,7 @@ estimateCommonDisp(object, tol=1e-06)
 The method of conditional maximum likelihood assumes that library sizes are equal, which is not true in general, so pseudocounts (counts adjusted so that the library sizes are equal) need to be calculated. The function \code{equalizeLibSizes} is called to adjust the counts using a quantile-to-quantile method, but this requires a fixed value for the common dispersion parameter. To obtain a good estimate for the common dispersion, pseudocounts are calculated under the Poisson model (dispersion is zero) and these pseudocounts are used to give an estimate of the common dispersion. This estimate of the common dispersion is then used to recalculate the pseudocounts, which are used to provide a final estimate of the common dispersion.
 }
 
-
+
 \references{
 Robinson MD and Smyth GK (2008). Small-sample estimation of negative
 binomial dispersion, with applications to SAGE data. \emph{Biostatistics},

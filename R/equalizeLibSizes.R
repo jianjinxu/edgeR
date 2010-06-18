@@ -1,6 +1,6 @@
 equalizeLibSizes <- function(object, disp=0, N=prod(object$samples$lib.size)^(1/ncol(object$counts)), null.hypothesis=FALSE)
-# Davis McCarthy, July 2009
-# A function that simply adjusts the counts for library size for a fixed value of the dispersion parameter
+    ## Davis McCarthy, July 2009. Last modified 11 June 2010.
+    ## A function that simply adjusts the counts for library size for a fixed value of the dispersion parameter
 {
 	nrows<-nrow(object$counts)
 	ncols<-ncol(object$counts)
@@ -31,7 +31,7 @@ equalizeLibSizes <- function(object, disp=0, N=prod(object$samples$lib.size)^(1/
 		}
 	}
 	pseudo <- q2qnbinom(object$counts, input.mean=input.mean, output.mean=output.mean, dispersion=disp)
-	pseudo[pseudo<0]<-0 
+	pseudo[pseudo<0]<-0
 	return(list(pseudo=pseudo,conc=conc,N=N))
 }
 

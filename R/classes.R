@@ -37,9 +37,9 @@ setIs("EBList","LargeDataObject")
 setIs("deDGEList","LargeDataObject")
 setIs("de4DGEList","LargeDataObject")
 
-DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, group=factor(), genes=NULL, remove.zeros=TRUE) 
+DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, group=factor(), genes=NULL, remove.zeros=FALSE) 
 #	Construct DGEList object from components, with some checking
-#	Last modified  22 Jan 2010
+#	Last modified  11 Jun 2010
 {
 	counts <- as.matrix(counts)
 	nlib <- ncol(counts)
@@ -65,12 +65,13 @@ DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, group=factor(), genes=N
                 rownames(genes) <- rownames(counts)
 		x$genes <- genes
 	}
-	if(remove.zeros) {
    	allZeros <- rowSums(counts,na.rm=TRUE)==0
-   	if(any(allZeros)) {
-			x <- x[!allZeros,]
-			warning("Removing ",sum(allZeros)," rows that all have zero counts.")
-		}
+        x$allZeros <- allZeros
+	if(remove.zeros) {
+            if(any(allZeros)) {
+                x <- x[!allZeros,]
+                warning("Removing ",sum(allZeros)," rows that all have zero counts.")
+            }
 	}
 	x
 }

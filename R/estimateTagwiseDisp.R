@@ -1,8 +1,9 @@
 estimateTagwiseDisp <- function(object, prior.n=10, tol=1e-06, grid=TRUE, grid.length=200, verbose=TRUE)
-# A function to estimate the common dispersion (using conditional maximum likelihood) for fixed counts (y), assuming library sizes are equal
-# Must take equalized counts (pseudocounts), not raw counts
-# Calculated on the delta = phi/(1+phi) scale, returns dispersion on the phi and the delta scale
-# Now uses optimize instead of a grid search to estimate delta when not using NR methd - improves speed of function
+    ## Written by Davis McCarthy, 2009. Last modified 11 June 2010.
+    ## A function to estimate the common dispersion (using conditional maximum likelihood) for fixed counts (y), assuming library sizes are equal
+    ## Must take equalized counts (pseudocounts), not raw counts
+    ## Calculated on the delta = phi/(1+phi) scale, returns dispersion on the phi and the delta scale
+    ## Now uses optimize instead of a grid search to estimate delta when not using NR methd - improves speed of function
 {
 	ntags<-nrow(object$counts)
 	group<-object$samples$group<-as.factor(object$samples$group)
@@ -33,7 +34,7 @@ estimateTagwiseDisp <- function(object, prior.n=10, tol=1e-06, grid=TRUE, grid.l
 	}
 	if(verbose) cat("\n")
 	tagwise.dispersion <- delta/(1-delta)
-	new("DGEList",list(samples=object$samples, common.dispersion=object$common.dispersion, prior.n=prior.n, tagwise.dispersion=tagwise.dispersion, counts=object$counts, pseudo.alt=object$pseudo.alt, genes=object$genes, conc=object$conc, common.lib.size=object$common.lib.size))
+	new("DGEList",list(samples=object$samples, common.dispersion=object$common.dispersion, prior.n=prior.n, tagwise.dispersion=tagwise.dispersion, counts=object$counts, pseudo.alt=object$pseudo.alt, genes=object$genes, allZeros=object$allZeros, conc=object$conc, common.lib.size=object$common.lib.size))
 }
 
 

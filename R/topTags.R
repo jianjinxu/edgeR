@@ -9,7 +9,7 @@ topTags<-function(object,n=10,adjust.method="BH",sort.by="p.value")
 	chosen <- o[1:min(nrow(object$table),n)]
 	tab<-data.frame(logConc=object$table$logConc[chosen], logFC=object$table$logFC[chosen], p.value=object$table$p.value[chosen] ,adj.p.val=adj.p.val[chosen])
 	if(!is.null(object$genes)){
-		tab <- cbind(object$genes[chosen,], tab) # Assumes that object$genes is a data.frame
+		tab <- cbind(object$genes[chosen,,drop=FALSE], tab) # Assumes that object$genes is a data.frame
 	}
 	rownames(tab)<-rownames(object$table[chosen,])
 	colnames(tab)<-c(colnames(object$genes), "logConc","logFC","PValue","FDR")

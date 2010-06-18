@@ -3,6 +3,10 @@ plotSmear <- function (object, pair=NULL, de.tags=NULL, xlab="logConc", ylab="lo
   if ( !(class(object) %in% c("DGEList", "de4DGEList")) ) 
     stop("Currently only supports DGEList/de4DGEList objects as the object argument.")
   levs.group <- levels(object$samples$group)
+  if(length(levs.group)==1)
+      stop("Cannot produce an MA-plot with only one group. The one group defined is: ",levs.group)
+  if(dim(object$conc$conc.group)[2] < 2)
+      stop("Cannot produce an MA-plot with only one group. Dimensions of object$conc$conc.group are ",dim(object$conc$conc.group)[1]," ",dim(object$conc$conc.group)[2],"\n Try defining more groups and executing estimateCommonDisp() before using plotSmear.\n")
   if (is.null(pair))
     pair <- levs.group[1:2]
   if( !all(pair %in% levs.group) )

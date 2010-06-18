@@ -8,7 +8,7 @@
 
 \usage{ 
 exactTest(object,pair=NULL,dispersion=NULL,common.disp=TRUE)
-exactTest.matrix(y1,y2,mus,r)
+exactTest.matrix(y1,y2,mus,r,allZeros=rep(FALSE,nrow(y1)))
 }
 
 \arguments{ 
@@ -28,6 +28,8 @@ exactTest.matrix(y1,y2,mus,r)
 \item{mus}{vector of count means for each tag/transcript under the null hypothesis (of no difference between groups)}
 
 \item{r}{vector of negative binomial \code{size} parameter values (\code{size} = \code{1/phi} where \code{phi} is the dispersion parameter in the NB model); if \code{r} is of length 1, then a common value of the dispersion is used for all transcripts, otherwise, must be a vector with length equal to the number of rows of \code{y1} and \code{y2}.  If you want to run a Poisson test, set r very large (e.g. 1000)}
+
+\item{allZeros}{logical vector indicating for each tag whether it has zero counts in each library (\code{TRUE}) or not (\code{FALSE}), with the default being not to remove any tags.}
 
 }
 
@@ -68,7 +70,7 @@ y<-matrix(rnbinom(20,mu=10,size=1.5),nrow=5)
 group<-factor(c(1,1,2,2))
 y<-splitIntoGroupsPseudo(y,group,pair=c(1,2))
 mus<-rep(10,5)
-f<-exactTest.matrix(y$y1,y$y2,mus,r=1.5)
+f<-exactTest.matrix(y$y1,y$y2,mus,r=1.5,allZeros=rep(FALSE,length=nrow(y$y1)))
 }
 
 \seealso{
