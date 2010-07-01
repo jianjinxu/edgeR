@@ -1,6 +1,6 @@
 Package: edgeR
-Version: 1.7.5
-Date: 2010/06/10
+Version: 1.7.6
+Date: 2010/07/01
 Title: Empirical analysis of digital gene expression data in R
 Author: Mark Robinson <mrobinson@wehi.edu.au>, Davis McCarthy <dmccarthy@wehi.edu.au>, Gordon Smyth <smyth@wehi.edu.au>
 Maintainer: Mark Robinson <mrobinson@wehi.edu.au>, Davis McCarthy <dmccarthy@wehi.edu.au>, Gordon Smyth <smyth@wehi.edu.au>
