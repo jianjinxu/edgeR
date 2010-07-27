@@ -34,7 +34,7 @@ An older function, no longer called by the functions recommended to carry out an
 y<-matrix(rnbinom(10000,size=2,mu=10),ncol=4)
 d<-DGEList(counts=y,group=rep(1:2,each=2),lib.size=rep(c(1000,1010),2))
 conc<-estimatePs(d,r=2)
-N<-prod(d$lib.size)^(1/ncol(d$counts))
+N<-exp(mean(log(d$samples$lib.size)))
 perc<-pnbinom(d$counts-1,size=2,mu=outer(conc$conc.common,d$samples$lib.size))+dnbinom(d$counts,size=2,mu=outer(conc$conc.common,d$samples$lib.size))/2
 maxcounts<-apply(d$counts,1,max)
 pseudo<-interpolateHelper(outer(conc$conc.common,rep(N,4)),perc,r=2,maxcounts)

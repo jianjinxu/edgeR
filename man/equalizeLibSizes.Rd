@@ -7,7 +7,7 @@
 
 
 \usage{ 
-equalizeLibSizes(object, disp=0, N=prod(object$samples$lib.size)^(1/ncol(object$counts)),null.hypothesis=FALSE)
+equalizeLibSizes(object, disp=0, N=exp(mean(log(object$samples$lib.size))),null.hypothesis=FALSE)
 }
 
 \arguments{ 
@@ -37,7 +37,6 @@ The function \code{equalizeLibSizes} provides the necessary framework and calcul
 y<-matrix(rnbinom(10000,size=2,mu=10),ncol=4)
 d<-DGEList(counts=y,group=rep(1:2,each=2),lib.size=rep(c(1000,1010),2))
 ps<-estimatePs(d,r=2)
-N<-prod(d$lib.size)^(1/ncol(d$counts))
 q2q.out<-equalizeLibSizes(d,disp=0.5,null.hypothesis=FALSE)
 }
 \keyword{algebra}

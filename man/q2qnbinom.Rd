@@ -39,7 +39,7 @@ The function calculates the percentiles that the counts in the unadjusted librar
 y<-matrix(rnbinom(10000,size=2,mu=10),ncol=4)
 d<-DGEList(counts=y,group=rep(1:2,each=2),lib.size=rep(c(1000,1010),2))
 conc<-estimatePs(d,r=2)
-N<-prod(d$samples$lib.size)^(1/ncol(d$counts))
+N<-exp(mean(log(d$samples$lib.size)))
 in.mean<-matrix(0,nrow=nrow(d$counts),ncol=ncol(d$counts))
 out.mean<-matrix(0,nrow=nrow(d$counts),ncol=ncol(d$counts))
 for(i in 1:2) {
