@@ -1,4 +1,4 @@
-estimateDispIter<-function(object,N=prod(object$samples$lib.size)^(1/ncol(object$counts)),prior.n=10,common.disp=FALSE, null.hypothesis=FALSE,n.iter=5,disp.init=NULL,tol=1e-6,verbose=TRUE) 
+estimateDispIter<-function(object,N=exp(mean(log(object$samples$lib.size))), prior.n=10,common.disp=FALSE, null.hypothesis=FALSE,n.iter=5,disp.init=NULL,tol=1e-6,verbose=TRUE) 
 # Written by Davis McCarthy, September 2009, based on a function by Mark Robinson 
 # A function to adjust counts for the estimation of common and tagwise dispersion(common dispersion only?)
 # Returns estimate(s) of dispersion, pseudocounts, mean counts for tags, proportions for tags in samples and adjusted library size
@@ -9,7 +9,7 @@ estimateDispIter<-function(object,N=prod(object$samples$lib.size)^(1/ncol(object
 	levs.group<-levels(group)
 	y<-splitIntoGroups(object)
 	if (is.null(disp.init)) { 
-		q2q.pois <- equalizeLibSizes(object, disp=0, N=prod(object$samples$lib.size)^(1/ncol(object$counts)), null.hypothesis=null.hypothesis)
+		q2q.pois <- equalizeLibSizes(object, disp=0, N=exp(mean(log(object$samples$lib.size))), null.hypothesis=null.hypothesis)
 		pseudo.obj<-new("DGEList",list(counts=q2q.pois$pseudo, samples=object$samples))
 		disp.init<- .estimateCommonDisp(pseudo.obj, tol=tol)
 		disp.init<-rep(disp.init$dispersion, nrows)
