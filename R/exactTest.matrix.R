@@ -10,7 +10,7 @@ exactTest.matrix<-function(y1,y2,mus,r,allZeros=rep(FALSE,nrow(y1)))
     nrows<-nrow(y1)
     pvals<-rep(1,nrows)
     if(any(allZeros)) {
-        pvals[!allZeros] <- Recall(y1[!allZeros,],y2[!allZeros,],mus[!allZeros],r[!allZeros])
+        pvals[!allZeros] <- Recall(y1[!allZeros,,drop=FALSE],y2[!allZeros,,drop=FALSE],mus[!allZeros],r[!allZeros])
     } else {
 	v<-cbind(rowSums(y1),rowSums(y2))
 	n1<-ncol(y1)
