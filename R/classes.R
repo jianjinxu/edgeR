@@ -37,6 +37,11 @@ setIs("EBList","LargeDataObject")
 setIs("deDGEList","LargeDataObject")
 setIs("de4DGEList","LargeDataObject")
 
+dim.DGEList <- function(x) if (is.null(x$counts)) c(0, 0) else dim(as.matrix(x$counts))
+dim.deDGEList <- dim.TopTags <- function(x) if (is.null(x$table)) c(0, 0) else dim(as.matrix(x$table))
+
+length.DGEList <- length.deDGEList <- length.TopTags <- function(x) prod(dim(x))
+
 DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, group=factor(), genes=NULL, remove.zeros=FALSE) 
 #	Construct DGEList object from components, with some checking
 #	Last modified  11 Jun 2010
