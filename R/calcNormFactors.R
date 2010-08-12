@@ -1,11 +1,30 @@
-calcNormFactors <- function(dataMatrix, refColumn=1, logratioTrim=.3, sumTrim=0.05, doWeighting=TRUE, Acutoff=-1e10) {
-  if( !is.matrix(dataMatrix) )
-    stop("'dataMatrix' needs to be a matrix")
-  if( refColumn > ncol(dataMatrix) )
-    stop("Invalid 'refColumn' argument")
-  apply(dataMatrix,2,.calcFactorWeighted,ref=dataMatrix[,refColumn], logratioTrim=logratioTrim, 
+calcNormFactors <- function(object, refColumn=NULL, logratioTrim=.3, sumTrim=0.05, doWeighting=TRUE, Acutoff=-1e10) {
+  if( is.matrix(object) ) {
+    if(is.null(refColumn))
+      refColumn <- 1
+    apply(object,2,.calcFactorWeighted,ref=object[,refColumn], logratioTrim=logratioTrim, 
         sumTrim=sumTrim, doWeighting=doWeighting, Acutoff=Acutoff)
+  } else if(is(object, "DGEList")) {
+    D <- object$counts
+    if(is.null(refColumn)) {
+      
+      y <- t(t(D)/object$samples$lib.size)
+      q75 <- apply(y,2,function(x) quantile(x,p=0.75))
+      refColumn <- which.min(abs(q75-mean(q75)))
+    }
+
+    f <- apply(D,2,.calcFactorWeighted,ref=D[,refColumn], logratioTrim=logratioTrim, 
+        sumTrim=sumTrim, doWeighting=doWeighting, Acutoff=Acutoff)
+    object$samples$norm.factors <- f/exp(mean(log(f)))
+    object$ref.column <- refColumn
+    
+    object
+  } else {
+    stop("calcNormFactors() only operates on 'matrix' and 'DGEList' objects")
+  }
 }
+
+
 
 .calcFactorWeighted <- function(obs, ref, logratioTrim=.3, sumTrim=0.05, doWeighting=TRUE, Acutoff=-1e10) {
 
@@ -32,7 +51,11 @@ calcNormFactors <- function(dataMatrix, refColumn=1, logratioTrim=.3, sumTrim=0.
   loS <- floor(n * sumTrim) + 1
   hiS <- n + 1 - loS
   
-  keep <- (rank(logR) %in% loL:hiL) & (rank(absE) %in% loS:hiS)
+  #keep <- (rank(logR) %in% loL:hiL) & (rank(absE) %in% loS:hiS)
+  # a fix from leonardo ivan almonacid cardenas, since rank() can return
+  # non-integer values when there are a lot of ties
+  keep <- (rank(logR)>=loL & rank(logR)<=hiL) & (rank(absE)>=loS & rank(absE)<=hiS)
+  
   if (doWeighting) 
     2^( sum(logR[keep]/v[keep], na.rm=TRUE) / sum(1/v[keep], na.rm=TRUE) )
   else

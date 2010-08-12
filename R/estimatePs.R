@@ -5,7 +5,7 @@ estimatePs<-function(object,r,tol=1e-10,maxit=30)
 # Let y be a list object, with elements corresponding to groups. Each element is a matrix for a particular group
 {
 	nrows<-nrow(object$counts)
-	lib.size<-object$samples$lib.size
+	lib.size<-object$samples$lib.size * object$samples$norm.factors
 	group<-object$samples$group
 	levs.group <- levels(group)
 	onev<-rep(1,nrows)

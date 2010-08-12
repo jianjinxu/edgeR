@@ -7,7 +7,7 @@
 
 
 \usage{ 
-estimateDispIter(object,N=exp(mean(log(object$samples$lib.size))),prior.n=10,common.disp=FALSE, null.hypothesis=FALSE,n.iter=5,disp.init=NULL,tol=1e-6,verbose=TRUE) 
+estimateDispIter(object,N=exp(mean(log(object$samples$lib.size*object$samples$norm.factors))),prior.n=10,common.disp=FALSE, null.hypothesis=FALSE,n.iter=5,disp.init=NULL,tol=1e-6,verbose=TRUE) 
 
 }
 \arguments{ 

@@ -1,10 +1,11 @@
-equalizeLibSizes <- function(object, disp=0, N=exp(mean(log(object$samples$lib.size))), null.hypothesis=FALSE)
-    ## Davis McCarthy, July 2009. Last modified 11 June 2010.
+equalizeLibSizes <- function(object, disp=0, N=exp(mean(log(object$samples$lib.size*object$samples$norm.factors))), 
+                             null.hypothesis=FALSE)
+    ## Davis McCarthy, July 2009. Last modified 12 August 2010.
     ## A function that simply adjusts the counts for library size for a fixed value of the dispersion parameter
 {
 	nrows<-nrow(object$counts)
 	ncols<-ncol(object$counts)
-	lib.size<-object$samples$lib.size
+	lib.size <- object$samples$lib.size * object$samples$norm.factors
 	group<-as.factor(object$samples$group)
 	levs.group<-levels(group)
 	y<-splitIntoGroups(object)

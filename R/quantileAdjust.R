@@ -1,4 +1,4 @@
-quantileAdjust<-function(object, N = exp(mean(log(object$samples$lib.size))),alpha = 0, null.hypothesis = FALSE, n.iter = 5, r.init = NULL, tol = 0.001, verbose = TRUE) 
+quantileAdjust<-function(object, N = exp(mean(log(object$samples$lib.size*object$samples$norm.factors))),alpha = 0, null.hypothesis = FALSE, n.iter = 5, r.init = NULL, tol = 0.001, verbose = TRUE) 
 # Written by Mark Robinson, edited by Davis McCarthy, February 2009, substantially revised July 2009
 # A function to adjust counts for the estimation of common and tagwise dispersion(common dispersion only?)
 # Returns estimate(s) of dispersion, pseudocounts, mean counts for tags, proportions for tags in samples and adjusted library size
@@ -7,7 +7,7 @@ quantileAdjust<-function(object, N = exp(mean(log(object$samples$lib.size))),alp
         r.init <- 1/findMaxD2(object, alpha = 10) - 1
     }
     nrows <- nrow(object$counts)
-    lib.size <- object$samples$lib.size
+    lib.size <- object$samples$lib.size * object$samples$norm.factors
     group <- object$samples$group
     levs.group <- levels(group)
     y <- splitIntoGroups(object)

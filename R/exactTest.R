@@ -21,7 +21,8 @@ exactTest<-function(object, pair=NULL, dispersion=NULL, common.disp=TRUE)
     cat("Comparison of groups: ",as.vector(pair[2]),"-",as.vector(pair[1]),"\n")
     group.pair <- factor(as.vector(object$samples$group[this.pair]))
     levs.pair <- levels(group.pair)
-    obj.pair <- DGEList(counts=object$counts[,this.pair], group=group.pair, lib.size=object$samples$lib.size[this.pair])
+    lib.size <- object$samples$lib.size * object$samples$norm.factors
+    obj.pair <- DGEList(counts=object$counts[,this.pair], group=group.pair, lib.size=lib.size[this.pair])
     if(!is.null(dispersion)) {
         if( length(dispersion)!=1 && length(dispersion)!=nrow(object$counts) )
             stop("Dispersion provided by user must have length either 1 or the number of tags in the DGEList object.\n")

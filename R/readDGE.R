@@ -31,6 +31,7 @@ readDGE <- function(files,path=NULL,columns=c(1,2),group=NULL,...)
 		x$counts[aa,i] <- d[[i]][,columns[2]]
 	}
 	x$samples$lib.size <- colSums(x$counts)
+	x$samples$norm.factors <- 1
 	row.names(x$samples) <- colnames(x$counts)
 	x$genes <- NULL
 	new("DGEList",x)

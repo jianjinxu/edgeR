@@ -42,7 +42,7 @@ dim.deDGEList <- dim.TopTags <- function(x) if (is.null(x$table)) c(0, 0) else d
 
 length.DGEList <- length.deDGEList <- length.TopTags <- function(x) prod(dim(x))
 
-DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, group=factor(), genes=NULL, remove.zeros=FALSE) 
+DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, norm.factors=NULL, group=factor(), genes=NULL, remove.zeros=FALSE) 
 #	Construct DGEList object from components, with some checking
 #	Last modified  11 Jun 2010
 {
@@ -61,7 +61,14 @@ DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, group=factor(), genes=N
 		if(nlib != length(lib.size))
 			stop("Length of 'lib.size' must equal number of columns in 'counts'")
 	}
-	samples <- data.frame(group=group,lib.size=lib.size)
+  if(is.null(norm.factors)) {
+		norm.factors <- rep(1,nlib)
+		#message("Setting normalization factors to 1.")
+  } else {
+		if(nlib != length(norm.factors))
+			stop("Length of 'norm.factors' must equal number of columns in 'counts'")
+  }
+	samples <- data.frame(group=group,lib.size=lib.size,norm.factors=norm.factors)
 	row.names(samples) <- colnames(counts)
 	x <- new("DGEList",list(samples=samples,counts=counts))
 	if(!is.null(genes)) {
@@ -70,8 +77,8 @@ DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, group=factor(), genes=N
                 rownames(genes) <- rownames(counts)
 		x$genes <- genes
 	}
-   	allZeros <- rowSums(counts,na.rm=TRUE)==0
-        x$allZeros <- allZeros
+  allZeros <- rowSums(counts,na.rm=TRUE)==0
+  x$allZeros <- allZeros
 	if(remove.zeros) {
             if(any(allZeros)) {
                 x <- x[!allZeros,]

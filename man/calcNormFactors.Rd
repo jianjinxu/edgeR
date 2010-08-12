@@ -6,11 +6,11 @@
 Using a reference sample, calculate the normalization factors, over and above accounting for library size. 
 }
 \usage{
-calcNormFactors(dataMatrix, refColumn = 1, logratioTrim = .3, sumTrim = 0.05, doWeighting=TRUE, Acutoff=-1e10)
+calcNormFactors(object, refColumn = NULL, logratioTrim = .3, sumTrim = 0.05, doWeighting=TRUE, Acutoff=-1e10)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{dataMatrix}{matrix of raw (read) counts}
+  \item{object}{either a \code{matrix} of raw (read) counts or a \code{DGEList} object}
   \item{refColumn}{column to use as reference}
   \item{logratioTrim}{amount of trim to use on log-ratios ("M" values)}
   \item{sumTrim}{amount of trim to use on the combined absolute levels ("A" values)}
@@ -23,7 +23,8 @@ The weighted trimmed mean of M values (to the reference) is used as the normaliz
 The normalization factor for the reference sample will always be 1.
 }
 \value{
-vector with length \code{ncol(dataMatrix)} giving the relative normalization factors
+If a \code{matrix} is given for \code{object}, the output is a vector with length \code{ncol(object)} giving the relative normalization factors.
+If a \code{DGEList} object is given for \code{object}, the output is a \code{DGEList} object containing the normalization factors in the \code{samples$norm.factors} element.
 }
 \author{ Mark Robinson }
 \examples{

@@ -9,12 +9,13 @@ DGEList Constructor
 A function to create a \code{DGEList} object from a table of counts (rows=features, columns=samples), group indicator for each column, library size (optional) and a table of annotation (optional)
 }
 \usage{
-DGEList(counts = matrix(0, 0, 0), lib.size = NULL, group = factor(), genes = NULL, remove.zeros = FALSE)
+DGEList(counts = matrix(0, 0, 0), lib.size=NULL, norm.factors=NULL, group=factor(), genes = NULL, remove.zeros = FALSE)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{counts}{numeric matrix containing the read counts.}
   \item{lib.size}{numeric vector containing the total to normalize against for each sample (optional)}
+  \item{norm.factors}{numeric vector containing normalization factors (optional, defaults to all 1)}
   \item{group}{vector giving the experimental group/condition for each sample/library}
   \item{genes}{data frame containing annotation information for the tags/transcripts/genes for which we have count data (optional).}
   \item{remove.zeros}{whether to remove rows that have 0 total count; default is FALSE so as to retain all information in the dataset}

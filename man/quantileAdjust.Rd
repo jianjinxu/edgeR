@@ -7,7 +7,7 @@
 
 
 \usage{ 
-quantileAdjust(object, N = exp(mean(log(object$samples$lib.size))), alpha = 0, null.hypothesis = FALSE, n.iter = 5, r.init = NULL, tol = 0.001, verbose=TRUE) 
+quantileAdjust(object, N = exp(mean(log(object$samples$lib.size*object$samples$norm.factors))), alpha = 0, null.hypothesis = FALSE, n.iter = 5, r.init = NULL, tol = 0.001, verbose=TRUE) 
 }
 \arguments{ 
 

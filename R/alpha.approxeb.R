@@ -2,6 +2,7 @@ alpha.approxeb<-function(object,verbose=TRUE)
 # Written by Mark Robinson, edited by Davis McCarthy, February 2009
 # A function to estimate a value for alpha, the weight for the weighted conditional log-likelihood, using approximate empirical Bayes methods
 {
+  warning("alpha.approxeb() is deprecated and should not be used.")
 	if (!is(object,"DGEList"))
 		stop("Currently supports DGEList objects")
 	group<-object$samples$group

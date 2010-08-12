@@ -7,7 +7,7 @@
 
 
 \usage{ 
-equalizeLibSizes(object, disp=0, N=exp(mean(log(object$samples$lib.size))),null.hypothesis=FALSE)
+equalizeLibSizes(object, disp=0, N=exp(mean(log(object$samples$lib.size*object$samples$norm.factors))),null.hypothesis=FALSE)
 }
 
 \arguments{ 
