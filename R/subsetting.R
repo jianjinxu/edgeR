@@ -26,7 +26,8 @@ function(object, i, j, ...) {
 			object$counts <- object$counts[i,,drop=FALSE]
 			object$conc$conc.common <- object$conc$conc.common[i,drop=FALSE]
 			object$conc$conc.group <- object$conc$conc.group[i,,drop=FALSE]
-			object$infos <- object$infos[i,drop=FALSE]
+                        object$tagwise.dispersion <- object$tagwise.dispersion[i,drop=FALSE]
+                        object$infos <- object$infos[i,drop=FALSE]
 			object$pseudo.alt <- object$pseudo.alt[i,,drop=FALSE]
 			object$genes <- object$genes[i,,drop=FALSE]
 		} else {
@@ -37,6 +38,7 @@ function(object, i, j, ...) {
 			#object$samples$lib.size <- object$samples$lib.size[j,drop=FALSE]
 			object$conc$conc.common <- object$conc$conc.common[i,drop=FALSE]
 			object$conc$conc.group <- object$conc$conc.group[i,,drop=FALSE]
+                        object$tagwise.dispersion <- object$tagwise.dispersion[i,drop=FALSE]
 			object$infos <- object$infos[i,drop=FALSE]
 			object$genes <- object$genes[i,,drop=FALSE]
 		}

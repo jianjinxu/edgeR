@@ -15,6 +15,8 @@ estimateSmoothing<-function(object,verbose=TRUE)
 		}
 	}
 	exp.inf<-approx.expected.info(object,d,object$pseudo.alt)
+        if(any(exp.inf < 0))
+            stop("Algorithm to estimate prior.n failed. Recommend that the common dispersion model or a pre-specified value for prior.n (e.g. prior.n=10) are used.") 
 	names(exp.inf)<-rownames(object$counts)
 	sigma2.0.est<-.odls(scores.g=scores,info.g=exp.inf)
 	alpha<-1/(sigma2.0.est*nrow(object$counts)*mean(exp.inf))

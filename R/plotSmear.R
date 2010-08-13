@@ -1,5 +1,6 @@
-plotSmear <- function (object, pair=NULL, de.tags=NULL, xlab="logConc", ylab="logFC", pch=19, cex=.2, smearWidth=.5, panel.first=grid(), ...)
-{
+plotSmear <- function (object, pair=NULL, de.tags=NULL, xlab="logConc", ylab="logFC", pch=19, cex=.2, smearWidth=.5, panel.first=grid(), smoothScatter=FALSE, ...) {
+    ## User-level function for creating an MA-plot for DGE data.
+    ## Created by Mark Robinson. Last modified by Davis McCarthy, 12 July 2010.
   if ( !(class(object) %in% c("DGEList", "de4DGEList")) ) 
     stop("Currently only supports DGEList/de4DGEList objects as the object argument.")
   levs.group <- levels(object$samples$group)
@@ -24,5 +25,5 @@ plotSmear <- function (object, pair=NULL, de.tags=NULL, xlab="logConc", ylab="lo
 	i <- match(de.tags,rownames(object$counts))
 	i <- i[!is.na(i)]
   
-	maPlot( D[,col1], D[,col2], xlab=xlab, ylab=ylab, pch=pch, cex=cex, smearWidth=smearWidth, de.tags=i, panel.first=panel.first, ...)
+	maPlot( D[,col1], D[,col2], xlab=xlab, ylab=ylab, pch=pch, cex=cex, smearWidth=smearWidth, de.tags=i, panel.first=panel.first, smoothScatter=smoothScatter, ...)
 }
