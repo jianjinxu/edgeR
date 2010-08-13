@@ -5,11 +5,12 @@
 Plot the sample relations based on Multidimensional Scaling.
 }
 \usage{
-plotMDS.dge(x, top=500, col=NULL, cex=1, dim.plot=c(1,2), ndim=max(dim.plot),...)
+plotMDS.dge(x, top=500, labels=colnames(x), col=NULL, cex=1, dim.plot=c(1,2), ndim=max(dim.plot),...)
 }
 \arguments{
   \item{x}{any matrix or \code{DGEList} object.}
   \item{top}{number of top genes used to calculate pairwise distances.}
+  \item{labels}{character vector of sample names or labels. If \code{x} has no column names, then defaults the index of the samples.}
   \item{col}{numeric or character vector of colors for the plotting characters.}
   \item{cex}{numeric vector of plot symbol expansions.}
   \item{dim.plot}{which two dimensions should be plotted, numeric vector of length two.}

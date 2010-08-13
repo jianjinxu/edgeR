@@ -9,9 +9,8 @@ DGEList Constructor
 A function to create a \code{DGEList} object from a table of counts (rows=features, columns=samples), group indicator for each column, library size (optional) and a table of annotation (optional)
 }
 \usage{
-DGEList(counts = matrix(0, 0, 0), lib.size=NULL, norm.factors=NULL, group=factor(), genes = NULL, remove.zeros = FALSE)
+DGEList(counts = matrix(0, 0, 0), lib.size = NULL, norm.factors = NULL, group = rep.int(1,ncol(counts)), genes = NULL, remove.zeros = FALSE)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{counts}{numeric matrix containing the read counts.}
   \item{lib.size}{numeric vector containing the total to normalize against for each sample (optional)}
@@ -27,7 +26,7 @@ The optional \code{genes} argument is meant to be an annotation data.frame, with
 }
 \value{a \code{DGEList} object}
 
-\author{Mark Robinson}
+\author{Mark Robinson, Davis McCarthy, Gordon Smyth}
 
 \seealso{\code{\link{DGEList}}}
 

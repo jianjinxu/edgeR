@@ -42,9 +42,19 @@ dim.deDGEList <- dim.TopTags <- function(x) if (is.null(x$table)) c(0, 0) else d
 
 length.DGEList <- length.deDGEList <- length.TopTags <- function(x) prod(dim(x))
 
-DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, norm.factors=NULL, group=factor(), genes=NULL, remove.zeros=FALSE) 
+dimnames.DGEList <- function(x) dimnames(x$counts)
+assign("dimnames<-.DGEList",function(x,value)
+{
+	dimnames(x$counts) <- value
+	dimnames(x$counts) <- value
+	if(!is.null(x$samples)) row.names(x$samples) <- value[[2]]
+	if(!is.null(x$genes)) row.names(x$genes) <- value[[1]]
+	x
+})
+
+DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, norm.factors=NULL, group=rep.int(1,ncol(counts)), genes=NULL, remove.zeros=FALSE) 
 #	Construct DGEList object from components, with some checking
-#	Last modified  11 Jun 2010
+#	Last modified 13 Aug 2011
 {
 	counts <- as.matrix(counts)
 	nlib <- ncol(counts)
