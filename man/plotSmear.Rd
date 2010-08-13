@@ -10,7 +10,9 @@ Plots log-Fold Change versus log-Concentration (or, M versus A) for Count Data
 Both of these functions plot the log-fold change (i.e. the log of the ratio of expression levels for each tag between two experimential groups) against the log-concentration (i.e. the overall average expression level for each tag across the two groups). To represent counts that were low (e.g. zero in 1 library and non-zero in the other) in one of the two conditions, a 'smear' of points at low A value is presented in \code{plotSmear}.
 }
 \usage{
-plotSmear(object, pair = NULL, de.tags=NULL, xlab = "logConc", ylab = "logFC", pch = 19, cex = 0.2, smearWidth = 0.5, panel.first=grid(), ...)
+plotSmear(object, pair = NULL, de.tags=NULL, xlab = "logConc", ylab =
+"logFC", pch = 19, cex = 0.2, smearWidth = 0.5, panel.first=grid(),
+smooth.scatter=FALSE, ...)
 plotFC(de.object,xlab="logConc",ylab="logFC",ylim=NULL,pch=19,cex=0.2,...)
 
 }
@@ -26,7 +28,12 @@ plotFC(de.object,xlab="logConc",ylab="logFC",ylim=NULL,pch=19,cex=0.2,...)
   \item{cex}{character expansion factor, numerical value giving the amount by which plotting text and symbols should be magnified relative to the default; default \code{cex=0.2} to make the plotted points smaller}
   \item{smearWidth}{width of the smear}
   \item{panel.first}{an expression to be evaluated after the plot axes are set up but before any plotting takes place; the default \code{grid()} draws a background grid to aid interpretation of the plot}
-  \item{ylim}{vector of length two giving limits on y-axis, if left at \code{NULL}, scaled to be symmetric about 0}
+  \item{ylim}{vector of length two giving limits on y-axis, if left at
+  \code{NULL}, scaled to be symmetric about 0}
+  \item{smooth.scatter}{logical, whether to produce a 'smooth scatter'
+  plot using the KernSmooth::smoothScatter function or just a regular
+  scatter plot; default is \code{FALSE}, i.e. produce a regular
+  scatter plot}
   \item{\dots}{further arguments passed on to \code{plot}}
 }
 

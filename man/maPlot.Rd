@@ -9,7 +9,9 @@ Plots Log-Fold Change versus Log-Concentration (or, M versus A) for Count Data
 To represent counts that were low (e.g. zero in 1 library and non-zero in the other) in one of the two conditions, a 'smear' of points at low A value is presented.
 }
 \usage{
-maPlot(x, y, normalize=FALSE, smearWidth = 1, col = NULL, allCol = "black", lowCol = "orange", deCol="red", de.tags=NULL, ...)
+maPlot(x, y, normalize=FALSE, smearWidth = 1, col = NULL, allCol =
+"black", lowCol = "orange", deCol="red", de.tags=NULL, smooth.scatter=
+FALSE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
@@ -21,7 +23,12 @@ maPlot(x, y, normalize=FALSE, smearWidth = 1, col = NULL, allCol = "black", lowC
   \item{allCol}{colour of the non-smeared points}
   \item{lowCol}{colour of the smeared points}
   \item{deCol}{colour of the DE (differentially expressed) points}
-  \item{de.tags}{indices for tags identified as being differentially expressed; use \code{exactTest} to identify DE genes}
+  \item{de.tags}{indices for tags identified as being differentially
+  expressed; use \code{exactTest} to identify DE genes}
+  \item{smooth.scatter}{logical, whether to produce a 'smooth scatter'
+  plot using the KernSmooth::smoothScatter function or just a regular
+  scatter plot; default is \code{FALSE}, i.e. produce a regular
+  scatter plot}
   \item{\dots}{further arguments passed on to \code{plot}}
 }
 \details{

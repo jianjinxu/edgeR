@@ -1,4 +1,4 @@
-maPlot <- function(x,y, normalize=FALSE, smearWidth=1, col=NULL, allCol="black", lowCol="orange", deCol="red",de.tags=NULL, smoothScatter=FALSE, ...) {
+maPlot <- function(x,y, normalize=FALSE, smearWidth=1, col=NULL, allCol="black", lowCol="orange", deCol="red",de.tags=NULL, smooth.scatter=FALSE, ...) {
     ## Low-level function for creating an MA-plot for DGE data.
     ## Created by Mark Robinson. Last modified by Davis McCarthy, 12 July 2010.
     if(normalize) {
@@ -22,7 +22,7 @@ maPlot <- function(x,y, normalize=FALSE, smearWidth=1, col=NULL, allCol="black",
       col <- rep(allCol, length(A))
       col[w] <- lowCol
     }
-    if(smoothScatter) {
+    if(smooth.scatter) {
         smoothScatter(A, M, col=col, ...)
         grid()
         points(A[w], M[w], col=lowCol, ...)
