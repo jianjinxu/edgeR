@@ -11,7 +11,7 @@ plotMDS.dge <- function (x, top=500, labels=colnames(x), col=NULL, cex=1, dim.pl
     if(ndim < 2) stop("dim.plot must be at least two")
     if(nsamples < ndim) stop("Too few samples")
 
-    x$sample$group <- factor(rep.int(1,nsamples))
+    x$samples$group <- factor(rep.int(1,nsamples))
     twd <- estimateTagwiseDisp(estimateCommonDisp(x), prior.n = 10, grid.length = 500)
     o <- order(twd$tagwise.dispersion, decreasing = TRUE)[1:min(nprobes,top)]
     subdata <- x$counts[o,]
