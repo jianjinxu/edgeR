@@ -1,29 +1,55 @@
-calcNormFactors <- function(object, refColumn=NULL, logratioTrim=.3, sumTrim=0.05, doWeighting=TRUE, Acutoff=-1e10) {
+calcNormFactors <- function(object, method=c("TMM","RLE","quantile"), refColumn=NULL,
+                            logratioTrim=.3, sumTrim=0.05, doWeighting=TRUE, Acutoff=-1e10, 
+                            quantile=0.75) {
+                            
+  method <- match.arg(method)
+                            
   if( is.matrix(object) ) {
     if(is.null(refColumn))
       refColumn <- 1
-    apply(object,2,.calcFactorWeighted,ref=object[,refColumn], logratioTrim=logratioTrim, 
-        sumTrim=sumTrim, doWeighting=doWeighting, Acutoff=Acutoff)
+    data <- object
+    libsize <- colSums(data)
   } else if(is(object, "DGEList")) {
-    D <- object$counts
-    if(is.null(refColumn)) {
-      
-      y <- t(t(D)/object$samples$lib.size)
-      q75 <- apply(y,2,function(x) quantile(x,p=0.75))
-      refColumn <- which.min(abs(q75-mean(q75)))
+    data <- object$counts
+    if(method=="TMM" & is.null(refColumn)) {      
+      f75 <- .calcFactorQuantile(data=data, lib.size=object$samples$lib.size, q=0.75)
+      refColumn <- which.min(abs(f75-mean(f75)))
     }
-
-    f <- apply(D,2,.calcFactorWeighted,ref=D[,refColumn], logratioTrim=logratioTrim, 
-        sumTrim=sumTrim, doWeighting=doWeighting, Acutoff=Acutoff)
-    object$samples$norm.factors <- f/exp(mean(log(f)))
-    object$ref.column <- refColumn
-    
-    object
+    libsize <- object$samples$lib.size
   } else {
     stop("calcNormFactors() only operates on 'matrix' and 'DGEList' objects")
   }
+  
+
+  f <- switch(method,
+              TMM = apply(data,2,.calcFactorWeighted,ref=object[,refColumn], 
+                          logratioTrim=logratioTrim, sumTrim=sumTrim, doWeighting=doWeighting, 
+                          Acutoff=Acutoff),
+              RLE = .calcFactorRLE(data),
+              quantile = .calcFactorQuantile(data, libsize, q=quantile))
+  f <- f/exp(mean(log(f)))
+
+  if( is.matrix(object) ) {
+    return(f)
+  } else if(is(object, "DGEList")) {
+    object$samples$norm.factors <- f
+    return(object)
+  }
+
+  
 }
 
+
+.calcFactorRLE <- function (data) {
+    gm <- exp(rowMeans(log(data)))
+    apply(data, 2, function(u) median((u/gm)[gm > 0]))
+}
+
+.calcFactorQuantile <- function (data, lib.size, q=0.75) {
+    y <- t(t(data)/lib.size)
+    f <- apply(y,2,function(x) quantile(x,p=q))
+    f/exp(mean(log(f)))
+}
 
 
 .calcFactorWeighted <- function(obs, ref, logratioTrim=.3, sumTrim=0.05, doWeighting=TRUE, Acutoff=-1e10) {
