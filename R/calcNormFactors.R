@@ -22,11 +22,12 @@ calcNormFactors <- function(object, method=c("TMM","RLE","quantile"), refColumn=
   
 
   f <- switch(method,
-              TMM = apply(data,2,.calcFactorWeighted,ref=object[,refColumn], 
+              TMM = apply(data,2,.calcFactorWeighted,ref=data[,refColumn], 
                           logratioTrim=logratioTrim, sumTrim=sumTrim, doWeighting=doWeighting, 
                           Acutoff=Acutoff),
               RLE = .calcFactorRLE(data),
               quantile = .calcFactorQuantile(data, libsize, q=quantile))
+              
   f <- f/exp(mean(log(f)))
 
   if( is.matrix(object) ) {
