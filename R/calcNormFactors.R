@@ -25,7 +25,7 @@ calcNormFactors <- function(object, method=c("TMM","RLE","quantile"), refColumn=
               TMM = apply(data,2,.calcFactorWeighted,ref=data[,refColumn], 
                           logratioTrim=logratioTrim, sumTrim=sumTrim, doWeighting=doWeighting, 
                           Acutoff=Acutoff),
-              RLE = .calcFactorRLE(data),
+              RLE = .calcFactorRLE(data)/libsize,
               quantile = .calcFactorQuantile(data, libsize, q=quantile))
               
   f <- f/exp(mean(log(f)))
