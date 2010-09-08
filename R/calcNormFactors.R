@@ -14,6 +14,8 @@ calcNormFactors <- function(object, method=c("TMM","RLE","quantile"), refColumn=
     if(method=="TMM" & is.null(refColumn)) {      
       f75 <- .calcFactorQuantile(data=data, lib.size=object$samples$lib.size, q=0.75)
       refColumn <- which.min(abs(f75-mean(f75)))
+      if(length(refColumn)==0)
+        refColumn <- 1
     }
     libsize <- object$samples$lib.size
   } else {
