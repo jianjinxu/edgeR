@@ -10,7 +10,7 @@ estimateCommonDisp <- function(object,tol=1e-06,rowsum.filter=5)
             warning("There is no replication.  Setting common dispersion to 0.")
             q2q.out <- equalizeLibSizes(object,disp=0,null.hypothesis=FALSE)
             d <- new("DGEList",list(samples=object$samples, common.dispersion=1e-16, counts=object$counts,
-                                    pseudo.alt=q2q.out$pseudo, conc=q2q.out$conc, allZeros=object$allZeros, common.lib.size=q2q.out$N))
+                                    pseudo.alt=q2q.out$pseudo, conc=q2q.out$conc, all.zeros=object$all.zeros, common.lib.size=q2q.out$N))
             return(d)
         }
         tags.used <- rowSums(object$counts) > rowsum.filter
@@ -21,7 +21,7 @@ estimateCommonDisp <- function(object,tol=1e-06,rowsum.filter=5)
             pseudo.obj <- pseudo.obj[tags.used,]
             common.dispersion <- .estimateCommonDisp(pseudo.obj, tol=tol)
 	}
-	new("DGEList",list(samples=object$samples, common.dispersion=common.dispersion$dispersion, counts=object$counts, pseudo.alt=q2q.out$pseudo, genes=object$genes, allZeros=object$allZeros, conc=q2q.out$conc, common.lib.size=q2q.out$N))
+	new("DGEList",list(samples=object$samples, common.dispersion=common.dispersion$dispersion, counts=object$counts, pseudo.alt=q2q.out$pseudo, genes=object$genes, all.zeros=object$all.zeros, conc=q2q.out$conc, common.lib.size=q2q.out$N))
 }
 
 .estimateCommonDisp <- function(object, tol=1e-06)

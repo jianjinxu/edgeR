@@ -30,6 +30,7 @@ function(object, i, j, ...) {
                         object$infos <- object$infos[i,drop=FALSE]
 			object$pseudo.alt <- object$pseudo.alt[i,,drop=FALSE]
 			object$genes <- object$genes[i,,drop=FALSE]
+                        object$all.zeros <- object$all.zeros[i,drop=FALSE]
 		} else {
 			object$counts <- object$counts[i,j,drop=FALSE]
 			object$samples <- object$samples[j,,drop=FALSE]
@@ -41,6 +42,7 @@ function(object, i, j, ...) {
                         object$tagwise.dispersion <- object$tagwise.dispersion[i,drop=FALSE]
 			object$infos <- object$infos[i,drop=FALSE]
 			object$genes <- object$genes[i,,drop=FALSE]
+                        object$all.zeros <- object$all.zeros[i,drop=FALSE]
 		}
 	}
 	object

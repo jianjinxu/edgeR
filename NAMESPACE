@@ -3,11 +3,11 @@
 #  All functions exported other than those starting with "."
 exportPattern("^[^\\.]")
 
-exportClasses("DGEList","deDGEList","EBList","TopTags")
+exportClasses("DGEList","deDGEList","EBList","TopTags","DGEGLM","DGELRT")
 exportMethods("show")
 
-importFrom(limma, removeExt, trimWhiteSpace)
-importClassesFrom(limma, "LargeDataObject")
+importFrom(limma, removeExt, trimWhiteSpace, asMatrixWeights, decideTests)
+importClassesFrom(limma, "LargeDataObject", "MArrayLM", "TestResults")
 importMethodsFrom(limma, "show")
 
 S3method(dim,DGEList)

@@ -40,10 +40,10 @@ exactTest<-function(object, pair=NULL, dispersion=NULL, common.disp=TRUE)
     q2q.pair <- equalizeLibSizes(obj.pair,disp=dispersion,null.hypothesis=TRUE)
     mus <- object$common.lib.size*q2q.pair$conc$conc.common
     y<-splitIntoGroupsPseudo(q2q.pair$pseudo,group.pair,pair)
-    exact.pvals<- exactTest.matrix(y$y1,y$y2,mus,r=1/dispersion, allZeros=obj.pair$allZeros)
+    exact.pvals<- exactTest.matrix(y$y1,y$y2,mus,r=1/dispersion, all.zeros=obj.pair$all.zeros)
     logConc<-(log2(q2q.pair$conc$conc.group[,pair[1]==levs.pair])+log2(q2q.pair$conc$conc.group[,pair[2]==levs.pair]))/2
     logFC<-log2(q2q.pair$conc$conc.group[,pair[2]==levs.pair]/q2q.pair$conc$conc.group[,pair[1]==levs.pair])
-    logFC[obj.pair$allZeros] <- 0
+    logFC[obj.pair$all.zeros] <- 0
     de.out<-data.frame(logConc=logConc, logFC=logFC, p.value=exact.pvals)
     rownames(de.out) <- rownames(obj.pair$counts)
     new("deDGEList",list(table=de.out, comparison=pair, genes=object$genes))

@@ -6,24 +6,23 @@ plotSmear <- function (object, pair=NULL, de.tags=NULL, xlab="logConc", ylab="lo
   levs.group <- levels(object$samples$group)
   if(length(levs.group)==1)
       stop("Cannot produce an MA-plot with only one group. The one group defined is: ",levs.group)
-  if(dim(object$conc$conc.group)[2] < 2)
-      stop("Cannot produce an MA-plot with only one group. Dimensions of object$conc$conc.group are ",dim(object$conc$conc.group)[1]," ",dim(object$conc$conc.group)[2],"\n Try defining more groups and executing estimateCommonDisp() before using plotSmear.\n")
-  if (is.null(pair))
+    if (is.null(pair))
     pair <- levs.group[1:2]
   if( !all(pair %in% levs.group) )
     stop("At least one element of given pair is not a group.\n Groups are: ", paste(levs.group, collapse=" "), "\n")
   stopifnot(length(pair)==2)
 
-  col1 <- match(pair[1], levs.group)
-  col2 <- match(pair[2], levs.group)
+  cols1 <- pair[1]==object$samples$group
+  cols2 <- pair[2]==object$samples$group
 
-  if( !(any(names(object) %in% "conc")) )
-    stop("'conc' is not an element of input object.  Try running estimateCommonDisp() first.")
-  D <-  object$conc$conc.group
-
+  lib.size <- object$samples$lib.size*object$samples$norm.factors
+  x <- rowMeans(t( t(object$counts[,cols1])/lib.size[cols1]))
+  y <- rowMeans(t( t(object$counts[,cols2])/lib.size[cols2]))
+  
   ylab <- paste(ylab, ":", paste(pair[c(2,1)], collapse="-"), paste="")
 	i <- match(de.tags,rownames(object$counts))
 	i <- i[!is.na(i)]
   
-	maPlot( D[,col1], D[,col2], xlab=xlab, ylab=ylab, pch=pch, cex=cex, smearWidth=smearWidth, de.tags=i, panel.first=panel.first, smooth.scatter=smooth.scatter, ...)
+	maPlot( x, y, xlab=xlab, ylab=ylab, pch=pch, cex=cex, smearWidth=smearWidth, de.tags=i, panel.first=panel.first, smooth.scatter=smooth.scatter, ...)
 }
+

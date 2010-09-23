@@ -1,4 +1,4 @@
-exactTest.matrix<-function(y1,y2,mus,r,allZeros=rep(FALSE,nrow(y1))) 
+exactTest.matrix<-function(y1,y2,mus,r,all.zeros=rep(FALSE,nrow(y1))) 
     ## Written by Mark Robinson, last modified by Davis McCarthy, 17 June 2009
     ## A function to calculate P-values using a Fisher-like exact test for the Negative Binomial distribution
     ## y1 and y2 are matrices of counts for two given experimental groups (libraries are assumed to be equal in size - adjusted pseudocounts in the edgeR context)
@@ -9,8 +9,8 @@ exactTest.matrix<-function(y1,y2,mus,r,allZeros=rep(FALSE,nrow(y1)))
         stop("Number of rows of y1 not equal to number of rows of y2\n")
     nrows<-nrow(y1)
     pvals<-rep(1,nrows)
-    if(any(allZeros)) {
-        pvals[!allZeros] <- Recall(y1[!allZeros,,drop=FALSE],y2[!allZeros,,drop=FALSE],mus[!allZeros],r[!allZeros])
+    if(any(all.zeros)) {
+        pvals[!all.zeros] <- Recall(y1[!all.zeros,,drop=FALSE],y2[!all.zeros,,drop=FALSE],mus[!all.zeros],r[!all.zeros])
     } else {
 	v<-cbind(rowSums(y1),rowSums(y2))
 	n1<-ncol(y1)

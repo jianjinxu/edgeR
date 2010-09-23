@@ -6,7 +6,7 @@ representation("list")
 )
 
 setClass("de4DGEList",
-#  Updated Linear model fit (Sep 2009)
+#  Deprecated Linear model fit (Sep 2009)
 representation("list")
 )
 
@@ -24,6 +24,14 @@ setClass("TopTags",
 representation("list")
 )
 
+setClass("DGEGLM",
+representation("list")
+)
+
+setClass("DGELRT",
+representation("list")
+)
+
 setMethod("show", "TopTags", function(object) {
 	if(length(object$comparison)) cat("Comparison of groups: ", object$comparison[2],"-",object$comparison[1],"\n")
 	#colnames(object$table) <- c("logConc","logFC","PValue","FDR")
@@ -36,6 +44,9 @@ setIs("DGEList","LargeDataObject")
 setIs("EBList","LargeDataObject")
 setIs("deDGEList","LargeDataObject")
 setIs("de4DGEList","LargeDataObject")
+setIs("DGEGLM","LargeDataObject")
+setIs("DGELRT","LargeDataObject")
+
 
 dim.DGEList <- function(x) if (is.null(x$counts)) c(0, 0) else dim(as.matrix(x$counts))
 dim.deDGEList <- dim.TopTags <- function(x) if (is.null(x$table)) c(0, 0) else dim(as.matrix(x$table))
@@ -87,12 +98,12 @@ DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, norm.factors=NULL, grou
                 rownames(genes) <- rownames(counts)
 		x$genes <- genes
 	}
-  allZeros <- rowSums(counts,na.rm=TRUE)==0
-  x$allZeros <- allZeros
+  all.zeros <- rowSums(counts,na.rm=TRUE)==0
+  x$all.zeros <- all.zeros
 	if(remove.zeros) {
-            if(any(allZeros)) {
-                x <- x[!allZeros,]
-                warning("Removing ",sum(allZeros)," rows that all have zero counts.")
+            if(any(all.zeros)) {
+                x <- x[!all.zeros,]
+                warning("Removing ",sum(all.zeros)," rows that all have zero counts.")
             }
 	}
 	x

@@ -13,14 +13,16 @@ topTags(object, n=10, adjust.method="BH", sort.by="p.value")
 }
 
 \arguments{ 
-\item{object}{a \code{deDGEList} object,  as output from \code{exactTest}, containing the elements:
-	\code{table}: data frame containing the log-concentration (i.e. expression level), the log-fold change in expression between the two groups/conditions and the exact p-value for differential expression, for each tag.
-	
-	
-	\code{comparison}: vector giving the two experimental groups/conditions being compared.
-	
-  	\code{genes}: data frame containing information about each transcript (can be \code{NULL}).
-}
+\item{object}{a \code{deDGEList} object (output from \code{exactTest}
+) or a \code{DGELRT} object (output from \code{glmLRT}), containing
+the (at least) the elements \code{table}: a data frame containing the
+log-concentration (i.e. expression level), the log-fold change in
+expression between the two groups/conditions and the p-value for
+differential expression, for each tag. If it is a \code{deDGEList}
+object, then \code{topTags} will also use the \code{comparison}
+element, which is a vector giving the two experimental
+groups/conditions being compared. The object may contain other
+elements that are not used by \code{topTags}.}
 
 \item{n}{scalar, number of tags to display/return}
 
@@ -30,9 +32,9 @@ topTags(object, n=10, adjust.method="BH", sort.by="p.value")
 }
 
 \value{an object of class \code{TopTags} containing the following elements for the top \code{n} most differentially expressed tags as determined by \code{sort.by}.
-There is a show method for this class.
 	\item{table}{a data frame containing the elements \code{logConc}, the log-average concentration/abundance for each tag in the two groups being compared, \code{logFC}, the log-abundance ratio, i.e. fold change, for each tag in the two groups being compared, \code{p.value}, exact p-value for differential expression using the NB model, \code{adj.p.val}, the p-value adjusted for multiple testing as found using \code{p.adjust} using the method specified}
-	\item{comparison}{a vector giving the names of the two groups being compared} 
+	\item{comparison}{a vector giving the names of the two groups being compared}
+There is a show method for this class.
 }
 
 \author{Mark Robinson, Davis McCarthy, Gordon Smyth}
@@ -43,6 +45,8 @@ d <- DGEList(counts=y,group=rep(1:2,each=2),lib.size=rep(c(1000:1001),2))
 rownames(d$counts) <- paste("tag",1:nrow(d$counts),sep=".")
 
 # estimate common dispersion and find differences in expression
+# here we demonstrate the 'exact' methods, but the use of topTags is
+# the same for a GLM analysis
 d<-estimateCommonDisp(d)
 de<-exactTest(d)
 
@@ -63,9 +67,10 @@ Robinson MD, Smyth GK. 'Moderated statistical tests for assessing differences in
 }
 
 \seealso{
-\code{\link{exactTest}}, \code{\link{p.adjust}}.
+\code{\link{exactTest}}, \code{\link{glmLRT}}, \code{\link{p.adjust}}.
 
 Analogous to \code{\link[limma:toptable]{topTable}} in the limma package.
 }
 
 \keyword{algebra}
+

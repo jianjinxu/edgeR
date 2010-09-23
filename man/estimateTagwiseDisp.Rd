@@ -7,7 +7,7 @@
 
 
 \usage{ 
-estimateTagwiseDisp(object, prior.n=10, tol=1e-06, grid=TRUE, grid.length=200, verbose=TRUE)
+estimateTagwiseDisp(object, prior.n=10, weighted.common=FALSE, prop.used=NULL, tol=1e-06, grid=TRUE, grid.length=200, verbose=TRUE)
 }
 
 \arguments{ 
@@ -15,6 +15,10 @@ estimateTagwiseDisp(object, prior.n=10, tol=1e-06, grid=TRUE, grid.length=200, v
 \item{object}{a \code{DGEList} object containing (at least) the elements \code{counts} (table of raw counts), \code{group} (factor indicating group), \code{lib.size} (numeric vector of library sizes) and \code{pseudo,alt} (numeric matrix of quantile-adjusted pseudocounts calculated under the alternative hypothesis of a true difference between groups; recommended to use the \code{DGEList} object provided as the output of \code{estimateCommonDisp}}
 
 \item{prior.n}{numeric scalar, smoothing parameter that indicates the weight to give to the common likelihood compared to the individual tag's likelihood; default \code{10} means that the common likelihood is given 10 times the weight of the individual tag/gene's likelihood in the estimation of the tag/genewise dispersion}
+
+\item{weighted.common}{logical, whether or not to let the tagwise dispersion estimates vary with tag/gene abundance (expression level)}
+
+\item{prop.used}{optional scalar giving the proportion of all tags/genes to be used for the locally weighted estimation of the tagwise dispersion, allowing the dispersion estimates to vary with abundance (expression level). If \code{NULL}, then a default value of 0.4 (i.e. 40 per cent of tags) are used. That means that for each tag/gene the estimate of its dispersion is based on the closest 40 per cent of all of the genes to that gene, where 'closeness' is based on similarity in expression level.}
 
 \item{tol}{numeric scalar, if \code{grid=FALSE}, tolerance for Newton-Rhapson iterations}
 
