@@ -72,7 +72,8 @@ DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, norm.factors=NULL, grou
 	ntags <- nrow(counts)
 	if(nlib>0 & is.null(colnames(counts)))
 		colnames(counts) <- paste("sample",1:ncol(counts),sep=".")
-	group <- as.factor(group)
+        group <- as.character(group)
+        group <- as.factor(group)
 	if(nlib != length(group))
 		stop("Length of 'group' must equal number of columns in 'counts'")
 	if(is.null(lib.size)) {

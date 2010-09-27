@@ -13,7 +13,7 @@ function(object, i, j, ...) {
 		else {
 			object$counts <- object$counts[,j,drop=FALSE]
 			object$samples <- object$samples[j,,drop=FALSE]
-			#object$samples$group <- object$samples$group[j,drop=FALSE]
+			object$samples$group <- as.factor(as.character(object$samples$group))
 			#object$samples$lib.size <- object$samples$lib.size[j,drop=FALSE]
 			object$pseudo.alt <- object$pseudo.alt[,j,drop=FALSE]
 		}
@@ -34,8 +34,8 @@ function(object, i, j, ...) {
 		} else {
 			object$counts <- object$counts[i,j,drop=FALSE]
 			object$samples <- object$samples[j,,drop=FALSE]
+                        object$samples$group <- as.factor(as.character(object$samples$group))
 			object$pseudo.alt <- object$pseudo.alt[i,j,drop=FALSE]
-			#object$samples$group <- object$samples$group[j,drop=FALSE]
 			#object$samples$lib.size <- object$samples$lib.size[j,drop=FALSE]
 			object$conc$conc.common <- object$conc$conc.common[i,drop=FALSE]
 			object$conc$conc.group <- object$conc$conc.group[i,,drop=FALSE]

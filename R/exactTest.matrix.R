@@ -20,7 +20,7 @@ exactTest.matrix<-function(y1,y2,mus,r,all.zeros=rep(FALSE,nrow(y1)))
 	if (length(r)==1)
             r<-rep(r,nrows)
 	N<-ceiling(rowSums(v))
-	for (i in 1:length(pvals)) {
+	for (i in 1:nrows) {
             ind<-0:N[i]
             p.top<-dnbinom(ind,size=n1*r[i],mu=n1*mus[i])*dnbinom(N[i]-ind,size=n2*r[i],mu=n2*mus[i])
             p.obs<-dnbinom(round(v[i,1]),size=n1*r[i],mu=n1*mus[i]) * dnbinom(round(v[i,2]),size=n2*r[i],mu=n2*mus[i])

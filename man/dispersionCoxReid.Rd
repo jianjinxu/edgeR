@@ -9,7 +9,7 @@
 
 
 \usage{ 
-CRDisp(y, design=NULL, offset=0, npts=10, min.disp=1e-2, max.disp=2, nrandom=200, rowsum.filter = 5, prior.n=10, lib.size=NULL, verbose=TRUE)
+CRDisp(y, design=NULL, offset=0, npts=10, min.disp=0, max.disp=2, nselect=200, rowsum.filter = 5, prior.n=10, trend=TRUE, lib.size=NULL, verbose=TRUE)
 adjustedProfileLik(phi, y, design, offset)
 maximize.by.interpolation(x,z,maxit=10,eps=1e-7,plot=FALSE)
 }
@@ -28,17 +28,19 @@ maximize.by.interpolation(x,z,maxit=10,eps=1e-7,plot=FALSE)
 
 \item{max.disp}{scalar, the maximum possible value for the dispersion.}
 
-\item{nrandom}{scalar, the number of genes/tags (chosen at random) to be used to get an initial 'ballpark' estimate of the magnitude of the dispersions in the dataset. Used to finesse the calculation of the estimates using all the data.}
+\item{nselect}{scalar, the number of genes/tags to be used to get an initial 'ballpark' estimate of the magnitude of the dispersions in the dataset. Used to finesse the calculation of the estimates using all the data.}
 
 \item{rowsum.filter}{numeric scalar giving a value for the filtering out of low abundance tags in the estimation of the common dispersion. Only tags with total sum of counts above this value are used in the estimation of the common dispersion. Low abundance tags can adversely affect the estimation of the common dispersion, so this argument allows the user to select an appropriate filter threshold for the tag abundance.}
 
 \item{prior.n}{numeric scalar, smoothing parameter that indicates the weight to give to the common likelihood compared to the individual tag's likelihood; default \code{10} means that the common likelihood is given 10 times the weight of the individual tag/gene's likelihood in the estimation of the tag/genewise dispersion}
 
+\item{trend}{logical scalar, if \code{TRUE} (default) then the abundance-dispersion trend is introduced in calculating the tagwise dispersions, if \code{FALSE} then such trend is not considered.}
+
 \item{lib.size}{optional vector providing the (effective) library size for each library (must have length equal to the number of columns, or libraries, in the matrix of counts). If \code{NULL}, then a default is used. If \code{y} is a \code{DGEList} object then the default for \code{lib.size} is the product of the library sizes and the normalization factors (in the \code{samples} slot of the object). If \code{y} is a simple matrix of counts, then the default for \code{lib.size} is the vector of column sums of \code{y}.}
 
 \item{verbose}{logical scalar, if \code{TRUE} (default) then certain notification messages are displayed in some circumstances, if \code{FALSE} then these messages are not displayed.}
 
-\item{phi}{numeric scalar providing the common value for the dispersion parameter (the 'size' parameter in the GLM fit is equal to \code{1/phi}) that is used in fitting the GLM for each transcript. \code{CRDisp} maximizes the Cox-Reid adjusted profile likelihood over phi to obtain the estimate for the common dispersion.}
+\item{phi}{numeric scalar providing the common value for the dispersion parameter (the 'size' parameter in the GLM fit is equal to \code{1/phi}) that is used in fitting the GLM for each transcript. Poisson GLM is fitted if \code{phi} is set at 0. \code{CRDisp} maximizes the Cox-Reid adjusted profile likelihood over phi to obtain the estimate for the common dispersion.}
 
 \item{maxit}{scalar, the maximum number of iterations to perform in the spline interpolation.}
 
