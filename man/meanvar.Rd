@@ -15,23 +15,15 @@ pooledVar(y,group)
 }
 
 \arguments{ 
-\item{object}{\code{DGEList} object containing the raw data and
-dispersion value. According the method desired for computing the
-dispersion, either \code{CRDisp} or \code{estimateCommonDisp} and
-(possibly) \code{estimateTagwiseDisp} should be run on the
-\code{DGEList} object before using \code{plotMeanVar}.}
+\item{object}{\code{DGEList} object containing the raw data and dispersion value. According the method desired for computing the dispersion, either \code{CRDisp} or \code{estimateCommonDisp} and (possibly) \code{estimateTagwiseDisp} should be run on the \code{DGEList} object before using \code{plotMeanVar}.}
 
 \item{meanvar}{list (optional) containing the output from \code{binMeanVar} or the returned value of \code{plotMeanVar}. Providing this object as an argument will save time in computing the tag/gene means and variances when producing a mean-variance plot. }
 
-\item{show.raw.vars}{logical, whether or not to display the raw
-(pooled) gene/tag variances on the mean-variance plot. Default is \code{FALSE}.}
+\item{show.raw.vars}{logical, whether or not to display the raw (pooled) gene/tag variances on the mean-variance plot. Default is \code{FALSE}.}
 
-\item{show.tagwise.vars}{logical, whether or not to display the estimated
-genewise/tagwise variances on the mean-variance plot. Default is \code{FALSE}.}
+\item{show.tagwise.vars}{logical, whether or not to display the estimated genewise/tagwise variances on the mean-variance plot. Default is \code{FALSE}.}
 
-\item{dispersion.method}{character string giving the method that has
-been used to estimate the common and tagwise dispersion values used to
-calculate the estimated variances. Default is \code{"coxreid"} indicating that the Cox-Reid method for GLMs has been used to compute the dispersions; other option is \code{"qcml"} to indicate that conditional inference methods (e.g. \code{estimateCommonDisp} and \code{estimateTagwiseDisp} were used.}
+\item{dispersion.method}{character string giving the method that has been used to estimate the common and tagwise dispersion values used to calculate the estimated variances. Default is \code{"coxreid"} indicating that the Cox-Reid method for GLMs has been used to compute the dispersions; other option is \code{"qcml"} to indicate that conditional inference methods (e.g. \code{estimateCommonDisp} and \code{estimateTagwiseDisp} were used.}
 
 \item{scalar}{vector (optional) of scaling values to divide counts by. Would expect to have this the same length as the number of columns in the count matrix (i.e. the number of libraries).}
 
@@ -49,40 +41,20 @@ calculate the estimated variances. Default is \code{"coxreid"} indicating that t
 
 }
 
-\value{ \code{plotMeanVar} produces a mean-variance plot for the DGE
-	data using the options described above. \code{plotMeanVar} and
-	\code{binMeanVar} both return a list with the following components:
-	\item{avemeans}{vector of the average expression level within
-	each bin of genes}
-	\item{avevars}{vector of the average raw pooled gene-wise
-	variance within each bin of genes}
-	\item{bin.means}{list containing the average (mean) expression
-	level for genes divided into bins based on amount of expression}
+\value{ \code{plotMeanVar} produces a mean-variance plot for the DGE data using the options described above. \code{plotMeanVar} and \code{binMeanVar} both return a list with the following components:
+	\item{avemeans}{vector of the average expression level within each bin of genes}
+	\item{avevars}{vector of the average raw pooled gene-wise variance within each bin of genes}
+	\item{bin.means}{list containing the average (mean) expression level for genes divided into bins based on amount of expression}
 	\item{bin.vars}{list containing the pooled variance for genes divided into bins based on amount of expression}
 	\item{means}{vector giving the mean expression level for each gene}
 	\item{vars}{vectore giving the pooled variance for each gene}
 
-\code{pooledVar} returns a scalar for the pooled variance of the given
-              data vector.
+\code{pooledVar} returns a scalar for the pooled variance of the given data vector.
 
 }
 
 \details{
-This function is useful for exploring the mean-variance relationship
-in the data. Raw variances are, for each gene, the pooled variance of
-the counts from each sample, divided by a scaling factor (by default
-the effective library size). The function will plot the average raw
-variance for tags split into \code{nbins} bins by overall expression
-level. This provides a useful summary of how the variance of the gene
-counts change with respect to average expression level
-(abundance). A line showing the Poisson mean-variance relationship
-(mean equals variance) is always shown to illustrate how the genewise
-variances may differ from a Poisson mean-variance
-relationship. Optionally, the raw variances and estimated tagwise
-variances can also be plotted. Estimated tagwise variances can be
-calculated using either qCML estimates of the tagwise dispersions
-(\code{estimateTagwiseDisp}) or Cox-Reid conditional inference
-estimates (\code{CRDisp}). A log-log scale is used for the plot.
+This function is useful for exploring the mean-variance relationship in the data. Raw variances are, for each gene, the pooled variance of the counts from each sample, divided by a scaling factor (by default the effective library size). The function will plot the average raw variance for tags split into \code{nbins} bins by overall expression level. This provides a useful summary of how the variance of the gene counts change with respect to average expression level (abundance). A line showing the Poisson mean-variance relationship (mean equals variance) is always shown to illustrate how the genewise variances may differ from a Poisson mean-variance relationship. Optionally, the raw variances and estimated tagwise variances can also be plotted. Estimated tagwise variances can be calculated using either qCML estimates of the tagwise dispersions (\code{estimateTagwiseDisp}) or Cox-Reid conditional inference estimates (\code{CRDisp}). A log-log scale is used for the plot.
 }
 
 

@@ -3,7 +3,7 @@
 #  All functions exported other than those starting with "."
 exportPattern("^[^\\.]")
 
-exportClasses("DGEList","deDGEList","EBList","TopTags","DGEGLM","DGELRT")
+exportClasses("DGEList","deDGEList","TopTags","DGEGLM","DGELRT")
 exportMethods("show")
 
 importFrom(limma, removeExt, trimWhiteSpace, asMatrixWeights, decideTests)
@@ -13,8 +13,12 @@ importMethodsFrom(limma, "show")
 S3method(dim,DGEList)
 S3method(dim,deDGEList)
 S3method(dim,TopTags)
+S3method(dim,DGEGLM)
+S3method(dim,DGELRT)
 S3method(length,DGEList)
 S3method(length,deDGEList)
 S3method(length,TopTags)
+S3method(length,DGEGLM)
+S3method(length,DGELRT)
 S3method(dimnames,DGEList)
 S3method("dimnames<-",DGEList)

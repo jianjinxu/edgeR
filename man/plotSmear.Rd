@@ -1,7 +1,6 @@
 \name{plotSmear}
 \Rdversion{1.1}
 \alias{plotSmear}
-\alias{plotFC}
 %- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Plots log-Fold Change versus log-Concentration (or, M versus A) for Count Data
@@ -13,13 +12,10 @@ Both of these functions plot the log-fold change (i.e. the log of the ratio of e
 plotSmear(object, pair = NULL, de.tags=NULL, xlab = "logConc", ylab =
 "logFC", pch = 19, cex = 0.2, smearWidth = 0.5, panel.first=grid(),
 smooth.scatter=FALSE, ...)
-plotFC(de.object,xlab="logConc",ylab="logFC",ylim=NULL,pch=19,cex=0.2,...)
-
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
   \item{object}{\code{DGEList} object to plot data from (uses $conc element)}
-  \item{de.object}{\code{deDGEList} object , as output from \code{exactTest}}
   \item{pair}{pair of experimental conditions to plot (if \code{NULL}, the first two conditions are used)}
   \item{de.tags}{rownames for tags identified as being differentially expressed; use \code{exactTest} to identify DE genes}
   \item{xlab}{x-label of plot}
@@ -28,12 +24,7 @@ plotFC(de.object,xlab="logConc",ylab="logFC",ylim=NULL,pch=19,cex=0.2,...)
   \item{cex}{character expansion factor, numerical value giving the amount by which plotting text and symbols should be magnified relative to the default; default \code{cex=0.2} to make the plotted points smaller}
   \item{smearWidth}{width of the smear}
   \item{panel.first}{an expression to be evaluated after the plot axes are set up but before any plotting takes place; the default \code{grid()} draws a background grid to aid interpretation of the plot}
-  \item{ylim}{vector of length two giving limits on y-axis, if left at
-  \code{NULL}, scaled to be symmetric about 0}
-  \item{smooth.scatter}{logical, whether to produce a 'smooth scatter'
-  plot using the KernSmooth::smoothScatter function or just a regular
-  scatter plot; default is \code{FALSE}, i.e. produce a regular
-  scatter plot}
+  \item{smooth.scatter}{logical, whether to produce a 'smooth scatter' plot using the KernSmooth::smoothScatter function or just a regular scatter plot; default is \code{FALSE}, i.e. produce a regular scatter plot}
   \item{\dots}{further arguments passed on to \code{plot}}
 }
 
@@ -59,8 +50,6 @@ plotSmear(d)
 # find differential expression
 de<-exactTest(d)
 
-# plot it
-plotFC(de)
 # highlighting the top 500 most DE tags
 de.tags <- rownames(topTags(de, n=500)$table)
 plotSmear(d, de.tags=de.tags)

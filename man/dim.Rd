@@ -2,9 +2,13 @@
 \alias{dim.DGEList}
 \alias{dim.deDGEList}
 \alias{dim.TopTags}
+\alias{dim.DGEGLM}
+\alias{dim.DGELRT}
 \alias{length.DGEList}
 \alias{length.deDGEList}
 \alias{length.TopTags}
+\alias{length.DGEGLM}
+\alias{length.DGELRT}
 \title{Retrieve the Dimensions of a DGEList, deDGEList or TopTags Object}
 \description{
 Retrieve the number of rows (transcripts) and columns (libraries) for an DGEList, deDGEList or TopTags Object.
@@ -14,7 +18,7 @@ Retrieve the number of rows (transcripts) and columns (libraries) for an DGEList
 \method{length}{DGEList}(x)
 }
 \arguments{
-  \item{x}{an object of class \code{DGEList}, \code{deDGEList} or \code{TopTags}}
+  \item{x}{an object of class \code{DGEList}, \code{deDGEList}, \code{TopTags}, \code{DGEGLM} or \code{DGELRT}}
 }
 \details{
 Digital gene expression data objects share many analogies with ordinary matrices in which the rows correspond to transcripts or genes and the columns to arrays.
@@ -26,7 +30,7 @@ A consequence is that row and column commands \code{nrow(x)}, \code{ncol(x)} and
 Numeric vector of length 2.
 The first element is the number of rows (genes) and the second is the number of columns (arrays).
 }
-\author{Gordon Smyth}
+\author{Gordon Smyth, Davis McCarthy}
 \seealso{
   \code{\link[base]{dim}} in the base package.
   

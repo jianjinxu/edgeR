@@ -5,17 +5,7 @@ setClass("deDGEList",
 representation("list")
 )
 
-setClass("de4DGEList",
-#  Deprecated Linear model fit (Sep 2009)
-representation("list")
-)
-
 setClass("DGEList",
-#  Linear model fit
-representation("list")
-)
-
-setClass("EBList",
 #  Linear model fit
 representation("list")
 )
@@ -41,17 +31,15 @@ setMethod("show", "TopTags", function(object) {
 })
 
 setIs("DGEList","LargeDataObject")
-setIs("EBList","LargeDataObject")
 setIs("deDGEList","LargeDataObject")
-setIs("de4DGEList","LargeDataObject")
 setIs("DGEGLM","LargeDataObject")
 setIs("DGELRT","LargeDataObject")
 
 
 dim.DGEList <- function(x) if (is.null(x$counts)) c(0, 0) else dim(as.matrix(x$counts))
-dim.deDGEList <- dim.TopTags <- function(x) if (is.null(x$table)) c(0, 0) else dim(as.matrix(x$table))
+dim.deDGEList <- dim.TopTags <- dim.DGEGLM <- dim.DGELRT <- function(x) if (is.null(x$table)) c(0, 0) else dim(as.matrix(x$table))
 
-length.DGEList <- length.deDGEList <- length.TopTags <- function(x) prod(dim(x))
+length.DGEList <- length.deDGEList <- length.TopTags <- length.DGEGLM <- length.DGELRT <- function(x) prod(dim(x))
 
 dimnames.DGEList <- function(x) dimnames(x$counts)
 assign("dimnames<-.DGEList",function(x,value)

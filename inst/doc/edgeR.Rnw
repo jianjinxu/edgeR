@@ -2180,12 +2180,7 @@ and took 2--4 minutes to carry out on an Apple MacBook with a 2.4 Ghz Intel Core
 
 It has been noted that, in some deep sequencing approaches, not a great deal of overdispersion is observed.  Specifically, the means and variances appear to be very close to each other, suggesting the Poisson distribution is a good fit.  Methods within the \edgeR~package may still be useful, including the quantile adjustment (effectively a normalization) and the exact testing routines.
 
-To illustrate this, we sample Poisson data and run \code{de4DGE}
-with the \code{doPoisson} argument set to \code{TRUE}.  The data
-is quantile-adjusted and before the exact test is invoked, the
-dispersion parameter is set to 0. Currently, elements from the output
-of \code{de4DGE} must be manually added to the \code{DGEList}
-object, as \code{exactTest} operates only on \code{DGEList} objects, as illustrated in the case studies above.  
+To illustrate this, we sample Poisson data and carry out the exact testing procedure by setting the dispersion parameter in the NB model very close to zero. The NB model reduces to the Poisson model as the dispersion parameter goes to zero, and our investigations have shown that using the NB exact test with very small dispersion gives results entirely consistent with using a `true' Poisson model and testing procedure. The data are quantile-adjusted before the exact test is carried out, with the dispersion parameter is set to (near) 0. The function  \code{exactTest} operates only on \code{DGEList} objects, as illustrated in the case studies above, so we need to form a \code{DGEList} object containing our data before carrying out the Poisson test.  
 
 Nevertheless, an analysis using the Poisson distribution can be carried out as follows:
 
@@ -2199,17 +2194,13 @@ mu <- outer(p,lib.sizes)
 mu[1:5,3:4]<-mu[1:5,3:4]*8
 y <- matrix(rpois(4*n,lambda=mu),nrow=n)
 dP <- DGEList(counts=y,group=rep(1:2,each=2),lib.size=lib.sizes)
-msP <- de4DGE(dP,doPoisson=TRUE)
-dP$pseudo.alt <- msP$pseudo
-dP$common.dispersion <- 1e-06 # Set dispersion close to zero to allow exact test for Poisson data
-dP$conc <- msP$conc
-dP$common.lib.size <- msP$M
+dP$common.lib.size <- exp(mean(log(dP$samples$lib.size)))
 @
 
 And you can proceed as before:
 
 <<poissonstats,fig=TRUE,height=6,width=8>>=
-de.P <- exactTest(dP)
+de.P <- exactTest(dP, dispersion=1e-06) # Set dispersion close to zero to allow exact test for Poisson data
 topTags(de.P)
 plotSmear(dP,col=c( rep("blue",5), rep("black",n-5) ))
 @

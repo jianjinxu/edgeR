@@ -29,8 +29,8 @@ approx.expected.info(object, d, pseudo, robust = FALSE)
 set.seed(0)
 y<-matrix(rnbinom(40,size=1,mu=10),ncol=4)
 d<-DGEList(counts=y,group=rep(1:2,each=2),lib.size=rep(c(1000:1001),2))
-qA<-estimateDispIter(d,prior.n=10)
-exp.inf<-approx.expected.info(d,1/(1 + qA$dispersion[1]),qA$pseudo)
+qA<-estimateCommonDisp(d)
+exp.inf<-approx.expected.info(d,1/(1 + qA$common.dispersion),qA$pseudo.alt)
 }
 
 \seealso{
