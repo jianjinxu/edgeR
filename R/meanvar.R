@@ -41,7 +41,7 @@ pooledVar <- function(y,group) {
     numerator/denominator
 }
 
-plotMeanVar <- function(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, dispersion.method="coxreid", scalar=NULL, NBline=FALSE) {
+plotMeanVar <- function(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, dispersion.method="coxreid", scalar=NULL, NBline=FALSE, ...) {
     ## Creates a mean-variance plot (with binned values) for a given DGEList object
     ## Uses the pooledVar and binMeanVar functions and operates on pseudo-counts to account for differences in library sizes
     if(!is(object,"DGEList"))
@@ -91,14 +91,14 @@ plotMeanVar <- function(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.
         tagvars <- meanvar$means + meanvar$means^2*tagwise.dispersion
     }
     if(show.raw.vars) {
-        plot(meanvar$means, meanvar$vars, log="xy", col="gray60", cex=0.6, xlab="Mean gene expression level (log10 scale)", ylab="Pooled gene-level variance (log10 scale)",main="Mean-variance plot",plot.first=grid())
+        plot(meanvar$means, meanvar$vars, log="xy", col="gray60", cex=0.6, xlab="Mean gene expression level (log10 scale)", ylab="Pooled gene-level variance (log10 scale)",plot.first=grid(), ...)
         if(show.tagwise.vars)
             points(meanvar$means, tagvars, col="lightskyblue", cex=0.6)
         points(meanvar$avemeans, meanvar$avevars, pch="x", col="red", cex=1.5)
     }
     else {
         if(show.tagwise.vars) {
-            plot(meanvar$means, tagvars, col="lightskyblue", log="xy", cex=0.6, xlab="Mean gene expression level (log10 scale)", ylab="Estimated tagwise variance (log10 scale)",main="Mean-variance plot",plot.first=grid())
+            plot(meanvar$means, tagvars, col="lightskyblue", log="xy", cex=0.6, xlab="Mean gene expression level (log10 scale)", ylab="Estimated tagwise variance (log10 scale)",plot.first=grid(), ...)
             points(meanvar$avemeans, meanvar$avevars, pch="x", col="red", cex=1.5)
         }
         else {
@@ -106,7 +106,7 @@ plotMeanVar <- function(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.
                 maxy <- max(meanvar$vars)
             else
                 maxy <- max(meanvar$avevars)
-            plot(meanvar$avemeans, meanvar$avevars, pch="x", col="red", cex=1.5, ylim=c(0.1,maxy), log="xy", xlab="Mean gene expression level (log10 scale)", ylab="Pooled gene-level variance (log10 scale)",main="Mean-variance plot",plot.first=grid())
+            plot(meanvar$avemeans, meanvar$avevars, pch="x", col="red", cex=1.5, ylim=c(0.1,maxy), log="xy", xlab="Mean gene expression level (log10 scale)", ylab="Pooled gene-level variance (log10 scale)",plot.first=grid(), ...)
         }
     }
     abline(0,1,lwd=2)

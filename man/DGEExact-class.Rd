@@ -1,7 +1,7 @@
-\name{deDGEList-class}
+\name{DGEExact-class}
 \docType{class}
-\alias{deDGEList-class}
-\alias{show,deDGEList-method}
+\alias{DGEExact-class}
+\alias{show,DGEExact-method}
 \title{differential expression of Digital Gene Expression data - class}
 
 \description{
@@ -20,7 +20,7 @@ Objects of this class contain the following list components:
 
 \section{Methods}{
 This class inherits directly from class \code{list} so any operation appropriate for lists will work on objects of this class.
-\code{deDGEList} objects also have a \code{show} method.
+\code{DGEExact} objects also have a \code{show} method.
 }
 
 \author{Mark Robinson, Davis McCarthy}

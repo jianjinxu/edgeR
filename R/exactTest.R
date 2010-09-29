@@ -46,5 +46,5 @@ exactTest<-function(object, pair=NULL, dispersion=NULL, common.disp=TRUE)
     logFC[obj.pair$all.zeros] <- 0
     de.out<-data.frame(logConc=logConc, logFC=logFC, p.value=exact.pvals)
     rownames(de.out) <- rownames(obj.pair$counts)
-    new("deDGEList",list(table=de.out, comparison=pair, genes=object$genes))
+    new("DGEExact",list(table=de.out, comparison=pair, genes=object$genes))
 }

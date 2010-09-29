@@ -34,7 +34,7 @@ exactTest.matrix(y1,y2,mus,r,all.zeros=rep(FALSE,nrow(y1)))
 }
 
 \value{
-\code{exactTest} produces an object of class \code{deDGEList} containing the following elements.
+\code{exactTest} produces an object of class \code{DGEExact} containing the following elements.
 \item{table}{a data frame containing the elements \code{logConc}, the log-average concentration/abundance for each tag in the two groups being compared, \code{logFC}, the log-abundance ratio, i.e. fold change, for each tag in the two groups being compared, \code{p.value}, exact p-value for differential expression using the NB model}
 \item{comparison}{a vector giving the names of the two groups being compared} 
 \item{genes}{a data frame containing information about each transcript; taken from \code{object} and can be \code{NULL}}

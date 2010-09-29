@@ -13,16 +13,7 @@ topTags(object, n=10, adjust.method="BH", sort.by="p.value")
 }
 
 \arguments{ 
-\item{object}{a \code{deDGEList} object (output from \code{exactTest}
-) or a \code{DGELRT} object (output from \code{glmLRT}), containing
-the (at least) the elements \code{table}: a data frame containing the
-log-concentration (i.e. expression level), the log-fold change in
-expression between the two groups/conditions and the p-value for
-differential expression, for each tag. If it is a \code{deDGEList}
-object, then \code{topTags} will also use the \code{comparison}
-element, which is a vector giving the two experimental
-groups/conditions being compared. The object may contain other
-elements that are not used by \code{topTags}.}
+\item{object}{a \code{DGEExact} object (output from \code{exactTest}) or a \code{DGELRT} object (output from \code{glmLRT}), containing the (at least) the elements \code{table}: a data frame containing the log-concentration (i.e. expression level), the log-fold change in expression between the two groups/conditions and the p-value for differential expression, for each tag. If it is a \code{DGEExact} object, then \code{topTags} will also use the \code{comparison} element, which is a vector giving the two experimental groups/conditions being compared. The object may contain other elements that are not used by \code{topTags}.}
 
 \item{n}{scalar, number of tags to display/return}
 

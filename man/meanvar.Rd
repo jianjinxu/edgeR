@@ -9,7 +9,7 @@
 
 
 \usage{ 
-plotMeanVar(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, dispersion.method="coxreid", scalar=NULL, NBline=FALSE) 
+plotMeanVar(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, dispersion.method="coxreid", scalar=NULL, NBline=FALSE, ...) 
 binMeanVar(x, conc=NULL, group, nbins=100)
 pooledVar(y,group)
 }
@@ -28,6 +28,8 @@ pooledVar(y,group)
 \item{scalar}{vector (optional) of scaling values to divide counts by. Would expect to have this the same length as the number of columns in the count matrix (i.e. the number of libraries).}
 
 \item{NBline}{logical, whether or not to add a line on the graph showing the mean-variance relationship for a NB model with common dispersion.}
+
+\item{\dots}{further arguments passed on to \code{plot}}
 
 \item{x}{matrix of count data, with rows representing tags/genes and columns representing samples}
 

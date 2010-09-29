@@ -1,24 +1,24 @@
 \name{dim}
 \alias{dim.DGEList}
-\alias{dim.deDGEList}
+\alias{dim.DGEExact}
 \alias{dim.TopTags}
 \alias{dim.DGEGLM}
 \alias{dim.DGELRT}
 \alias{length.DGEList}
-\alias{length.deDGEList}
+\alias{length.DGEExact}
 \alias{length.TopTags}
 \alias{length.DGEGLM}
 \alias{length.DGELRT}
-\title{Retrieve the Dimensions of a DGEList, deDGEList or TopTags Object}
+\title{Retrieve the Dimensions of a DGEList, DGEExact, DGEGLM, DGELRT or TopTags Object}
 \description{
-Retrieve the number of rows (transcripts) and columns (libraries) for an DGEList, deDGEList or TopTags Object.
+Retrieve the number of rows (transcripts) and columns (libraries) for an DGEList, DGEExact or TopTags Object.
 }
 \usage{
 \method{dim}{DGEList}(x)
 \method{length}{DGEList}(x)
 }
 \arguments{
-  \item{x}{an object of class \code{DGEList}, \code{deDGEList}, \code{TopTags}, \code{DGEGLM} or \code{DGELRT}}
+  \item{x}{an object of class \code{DGEList}, \code{DGEExact}, \code{TopTags}, \code{DGEGLM} or \code{DGELRT}}
 }
 \details{
 Digital gene expression data objects share many analogies with ordinary matrices in which the rows correspond to transcripts or genes and the columns to arrays.
