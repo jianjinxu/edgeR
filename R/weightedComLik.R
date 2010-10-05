@@ -5,6 +5,8 @@ weightedComLik <- function(object,l0,prop.used=0.25) {
     ## Written by Davis McCarthy, May 2010. Last modified 3 June 2010.
     ## We order the tags based on their average abundance across all groups
     ## l0 is a matrix of ntags rows and number of columns given by grid.length
+    if(is.null(object$conc))
+        stop("estimateCommonDisp() must be run before using this function.\n")
     o <- order(object$conc$conc.common)
     x <- object$conc$conc.common
     xord <- x[o]

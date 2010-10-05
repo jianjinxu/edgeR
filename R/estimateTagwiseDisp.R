@@ -41,7 +41,7 @@ estimateTagwiseDisp <- function(object, prior.n=10, weighted.common=FALSE, prop.
 	}
 	if(verbose) cat("\n")
 	tagwise.dispersion <- delta/(1-delta)
-	new("DGEList",list(samples=object$samples, common.dispersion=object$common.dispersion, prior.n=prior.n, tagwise.dispersion=tagwise.dispersion, counts=object$counts, pseudo.alt=object$pseudo.alt, genes=object$genes, allZeros=object$allZeros, conc=object$conc, common.lib.size=object$common.lib.size))
+	new("DGEList",list(samples=object$samples, common.dispersion=object$common.dispersion, prior.n=prior.n, tagwise.dispersion=tagwise.dispersion, counts=object$counts, pseudo.alt=object$pseudo.alt, genes=object$genes, all.zeros=object$all.zeros, conc=object$conc, common.lib.size=object$common.lib.size))
 }
 
 
