@@ -1,4 +1,4 @@
-estimateTagwiseDisp <- function(object, prior.n=10, weighted.common=FALSE, prop.used=NULL, tol=1e-06, grid=TRUE, grid.length=200, verbose=TRUE)
+estimateTagwiseDisp <- function(object, prior.n=10, trend=FALSE, prop.used=NULL, tol=1e-06, grid=TRUE, grid.length=200, verbose=TRUE)
     ## Written by Davis McCarthy, 2009. Last modified 11 June 2010.
     ## A function to estimate the common dispersion (using conditional maximum likelihood) for fixed counts (y), assuming library sizes are equal
     ## Must take equalized counts (pseudocounts), not raw counts
@@ -18,7 +18,7 @@ estimateTagwiseDisp <- function(object, prior.n=10, weighted.common=FALSE, prop.
 		for(i in 1:length(y)) {
 			l0<-condLogLikDerDelta(y[[i]],grid.vals,der=0,doSum=FALSE)+l0
 		}
-                if(weighted.common) {
+                if(trend) {
                     if(is.null(prop.used))
                         prop.used <- 0.4
                     m0 <- ntags*weightedComLik(object,l0,prop.used=prop.used) # Weights sum to 1, so need to multiply by number of tags to give this the same weight overall as the regular common likelihood
