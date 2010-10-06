@@ -9,7 +9,7 @@
 
 
 \usage{ 
-plotMeanVar(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, dispersion.method="coxreid", scalar=NULL, NBline=FALSE, ...) 
+plotMeanVar(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, dispersion.method="coxreid", scalar=NULL, NBline=FALSE, nbins=100, ...) 
 binMeanVar(x, conc=NULL, group, nbins=100)
 pooledVar(y,group)
 }
@@ -29,6 +29,8 @@ pooledVar(y,group)
 
 \item{NBline}{logical, whether or not to add a line on the graph showing the mean-variance relationship for a NB model with common dispersion.}
 
+\item{nbins}{scalar giving the number of bins (formed by using the quantiles of the genewise mean expression levels) for  which to compute average means and variances for exploring the mean-variance relationship. Default is \code{100} bins}
+
 \item{\dots}{further arguments passed on to \code{plot}}
 
 \item{x}{matrix of count data, with rows representing tags/genes and columns representing samples}
@@ -36,8 +38,6 @@ pooledVar(y,group)
 \item{conc}{vector (optional) of values for the concentration (i.e. abundance) of each tag}
 
 \item{group}{factor giving the experimental group or condition to which each sample (i.e. column of \code{x} or element of {y}) belongs}
-
-\item{nbins}{scalar giving the number of bins (formed by using the quantiles of the genewise mean expression levels) for  which to compute average means and variances for exploring the mean-variance relationship}
 
 \item{y}{vector of count data}
 

@@ -41,7 +41,7 @@ pooledVar <- function(y,group) {
     numerator/denominator
 }
 
-plotMeanVar <- function(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, dispersion.method="coxreid", scalar=NULL, NBline=FALSE, ...) {
+plotMeanVar <- function(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, dispersion.method="coxreid", scalar=NULL, NBline=FALSE, nbins=100, ...) {
     ## Creates a mean-variance plot (with binned values) for a given DGEList object
     ## Uses the pooledVar and binMeanVar functions and operates on pseudo-counts to account for differences in library sizes
     if(!is(object,"DGEList"))
@@ -80,9 +80,9 @@ plotMeanVar <- function(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.
         nb.var <- 10^lmu + (10^lmu)^2*common.dispersion
     }
     if(is.null(meanvar) & dispersion.method=="qcml")
-        meanvar <- binMeanVar(x, object$conc$conc.common, object$samples$group)
+        meanvar <- binMeanVar(x, object$conc$conc.common, object$samples$group, nbins=nbins)
     if(is.null(meanvar) & dispersion.method=="coxreid")
-        meanvar <- binMeanVar(x, conc=NULL, object$samples$group)
+        meanvar <- binMeanVar(x, conc=NULL, object$samples$group, nbins=nbins)
     if(show.tagwise.vars) {
         if(dispersion.method=="coxreid" & is.null(object$CR.tagwise.dispersion))
             stop("Cannot extract Cox-Reid tagwise dispersions. Try running CRDisp on your object first.")
