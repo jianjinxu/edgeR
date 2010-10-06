@@ -1,7 +1,7 @@
-CRDisp <- function(y, design=NULL, offset=0, npts=10, min.disp=0, max.disp=2, nselect=200, rowsum.filter = 5, prior.n=10, trend=TRUE, lib.size=NULL, verbose=TRUE)
+estimateCRDisp <- function(y, design=NULL, offset=0, npts=10, min.disp=0, max.disp=2, nselect=200, rowsum.filter=5, tagwise=FALSE, prior.n=10, trend=FALSE, lib.size=NULL, verbose=TRUE)
     ## Function to estimate the common dispersion and tagwise disperisons using CoxReid Adjusted Profile-likelihood
     ## The function uses cubic spline interpolation in finding the MLEs.
-    ## Written by Yunshun Chen, August 2010. Last modified by Yunshun Chen, 24 Sept 2010
+    ## Written by Yunshun Chen, August 2010. Last modified by Yunshun Chen, 05 Oct 2010
 
 {
     if( is(y,"DGEList") ) {
@@ -82,54 +82,68 @@ CRDisp <- function(y, design=NULL, offset=0, npts=10, min.disp=0, max.disp=2, ns
 	for(i in 1:npts){
 		y.apl <- adjustedProfileLik(spline.disp[i], y.filt, design=design, offset=offset.mat.filt+lib.size.mat.filt)
 		apl.tgw[i,] <- y.apl
-		fit <- loess(y.apl ~ abundance.rank, span = 0.3, degree = 0, family = "gaussian", iterations = 1)
-		smoothy[i,] <- fitted(fit) 
+		if(trend){
+			fit <- loess(y.apl ~ abundance.rank, span = 0.3, degree = 0, family = "gaussian", iterations = 1)
+			smoothy[i,] <- fitted(fit)
+		}
 	}
 	apl.com <- rowSums(apl.tgw)/ntags
-	cr.com <- (maximize.by.interpolation(spline.pts, apl.com))^4
+	if(trend){
+		cr.com <- rep(0,ntags)
+		for(j in 1:ntags) cr.com[j] <- (maximize.by.interpolation(spline.pts, smoothy[,j]))^4
+	} else {	
+		cr.com <- (maximize.by.interpolation(spline.pts, apl.com))^4
+	}
 	if(cr.com == min.disp || cr.com == max.disp)	
 		warning("Common dispersion not within the selected range. Reset the 'min.disp' or the 'max.disp'.")
-	cr.tgw.all <- rep(cr.com, ngenes)
-	cr.tgw.filt <- rep(0, ntags)
-
-	if(trend){
-		for(j in 1:ntags) cr.tgw.filt[j] <- (maximize.by.interpolation(spline.pts, apl.tgw[,j]+ prior.n*smoothy[,j]))^4
-	} else {
-		for(j in 1:ntags) cr.tgw.filt[j] <- (maximize.by.interpolation(spline.pts, apl.tgw[,j]+ prior.n*apl.com))^4
+	if(tagwise){
+		cr.tgw.filt <- rep(0, ntags)
+		if(trend){
+			cr.tgw.all <- rep(max(cr.com), ngenes)
+			for(j in 1:ntags) cr.tgw.filt[j] <- (maximize.by.interpolation(spline.pts, apl.tgw[,j]+ prior.n*smoothy[,j]))^4
+		} else {
+			cr.tgw.all <- rep(cr.com, ngenes)
+			for(j in 1:ntags) cr.tgw.filt[j] <- (maximize.by.interpolation(spline.pts, apl.tgw[,j]+ prior.n*apl.com))^4
+		}
+		cr.tgw.all[tags.used] <- cr.tgw.filt
 	}
-	cr.tgw.all[tags.used] <- cr.tgw.filt
 	if(is(y,"DGEList")){
 		y$design <- design
 		y$CR.common.dispersion=cr.com
-		y$CR.tagwise.dispersion=cr.tgw.all
+		if(tagwise)	y$CR.tagwise.dispersion=cr.tgw.all
 		return(y)
 	} else {
-		new("DGEList",list(samples=y$samples, counts=y$counts, genes=y$genes, design = design, CR.common.dispersion=cr.com,
-		CR.tagwise.dispersion=cr.tgw.all))
+		if(tagwise){
+			new("DGEList",list(samples=y$samples, counts=y$counts, genes=y$genes, design = design, 
+			CR.common.dispersion=cr.com, CR.tagwise.dispersion=cr.tgw.all))
+		} else {
+			new("DGEList",list(samples=y$samples, counts=y$counts, genes=y$genes, design = design, 
+			CR.common.dispersion=cr.com))
+		}
 	}
 }
 
-adjustedProfileLik <- function(phi, y, design, offset) {
+adjustedProfileLik <- function(dispersion, y, design, offset) {
     ## Function to calculate the adjusted profile-likelihood given dispersion, design matrix and response.
-    ## Created by Yunshun Chen, June 2010. Last modified by Yunshun Chen, 24 Sept 2010.
+    ## Created by Yunshun Chen, June 2010. Last modified by Yunshun Chen, 05 Oct 2010.
     ## y is simply a table of counts: rows are genes/tags/transcripts, columns are samples/libraries
     ## offset needs to be a matrix of offsets of the same dimensions as y
     require(MASS)
     if(!identical(dim(y), dim(offset)))
         stop("offset must be a matrix with the same dimensions as y, the table of counts.\n")
     tgw.apl <- c()
-    if(phi == 0) {
-        f <- poisson()
+    if(dispersion == 0){
+		f <- poisson()
     }
-    else {
-        theta <- 1/phi
+    else{
+    		theta <- 1/dispersion
     		f <- negative.binomial(theta)
     }
-    for(i in 1:nrow(y)) {
-        fit <- glm.fit(design, y[i,], offset = offset[i,], family = f)
-        loglik <- -fit$aic/2+fit$qr$rank
-        cr <- sum(log(abs(diag(fit$qr$qr)[1:fit$qr$rank])))
-        tgw.apl[i] <- loglik - cr
+    for(i in 1:nrow(y)){
+          fit <- glm.fit(design, y[i,], offset = offset[i,], family = f)
+          loglik <- -fit$aic/2+fit$qr$rank
+          cr <- sum(log(abs(diag(fit$qr$qr)[1:fit$qr$rank])))
+          tgw.apl[i] <- loglik - cr
     }
     return(tgw.apl)
 }

@@ -1,5 +1,5 @@
-\name{dispersionCoxReid}
-\alias{CRDisp}
+\name{estimateCRDisp}
+\alias{estimateCRDisp}
 \alias{adjustedProfileLik}
 \alias{maximize.by.interpolation}
 
@@ -9,8 +9,8 @@
 
 
 \usage{ 
-CRDisp(y, design=NULL, offset=0, npts=10, min.disp=0, max.disp=2, nselect=200, rowsum.filter = 5, prior.n=10, trend=TRUE, lib.size=NULL, verbose=TRUE)
-adjustedProfileLik(phi, y, design, offset)
+estimateCRDisp(y, design=NULL, offset=0, npts=10, min.disp=0, max.disp=2, nselect=200, rowsum.filter=5, tagwise=FALSE, prior.n=10, trend=FALSE, lib.size=NULL, verbose=TRUE)
+adjustedProfileLik(dispersion, y, design, offset)
 maximize.by.interpolation(x,z,maxit=10,eps=1e-7,plot=FALSE)
 }
 
@@ -32,15 +32,17 @@ maximize.by.interpolation(x,z,maxit=10,eps=1e-7,plot=FALSE)
 
 \item{rowsum.filter}{numeric scalar giving a value for the filtering out of low abundance tags in the estimation of the common dispersion. Only tags with total sum of counts above this value are used in the estimation of the common dispersion. Low abundance tags can adversely affect the estimation of the common dispersion, so this argument allows the user to select an appropriate filter threshold for the tag abundance.}
 
+\item{tagwise}{logical scalar, if \code{FALSE} (default) then the tagwise dispersions are not calculated, if \code{TRUE} then the tagwise dispersions are calculated.}
+
 \item{prior.n}{numeric scalar, smoothing parameter that indicates the weight to give to the common likelihood compared to the individual tag's likelihood; default \code{10} means that the common likelihood is given 10 times the weight of the individual tag/gene's likelihood in the estimation of the tag/genewise dispersion}
 
-\item{trend}{logical scalar, if \code{TRUE} (default) then the abundance-dispersion trend is introduced in calculating the tagwise dispersions, if \code{FALSE} then such trend is not considered.}
+\item{trend}{logical scalar, if \code{FALSE} (default) then the abundance-dispersion trend is not considered in calculating both the common dispersion and the tagwise dispersions, if \code{TRUE} then such trend is introduced in calculating both dispersions.}
 
 \item{lib.size}{optional vector providing the (effective) library size for each library (must have length equal to the number of columns, or libraries, in the matrix of counts). If \code{NULL}, then a default is used. If \code{y} is a \code{DGEList} object then the default for \code{lib.size} is the product of the library sizes and the normalization factors (in the \code{samples} slot of the object). If \code{y} is a simple matrix of counts, then the default for \code{lib.size} is the vector of column sums of \code{y}.}
 
 \item{verbose}{logical scalar, if \code{TRUE} (default) then certain notification messages are displayed in some circumstances, if \code{FALSE} then these messages are not displayed.}
 
-\item{phi}{numeric scalar providing the common value for the dispersion parameter (the 'size' parameter in the GLM fit is equal to \code{1/phi}) that is used in fitting the GLM for each transcript. Poisson GLM is fitted if \code{phi} is set at 0. \code{CRDisp} maximizes the Cox-Reid adjusted profile likelihood over phi to obtain the estimate for the common dispersion.}
+\item{dispersion}{numeric scalar providing the common value for the dispersion parameter (the 'size' parameter in the GLM fit is equal to \code{1/dispersion}) that is used in fitting the GLM for each transcript. Poisson GLM is fitted if \code{dispersion} is set at 0. \code{estimateCRDisp} maximizes the Cox-Reid adjusted profile likelihood over dispersion to obtain the estimate for the common dispersion.}
 
 \item{maxit}{scalar, the maximum number of iterations to perform in the spline interpolation.}
 
@@ -54,9 +56,9 @@ maximize.by.interpolation(x,z,maxit=10,eps=1e-7,plot=FALSE)
 
 }
 
-\value{ \code{CRDisp} produces a \code{DGEList} object, which contains the estimate of the common dispersion parameter for the negative binomial model that maximizes the Cox-Reid adjusted profile likelihood, and also the tagwise Cox-Reid dispersion estimates.
+\value{ \code{estimateCRDisp} produces a \code{DGEList} object, which contains the estimate of the common dispersion parameter for the negative binomial model that maximizes the Cox-Reid adjusted profile likelihood, and also the tagwise Cox-Reid dispersion estimates.
 
-\code{adjustedProfileLik} produces a vector of the tagwise Cox-Reid adjusted profile likelihood for the given counts, dispersion (phi) value, offset and design matrices (i.e. the APL for each gene/tag).
+\code{adjustedProfileLik} produces a vector of the tagwise Cox-Reid adjusted profile likelihood for the given counts, dispersion  value, offset and design matrices (i.e. the APL for each gene/tag).
 
 \code{maximize.by.interpolation} returns a scalar value, which is the value for x that maximizes z.
 
@@ -72,12 +74,12 @@ Cox DR and Reid N (1987). Parameter orthogonality and approximate conditional in
 49, 1, 1--39.
 }
 
-\author{Davis McCarthy}
+\author{Yunshun Chen, Gordon Smyth}
 \examples{
 y<-matrix(rnbinom(1000,mu=10,size=2),ncol=4)
 d<-DGEList(counts=y,group=c(1,1,2,2),lib.size=c(1000:1003))
 design <- model.matrix(~d$samples$group) # Define the design matrix for the full model
-d<-CRDisp(d, design)
+d<-estimateCRDisp(d, design)
 d
 }
 
