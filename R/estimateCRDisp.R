@@ -41,8 +41,7 @@ estimateCRDisp <- function(y, design=NULL, offset=0, npts=10, min.disp=0, max.di
     	y.filt <- y.mat[tags.used,]
 	offset.mat.filt <- offset.mat[tags.used,]
 	ntags <- nrow(y.filt)
-	if(nselect > ntags){
-		warning("Not enough tags to get an initial estimate of the dispersion. All tags will be used.")
+	if(nselect > ntags) {
 		nselect <- ntags
 	}
 	abundance <- rowSums(y.filt)	
@@ -90,9 +89,9 @@ estimateCRDisp <- function(y, design=NULL, offset=0, npts=10, min.disp=0, max.di
 	apl.com <- rowSums(apl.tgw)/ntags
 	if(trend){
 		cr.com <- rep(0,ntags)
-		for(j in 1:ntags) cr.com[j] <- (maximize.by.interpolation(spline.pts, smoothy[,j]))^4
+		for(j in 1:ntags) cr.com[j] <- (.maximize.by.interpolation(spline.pts, smoothy[,j]))^4
 	} else {	
-		cr.com <- (maximize.by.interpolation(spline.pts, apl.com))^4
+		cr.com <- (.maximize.by.interpolation(spline.pts, apl.com))^4
 	}
 	if(cr.com == min.disp || cr.com == max.disp)	
 		warning("Common dispersion not within the selected range. Reset the 'min.disp' or the 'max.disp'.")
@@ -100,10 +99,10 @@ estimateCRDisp <- function(y, design=NULL, offset=0, npts=10, min.disp=0, max.di
 		cr.tgw.filt <- rep(0, ntags)
 		if(trend){
 			cr.tgw.all <- rep(max(cr.com), ngenes)
-			for(j in 1:ntags) cr.tgw.filt[j] <- (maximize.by.interpolation(spline.pts, apl.tgw[,j]+ prior.n*smoothy[,j]))^4
+			for(j in 1:ntags) cr.tgw.filt[j] <- (.maximize.by.interpolation(spline.pts, apl.tgw[,j]+ prior.n*smoothy[,j]))^4
 		} else {
 			cr.tgw.all <- rep(cr.com, ngenes)
-			for(j in 1:ntags) cr.tgw.filt[j] <- (maximize.by.interpolation(spline.pts, apl.tgw[,j]+ prior.n*apl.com))^4
+			for(j in 1:ntags) cr.tgw.filt[j] <- (.maximize.by.interpolation(spline.pts, apl.tgw[,j]+ prior.n*apl.com))^4
 		}
 		cr.tgw.all[tags.used] <- cr.tgw.filt
 	}
@@ -148,7 +147,7 @@ adjustedProfileLik <- function(dispersion, y, design, offset) {
     return(tgw.apl)
 }
 
-maximize.by.interpolation <- function(x,z,maxit=10,eps=1e-7,plot=FALSE)
+.maximize.by.interpolation <- function(x,z,maxit=10,eps=1e-7,plot=FALSE)
 #       Maximize a function given a table of values
 #       by spline interpolation
 #       Gordon Smyth

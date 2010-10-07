@@ -2,15 +2,13 @@
 \alias{glmFit}
 \alias{glmLRT}
 
-\title{Fits a negative binomial generalized linear model for each transcript to a series of digital expression libraries}
+\title{Fit negative binomial generalized linear model for each transcript}
 
-\description{Fits a negative binomial generalized linear model for each transcript (tag) with the unadjusted counts provided, a value for the dispersion parameter and, optionally, offsets and weights for different libraries or transcripts. }
+\description{Fit a negative binomial generalized linear model for each transcript (tag) with the unadjusted counts provided, a value for the dispersion parameter and, optionally, offsets and weights for different libraries or transcripts.}
 
 
-\usage{ 
-glmFit(y, design, dispersion, offset=0, weights=NULL, lib.size=NULL) 
-glmLRT(y, glmfit, coef=ncol(glmfit$design))
-}
+\usage{glmFit(y, design, dispersion, offset=0, weights=NULL, lib.size=NULL) 
+glmLRT(y, glmfit, coef=ncol(glmfit$design))}
 
 \arguments{ 
 
@@ -31,7 +29,7 @@ glmLRT(y, glmfit, coef=ncol(glmfit$design))
 \item{coef}{scalar or vector indicating the column(s) of \code{design} that are to be dropped when creating the null model for the Likelihood Ratio (LR) Test. The \code{glmLRT} fits the null model and then conducts an LR test of the model fit provided in \code{glmfit} against the null model defined by the choice of \code{coef}.}
 }
 
-\value{ \code{glmFit} produces an object of class \code{DGEGLM} with the following components:
+\value{\code{glmFit} produces an object of class \code{DGEGLM} with the following components:
 	\item{coefficients}{matrix of estimated coefficients from the NB model}
 	\item{df.residual}{vector giving the residual degrees of freedom for each tag. In theory it can be different for different tags (if there are missing values), but in practice these will usually be identical for each tag.}
 	\item{deviance}{vector giving the deviance from the NB model fit for each tag.}
@@ -58,32 +56,40 @@ Given a fixed value for the dispersion parameter, a negative binomial model can 
 }
 
 
-\references{
-Robinson MD and Smyth GK (2008). Small-sample estimation of negative
-binomial dispersion, with applications to SAGE data. \emph{Biostatistics},
-9, 321-332
-}
-
-\author{Davis McCarthy}
+\author{Davis McCarthy and Gordon Smyth}
 \examples{
-y<-matrix(rnbinom(1000,mu=10,size=2),ncol=4)
-d<-DGEList(counts=y,group=c(1,1,2,2),lib.size=c(1000:1003))
-d<-estimateCommonDisp(d) # Obtain an estimate of the dispersion parameter
-design <- model.matrix(~d$samples$group) # Define the design matrix for the full model
-## Fit the NB GLM for the full model to the counts
-glmfit <- glmFit(d, design, dispersion=d$common.dispersion)
-## Conduct the likelihood ratio test for differences between the two groups
-lrt.results <- glmLRT(d, glmfit, coef=ncol(design))
-lrt.results
-## Look at ordered results for differential expression
-topTags(lrt.results)
+nlibs <- 3
+ntags <- 100
+dispersion.true <- 0.1
+
+# Make first transcript respond to covariate x
+x <- 0:2
+design <- model.matrix(~x)
+beta.true <- cbind(Beta1=2,Beta2=c(2,rep(0,ntags-1)))
+mu.true <- 2^(beta.true \%*\% t(design))
+
+# Generate count data
+y <- rnbinom(ntags*nlibs,mu=mu.true,size=1/dispersion.true)
+y <- matrix(y,ntags,nlibs)
+colnames(y) <- c("x0","x1","x2")
+rownames(y) <- paste("Gene",1:ntags,sep="")
+d <- DGEList(y)
+
+# Normalize
+d <- calcNormFactors(d)
+
+# Fit the NB GLMs
+fit <- glmFit(d, design, dispersion=dispersion.true)
+
+## Likelihood ratio tests for trend
+results <- glmLRT(d, fit, coef=2)
+topTags(results)
 }
 
 \seealso{
-\code{\link{estimateTagwiseDisp}}, and \code{\link{estimateCommonDisp}} can be used to estimate a value for the dispersion parameter for each tag/transcript and a common dispersion value, respectively. The estimates are stabilized by squeezing the estimates towards the common value calculated by \code{estimateCommonDisp}.
+\code{\link{estimateCRDisp}} for estimating the negative binomial dispersion.
 
-\code{\link{topTags}} can be used to conveniently show a ranked list of results for a \code{DGELRT} object, such as that produced by \code{glmLRT}.
-
+\code{\link{topTags}} for displaying results from \code{glmLRT}.
 }
 
 \keyword{algebra}

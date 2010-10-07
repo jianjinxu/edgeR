@@ -4,32 +4,19 @@ glmFit <- function(y, design, dispersion, offset=0, weights=NULL, lib.size=NULL)
     ##	Fit negative binomial generalized linear model for each transcript
     ##  to a series of digital expression libraries
     ##	Davis McCarthy
-    ##	Created 17 August 2010. Last modified 18 August 2010.
+    ##	Created 17 August 2010. Last modified 7 October 2010.
     ##  Requires the {MASS} package for the negative.binomial() family
     ##  Lower-level function. Takes a matrix of counts (y.mat)
 {
     require(MASS)
-    if(is(y,"DGEList")) {
-        if(is.null(lib.size))
-            lib.size <- y$samples$lib.size*y$samples$norm.factors
-        y.mat <- y$counts
-        samples <- y$samples
-        genes <- y$genes
-    } else {
-        warning("It is recommended to use a DGEList object with this function.\n")
-        y.mat <- as.matrix(y)
-        if(is.null(lib.size)) {
-            lib.size <- colSums(y.mat)
-            cat("No lib.size supplied, so lib.size is taken as the column sums of the matrix of counts.")
-        }
-        if(is.null(y$samples))
-            samples <- "No sample information in object supplied."
-        if(is.null(y$genes))
-            genes <- "No gene information in object supplied."
-    }
+    if(!is(y,"DGEList")) y <- DGEList(as.matrix(y))
+
+    if(is.null(lib.size)) lib.size <- y$samples$lib.size*y$samples$norm.factors
+    y.mat <- y$counts
+    samples <- y$samples
+    genes <- y$genes
+
     narrays <- ncol(y.mat)
-    if(is.null(design))
-        stop("No design matrix supplied. Please supply a design matrix for the GLMs as an argument.\n")
     design <- as.matrix(design)
     coefficients <- matrix(NA,nrow=nrow(y.mat),ncol=ncol(design))
     fitted.values <- matrix(NA,nrow=nrow(y.mat),ncol=ncol(y.mat))

@@ -1,18 +1,15 @@
 \name{estimateCRDisp}
 \alias{estimateCRDisp}
 \alias{adjustedProfileLik}
-\alias{maximize.by.interpolation}
 
 \title{Estimate the dispersion parameter for a negative binomial model using Cox-Reid approximate conditional inference}
 
 \description{Estimates the common dispersion parameter for a DGE dataset for general experimental designs by using Cox-Reid approximate conditional inference for a negative binomial generalized linear model for each transcript (tag) with the unadjusted counts and design matrix provided. }
 
 
-\usage{ 
-estimateCRDisp(y, design=NULL, offset=0, npts=10, min.disp=0, max.disp=2, nselect=200, rowsum.filter=5, tagwise=FALSE, prior.n=10, trend=FALSE, lib.size=NULL, verbose=TRUE)
-adjustedProfileLik(dispersion, y, design, offset)
-maximize.by.interpolation(x,z,maxit=10,eps=1e-7,plot=FALSE)
-}
+\usage{estimateCRDisp(y, design=NULL, offset=0, npts=10, min.disp=0, max.disp=2, nselect=200,
+rowsum.filter=5, tagwise=FALSE, prior.n=10, trend=FALSE, lib.size=NULL, verbose=TRUE)
+adjustedProfileLik(dispersion, y, design, offset)}
 
 \arguments{ 
 
@@ -43,29 +40,15 @@ maximize.by.interpolation(x,z,maxit=10,eps=1e-7,plot=FALSE)
 \item{verbose}{logical scalar, if \code{TRUE} (default) then certain notification messages are displayed in some circumstances, if \code{FALSE} then these messages are not displayed.}
 
 \item{dispersion}{numeric scalar providing the common value for the dispersion parameter (the 'size' parameter in the GLM fit is equal to \code{1/dispersion}) that is used in fitting the GLM for each transcript. Poisson GLM is fitted if \code{dispersion} is set at 0. \code{estimateCRDisp} maximizes the Cox-Reid adjusted profile likelihood over dispersion to obtain the estimate for the common dispersion.}
-
-\item{maxit}{scalar, the maximum number of iterations to perform in the spline interpolation.}
-
-\item{eps}{scalar, the small 'epsilon' value that provides the tolerance for the convergence of the algorithm.}
-
-\item{x}{vector of independent variables for the interpolation, i.e. return the interpolated x value that gives the maximum z value.}
-
-\item{z}{vector of dependent variables for the interpolation, i.e. interpolate the maximum over the z values.}
-
-\item{plot}{logical, whether or not to produce a plot of the maximization by interpolation.}
-
 }
 
-\value{ \code{estimateCRDisp} produces a \code{DGEList} object, which contains the estimate of the common dispersion parameter for the negative binomial model that maximizes the Cox-Reid adjusted profile likelihood, and also the tagwise Cox-Reid dispersion estimates.
+\value{\code{estimateCRDisp} produces a \code{DGEList} object, which contains the estimate of the common dispersion parameter for the negative binomial model that maximizes the Cox-Reid adjusted profile likelihood, and also the tagwise Cox-Reid dispersion estimates.
 
 \code{adjustedProfileLik} produces a vector of the tagwise Cox-Reid adjusted profile likelihood for the given counts, dispersion  value, offset and design matrices (i.e. the APL for each gene/tag).
-
-\code{maximize.by.interpolation} returns a scalar value, which is the value for x that maximizes z.
-
 }
 
 \details{
-To obtain estimates of the common and tagwise (i.e. genewise) dispersion parameters for negative binomial GLMs we use Cox-Reid approximate conditional inference. The approach is to maximize the adjusted profile likelihood over the dispersion value, for both the common and tagwise models and use these values as the common and tagwise dispersion parameters for differential signal testing in downstream analysis.
+To obtain estimates of the common and tagwise (i.e., genewise) dispersion parameters for negative binomial GLMs we use Cox-Reid approximate conditional inference. The approach is to maximize the adjusted profile likelihood over the dispersion value, for both the common and tagwise models and use these values as the common and tagwise dispersion parameters for differential signal testing in downstream analysis.
 }
 
 
