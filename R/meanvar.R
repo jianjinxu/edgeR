@@ -35,8 +35,10 @@ pooledVar <- function(y,group) {
         choosei <- as.logical(match(group,levels(group)[i]))
         choosei[is.na(choosei)] <- FALSE
         ni <- sum(choosei)
-        numerator <- numerator + ni*var(y[choosei])
-        denominator <- denominator + ni - 1
+        if(ni > 1) {
+            numerator <- numerator + ni*var(y[choosei])
+            denominator <- denominator + ni - 1
+        }
     }
     numerator/denominator
 }
@@ -76,8 +78,10 @@ plotMeanVar <- function(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.
             else
                 stop("Could not extract qCML common dispersion. Try running estimateCommonDisp on the DGEList object before plotMeanVar.\n")
         }
-        lmu <- seq(1e-5,10,length.out=1000)
-        nb.var <- 10^lmu + (10^lmu)^2*common.dispersion
+        if(NBline) {
+            lmu <- seq(1e-5,10,length.out=1000)
+            nb.var <- 10^lmu + (10^lmu)^2*common.dispersion
+        }
     }
     if(is.null(meanvar) & dispersion.method=="qcml")
         meanvar <- binMeanVar(x, object$conc$conc.common, object$samples$group, nbins=nbins)

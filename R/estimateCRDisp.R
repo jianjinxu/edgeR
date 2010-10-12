@@ -122,19 +122,19 @@ estimateCRDisp <- function(y, design=NULL, offset=0, npts=10, min.disp=0, max.di
 	}
 }
 
-adjustedProfileLik <- function(dispersion, y, design, offset) {
+adjustedProfileLik <- function(dispersion, y, design, offset)
     ## Function to calculate the adjusted profile-likelihood given dispersion, design matrix and response.
-    ## Created by Yunshun Chen, June 2010. Last modified by Yunshun Chen, 05 Oct 2010.
     ## y is simply a table of counts: rows are genes/tags/transcripts, columns are samples/libraries
     ## offset needs to be a matrix of offsets of the same dimensions as y
+    ## Created by Yunshun Chen, June 2010. Last modified 08 Oct 2010.
+{
     require(MASS)
     if(!identical(dim(y), dim(offset)))
         stop("offset must be a matrix with the same dimensions as y, the table of counts.\n")
-    tgw.apl <- c()
-    if(dispersion == 0){
+    tgw.apl <- rep(0,nrow(y))
+    if(dispersion == 0) {
 		f <- poisson()
-    }
-    else{
+    } else {
     		theta <- 1/dispersion
     		f <- negative.binomial(theta)
     }
