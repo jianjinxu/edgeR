@@ -97,7 +97,7 @@ glmFit <- function(y, design, dispersion, offset=0, weights=NULL, lib.size=NULL)
 glmLRT <- function(y,glmfit,coef=ncol(glmfit$design))
     ##	Fit negative binomial generalized linear model for each transcript
     ##	Gordon Smyth. Edited by Davis McCarthy.
-    ##	Created 1 July 2010. Last modified, 18 August 2010.
+    ##	Created 1 July 2010. Last modified, 15 October 2010.
 {
     require("MASS")
     if(is(y,"DGEList"))
@@ -129,6 +129,11 @@ glmLRT <- function(y,glmfit,coef=ncol(glmfit$design))
     } else {
     	y <- list(table=tab, coefficients.full=glmfit$coefficients, coefficients.null=fit.null$coefficients, design=design, dispersion.used=glmfit$dispersion)
     }
+    if(is.character(coef))
+    	coef.name <- coef
+    else
+    	coef.name <- colnames(design)[coef]
+    y$comparison <- coef.name
     new("DGELRT",unclass(y))
 }
 
