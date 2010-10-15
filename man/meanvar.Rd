@@ -9,19 +9,23 @@
 
 
 \usage{ 
-plotMeanVar(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, dispersion.method="coxreid", scalar=NULL, NBline=FALSE, nbins=100, ...) 
-binMeanVar(x, conc=NULL, group, nbins=100)
+plotMeanVar(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, show.binned.common.disp.vars=TRUE, show.ave.raw.vars=FALSE, dispersion.method="coxreid", scalar=NULL, NBline=FALSE, nbins=100, ...) 
+binMeanVar(x, conc=NULL, group, nbins=100, common.dispersion=FALSE, object=NULL)
 pooledVar(y,group)
 }
 
 \arguments{ 
-\item{object}{\code{DGEList} object containing the raw data and dispersion value. According the method desired for computing the dispersion, either \code{CRDisp} or \code{estimateCommonDisp} and (possibly) \code{estimateTagwiseDisp} should be run on the \code{DGEList} object before using \code{plotMeanVar}.}
+\item{object}{\code{DGEList} object containing the raw data and dispersion value. According the method desired for computing the dispersion, either \code{CRDisp} or \code{estimateCommonDisp} and (possibly) \code{estimateTagwiseDisp} should be run on the \code{DGEList} object before using \code{plotMeanVar}. The argument \code{object} must be supplied in the function \code{binMeanVar} if common dispersion values are to be computed for each bin.}
 
 \item{meanvar}{list (optional) containing the output from \code{binMeanVar} or the returned value of \code{plotMeanVar}. Providing this object as an argument will save time in computing the tag/gene means and variances when producing a mean-variance plot. }
 
 \item{show.raw.vars}{logical, whether or not to display the raw (pooled) gene/tag variances on the mean-variance plot. Default is \code{FALSE}.}
 
 \item{show.tagwise.vars}{logical, whether or not to display the estimated genewise/tagwise variances on the mean-variance plot. Default is \code{FALSE}.}
+
+\item{show.binned.common.disp.vars}{logical, whether or not to compute the common dispersion for each bin of tags and show the variances computed from those binned common dispersions and the mean expression level of the respective bin of tags. Default is \code{TRUE}.}
+
+\item{show.ave.raw.vars}{logical, whether or not to show the average of the raw variances for each bin of tags plotted against the average expression level of the tags in the bin. Likely to be biased, so the default is \code{FALSE}.}
 
 \item{dispersion.method}{character string giving the method that has been used to estimate the common and tagwise dispersion values used to calculate the estimated variances. Default is \code{"coxreid"} indicating that the Cox-Reid method for GLMs has been used to compute the dispersions; other option is \code{"qcml"} to indicate that conditional inference methods (e.g. \code{estimateCommonDisp} and \code{estimateTagwiseDisp} were used.}
 
@@ -38,6 +42,8 @@ pooledVar(y,group)
 \item{conc}{vector (optional) of values for the concentration (i.e. abundance) of each tag}
 
 \item{group}{factor giving the experimental group or condition to which each sample (i.e. column of \code{x} or element of {y}) belongs}
+
+\item{common.dispersion}{logical, whether or not to compute the common dispersion for each bin of tags.}
 
 \item{y}{vector of count data}
 

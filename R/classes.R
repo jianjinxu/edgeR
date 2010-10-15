@@ -23,7 +23,9 @@ representation("list")
 )
 
 setMethod("show", "TopTags", function(object) {
-	if(length(object$comparison)) cat("Comparison of groups: ",paste(rev(object$comparison),collapse="-"),"\n")
+	if(length(object$comparison)==1) cat("Coefficient: ")
+	else cat("Comparison of groups: ")
+	cat(paste(rev(object$comparison),collapse="-"),"\n")
 	#colnames(object$table) <- c("logConc","logFC","PValue","FDR")
 	if(object$adjust.method %in%  c("holm", "hochberg", "hommel", "bonferroni")) colnames(object$table)[ncol(object$table)] <- "FWER"
 	if(object$adjust.method=="none") object$table$FDR <- NULL
