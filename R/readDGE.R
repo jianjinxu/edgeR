@@ -1,10 +1,11 @@
-readDGE <- function(files,path=NULL,columns=c(1,2),group=NULL,...) 
+readDGE <- function(files,path=NULL,columns=c(1,2),group=NULL,labels=NULL,...) 
 #	Read and collate a set of DGE data files, one library per file
-#	Last modified 4 December 2009.
+#	Last modified 16 October 2010.
 {
 	x <- list()
 	if(is.data.frame(files)) {
 		x$samples <- files
+		if(is.null(labels)) labels <- row.names(files)
 		files <- files$files
 	} else {
 		x$samples <- data.frame(files=as.character(files),stringsAsFactors=FALSE)
@@ -25,7 +26,8 @@ readDGE <- function(files,path=NULL,columns=c(1,2),group=NULL,...)
 	nfiles <- length(files)
 	x$counts <- matrix(0,ntags,nfiles)
 	rownames(x$counts) <- tags
-	colnames(x$counts) <- removeExt(files)
+	colnames(x$counts) <- labels
+	if(is.null(colnames(x$counts))) colnames(x$counts) <- removeExt(files)
 	for (i in 1:nfiles) {
 		aa <- match(taglist[[i]],tags)
 		x$counts[aa,i] <- d[[i]][,columns[2]]
