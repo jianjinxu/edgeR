@@ -26,15 +26,17 @@
 \and
 Davis McCarthy \\ \texttt{dmccarthy@wehi.edu.au}
 \and
+Yunshun Chen \\ \texttt{yuchen@wehi.edu.au}
+\and
 Gordon K.\ Smyth}
 % Please increment date when working on this document, so that
 % date shows genuine change date, not merely date of compile.
-\date{1 July 2010}
+\date{14 Oct 2010}
 \maketitle
 
 \section{Introduction}
 
-This document gives a brief introduction and overview of the \R~Bioconductor package \edgeR~\citep{Robinson:2010p249},
+This document gives an introduction and overview of the \R~Bioconductor package \edgeR~\citep{Robinson:2010p249},
 which provides statistical routines for determining differential
 expression in digital gene expression data. The package implements
 methods developed by~\citet{Robinson07, Robinson08}.  The routines can
@@ -77,15 +79,6 @@ If the counts for all libraries are stored in a single file, then an appriopriat
 
 If the counts are stored in separate files, then, given a vector containing the filenames the \edgeR~function \texttt{readDGE} will read in the data from the individual files, collate the counts into a table and compute the library sizes and return a \texttt{DGEList} object.  See the help documentation (\texttt{?readDGE}) or the examples below for further details.
 
-\section{Moderated negative binomial dispersions}
-
-The basic model we use for DGE data is based on the negative binomial distribution.  The model is very flexible.  For example, if $Y$ is distributed as $NB(\mu,\phi)$, then the expected value of $Y$ is $\mu$ and the variance is $\mu + \mu^2 \cdot \phi$, thus giving sufficient flexibility for many scenarios in observing count data.
-
-The observed data can be denoted as $Y_{gij}$ where $g$ is the gene (tag, exon, etc.), $i$ is the experimental group and $j$ is the index of the replicate.  We can model the counts as
-\[  Y_{gij} \sim NB(M_j \cdot p_{gi}, \phi_g) \]
-where $p_{gi}$ represents the proportion of the sequenced sample for group $i$ that is tag $g$ and $M_j$ represents the library size. 
-
-It is of interest to find genes where, for example, $p_{g1}$ is significantly different from $p_{g2}$.  The parameter $\phi_g$ is the overdispersion (relative to the Poisson) and represents the biological, or sample-to-sample variability.   The methods we developed moderate the dispersion estimates towards a common dispersion, much like how the \limma~package moderates the variances in the analysis of microarray data. It is also possible to analyse DGE data using a common dispersion for each tag using \edgeR.
 
 \section{Normalization issues for digital counts}
 
@@ -99,11 +92,9 @@ For some datasets, no other normalization is required for evaluating differentia
 \subsection{Calculating normalization factors}
 
 
-Recently, \citet{Robinson:2010p145} described a method to account for a bias introduced by what they call RNA composition.  In brief, there are occasions when comparing different DGE libraries where a small number of genes are very highly expressed in one sample, but not in another.  Because these highly expressed genes consume a substantial proportion of the sequencing ``real estate'', the remaining genes in the library are undersampled.  Similarly, this situation may occur when the two tissues being compared have transcriptomes of different sizes, i.e., when there are noticeably more transcripts expressed in one tissues than the other.
+Recently, \citet{Robinson:2010p145} described a method to account for a bias introduced by what they call RNA composition.  In brief, there are occasions when comparing different DGE libraries where a small number of genes are very highly expressed in one sample, but not in another.  Because these highly expressed genes consume a substantial proportion of the sequencing ``real estate'', the remaining genes in the library are undersampled.  Similarly, this situation may occur when the two tissues being compared have transcriptomes of different sizes, i.e.~when there are noticeably more transcripts expressed in one tissues than the other.
 \citet{Robinson:2010p145} show that in comparing kidney and liver RNA, there are a large number of genes expressed in kidney but not in liver, causing the remaining genes to be undersampled and skewing the differential expression calls.
 To account for this, the authors developed an empirical approach to estimate the bias and proposed to build that into the library size (or, an offset in a generalized linear model), making it an {\em effective} library size.  We demonstrate this below on the \citet{Marioni:2008p93} RNA-seq dataset.
-
-
 
 
 Given a table counts or a \texttt{DGEList} object, one can calculate normalization factors using the \texttt{calcNormFactors()} function.
@@ -177,10 +168,74 @@ To see the bias and normalization visually, consider a smear plot between the fi
 
 
 
+\section{Negative binomial models}
+The basic model we use for DGE data is based on the negative binomial distribution.  The model is very flexible.  For example, if $Y$ is distributed as $NB(\mu,\phi)$, then the expected value of $Y$ is $\mu$ and the variance is $\mu + \mu^2 \cdot \phi$, thus giving sufficient flexibility for many scenarios in observing count data.
+
+The observed data can be denoted as $Y_{gij}$ where $g$ is the gene (tag, exon, etc.), $i$ is the experimental group and $j$ is the index of the replicate.  We can model the counts as
+\[  Y_{gij} \sim NB(M_j \cdot p_{gi}, \phi_g) \]
+where $p_{gi}$ represents the proportion of the sequenced sample for group $i$ that is tag $g$ and $M_j$ represents the library size. 
+
+It is of interest to find genes where, for example, $p_{g1}$ is significantly different from $p_{g2}$.  The parameter $\phi_g$ is the overdispersion (relative to the Poisson) and represents the biological, or sample-to-sample variability.   The methods we developed moderate the dispersion estimates towards a common dispersion, much like how the \limma~package moderates the variances in the analysis of microarray data. It is also possible to analyse DGE data using a common dispersion for each tag using \edgeR.
+
+\section{Estimating dispersions}
+
+\subsection{Two ways of estimating dispersions}
+
+When a negative binomial model is fitted, we need to estimate the dispersion(s) before we carry out the analysis. \edgeR\ provides two ways of estimating the dispersion(s), the quantile-adjusted conditional maximum likelihood (qCML) method and the Cox-Reid profile-adjusted likelihood (CR) method. In general, we apply the qCML method to experiments with single factor and the CR method to experiments with multiple factors.
+
+\subsection{Experiment with single factor}
+
+Compared against several other estimators (e.g.~maximum likelihood estimator, Quasi-likelihood estimator etc.) using an extensive simulation study, qCML is the most reliable in terms of bias on a wide range of conditions and specifically performs best in the situation of many small samples with a common dispersion, the model which is applicable to Next-Gen sequencing data. We have deliberately focused on very small samples due to the fact that DNA sequencing costs prevent large number of replicates for SAGE and RNA-seq experiments.
+
+For a single tag with a small number of libraries, all estimators offer mediocre performance and here is no clear winner. As the number of tags used to estimate the common dispersion increases while holding the number of libraries at a small number, qCML is clearly the best estimator. With more libraries, CR method performs about as well as qCML.
+
+The qCML method calculates the likelihood conditioning on the total counts for each tag, and uses pseudo counts after adjusted for library sizes. Given a table counts or a \texttt{DGEList} object, the qCML common dispersion can be calculated using the \texttt{estimateCommonDisp()} function, and the qCML tagwise dispersions can be calculated using the \texttt{estimateTagwiseDisp()} function.  
+
+However, the qCML method is only applicable on dataset with single factor design since it fails to take into account the effects from multiple factors in a more complicated experiment. Therefore, the qCML method (i.e.~the \texttt{estimateCommonDisp()} and \texttt{estimateTagwiseDisp()} function) is recommended for a study with single factor. When experiment has more than one factor involved, we need to seek a new way of estimating dispersions.
+
+For more detailed examples, see the case studies in section \ref{zhang} (Zhang's data), section \ref{hoen} ('t Hoen's data) and section \ref{li} (Li's data)
+
+\subsection{Experiment with multiple factors}
+
+The CR method is derived to overcome the limitations of the qCML method as mentioned above. It takes care of multiple factors by fitting generalized linear models (GLM) with a design matrix.
+
+The CR method is based on the idea of approximate conditional likelihood which reduces to residual maximum likelihood. Given a table counts or a \texttt{DGEList} object and the design matrix of the experiment, generalized linear models are fitted. This allows valid estimation of the dispersion, since all systematic sources of variation are accounted for. The CR common dispersion and tagwise dispersions can be calculated using the \texttt{estimateCRDisp()} function (for tagwise dispersions, set \texttt{`tagwise = TRUE'} within the function), and it is strongly recommended in multi-factor experiment cases.
+
+For more detailed examples, see the case study in section \ref{tuch} (Tuch's data).
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\section{Testing for DE genes/tags}
+
+\subsection{Two ways of testing for differential expression}
+
+For all the Next-Gen squencing data analyses we consider here, people are most interested in finding differentially expressed genes/tags between two (or more) groups. 
+
+Once negative binomial models are fitted and dispersion estimates are obtained, we can proceed with testing procedures for determing differential expression. \edgeR\ provides two ways of testing differential expression, the exact test and the generalized linear model (GLM) likelihood ratio test.   
+
+\subsection{Experiment with single factor}
+
+The exact test is based on the qCML methods. Knowing the conditional distribution for the sum of counts in a group, we can compute exact $p$-values by summing over all sums of counts that have a probability less than the probability under the null hypothesis of the observed sum of counts. The exact test for the negative binomial distribution has strong parallels with Fisher's exact test.
+
+As we dicussed in the previous section, the exact test is only applicable to experiments with a single factor. The testing can be done by using the function \texttt{exactTest()}, and the function allows both common dispersion and tagwise dispersion approaches. 
+
+For more detailed examples, see the case studies in section \ref{zhang} (Zhang's data), section \ref{hoen} ('t Hoen's data) and section \ref{li} (Li's data).
+
+\subsection{Experiment with multiple factors}
+
+The GLM likelihood ratio test is based on the idea of fitting negative binomial GLMs with the Cox-Reid dispersion estimates. By doing this, it automatically takes all known sources of varations into account. Therefore, the GLM likelihood ratio test is recommended for experiment with multiple factors. 
+
+The testing can be done by using the functions \texttt{glmFit()} and \texttt{glmLRT()}. Given raw counts, a fixed value for the dispersion parameter and a design matrix, the function \texttt{glmFit()} fits the negative binomial GLM for each tag and produces an object of class \texttt{DGEGLM} with some new components. 
+
+Then this \texttt{DGEGLM} object can be passed to the function \texttt{glmLRT()} to carry out the likelihood ratio test. User can select coefficient(s) to drop from the full design matrix. This gives the null model against which the full model is compared with in the likelihood ratio test. Tags can then be ranked in order of evidence for differential expression, based on the $p$-value computed for each tag. 
+
+For more detailed examples, see the case study in section \ref{tuch} (Tuch's data).
+
+
 
 %%% CASE STUDIES
 
-\section{Case study: SAGE data}
+\section{Case study: SAGE data} \label{zhang}
 \subsection{Introduction}
 This section provides a detailed analysis of data from a SAGE experiment to illustrate the data analysis pipeline for \edgeR. The data come from a very early study using SAGE technology to analyse gene expression profiles in human cancer cells  \citep{Zhang:1997p13}.
 
@@ -764,7 +819,7 @@ and took 2--3 minutes to carry out on an Apple MacBook with a 2.4 Ghz Intel Core
 
 
 
-\section{Case Study: deep-sequenced short tags}
+\section{Case Study: deep-sequenced short tags}\label{hoen}
 \subsection{Introduction}
 This section provides a detailed analysis of data from an experiment seeking to compare deep-sequenced tag-based expression profiling to the microarray platforms that had been previously used to conduct such studies~\citep{THoen:2008p9}. 
 
@@ -1461,7 +1516,7 @@ and took 5--10 minutes to carry out on an Apple MacBook with a 2.4 Ghz Intel Cor
 
 
 
-\section{Case Study: RNA-seq data}
+\section{Case Study: RNA-seq data}\label{li}
 \subsection{Introduction}
 This section provides a detailed analysis of data from a study by \citet{Li08} designed to address a range of practical issues in RNA-seq experiments:
 \begin{enumerate}
@@ -2025,7 +2080,7 @@ ENSG00000137404 -33.44594 -33.14022 5.612659e-07 9.183854e-06
 \end{Soutput}
 \end{Schunk}
 
-The tables below shows the quantile-adjusted counts (i.e. counts for equalised library sizes) for the genes that \edgeR~has identified as the most differentially expressed, using the common dispersion and tagwise dispersions. For these tags, using both methods, there seem to be very large differences between the groups, suggesting that the DE genes identified are truly differentially expressed, and not false positives. 
+The tables below shows the quantile-adjusted counts (i.e.~counts for equalised library sizes) for the genes that \edgeR~has identified as the most differentially expressed, using the common dispersion and tagwise dispersions. For these tags, using both methods, there seem to be very large differences between the groups, suggesting that the DE genes identified are truly differentially expressed, and not false positives. 
 
 We saw for \citet{THoen:2008p9}'s data how much more consistent the
 counts \emph{within} groups are for the top tags identified using
@@ -2176,6 +2231,482 @@ loaded via a namespace (and not attached):
 and took 2--4 minutes to carry out on an Apple MacBook with a 2.4 Ghz Intel Core 2 Duo processor and 4 Gb of 1067 MHz DDR3 memory.
 
 
+
+
+\section{Case study: Oral carcinomas vs matched normal tissue}\label{tuch}
+\subsection{Introduction}
+This section provides a detailed analysis of data from a paired design RNA-seq experiment, featuring oral squamous cell carcinomas and matched normal tissue from three patients \citep{Tuch:2010p457}. For a paired design, as we discussed before, we have to apply the Cox-Reid (CR) method in estimating dispersions and the GLM method in detecting DE tags.
+
+\subsection{Source of the data}
+The dataset is obtained from the NCBI's Gene Expression Omnibus (GEO) (\url{http://www.ncbi.nlm.nih.gov/geo/}). It was produced using the Applied Biosystems (AB) SOLiD System 3.0, and is described in \citet{Tuch:2010p457}. The data downloaded from GEO consisted of a file for each of the six samples, each of which contained mapped reads in AB's MAX format (similar to FASTA). The raw reads had been mapped by \citet{Tuch:2010p457} to the UCSC hg18 reference genome. In order to analyse these data in \R\ it was necessary to generate, from the MAX files, a file for each sample that contained the number of counts for each gene sequenced and successfully mapped, as well as the gene ID's corresponding to the reads.
+
+AB supply some software tools for the analysis of RNA-seq data from the SOLiD platform. One function, \code{count\_tags.pl} exists to count the number of reads mapping to each position of the genome and provide the associated gene and transcript ID's, as well as other information such as chromosome and precise start and end points of the read.
+
+According to \citet{Tuch:2010p457}'s paper, the reads were mapped to the UCSC hg18 reference genome. A reference annotation file was created using the AB function \code{refgene2gff.sh} (the default annotation for the AB software).
+
+The file produced by \code{count\_tags.pl} contains a row for each unique exon position in the genome to which reads map. For each row there are many columns which provide information including the matching gene and transcript ID's, the starting point and ending points for the reads and the count (number) of reads for that position in the genome. One such file was produced for each of the six samples.
+
+The final task to produce data files that \edgeR\ can handle was to simplify the files output by \code{count\_tags.pl} into files with just one row for each gene ID and the appropriate count for each gene ID.
+
+\subsection{Reading in the data and creating a \texttt{DGEList} object}
+
+Our first task is to load the \edgeR\ package, read the data into \R\ and organise the data into a \texttt{DGEList} object that the functions in the package can recognise. The library size is usually the total sum of all of the counts for a library, and that is how library size is defined in this analysis. The easiest way to construct an appropriate \texttt{DGEList} object for these data is described below. In this case, the tag counts for the four individual libraries are stored in six separate plain text files. 
+
+In each file, the tag IDs and counts for each tag are provided in a table. It is best to create a tab-delimited, plain-text `Targets' file, which, under the headings `files', `group' and `description', gives the filename, the experimental group and a brief description for each sample.
+
+The \texttt{targets} object is produced when the \texttt{Targets.txt} file is read into the \R\ session. This object makes a convenient argument to the function \texttt{readDGE} which reads the tables of counts into our \R\ session, calculates the sizes of the count libraries and produces a \texttt{DGEList} object for use by subsequent functions.
+
+
+\begin{Schunk}
+\begin{Sinput}
+> library(edgeR)
+> setwd("C:/Users/yuchen/Documents/R/2010.05.15 Cox-Reid/Data/TuchData")
+> targets <- read.delim(file="targets.txt",stringsAsFactors=FALSE,
++ row.names = "label")
+> targets$tissue <- factor(targets$tissue)
+> targets$patient <- factor(targets$patient)
+> targets
+\end{Sinput}
+\begin{Soutput}
+                                files tissue patient
+N8   GSM515513_N8_gene_agg_counts.txt normal       8
+T8   GSM515514_T8_gene_agg_counts.txt tumour       8
+N33 GSM515515_N33_gene_agg_counts.txt normal      33
+T33 GSM515516_T33_gene_agg_counts.txt tumour      33
+N51 GSM515517_N51_gene_agg_counts.txt normal      51
+T51 GSM515518_T51_gene_agg_counts.txt tumour      51
+\end{Soutput}
+\begin{Sinput}
+> d.tuch <- readDGE(targets,skip=1,comment.char='#')
+> colnames(d.tuch) <- row.names(targets)
+> d.tuch <- calcNormFactors(d.tuch)
+> d.tuch
+\end{Sinput}
+\begin{Soutput}
+An object of class "DGEList"
+$samples
+                                files tissue patient lib.size norm.factors
+N8   GSM515513_N8_gene_agg_counts.txt normal       8  8859892       1.1511
+T8   GSM515514_T8_gene_agg_counts.txt tumour       8  8270556       1.0695
+N33 GSM515515_N33_gene_agg_counts.txt normal      33 17635449       0.7049
+T33 GSM515516_T33_gene_agg_counts.txt tumour      33 15741712       0.9524
+N51 GSM515517_N51_gene_agg_counts.txt normal      51 24009496       1.0427
+T51 GSM515518_T51_gene_agg_counts.txt tumour      51 16967249       1.1603
+
+$counts
+         N8  T8   N33  T33   N51  T51
+A1CF      0   0     0    0     0    0
+A2BP1   188   1   154    1   711   57
+A2LD1    10   0    18   13    40   22
+A2M    2238 261  2375  612 15351 2003
+A2ML1 11751 911 13305 3080  6935 1156
+21783 more rows ...
+\end{Soutput}
+\end{Schunk}
+
+
+
+This \texttt{DGEList} is now ready to be passed to the functions that do the calculations to determine differential expression levels for the genes. Note that when we `see' the \texttt{DGEList} object \texttt{d.tuch}, the counts for just the first five genes in the table are shown, as well as the \texttt{samples} element, which is a data frame constructed from the `Targets.txt' file and provides the filenames, groups, descriptions and library sizes for the samples.
+
+However, for this dataset, there were over 20 000 unique tags sequenced, some of which have a very small number of counts in total across all libraries. Since it is not possible to achieve statistical significance with fewer than ten counts in total for a tag, we filter out tags with nine or fewer counts in total---this also helps to speed up the calculations we need to perform. The subsetting capability of \texttt{DGEList} objects makes such filtering very easy to carry out.
+
+\begin{Schunk}
+\begin{Sinput}
+> d.tuch <- d.tuch[rowSums(d.tuch$counts) > 9, ]
+\end{Sinput}
+\end{Schunk}
+
+Now the dataset is ready to be analysed for differential expression.
+
+\subsection{Producing an MDS plot}
+
+Before proceeding with the computations for differential expression, it is possible to produce a plot showing the sample relations based on multidimensional scaling. The function \texttt{plotMDS.dge} produces an MDS plot for the samples when provided with the \texttt{DGEList} object, as shown in Figure~\ref{fig:Tuch_MDS}.
+
+\begin{Schunk}
+\begin{Sinput}
+> plotMDS.dge(d.tuch, main="MDS Plot for Tuch Data")
+\end{Sinput}
+\end{Schunk}
+
+From the MDS plot, it can be seen that the libraries T33 and T8 (tumour samples from patients 33 and 8 respectively) are most different from the other samples, but we will not remove them from the analysis as we will just be demonstrating the use of \edgeR.
+
+\begin{figure}[ht]
+\begin{center}
+\includegraphics[width=0.9\textwidth]{edgeR_case_study_Tuch_MDSplot.png}
+\caption{Multidimensional scaling (MDS) plot for the Tuch data,
+  showing the relations between the samples in two dimensions. From
+  this plot, the samples T33 and T8 can be identified easily as outliers---there is a large distance between these two samples and the others.}
+\label{fig:Tuch_MDS}
+\end{center}
+\end{figure}
+
+\subsection{The design matrix}
+
+Before we fit negative binomial GLMs, we need to define our design matrix based on the experimental design. Here we want to test for differential expressions between tumour and normal tissues within patients, i.e.~adjusting for differences between patients. In statistical terms, this is an additive linear model with patient as the blocking factor. So the full design matrix can be created as follows.
+
+\begin{Schunk}
+\begin{Sinput}
+> design <- model.matrix(~ patient + tissue, data = targets)
+> design
+\end{Sinput}
+\begin{Soutput}
+    (Intercept) patient33 patient51 tissuetumour
+N8            1         0         0            0
+T8            1         0         0            1
+N33           1         1         0            0
+T33           1         1         0            1
+N51           1         0         1            0
+T51           1         0         1            1
+attr(,"assign")
+[1] 0 1 1 2
+attr(,"contrasts")
+attr(,"contrasts")$patient
+[1] "contr.treatment"
+
+attr(,"contrasts")$tissue
+[1] "contr.treatment"
+\end{Soutput}
+\end{Schunk}
+
+This is the design matrix under the alternative hypothesis (i.e.~the difference between the normal tissue and the tumour tissue does exist), and the design matrix under the null hypothesis is just the above matrix without the last column. 
+
+
+\subsection{Analysis using Cox-Reid common dispersion}
+
+\subsubsection{Estimating the Cox-Reid common dispersion}
+
+The first major step in the analysis of DGE data using the NB model is to estimate the dispersion parameter for each tag. Note that this is a paired design experiment, so the dispersion has to be estimated in a different way such that both the cell-type and the patient factors are taken into account.
+
+Like the qCML method (i.e.,the \texttt{estimateCommonDisp()} and the \texttt{estimateTagwiseDisp()} function) we used in previous case studies, the CR method also calculates both the common dispersion and tagwise dispersions. The most straight-forward analysis for a paired design experiment uses the CR common dispersion estimate as the dispersion for all tags. For many applications this will be adequate and it may not be necessary to estimate the CR tagwise dispersions, i.e.~estimate the CR dispersion separately for each tag.
+
+Estimating the CR common dispersion is done using the function \texttt{estimateCRDisp()}. Once we have the design matrix, we pass it to the \texttt{estimateCRDisp()} function, together with the \texttt{DGEList} object `d.tuch'.
+\begin{Schunk}
+\begin{Sinput}
+> d.tuch <- estimateCRDisp(d.tuch, design)
+> names(d.tuch)
+\end{Sinput}
+\begin{Soutput}
+[1] "samples"              "counts"              
+[3] "design"               "CR.common.dispersion"
+\end{Soutput}
+\end{Schunk}
+
+The output of \code{estimateCRDisp} is a \texttt{DGEList} object with several new elements. The element \code{CR.common.dispersion}, as the name suggests, provides the estimate of the Cox-Reid common dispersion, and \code{design} gives the design matrix as we defined at the start.
+
+Under the negative binomial model, the square root of the common dispersion gives the coefficient of variation of biological variation. Here the common dispersion is found to be $0.2281$, so the coefficient of biological variation is around $0.478$.
+
+\begin{Schunk}
+\begin{Sinput}
+> d.tuch$CR.common.dispersion
+\end{Sinput}
+\begin{Soutput}
+[1] 0.2281214
+\end{Soutput}
+\begin{Sinput}
+> sqrt(d.tuch$CR.common.dispersion)
+\end{Sinput}
+\begin{Soutput}
+[1] 0.4776205
+\end{Soutput}
+\end{Schunk}
+
+\subsubsection{Testing}
+Once we have an estimate of the CR common dispersion, we can proceed with testing procedures for determining differential expression. Since this is a paired design experiment, we have to use the new testing method, the GLM method, rather than the exact test (the one we demonstrated in the previous case studies). 
+
+The GLM method fits a negative binomial generalized linear model for each gene/tag with the unadjusted counts provided, a value for the dispersion parameter and, optionally, offsets and weights for different libraries or transcripts. This is done using the funtion \texttt{glmFit()} and \texttt{glmLRT()}. 
+
+The function \texttt{glmFit()} calls the in-built function \texttt{glm.fit()} to fit the NB GLM for each tag and produces an object of class \texttt{DGEGLM}. Once we have a fit for a given design matrix, \texttt{glmLRT()} can be run with a given coefficient or contrast specified and evidence for differential expression can be assessed using a likelihood ratio test. The \texttt{glmLRT} function produces an object of class \texttt{DGELRT} with a table containing the abundance of each tag (log-concentration, logConc), the log-fold change of expression between conditions/contrasts being tested (logFC), the likelihood ratio statistic (LR.statistic) and the p-value from the LR test (p.value), for each tag in the dataset. Then tags can be ranked in order of evidence for differential expression, based on either the $p$-value or the log-fold change of expression computed for each tag.
+
+The results of the NB GLM likelihood ratio test can be accessed conveniently using the \texttt{topTags} function applied to the object produced by \texttt{glmLRT}. The user can specify the number, \texttt{n}, of tags for which they would like to see the differential expression information, ranked by $p$-value (default) or fold change. As the same test is conducted for many thousands of tags, adjusting the $p$-values for multiple testing is recommended. The desired adjustment method can be supplied by the user, with the default method being Benjamini and Hochberg's approach for controlling the false discovery rate (FDR)~\citep{Benjamini95}. The table below shows the top $10$ DE genes ranked by $p$-value.
+
+\begin{Schunk}
+\begin{Sinput}
+> glmfit.tuch <- glmFit(d.tuch, design, 
++ dispersion = d.tuch$CR.common.dispersion)
+> lrt.tuch <- glmLRT(d.tuch, glmfit.tuch)
+> options(digits = 4)
+> topTags(lrt.tuch)
+\end{Sinput}
+\begin{Soutput}
+          logConc  logFC    PValue       FDR
+TMPRSS11B  -12.49 -7.371 1.802e-20 3.926e-16
+CKM        -11.66 -7.177 1.252e-18 1.364e-14
+TNNC2      -14.60 -6.817 2.236e-18 1.624e-14
+MAL        -13.11 -6.872 3.836e-18 2.089e-14
+CRNN       -10.28 -7.247 5.259e-18 2.292e-14
+PI16       -15.61 -6.574 2.457e-17 8.922e-14
+MYBPC1     -11.96 -7.033 5.465e-17 1.701e-13
+IL1F6      -14.74 -6.140 1.185e-16 3.228e-13
+KRT36      -16.17 -7.342 2.215e-16 5.363e-13
+MUC21      -12.89 -6.794 6.358e-16 1.385e-12
+\end{Soutput}
+\end{Schunk}
+
+The output shows that the \edgeR~package identifies a good deal of differential expression between the normal tissue group and the tumour tissue group. The top DE tags are given very small $p$-values, even after adjusting for multiple testing. Furthermore, all of the top tags have a large fold change, indicating that these tags are more likely to be biologically meaningful.
+
+The table below shows the raw counts for the tags that \edgeR~has identified as the most differentially expressed. For these tags there seems to be very large differences between the groups, suggesting that the DE tags identified are truly differentially expressed, and not false positives.
+
+\begin{Schunk}
+\begin{Sinput}
+> top <- rownames(topTags(lrt.tuch)$table)
+> d.tuch$counts[top,order(d.tuch$samples$group)]
+\end{Sinput}
+\begin{Soutput}
+             N8   N33   N51 T8  T33  T51
+TMPRSS11B  2601  7874  3399  3  322    9
+CKM        4120  5203 24175  5   24 1225
+TNNC2       590  1627  1239  1    8   39
+MAL        2742  3977  1772  3  264    8
+CRNN      24178 22055 12533 49 2353   26
+PI16        231   216  1950  0    2   35
+MYBPC1     4791  4145 15766 10   14 1319
+IL1F6       367  1825   809 10   45    1
+KRT36       711   104    70  2    1    1
+MUC21      4161  3432  1722  7  517    5
+\end{Soutput}
+\end{Schunk}
+
+Note that the 2nd tag ('CKM') and the 7th tag ('MYBPC1') have much larger counts in patient 55 than in the other two patients, which shows that the effect from the patients does exist and the GLM method can pick that up.
+
+If we order the genes by fold change instead of $p$-value, as in the table below, we see that the tags with the largest fold changes have very small concentrations. This ranking is dominated by genes that have zero counts in one group and is less informative than ranking by $p$-value. 
+
+\begin{Schunk}
+\begin{Sinput}
+> topTags(lrt.tuch, sort.by = "logFC")
+\end{Sinput}
+\begin{Soutput}
+       logConc  logFC    PValue       FDR
+EMX1    -19.29  41.03 4.632e-10 5.607e-08
+MAGEA4  -18.69  40.72 1.340e-09 1.448e-07
+MAGEA3  -20.19  40.19 5.692e-08 3.626e-06
+CR2     -19.89 -40.06 5.145e-08 3.336e-06
+GSTA1   -19.85  40.01 1.873e-07 1.003e-05
+PYY2    -20.06  39.98 1.617e-07 8.831e-06
+GJB7    -20.63  39.96 9.991e-07 4.211e-05
+CST1    -21.08  39.95 2.646e-07 1.356e-05
+MAGEA6  -20.50  39.63 1.182e-06 4.825e-05
+FBP2    -19.50 -39.36 4.798e-12 1.275e-09
+\end{Soutput}
+\begin{Sinput}
+> top <- rownames(topTags(lrt.tuch, sort.by = "logFC")$table)
+> d.tuch$counts[top,order(d.tuch$samples$group)]
+\end{Sinput}
+\begin{Soutput}
+       N8 N33 N51  T8 T33 T51
+EMX1    0   0   0  43  67   0
+MAGEA4  0   0   0 121   0  10
+MAGEA3  0   0   0  38   0  14
+CR2     0  73   8   0   0   0
+GSTA1   0   0   0  51   9   0
+PYY2    0   0   0  45   0   8
+GJB7    0   0   0   0   0  73
+CST1    0   0   0   0  10  40
+MAGEA6  0   0   0  33   0   6
+FBP2   40  38  28   0   0   0
+\end{Soutput}
+\end{Schunk}
+
+We see in the output below that $2700$ tags are significantly differentially expressed according to \edgeR~when using the CR common dispersion estimate and GLM likelihood ratio test. Of those tags, $530$ are up-regulated in the tumour tissues compared with the normal tissues and $2170$ are down-regulated in the tumour tissues compared with normal tissues.
+
+\begin{Schunk}
+\begin{Sinput}
+> summary(decideTestsDGE(lrt.tuch))
+\end{Sinput}
+\begin{Soutput}
+   [,1] 
+-1  2170
+0  19088
+1    530
+\end{Soutput}
+\end{Schunk}
+
+
+\subsection{Analysis using Cox-Reid tagwise dispersion}
+
+\subsubsection{Estimating the Cox-Reid tagwise dispersion}
+
+An extension to simply using the CR common dispersion for each tag is to estimate the CR dispersion separately for each tag, while `squeezing' these estimates towards the CR common dispersion estimate in order to improve inference by sharing information between tags. This type of analysis can also be carried out in few steps using the \edgeR~package.
+
+As noted earlier, the dispersion parameter is the overdispersion relative to the Poisson, and represents the biological, or sample-to-sample variability. The methods we have developed moderate the dispersion estimates towards a common dispersion, much like how the \limma~package moderates the variances in the analysis of microarray data.
+
+The amount of moderation done is determined by the value of a weight parameter \code{prior.n}. The value for \code{prior.n} corresponds to the number of individual tags equivalent to the weight given to the common likelihood. Thus, the higher \code{prior.n}, the more strongly the individual dispersion estimates are moderated, or `squeezed', towards the common value. To run the moderated analysis, we need to determine how much moderation is necessary. How best to do this is still an open research
+question, but we currently recommend selecting a value for the weight parameter \code{prior.n} \emph{a priori} and have found that very good results can be obtained this way.
+
+In an experiment such as that we consider here, in which we have just six samples, with two groups (group factor) and three patients (blocking factor), and thus two degrees of freedom for estimating the dispersion parameter. Standard tagwise
+dispersion estimates are likely to be unreliable, so we want to give a reasonable weight to the common likelihood. We need to choose a value for \code{prior.n} such that individual tagwise dispersion estimates are `squeezed' quite strongly
+towards the common dispersion. Here, we choose a moderate amount of smoothing---we let \code{prior.n} be $10$. This means that the
+common likelihood receives the weight of $10$ individual tags, so there will be a reasonable degree of `squeezing', but there is still ample scope to estimate an individual dispersion for each tag.
+
+The function \code{estimateCRDisp} produces a DGEList object that contains all of the CR tagwise dispersion estimates when the argument \texttt{'tagwise'} is set as \texttt{TRUE}, as we see below.
+
+\begin{Schunk}
+\begin{Sinput}
+> d.tuch.tgw <- estimateCRDisp(d.tuch, design, tagwise = TRUE, prior.n = 10)
+> names(d.tuch.tgw)
+\end{Sinput}
+\begin{Soutput}
+[1] "samples"               "counts"               
+[3] "design"                "CR.common.dispersion" 
+[5] "CR.tagwise.dispersion"
+\end{Soutput}
+\begin{Sinput}
+> head(d.tuch.tgw$CR.tagwise.dispersion)
+\end{Sinput}
+\begin{Soutput}
+[1] 0.2281 0.2975 0.2357 0.2003 0.2108 0.2733
+\end{Soutput}
+\end{Schunk}
+
+It is interesting to consider the distribution of the CR tagwise dispersion estimates. As we can see from the output below, the CR tagwise dispersion estimates range from a minimum of $0.131$ to a maximum of $0.777$. The range of dispersions is therefore large, but the tags in the middle two quartiles of the CR tagwise dispersion estimates have dispersion estimates close to the CR common dispersion estimate.
+
+\begin{Schunk}
+\begin{Sinput}
+> summary(d.tuch.tgw$CR.tagwise.dispersion)
+\end{Sinput}
+\begin{Soutput}
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+  0.131   0.206   0.224   0.229   0.230   0.777
+\end{Soutput}
+\end{Schunk}
+
+
+\subsubsection{Testing}
+The testing procedures when using CR tagwise dispersion estimates are carried out exactly as for the CR common dispersion, as described above. Here we carry out the testing using the CR tagwise dispersion estimates calculated using a \code{prior.n} value of ten. The GLM fit and the likelihood ratio test are done using the same functions as before (i.e.~\texttt{glmFit()} and \texttt{glmLRT()}), the only difference is that we use CR tagwise dispersions as the dispersion in the \texttt{glmFit()} function.
+
+\begin{Schunk}
+\begin{Sinput}
+> glmfit.tuch.tgw <- glmFit(d.tuch.tgw, design, 
++ dispersion = d.tuch.tgw$CR.tagwise.dispersion)
+> lrt.tuch.tgw <- glmLRT(d.tuch.tgw, glmfit.tuch.tgw)
+\end{Sinput}
+\end{Schunk}
+
+The output below shows that when using CR tagwise dispersions, the \edgeR~package still identifies a lot of differential expression between the normal tissue group and the tumour tissue group. This arises because the moderated tagwise dispersions can be much smaller than the common dispersion, and tags with smaller dispersions will have smaller $p$-values than the same tags with $p$-values computed using a common dispersion. As with the analysis using the common dispersion, all of the top tags have a large fold change, indicating that these changes in expression are likely to be biologically meaningful. We note that the ranking is different, however, and not all of the top ten tags according to using the common dispersion are found to be among the top ten tags using tagwise dispersions.
+
+\begin{Schunk}
+\begin{Sinput}
+> options(digits = 4)
+> topTags(lrt.tuch.tgw)
+\end{Sinput}
+\begin{Soutput}
+          logConc  logFC    PValue       FDR
+KRT36      -16.17 -7.347 9.574e-17 1.869e-12
+PI16       -15.61 -6.595 1.716e-16 1.869e-12
+TMPRSS11B  -12.49 -7.444 3.055e-15 2.218e-11
+IL1F6      -14.74 -6.158 6.078e-15 2.693e-11
+TNNC2      -14.60 -6.882 6.767e-15 2.693e-11
+PTGFR      -15.38 -5.152 7.415e-15 2.693e-11
+VTCN1      -18.81  7.691 8.146e-14 2.536e-10
+DNAH17     -14.51  5.512 1.184e-13 2.948e-10
+PYGM       -13.92 -5.532 1.218e-13 2.948e-10
+PLA2G2A    -15.00 -5.587 2.304e-13 4.510e-10
+\end{Soutput}
+\end{Schunk}
+
+The table below shows the raw counts for the tags that \edgeR~has identified as the most differentially expressed using CR tagwise dispersions. For these tags there seems to be very large differences between the groups, suggesting that the DE tags identified are truly differentially expressed, and not false positives. 
+
+\begin{Schunk}
+\begin{Sinput}
+> top.tgw <- rownames(topTags(lrt.tuch.tgw)$table)
+> d.tuch.tgw$counts[top.tgw,order(d.tuch.tgw$samples$group)]
+\end{Sinput}
+\begin{Soutput}
+            N8  N33  N51  T8 T33  T51
+KRT36      711  104   70   2   1    1
+PI16       231  216 1950   0   2   35
+TMPRSS11B 2601 7874 3399   3 322    9
+IL1F6      367 1825  809  10  45    1
+TNNC2      590 1627 1239   1   8   39
+PTGFR      455  287 1736   7  12   46
+VTCN1        0    1    0  29  81   84
+DNAH17       4   22  107 678 614 2628
+PYGM      1666 1420 2477  22  17  127
+PLA2G2A    515  634 1914   1  29   52
+\end{Soutput}
+\end{Schunk}
+
+If we order the genes by fold change instead of $p$-value, as in the table below, we see that the tags with the largest fold changes have very small concentrations. This ranking is dominated by genes that have zero counts in one group and is less informative than ranking by $p$-value. 
+
+\begin{Schunk}
+\begin{Sinput}
+> topTags(lrt.tuch.tgw, sort.by = "logFC")
+\end{Sinput}
+\begin{Soutput}
+       logConc  logFC    PValue       FDR
+EMX1    -19.29  41.03 4.442e-10 1.125e-07
+MAGEA4  -18.69  40.72 1.321e-09 2.267e-07
+MAGEA3  -20.19  40.19 5.553e-08 4.144e-06
+CR2     -19.89 -40.06 5.096e-08 3.883e-06
+GSTA1   -19.85  40.01 1.844e-07 1.126e-05
+PYY2    -20.06  39.98 1.590e-07 9.897e-06
+GJB7    -20.63  39.96 1.040e-06 4.903e-05
+CST1    -21.08  39.95 2.602e-07 1.500e-05
+MAGEA6  -20.50  39.63 1.166e-06 5.383e-05
+FBP2    -19.50 -39.36 4.342e-12 4.300e-09
+\end{Soutput}
+\begin{Sinput}
+> top.tgw <- rownames(topTags(lrt.tuch.tgw, sort.by = "logFC")$table)
+> d.tuch.tgw$counts[top.tgw,order(d.tuch.tgw$samples$group)]
+\end{Sinput}
+\begin{Soutput}
+       N8 N33 N51  T8 T33 T51
+EMX1    0   0   0  43  67   0
+MAGEA4  0   0   0 121   0  10
+MAGEA3  0   0   0  38   0  14
+CR2     0  73   8   0   0   0
+GSTA1   0   0   0  51   9   0
+PYY2    0   0   0  45   0   8
+GJB7    0   0   0   0   0  73
+CST1    0   0   0   0  10  40
+MAGEA6  0   0   0  33   0   6
+FBP2   40  38  28   0   0   0
+\end{Soutput}
+\end{Schunk}
+
+We see in the output below that $2626$ tags are significantly differentially expressed according to \edgeR~when using the CR tagwise dispersion estimate and GLM likelihood ratio test. It is slightly less the total number of DE tags under the CR common dispersion method. Of those $2626$ tags, $509$ are up-regulated in the tumour tissues compared with the normal tissues and $2117$ are down-regulated in the tumour tissues compared with normal tissues.
+
+\begin{Schunk}
+\begin{Sinput}
+> summary(decideTestsDGE(lrt.tuch.tgw))
+\end{Sinput}
+\begin{Soutput}
+   [,1] 
+-1  2117
+0  19162
+1    509
+\end{Soutput}
+\end{Schunk}
+
+\subsection{Setup}
+This analysis of \citet{Tuch:2010p457}'s RNA-seq data was conducted on:
+\begin{Schunk}
+\begin{Sinput}
+> sessionInfo()
+\end{Sinput}
+\begin{Soutput}
+R version 2.12.0 alpha (2010-09-20 r52948)
+Platform: i386-pc-mingw32/i386 (32-bit)
+
+locale:
+[1] LC_COLLATE=English_Australia.1252 
+[2] LC_CTYPE=English_Australia.1252   
+[3] LC_MONETARY=English_Australia.1252
+[4] LC_NUMERIC=C                      
+[5] LC_TIME=English_Australia.1252    
+
+attached base packages:
+[1] stats     graphics  grDevices utils     datasets  methods  
+[7] base     
+
+other attached packages:
+[1] limma_3.5.20 MASS_7.3-8   edgeR_1.7.19
+
+loaded via a namespace (and not attached):
+[1] tools_2.12.0
+\end{Soutput}
+\end{Schunk}
+
+
 \section{Poisson example}
 
 It has been noted that, in some deep sequencing approaches, not a great deal of overdispersion is observed.  Specifically, the means and variances appear to be very close to each other, suggesting the Poisson distribution is a good fit.  Methods within the \edgeR~package may still be useful, including the quantile adjustment (effectively a normalization) and the exact testing routines.
@@ -2205,17 +2736,17 @@ topTags(de.P)
 plotSmear(dP,col=c( rep("blue",5), rep("black",n-5) ))
 @
 
-\section{Future improvements and extension}
+%\section{Future improvements and extension}
 
-Here, we list some improvements/extensions that are planned for the \edgeR~package:
+%Here, we list some improvements/extensions that are planned for the \edgeR~package:
 
-\begin{enumerate}
-\item As the packages for the processing of raw high-throughput sequencing data become more mature, \edgeR~may need to adapt and operate on different objects.  As shown above, \edgeR~operates on a simple object containing simple data summaries which will  presumably be readily available from pre-processing steps.
-\item Significant speed improvements have been made since the earlier
-  versions of \edgeR, but as the datasets become larger, some further optimizations may be necessary.  We are exploring various ways to do this.
-\item The current quantile-based normalization assumes the library sizes are fixed.  Depending on the circumstances of the samples in question, it may be necessary to explore something like an {\em effective} library size.
-\item We are exploring more general testing procedures.
-\end{enumerate}
+%\begin{enumerate}
+%\item As the packages for the processing of raw high-throughput sequencing data become more mature, \edgeR~may need to adapt and operate on different objects.  As shown above, \edgeR~operates on a simple object containing simple data summaries which will  presumably be readily available from pre-processing steps.
+%\item Significant speed improvements have been made since the earlier
+%  versions of \edgeR, but as the datasets become larger, some further optimizations may be necessary.  We are exploring various ways to do this.
+%\item The current quantile-based normalization assumes the library sizes are fixed.  Depending on the circumstances of the samples in question, it may be necessary to explore something like an {\em effective} library size.
+%\item We are exploring more general testing procedures.
+%\end{enumerate}
 
 %<<setupfiles>>=
 %getwd()
