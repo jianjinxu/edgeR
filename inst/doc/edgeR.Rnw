@@ -526,7 +526,7 @@ In Figure~\ref{fig:Zhang_FC1}, the $264$ tags identified as differentially expre
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics[width=\textwidth]{edgeR_case_study_Zhang-015.png}
+\includegraphics[height=0.45\textheight]{edgeR_case_study_Zhang-015.png}
 \caption{Plot of the log-fold change against the log-concentration for each tag. The 264 most differentially expressed tags as identified by \edgeR~using the common dispersion are outlined in red.}
 \label{fig:Zhang_FC1}
 \end{center}
@@ -786,7 +786,7 @@ In Figure~\ref{fig:Zhang_FC2}, the $309$ tags identified as differentially expre
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics[width=\textwidth]{edgeR_case_study_Zhang-028.png}
+\includegraphics[height=0.45\textheight]{edgeR_case_study_Zhang-028.png}
 \caption{Plot of the log-fold change against the log-concentration for each tag. The 264 most differentially expressed tags as identified by \edgeR~are outlined in red.}
 \label{fig:Zhang_FC2}
 \end{center}
@@ -943,7 +943,7 @@ just be demonstrating the use of \edgeR.
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics[width=0.9\textwidth]{edgeR_case_study_longSAGE_MDSplot.pdf}
+\includegraphics[height=0.45\textheight]{edgeR_case_study_longSAGE_MDSplot.pdf}
 \caption{Multidimensional scaling (MDS) plot for the `t Hoen data,
   showing the relations between the samples in two dimensions. From
   this plot, the sample GSM272322 can be identified easily as an
@@ -1154,7 +1154,7 @@ The code for producing the default fold-change plot, with the top $500$ most DE 
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics[width=\textwidth]{edgeR_case_study_longSAGE-015.png}
+\includegraphics[height=0.45\textheight]{edgeR_case_study_longSAGE-015.png}
 \caption{Plot of the log-fold change against the log-concentration for each tag. The $500$ most differentially expressed tags as identified by \edgeR~using the common dispersion are outlined in red.}
 \label{fig:longSAGE_FC1}
 \end{center}
@@ -1482,7 +1482,7 @@ In Figure~\ref{fig:longSAGE_FC2}, the top $500$ most differentially expressed ta
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics[height=0.9\textheight]{edgeR_case_study_longSAGE-030.png}
+\includegraphics[height=0.8\textheight]{edgeR_case_study_longSAGE-030.png}
 \caption{Plots of the log-fold change against the log-concentration for each tag, using the common dispersion (upper), and tagwise dispersions (lower). Tags with positive fold-change here are up-regulated in wild-type compared with transgenic mice. The $500$ most differentially expressed tags according to each method are highlighted in red on both plots.}
 \label{fig:longSAGE_FC2}
 \end{center}
@@ -1614,7 +1614,7 @@ between the samples we can proceed to the DE analysis of the data.
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics[width=0.9\textwidth]{edgeR_case_study_Li_MDSplot.pdf}
+\includegraphics[height=0.45\textheight]{edgeR_case_study_Li_MDSplot.pdf}
 \caption{Multidimensional scaling (MDS) plot for the Li data, showin
   the relations between the samples in two dimensions. From this plot,
   Lane 8 may be identified easily as an outlier, but we note that the
@@ -1901,7 +1901,7 @@ The code for producing the default fold-change plot, with the top $500$ most DE 
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics[width=\textwidth]{edgeR_case_study_Li-017.png}
+\includegraphics[height=0.45\textheight]{edgeR_case_study_Li-017.png}
 \caption{Plot of the log-fold change against the log-concentration for each tag. The $500$ most differentially expressed tags as identified by \edgeR~using the common dispersion are outlined in red.}
 \label{fig:Li_FC1}
 \end{center}
@@ -2198,7 +2198,7 @@ In Figure~\ref{fig:Li_FC2}, the top $500$ most differentially expressed genes (t
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics[height=0.9\textheight]{edgeR_case_study_Li-032.png}
+\includegraphics[height=0.8\textheight]{edgeR_case_study_Li-032.png}
 \caption{Plots of the log-fold change against the log-concentration for each tag, using the common dispersion (top), and tagwise dispersions (bottom). Tags with positive fold-change here are up-regulated in DHT-treated cells compared with control cells. The $500$ most differentially expressed tags according to each method are highlighted in red on both plots.}
 \label{fig:Li_FC2}
 \end{center}
@@ -2332,7 +2332,7 @@ From the MDS plot, it can be seen that the libraries T33 and T8 (tumour samples 
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics[width=0.9\textwidth]{edgeR_case_study_Tuch_MDSplot.png}
+\includegraphics[height=0.45\textheight]{edgeR_case_study_Tuch_MDSplot.png}
 \caption{Multidimensional scaling (MDS) plot for the Tuch data,
   showing the relations between the samples in two dimensions. From
   this plot, the samples T33 and T8 can be identified easily as outliers---there is a large distance between these two samples and the others.}
@@ -2730,10 +2730,9 @@ dP$common.lib.size <- exp(mean(log(dP$samples$lib.size)))
 
 And you can proceed as before:
 
-<<poissonstats,fig=TRUE,height=6,width=8>>=
+<<poissonstats,height=6,width=8>>=
 de.P <- exactTest(dP, dispersion=1e-06) # Set dispersion close to zero to allow exact test for Poisson data
 topTags(de.P)
-plotSmear(dP,col=c( rep("blue",5), rep("black",n-5) ))
 @
 
 %\section{Future improvements and extension}
