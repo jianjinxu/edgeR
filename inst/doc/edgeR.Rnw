@@ -211,7 +211,7 @@ The amount of shrinkage is determined by the prior weight given to the common di
 The prior can be thought of arising from a number of prior observations, equivalent to \code{prior.n} tags with common dispersion and the same number of libraries per tag as in the current experiment.
 The prior number of tags \code{prior.n} can be set by the user.
 The precision of the tagwise estimators is roughly proportion to the per-tag degrees of freedom, equal to the number of libraries minus the number of groups or the number of GLM coefficients.
-We generally recommend choosing \code{prior.n} so that the total degrees of freedom (\code{prior.n*df}) associated with the prior is about 50.
+We generally recommend choosing \code{prior.n} so that the total degrees of freedom (\code{prior.n*df}) associated with the prior is about 50, subject to \code{prior.n} not going below 1.
 For example, if there are four libraries and two groups, the tagwise degrees of freedom are 2, so we would recommend \code{prior.n=25}.
 This is an empirical rule of thumb borne out of experience with a number of datasets.
 
