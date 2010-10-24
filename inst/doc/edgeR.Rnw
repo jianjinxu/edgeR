@@ -203,6 +203,20 @@ The CR method is based on the idea of approximate conditional likelihood which r
 
 For more detailed examples, see the case study in section \ref{tuch} (Tuch's data).
 
+\subsection{Tagwise dispersion or common dispersion}
+
+\edgeR\ can estimate a common dispersion for all the tags or it can estimate separate dispersions for individual tags.
+As individual tags typically don't provide enough data to estimate the dispersion reliably, \edgeR\ implements an empirical Bayes strategy for squeezing the tagwise dispersions towards the common dispersion.
+The amount of shrinkage is determined by the prior weight given to the common dispersion and the precision of the tagwise estimates.
+The prior can be thought of arising from a number of prior observations, equivalent to \code{prior.n} tags with common dispersion and the same number of libraries per tag as in the current experiment.
+The prior number of tags \code{prior.n} can be set by the user.
+The precision of the tagwise estimators is roughly proportion to the per-tag degrees of freedom, equal to the number of libraries minus the number of groups or the number of GLM coefficients.
+We generally recommend choosing \code{prior.n} so that the total degrees of freedom (\code{prior.n*df}) associated with the prior is about 50.
+For example, if there are four libraries and two groups, the tagwise degrees of freedom are 2, so we would recommend \code{prior.n=25}.
+This is an empirical rule of thumb borne out of experience with a number of datasets.
+
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 \section{Testing for DE genes/tags}
