@@ -145,10 +145,6 @@ adjustedProfileLik <- function(dispersion, y, design, offset)
 		for(i in 1:nrow(y)) {
 			fit <- try(.glmnb.fit(design,y[i,],offset=offset[i,],dispersion=dispersion,tol=1e-5,maxit=30,start=start[i,]))
 			if(is(fit,"try-error")) {
-				cat("Error row",i,"\n")
-				yi <- y[i,]
-				oi <- offset[i,]
-				save(file=paste(i,"RData",sep="."),yi,design,oi,dispersion)
 				tgw.apl[i] <- NA
 			} else {
 				mu <- fit$fitted
