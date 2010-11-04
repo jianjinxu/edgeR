@@ -129,8 +129,7 @@ adjustedProfileLik <- function(dispersion, y, design, offset)
 ## Yunshun Chen, Gordon Smyth
 ## Created June 2010. Last modified 3 Nov 2010.
 {
-	if(!identical(dim(y), dim(offset)))
-		stop("offset must be a matrix with the same dimensions as y, the table of counts.\n")
+	if(any(dim(y)!=dim(offset))) stop("offset must be a matrix with the same dimensions as y, the table of counts.")
 	tgw.apl <- rep(0,nrow(y))
 	start <- matrix(0,nrow(y),ncol(design))
 	start[,1] <- glmNBOneGroup(y,offset,dispersion)
@@ -144,12 +143,20 @@ adjustedProfileLik <- function(dispersion, y, design, offset)
 		}
 	} else {
 		for(i in 1:nrow(y)) {
-			fit <- .glmnb.fit(design,y[i,],offset=offset[i,],dispersion=dispersion,tol=1e-5,maxit=30,start=start[i,])
-			mu <- fit$fitted
-			loglik <- sum(dnbinom(y[i,],size=1/dispersion,mu=mu,log = TRUE))
-			R <- chol(crossprod(design,.vecmat(mu/(1+dispersion*mu),design)))
-			cr <- sum(log(abs(diag(R))))
-			tgw.apl[i] <- loglik - cr
+			fit <- try(.glmnb.fit(design,y[i,],offset=offset[i,],dispersion=dispersion,tol=1e-5,maxit=30,start=start[i,]))
+			if(is(fit,"try-error")) {
+				cat("Error row",i,"\n")
+				yi <- y[i,]
+				oi <- offset[i,]
+				save(file=paste(i,"RData",sep="."),yi,design,oi,dispersion)
+				tgw.apl[i] <- NA
+			} else {
+				mu <- fit$fitted
+				loglik <- sum(dnbinom(y[i,],size=1/dispersion,mu=mu,log = TRUE))
+				R <- chol(crossprod(design,.vecmat(mu/(1+dispersion*mu),design)))
+				cr <- sum(log(abs(diag(R))))
+				tgw.apl[i] <- loglik - cr
+			}
 		}
 	}
 	tgw.apl
@@ -208,11 +215,11 @@ adjustedProfileLik <- function(dispersion, y, design, offset)
 	if(any(y < 0)) stop("y must be non-negative")
 	maxy <- max(y)
 	if(maxy==0) return(list(coefficients=rep(0,p),fitted.values=rep(0,n),deviance=NA))
-	y1 <- pmax(y,1/6)
 	phi <- dispersion
 
 #  starting values
 	if(is.null(start)) {
+		y1 <- pmax(y,1/6)
 		fit <- lm.fit(X,log(y1)-offset)
 		beta <- fit$coefficients
 		mu <- exp(fit$fitted.values+offset)
@@ -222,19 +229,17 @@ adjustedProfileLik <- function(dispersion, y, design, offset)
 	}
 
 	deviance.nb <- function(y,mu,phi) {
-		if(any(mu<0)) return(Inf)
 		o <- (y < 1e-14) & (mu < 1e-14)
 		if(any(o)) {
 			if(all(o)) {
 				dev <- 0
 			} else {
-				y1 <- y[!o]
-				mu1 <- mu[!o]
-				dev <- 2*sum(y1*log(y1/mu1) + (y1+1/phi)*log((mu1+1/phi)/(y1+1/phi)) )
+				y <- y[!o]
+				mu <- mu[!o]
 			}
-		} else {
-			dev <- 2*sum(y*log(y1/mu) + (y+1/phi)*log((mu+1/phi)/(y+1/phi)) )
 		}
+		y1 <- pmax(y,1/6)
+		2*sum(y*log(y1/mu) + (y+1/phi)*log((mu+1/phi)/(y+1/phi)) )
 	}
 
 	dev <- deviance.nb(y,mu,phi)
