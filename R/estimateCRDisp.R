@@ -88,13 +88,15 @@ estimateCRDisp <- function(y, design=NULL, offset=0, npts=10, min.disp=0, max.di
 	}
 	apl.com <- rowSums(apl.tgw)/ntags
 	if(trend){
-		cr.com <- rep(0,ntags)
-		for(j in 1:ntags) cr.com[j] <- (.maximize.by.interpolation(spline.pts, smoothy[,j]))^4
-	} else {	
-		cr.com <- (.maximize.by.interpolation(spline.pts, apl.com))^4
+			cr.com.filt <- rep(0,ntags)
+			for(j in 1:ntags) cr.com.filt[j] <- (.maximize.by.interpolation(spline.pts, smoothy[,j]))^4
+			cr.com <- rep(max(cr.com.filt),ngenes)
+			cr.com[tags.used] <- cr.com.filt
+		} else {	
+			cr.com <- (.maximize.by.interpolation(spline.pts, apl.com))^4
+			if(cr.com == min.disp || cr.com == max.disp)	
+			warning("Common dispersion not within the selected range. Reset the 'min.disp' or the 'max.disp'.")
 	}
-	if(cr.com == min.disp || cr.com == max.disp)	
-		warning("Common dispersion not within the selected range. Reset the 'min.disp' or the 'max.disp'.")
 	if(tagwise){
 		cr.tgw.filt <- rep(0, ntags)
 		if(trend){
