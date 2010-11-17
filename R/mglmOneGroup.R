@@ -1,4 +1,4 @@
-glmNBOneGroup <- function(y,offset=0,dispersion=0,maxit=50,verbose=FALSE)
+mglmOneGroup <- function(y,offset=0,dispersion=0,maxit=50,verbose=FALSE)
 #	Fit null (single-group) negative-binomial glm with log-link to DGE data
 #	18 Aug 2010. Last modified 19 Aug 2010.
 {

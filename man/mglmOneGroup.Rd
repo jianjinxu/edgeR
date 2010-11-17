@@ -40,7 +40,7 @@ Given a fixed value for the dispersion parameter, a negative binomial model can 
 y<-matrix(rnbinom(1000,mu=10,size=2),ncol=4)
 dispersion <- 0.1
 ## Fit the NB GLM to the counts
-ave.expression <- glmNBOneGroup(y, dispersion=dispersion)
+ave.expression <- mglmOneGroup(y, dispersion=dispersion)
 head(ave.expression)
 }
 
