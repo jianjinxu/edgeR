@@ -134,7 +134,7 @@ adjustedProfileLik <- function(dispersion, y, design, offset)
 	if(any(dim(y)!=dim(offset))) stop("offset must be a matrix with the same dimensions as y, the table of counts.")
 	tgw.apl <- rep(0,nrow(y))
 	start <- matrix(0,nrow(y),ncol(design))
-	start[,1] <- glmNBOneGroup(y,offset,dispersion)
+	start[,1] <- mglmOneGroup(y,offset,dispersion)
 	ls <- mglmLS(y, design, dispersion, offset = offset)
 	mu <- ls$fitted
 		for(i in 1:nrow(y)) {
