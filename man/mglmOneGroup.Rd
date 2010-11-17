@@ -1,5 +1,6 @@
-\name{glmNBOneGroup}
-\alias{glmNBOneGroup}
+\name{mglmOneGroup}
+\alias{mglmOneGroup}
+\alias{mglmLS}
 
 \title{Fit a one-group negative binomial generalized linear model for each transcript}
 
@@ -7,7 +8,8 @@
 
 
 \usage{ 
-glmNBOneGroup(y, offset=0, dispersion=0, maxit=50, verbose=FALSE)
+mglmOneGroup(y, offset=0, dispersion=0, maxit=50, verbose=FALSE)
+mglmLS(y,design,dispersion=0,start=NULL,offset=0,tol=1e-5,maxit=50,trace=FALSE)
 }
 
 \arguments{ 
@@ -15,6 +17,8 @@ glmNBOneGroup(y, offset=0, dispersion=0, maxit=50, verbose=FALSE)
 \item{y}{matrix containing the raw counts for each library (the measure of expression level) and gene}
 
 \item{offset}{matrix giving the offset that is to be included in the NB GLM for the transcripts. If a scalar, then this value will be used as an offset for all transcripts and libraries.}
+
+\item{design}{matrix giving the design matrix of the GLM.}
 
 \item{dispersion}{numeric scalar or vector providing the value for the dispersion parameter that is used in fitting the GLM for each transcript. Can be a common value for all tags, or a vector of values can provide a unique dispersion value for each tag.}
 
