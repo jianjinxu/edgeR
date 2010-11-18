@@ -7,7 +7,7 @@ mglmLS <- function(y,design,dispersion=0,start=NULL,offset=0,tol=1e-5,maxit=50,t
 #  Fit negative binomial generalized linear model with log link
 #  by approximate Fisher scoring with simple line search
 #  Yunshun Chen and Gordon Smyth
-#  12 November 2010.  Revised 17 Nov 2010.
+#  12 November 2010.  Revised 18 Nov 2010.
 {
 #	Check input
 	X <- as.matrix(design)
@@ -25,7 +25,13 @@ mglmLS <- function(y,design,dispersion=0,start=NULL,offset=0,tol=1e-5,maxit=50,t
 		ispoisson <- FALSE
 	}
 	phi <- rep(phi,length=ntags)
-	offset <- matrix(offset,ntags,nlibs,byrow=TRUE)
+	loffset <- length(offset)
+	if(loffset==1 || loffset==nlibs) 
+		offset <- matrix(offset,ntags,nlibs,byrow=TRUE)
+	else {
+		offset <- as.matrix(offset)
+		if(any(dim(offset)!=dim(y))) stop("dim(offset) doesn't match dimensions of y")
+	}
 
 #	Define deviance functions
 	if(ispoisson) {
@@ -51,23 +57,22 @@ mglmLS <- function(y,design,dispersion=0,start=NULL,offset=0,tol=1e-5,maxit=50,t
 	colnames(beta) <- colnames(X)
 	stepsize <- meanw <- 1/rowMeans(y)+phi
 
-#	Non-iterative solutions for low count cases
+#	Non-iterative solution for all zero case
 	nypos <- rowSums(y>0)
-	if(any(nypos<2)) {
-		yi <- y[nypos<2,,drop=FALSE]
-		logyi <- log(yi)
-		logyi[yi==0] <- -10
-		z <- logyi-offset[nypos<2,,drop=FALSE]
-		beta[nypos<2,] <- z %*% X # t(qr.coef(qrX,t(z)))
-#		print(beta[nypos<2,])
+	if(any(nypos<1)) {
+#		yi <- y[nypos<1,,drop=FALSE]
+#		logyi <- log(yi)
+#		logyi[yi==0] <- -30
+		z <- -30-offset[nypos<1,,drop=FALSE]
+		beta[nypos<1,] <- z %*% X
 	}
 	
 #	Index tags still iterating
-	i <- nypos >= 2
-#	cat("i",i,"\n")
-	ls.fail <- !i
+	i <- nypos >= 1
+	ls.fail <- rep(FALSE,sum(i))
 
 #	Starting values
+	if(any(i))
 	if(is.null(start)) {
 		z <- log(pmax(y[i,,drop=FALSE],1/6))-offset[i,,drop=FALSE]
 #		beta[i,] <- t(qr.coef(qrX,t(z)))
@@ -81,8 +86,9 @@ mglmLS <- function(y,design,dispersion=0,start=NULL,offset=0,tol=1e-5,maxit=50,t
 #	Approximate Fisher scoring iteration
 	iter <- 0
 	if(trace) {
-		cat("Iter =",iter,"\n")
-		print(summary(beta))
+		cat("Iter",iter,"\n")
+		cat("Scoring for",sum(i),"tag(s)\n")
+#		print(summary(beta))
 	}
 	while(any(i)) {
 		iter <- iter + 1
@@ -103,9 +109,9 @@ mglmLS <- function(y,design,dispersion=0,start=NULL,offset=0,tol=1e-5,maxit=50,t
 		if(iter > maxit) break
 
 		if(trace) {
-			cat("Iter =",iter,"\n")
-			cat("Still iterating",sum(i),"\n")
-			print(summary(beta))
+			cat("Iter",iter,"\n")
+			cat("Scoring for",sum(i),"tag(s)\n")
+#			print(summary(beta))
 		}
 
 #		Subset to data not yet converged
@@ -150,9 +156,13 @@ mglmLS <- function(y,design,dispersion=0,start=NULL,offset=0,tol=1e-5,maxit=50,t
 				j[j] <- !decr
 #				cat("j",j,"\n")
 			}
+			if(trace) {
+				if(iter.ls==1 & any(j)) cat("Step halving:",sum(j),"tag(s), ")
+			}
 			stepsizei[j] <- stepsizei[j]/3
 		}
-		if(trace) cat(iter.ls,"line search iterations\n")
+		if(trace) 
+			if(iter.ls>1) cat(iter.ls-1,"iteration(s)\n")
 	}
 
 	R <- qr.R(qrX)

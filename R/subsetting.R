@@ -26,23 +26,23 @@ function(object, i, j, ...) {
 			object$counts <- object$counts[i,,drop=FALSE]
 			object$conc$conc.common <- object$conc$conc.common[i,drop=FALSE]
 			object$conc$conc.group <- object$conc$conc.group[i,,drop=FALSE]
-                        object$tagwise.dispersion <- object$tagwise.dispersion[i,drop=FALSE]
-                        object$infos <- object$infos[i,drop=FALSE]
+			object$tagwise.dispersion <- object$tagwise.dispersion[i,drop=FALSE]
+			object$infos <- object$infos[i,drop=FALSE]
 			object$pseudo.alt <- object$pseudo.alt[i,,drop=FALSE]
 			object$genes <- object$genes[i,,drop=FALSE]
-                        object$all.zeros <- object$all.zeros[i,drop=FALSE]
+			object$all.zeros <- object$all.zeros[i,drop=FALSE]
 		} else {
 			object$counts <- object$counts[i,j,drop=FALSE]
 			object$samples <- object$samples[j,,drop=FALSE]
-                        object$samples$group <- as.factor(as.character(object$samples$group))
+			object$samples$group <- as.factor(as.character(object$samples$group))
 			object$pseudo.alt <- object$pseudo.alt[i,j,drop=FALSE]
 			#object$samples$lib.size <- object$samples$lib.size[j,drop=FALSE]
 			object$conc$conc.common <- object$conc$conc.common[i,drop=FALSE]
 			object$conc$conc.group <- object$conc$conc.group[i,,drop=FALSE]
-                        object$tagwise.dispersion <- object$tagwise.dispersion[i,drop=FALSE]
+			object$tagwise.dispersion <- object$tagwise.dispersion[i,drop=FALSE]
 			object$infos <- object$infos[i,drop=FALSE]
 			object$genes <- object$genes[i,,drop=FALSE]
-                        object$all.zeros <- object$all.zeros[i,drop=FALSE]
+			object$all.zeros <- object$all.zeros[i,drop=FALSE]
 		}
 	}
 	object
@@ -55,11 +55,11 @@ function(object, i, j, ...)
 #  6 October 2010.  Last modified 6 Oct 2010.
 {
 	if(!missing(j))
-            stop("Subsetting columns not allowed for DGEExact object. Try subsetting object$table instead.",call.=FALSE)
+	    stop("Subsetting columns not allowed for DGEExact object. Try subsetting object$table instead.",call.=FALSE)
 	if(!missing(i)) {
-            object$table <- object$table[i,,drop=FALSE]
-            object$genes <- object$genes[i,,drop=FALSE]
-        }
+	    object$table <- object$table[i,,drop=FALSE]
+	    object$genes <- object$genes[i,,drop=FALSE]
+	}
 	object
 })
 
