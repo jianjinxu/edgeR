@@ -4,18 +4,20 @@ binMeanVar <- function(x, conc=NULL, group, nbins=100, common.dispersion=FALSE, 
     means <- rowMeans(x)
     vars <- apply(x,1,pooledVar,group=group)
     means.quantiles <- quantile(means, probs=seq(0,1,length=nbins+1))
+    means.quantiles[1] <- 0
     if(!is.null(conc))
        conc.quantiles <- quantile(conc, probs=seq(0,1,length=nbins+1))
     if(any(duplicated(means.quantiles))) {
         cat("Duplicated quantiles for the means, so using quantiles of conc instead\n")
         if(is.null(conc))
             stop("conc is NULL, so cannot bin data.\n")
-        else
-            breaks <- conc.quantiles
+        else {
+            f <- cut(conc, breaks=conc.quantiles)
+        }
     }
-    else
-        breaks <- means.quantiles
-    f <- cut(means,breaks=breaks)
+    else {
+        f <- cut(means,breaks=means.quantiles)
+    }
     bins <- split(1:nrow(x),f)
     var.bins <- means.bins <- list()
     if(common.dispersion)
@@ -25,7 +27,7 @@ binMeanVar <- function(x, conc=NULL, group, nbins=100, common.dispersion=FALSE, 
         var.bins[[i]] <- vars[bins[[i]]]
         if(common.dispersion)
             if(!is.null(object))
-                comdisp.bin[i] <- estimateCommonDisp(object[bins[[i]],], rowsum.filter=1)$common.dispersion
+                comdisp.bin[i] <- estimateCommonDisp(object[bins[[i]],], rowsum.filter=0)$common.dispersion
     }
     ave.means <- sapply(means.bins, mean)
     ave.vars <- sapply(var.bins, mean)
@@ -47,14 +49,14 @@ pooledVar <- function(y,group) {
         choosei[is.na(choosei)] <- FALSE
         ni <- sum(choosei)
         if(ni > 1) {
-            numerator <- numerator + ni*var(y[choosei])
+            numerator <- numerator + (ni-1)*var(y[choosei])
             denominator <- denominator + ni - 1
         }
     }
     numerator/denominator
 }
 
-plotMeanVar <- function(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, show.binned.common.disp.vars=TRUE, show.ave.raw.vars=FALSE, dispersion.method="coxreid", scalar=NULL, NBline=FALSE, nbins=100, ...) {
+plotMeanVar <- function(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, show.binned.common.disp.vars=TRUE, show.ave.raw.vars=FALSE, dispersion.method="coxreid", scalar=NULL, NBline=FALSE, nbins=100, log="xy", xlab=NULL, ylab=NULL, ...) {
     ## Creates a mean-variance plot (with binned values) for a given DGEList object
     ## Uses the pooledVar and binMeanVar functions and operates on pseudo-counts to account for differences in library sizes
     if(!is(object,"DGEList"))
@@ -65,7 +67,7 @@ plotMeanVar <- function(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.
             meanvar <- NULL
         }
     if(!is.null(scalar)) {
-        if( length(scalar) != nrow(object$counts) )
+        if( length(scalar) != ncol(object$counts) )
             stop("The supplied argument scalar must have length equal to the number of columns of the count matrix in the DGEList object.")
         scalar <- scalar
     }
@@ -89,29 +91,19 @@ plotMeanVar <- function(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.
             else
                 stop("Could not extract qCML common dispersion. Try running estimateCommonDisp on the DGEList object before plotMeanVar.\n")
         }
-        if(NBline) {
-            if(length(common.dispersion)==1) {
-                lmu <- seq(1e-5,10,length.out=1000)
-                nb.var <- 10^lmu + (10^lmu)^2*common.dispersion
-            }
-            else {
-                lmu <- seq(1e-5,10,length.out=nrow(object$counts))
-                nb.var <- 10^lmu + (10^lmu)^2*common.dispersion
-            }
-        }
     }
     if(show.binned.common.disp.vars) {
-        common.dispersion <- TRUE
+        com.disp <- TRUE
         meanvar.in <- object
     }
     else {
-        common.dispersion=FALSE
+        com.disp <- FALSE
         meanvar.in <- NULL
     }
     if(is.null(meanvar) & dispersion.method=="qcml")
-        meanvar <- binMeanVar(x, object$conc$conc.common, object$samples$group, nbins=nbins, common.dispersion=common.dispersion, object=meanvar.in)
+        meanvar <- binMeanVar(x, object$conc$conc.common, object$samples$group, nbins=nbins, common.dispersion=com.disp, object=meanvar.in)
     if(is.null(meanvar) & dispersion.method=="coxreid")
-        meanvar <- binMeanVar(x, conc=NULL, object$samples$group, nbins=nbins, common.dispersion=common.dispersion, object=meanvar.in)
+        meanvar <- binMeanVar(x, conc=NULL, object$samples$group, nbins=nbins, common.dispersion=com.disp, object=meanvar.in)
     if(show.tagwise.vars) {
         if(dispersion.method=="coxreid" & is.null(object$CR.tagwise.dispersion))
             stop("Cannot extract Cox-Reid tagwise dispersions. Try running CRDisp on your object first.")
@@ -119,21 +111,26 @@ plotMeanVar <- function(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.
             stop("Cannot extract tagwise dispersions. Try running estimateTagwiseDisp() on your object first.")
         tagvars <- meanvar$means + meanvar$means^2*tagwise.dispersion
     }
+    ## Having done the necessary calculations, now do the plotting
+    if(is.null(xlab))
+        xlab <- "Mean gene expression level (log10 scale)"
+    if(is.null(ylab))
+        ylab <- "Pooled gene-level variance (log10 scale)"
     if(show.raw.vars) {
-        plot(meanvar$means, meanvar$vars, log="xy", col="gray60", cex=0.6, xlab="Mean gene expression level (log10 scale)", ylab="Pooled gene-level variance (log10 scale)",plot.first=grid(), ...)
+        plot(meanvar$means, meanvar$vars, log=log, col="gray60", cex=0.6, xlab=xlab, ylab=ylab, plot.first=grid(), ...)
         if(show.tagwise.vars)
             points(meanvar$means, tagvars, col="lightskyblue", cex=0.6)
         if(show.ave.raw.vars)
             points(meanvar$avemeans, meanvar$avevars, pch="x", col="red", cex=1.5)
-        if(common.dispersion)
+        if(show.binned.common.disp.vars)
             points(meanvar$avemeans, meanvar$common.dispersion.vars, pch="x", col="darkgreen", cex=1.5)
     }
     else {
         if(show.tagwise.vars) {
-            plot(meanvar$means, tagvars, col="lightskyblue", log="xy", cex=0.6, xlab="Mean gene expression level (log10 scale)", ylab="Estimated tagwise variance (log10 scale)",plot.first=grid(), ...)
+            plot(meanvar$means, tagvars, col="lightskyblue", log=log, cex=0.6, xlab=xlab, ylab=ylab, plot.first=grid(), ...)
             if(show.ave.raw.vars)
                 points(meanvar$avemeans, meanvar$avevars, pch="x", col="red", cex=1.5)
-            if(common.dispersion)
+            if(show.binned.common.disp.vars)
                 points(meanvar$avemeans, meanvar$common.dispersion.vars, pch="x", col="darkgreen", cex=1.5)
         }
         else {
@@ -142,21 +139,27 @@ plotMeanVar <- function(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.
             else
                 maxy <- max(meanvar$avevars)
             if(show.ave.raw.vars) {
-                plot(meanvar$avemeans, meanvar$avevars, pch="x", col="red", cex=1.5, ylim=c(0.1,maxy), log="xy", xlab="Mean gene expression level (log10 scale)", ylab="Pooled gene-level variance (log10 scale)",plot.first=grid(), ...)
-                if(common.dispersion)
+                plot(meanvar$avemeans, meanvar$avevars, pch="x", col="red", cex=1.5, ylim=c(0.1,maxy), log=log, xlab=xlab, ylab=ylab, plot.first=grid(), ...)
+                if(show.binned.common.disp.vars)
                     points(meanvar$avemeans, meanvar$common.dispersion.vars, pch="x", col="darkgreen", cex=1.5)
             }
             else {
-                plot(meanvar$avemeans, meanvar$common.dispersion.vars, pch="x", col="darkgreen", cex=1.5, ylim=c(0.1,maxy), log="xy", xlab="Mean gene expression level (log10 scale)", ylab="Pooled gene-level variance (log10 scale)",plot.first=grid(), ...)
+                plot(meanvar$avemeans, meanvar$common.dispersion.vars, pch="x", col="darkgreen", cex=1.5, ylim=c(0.1,maxy), log=log, xlab=xlab, ylab=ylab, plot.first=grid(), ...)
                 if(show.ave.raw.vars)
                     points(meanvar$avemeans, meanvar$avevars, pch="x", col="red", cex=1.5)
             }
         }
     }
     abline(0,1,lwd=2)
-    if(NBline)
-        lines(10^lmu,nb.var,col="dodgerblue3",lwd=3)
+    if(NBline) {
+        if(length(common.dispersion)==1)
+            curve(x + common.dispersion*x^2, from=0.01, to=100000, col="dodgerblue3", lwd=4, add=TRUE)
+        else {
+            o <- order(meanvar$means)
+            nb.var <- meanvar$means + (meanvar$means^2)*common.dispersion
+            lines(meanvar$means[o], nb.var[o], col="dodgerblue3", lwd=4)
+        }
+    }
     return(invisible(meanvar))
 }
-
 

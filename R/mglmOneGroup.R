@@ -1,4 +1,4 @@
-mglmOneGroup <- function(y,offset=0,dispersion=0,maxit=50,verbose=FALSE)
+mglmOneGroup <- function(y,dispersion=0,offset=0,maxit=50,trace=FALSE)
 #	Fit null (single-group) negative-binomial glm with log-link to DGE data
 #	18 Aug 2010. Last modified 19 Aug 2010.
 {
@@ -32,7 +32,7 @@ mglmOneGroup <- function(y,offset=0,dispersion=0,maxit=50,verbose=FALSE)
 		step <- dl/info
 		beta[i] <- betaold+step
 		i[i] <- abs(step)>1e-6
-		if(verbose) cat("Iter=",iter,"Still converging=",sum(i),"\n")
+		if(trace) cat("Iter=",iter,"Still converging=",sum(i),"\n")
 		mu <- exp(beta[i]+offset[i,,drop=FALSE])
 		betaold <- beta[i]
 	}

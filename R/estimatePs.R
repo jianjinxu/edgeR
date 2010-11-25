@@ -47,3 +47,4 @@ estimatePs<-function(object,r,tol=1e-10,maxit=30)
 	rownames(this.p.group)<-rownames(object$counts)
 	return(list(conc.common=this.p.com,conc.group=this.p.group))
 }
+

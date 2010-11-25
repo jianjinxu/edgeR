@@ -9,7 +9,7 @@
 
 
 \usage{ 
-plotMeanVar(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, show.binned.common.disp.vars=TRUE, show.ave.raw.vars=FALSE, dispersion.method="coxreid", scalar=NULL, NBline=FALSE, nbins=100, ...) 
+plotMeanVar(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, show.binned.common.disp.vars=TRUE, show.ave.raw.vars=FALSE, dispersion.method="coxreid", scalar=NULL, NBline=FALSE, nbins=100, log="xy", xlab=NULL, ylab=NULL,  ...) 
 binMeanVar(x, conc=NULL, group, nbins=100, common.dispersion=FALSE, object=NULL)
 pooledVar(y,group)
 }
@@ -34,6 +34,12 @@ pooledVar(y,group)
 \item{NBline}{logical, whether or not to add a line on the graph showing the mean-variance relationship for a NB model with common dispersion.}
 
 \item{nbins}{scalar giving the number of bins (formed by using the quantiles of the genewise mean expression levels) for  which to compute average means and variances for exploring the mean-variance relationship. Default is \code{100} bins}
+
+\item{log}{character vector indicating if any of the axes should use a log scale. Default is \code{"xy"}, which makes both y and x axes on the log scale. Other valid options are \code{"x"} (log scale on x-axis only), \code{"y"} (log scale on y-axis only) and \code{""} (linear scale on x- and y-axis).}
+
+\item{xlab}{character string giving the label for the x-axis. Standard graphical parameter. If left as the default \code{NULL}, then the x-axis label will be set to "logConc".}
+
+\item{ylab}{character string giving the label for the y-axis. Standard graphical parameter. If left as the default \code{NULL}, then the x-axis label will be set to "logConc".}
 
 \item{\dots}{further arguments passed on to \code{plot}}
 

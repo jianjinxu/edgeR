@@ -1,4 +1,4 @@
-\name{glmfit}
+\name{glmFit}
 \alias{glmFit}
 \alias{glmLRT}
 
@@ -8,13 +8,14 @@
 
 
 \usage{glmFit(y, design, dispersion, offset=0, weights=NULL, lib.size=NULL) 
-glmLRT(y, glmfit, coef=ncol(glmfit$design))}
+glmLRT(y, glmfit, coef=ncol(glmfit$design), contrast=NULL)}
 
 \arguments{ 
 
 \item{y}{an object that contains the raw counts for each library (the measure of expression level); alternatively, a matrix of counts, or a \code{DGEList} object with (at least) elements \code{counts} (table of unadjusted counts) and \code{samples} (data frame containing information about experimental group, library size and normalization factor for the library size)}
 
-\item{design}{numeric matrix giving the design matrix for the GLM that is to be fit.}
+\item{design}{numeric matrix giving the design matrix for the GLM that is to be fit.
+Must be of full column rank.}
 
 \item{dispersion}{numeric scalar or vector providing the value for the dispersion parameter that is used in fitting the GLM for each transcript. Can be a common value for all tags, or a vector of values can provide a unique dispersion value for each tag.}
 
@@ -27,6 +28,8 @@ glmLRT(y, glmfit, coef=ncol(glmfit$design))}
 \item{glmfit}{a \code{DGEGLM} object, the output from \code{glmFit}.}
 
 \item{coef}{scalar or vector indicating the column(s) of \code{design} that are to be dropped when creating the null model for the Likelihood Ratio (LR) Test. The \code{glmLRT} fits the null model and then conducts an LR test of the model fit provided in \code{glmfit} against the null model defined by the choice of \code{coef}.}
+
+\item{contrast}{contrast vector for which the test is required, of length equal to the number of columns of \code{design}. If specified, then takes precedence over \code{coef}.}
 }
 
 \value{\code{glmFit} produces an object of class \code{DGEGLM} with the following components:
@@ -92,4 +95,4 @@ topTags(results)
 \code{\link{topTags}} for displaying results from \code{glmLRT}.
 }
 
-\keyword{algebra}
+\keyword{models}

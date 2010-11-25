@@ -10,7 +10,7 @@ calcNormFactors(object, method=c("TMM","RLE","quantile"), refColumn = NULL, logr
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
-  \item{object}{either a \code{matrix} of raw (read) counts or a \code{DGEList} object}
+\item{object}{either a \code{matrix} of raw (read) counts or a \code{DGEList} object}
   \item{method}{method to use to calculate the scale factors}
   \item{refColumn}{column to use as reference, only used when \code{method="TMM"}}
   \item{logratioTrim}{amount of trim to use on log-ratios ("M" values), only used when \code{method="TMM"}}

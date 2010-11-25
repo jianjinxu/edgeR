@@ -5,6 +5,8 @@ estimateCRDisp <- function(y, design=NULL, offset=0, npts=10, min.disp=0, max.di
 
 {
 	if( is(y,"DGEList") ) {
+		if(is.null(y$samples$norm.factors))
+			y$samples$norm.factors <- rep(1, ncol(y$counts))
 		if(is.null(lib.size))
 			lib.size <- y$samples$lib.size*y$samples$norm.factors
 		y.mat <- y$counts
@@ -125,7 +127,8 @@ estimateCRDisp <- function(y, design=NULL, offset=0, npts=10, min.disp=0, max.di
 }
 
 adjustedProfileLik <- function(dispersion, y, design, offset)
-## Function to calculate the adjusted profile-likelihood given dispersion, design matrix and response.
+## Cox-Reid adjusted profile-likelihood for multiple response
+## given dispersion, design matrix and response.
 ## y is simply a table of counts: rows are genes/tags/transcripts, columns are samples/libraries
 ## offset needs to be a matrix of offsets of the same dimensions as y
 ## Yunshun Chen, Gordon Smyth

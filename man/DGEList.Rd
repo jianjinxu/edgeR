@@ -17,7 +17,7 @@ DGEList(counts = matrix(0, 0, 0), lib.size = NULL, norm.factors = NULL, group = 
   \item{norm.factors}{numeric vector containing normalization factors (optional, defaults to all 1)}
   \item{group}{vector giving the experimental group/condition for each sample/library}
   \item{genes}{data frame containing annotation information for the tags/transcripts/genes for which we have count data (optional).}
-  \item{remove.zeros}{whether to remove rows that have 0 total count; default is FALSE so as to retain all information in the dataset}
+\item{remove.zeros}{whether to remove rows that have 0 total count; default is FALSE so as to retain all information in the dataset}
 }
 \details{
 If no \code{lib.size} argument is passed to the constructor, the column totals are used.
