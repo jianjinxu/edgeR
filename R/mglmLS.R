@@ -1,7 +1,7 @@
 deviances.function <- function(dispersion)
 #	Deviance function for multiple GLMs
 #	Gordon Smyth
-#	23 November 2010. Last modified 25 Nov 2010.
+#	23 November 2010. Last modified 26 Nov 2010.
 {
 	i <- dispersion>0
 	if(all(i)) {
@@ -15,7 +15,7 @@ deviances.function <- function(dispersion)
 		if(any(i)) {
 #			Some Poisson, some negative binomial
 			deviances <- function(y,mu,dispersion) {
-#				i <- dispersion>0
+				i <- dispersion>0
 				f0 <- deviances.function(0)
 				f1 <- deviances.function(1)
 				dev <- dispersion
@@ -44,7 +44,7 @@ mglmLS <- function(y,design,dispersion=0,offset=0,start=NULL,tol=1e-5,maxit=50,t
 #  Fit negative binomial generalized linear model with log link
 #  by approximate Fisher scoring with simple line search
 #  Yunshun Chen and Gordon Smyth
-#  12 November 2010.  Revised 18 Nov 2010.
+#  12 November 2010.  Revised 26 Nov 2010.
 {
 #	Check input
 	X <- as.matrix(design)
@@ -71,19 +71,7 @@ mglmLS <- function(y,design,dispersion=0,offset=0,start=NULL,tol=1e-5,maxit=50,t
 	}
 
 #	Define deviance functions
-	if(ispoisson) {
-		deviances <- function(y,mu,phi) {
-			logymu <- log(y/mu)
-			logymu[y<1e-14] <- 0
-			2*rowSums(y*logymu-(y-mu))
-		}
-	} else {
-		deviances <- function(y,mu,phi) {
-			logymu <- log(y/mu)
-			logymu[y<1e-14] <- 0
-			2*rowSums(y*logymu + (y+1/phi)*log((mu+1/phi)/(y+1/phi)))
-		}
-	}
+	deviances <- deviances.function(dispersion)
 
 #	Transform to orthonormal design matrix
 	qrX <- qr(X)
