@@ -17,7 +17,7 @@ Non-parametric empirical Bayes estimates of the frequencies of observed (and uno
 \value{
 A list with components
 	\item{count}{observed frequencies, i.e., the unique positive values of \code{x}}
-	\item{estimated.p}{estimated proportion of species given the count}
+	\item{proportion}{estimated proportion of species given the count}
 	\item{P0}{estimated combined proportion of all undetected species}
 	\item{n0}{number of zeros found in \code{x}}
 }

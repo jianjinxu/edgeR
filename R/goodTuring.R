@@ -53,5 +53,5 @@ goodTuring <- function(x,plot=FALSE)
 	N <- sum(n.pos*r.pos)
 	P0 <- n[1]/N
 	N.post <- sum(n.pos*r.pos.post)
-	list(count=r.pos,estimated.p=(1-P0)*r.pos.post/N.post,P0=P0,n0=n0)
+	list(count=r.pos,proportion=(1-P0)*r.pos.post/N.post,P0=P0,n0=n0)
 }
