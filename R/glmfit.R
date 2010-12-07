@@ -1,6 +1,6 @@
 #  GENERALIZED LINEAR MODELS
 
-glmFit <- function(y, design, dispersion, offset=0, weights=NULL, lib.size=NULL)
+glmFit <- function(y, design, dispersion, offset=NULL, weights=NULL, lib.size=NULL)
 	##	Fit negative binomial generalized linear model for each transcript
 	##  to a series of digital expression libraries
 	##	Davis McCarthy and Gordon Smyth
@@ -11,6 +11,8 @@ glmFit <- function(y, design, dispersion, offset=0, weights=NULL, lib.size=NULL)
 		y.mat <- y$counts
 		samples <- y$samples
 		genes <- y$genes
+        if( !is.null(offset) & !is.null(lib.size))
+            warning("If non-null offset and non-null lib.size are provided, then the offset argument will be used and the supplied lib.size ignored.\n")
 		if(is.null(lib.size)) lib.size <- y$samples$lib.size
 		lib.size <- lib.size*y$samples$norm.factors
 	} else {
@@ -34,11 +36,18 @@ glmFit <- function(y, design, dispersion, offset=0, weights=NULL, lib.size=NULL)
 		stop("Length of 'dispersion' is not compatible with size of 'y'. Dispersion must have length either equal to one or equal to the number of rows of y.\n")
 	if( length(dispersion==1) )
 		dispersion <- rep(dispersion, length=nrow(y.mat))
-	if( length(offset)!=nlibs & length(offset)!=1 & length(offset)!=length(y.mat) )
+	if( !is.null(offset) & length(offset)!=nlibs & length(offset)!=1 & length(offset)!=length(y.mat) )
 		stop("Number of entries in argument 'offset' incompatible with 'y'. Must have length equal to 1 or to the number of entries in the matrix of counts or to the number of columns in the matrix of counts.\n")
-	else
-		offset <- matrix(offset, nrow=ngenes, ncol=nlibs, byrow=TRUE) + matrix(log(lib.size), nrow=ngenes, ncol=nlibs, byrow=TRUE)
-										# Fit a glm to each gene sequentially using the line-search algorithm implemented in mglmLS()
+	else {
+        if( !is.null(offset) )
+            if( length(offset)==length(y.mat) )
+                offset <- matrix(offset, nrow=ngenes, ncol=nlibs)
+            else
+                offset <- matrix(offset, nrow=ngenes, ncol=nlibs, byrow=TRUE)
+        else
+            offset <- matrix(log(lib.size), nrow=ngenes, ncol=nlibs, byrow=TRUE)
+    }
+                                        # Fit a glm to each gene sequentially using the line-search algorithm implemented in mglmLS()
 	fit <- mglmLS(y.mat, design=design, dispersion=dispersion, start=NULL, offset=offset, tol=1e-5, maxit=50, trace=FALSE)
 	coefficients <- fit$coefficients
 	fitted.values <- fit$fitted
@@ -103,7 +112,7 @@ glmLRT <- function(y,glmfit,coef=ncol(glmfit$design),contrast=NULL)
 	design0 <- design[,-coef,drop=FALSE]
 
 #	Null fit
-	fit.null <- glmFit(y,design=design0,offset=glmfit$offset,weights=glmfit$weights,dispersion=glmfit$dispersion,lib.size=glmfit$lib.size)
+	fit.null <- glmFit(y,design=design0,offset=glmfit$offset,weights=glmfit$weights,dispersion=glmfit$dispersion,lib.size=NULL)
 
 	LR <- fit.null$deviance - glmfit$deviance
 	LRT.pvalue <- pchisq(LR, df=( fit.null$df.residual - glmfit$df.residual ), lower.tail = FALSE, log.p = FALSE)

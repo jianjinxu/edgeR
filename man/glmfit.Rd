@@ -7,7 +7,7 @@
 \description{Fit a negative binomial generalized linear model for each transcript (tag) with the unadjusted counts provided, a value for the dispersion parameter and, optionally, offsets and weights for different libraries or transcripts.}
 
 
-\usage{glmFit(y, design, dispersion, offset=0, weights=NULL, lib.size=NULL) 
+\usage{glmFit(y, design, dispersion, offset=NULL, weights=NULL, lib.size=NULL) 
 glmLRT(y, glmfit, coef=ncol(glmfit$design), contrast=NULL)}
 
 \arguments{ 
@@ -19,9 +19,9 @@ Must be of full column rank.}
 
 \item{dispersion}{numeric scalar or vector providing the value for the dispersion parameter that is used in fitting the GLM for each transcript. Can be a common value for all tags, or a vector of values can provide a unique dispersion value for each tag.}
 
-\item{offset}{numeric scalar, vector or matrix giving the offset (in addition to the log of the effective library size) that is to be included in the NB GLM for the transcripts. If a scalar, then this value will be used as an offset for all transcripts and libraries. If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each transcript. If a matrix, then each library for each transcript can have a unique offset, if desired.}
+\item{offset}{numeric scalar, vector or matrix giving the offset that is to be included in the NB GLM for the transcripts. Only one of \code{offset} and \code{lib.size} should be supplied---if both are supplied then \code{offset} will be used and \code{lib.size} will be ignored. If a scalar, then this value will be used as an offset for all transcripts and libraries. If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each transcript. If a matrix, then each library for each transcript can have a unique offset, if desired. If \code{NULL} (the default) then the log of the effective library size (library size multiplied by normalization factors) will be used as the offsets in the GLMs.}
 
-\item{weights}{optional numeric matrix giving the matrix of weights for the observations (for each library and transcript) to be used in the GLM calculations.}
+\item{weights}{optional numeric matrix giving the matrix of weights for the observations (for each library and transcript) to be used in the GLM calculations. Not currently used in the GLM calculations.}
 
 \item{lib.size}{optional vector providing the (effective) library size for each library (must have length equal to the number of columns, or libraries, in the matrix of counts). If \code{NULL}, then a default is used. If \code{y} is a \code{DGEList} object then the default for \code{lib.size} is the product of the library sizes and the normalization factors (in the \code{samples} slot of the object). If \code{y} is a simple matrix of counts, then the default for \code{lib.size} is the vector of column sums of \code{y}.}
 
