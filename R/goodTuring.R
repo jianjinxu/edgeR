@@ -55,3 +55,21 @@ goodTuring <- function(x,plot=FALSE)
 	N.post <- sum(n.pos*r.pos.post)
 	list(count=r.pos,proportion=(1-P0)*r.pos.post/N.post,P0=P0,n0=n0)
 }
+
+counts2Normal <- function(x,lib.size=1e6)
+#	Transform counts to approximately normal expression values
+#	Gordon Smyth
+#	15 Dec 2010.  Last modified 21 Nov 2010.
+{
+	z <- x <- as.matrix(x)
+	nlibs <- ncol(x)
+	for (i in 1:nlibs) {
+		g <- goodTuring(x[,i])
+		p0 <- g$P0/g$n0
+		zero <- z[,i]==0
+		z[zero,i] <- p0
+		m <- match(z[!zero,i],g$count)
+		z[!zero,i] <- g$proportion[m]
+	}
+	sqrt(z*lib.size)
+}
