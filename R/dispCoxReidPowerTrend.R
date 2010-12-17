@@ -11,7 +11,7 @@ dispCoxReidPowerTrend <- function(y, design, lib.size, abundance=NULL, trace=0)
 	
 	fun <- function(par,y,design,offset,abundance) {
 		dispersion <- exp(par[1]+par[2]*abundance)
-		tryCatch(-sum(adjustedProfileLik(dispersion,y,design,offset)),error=function(e) Inf)
+		tryCatch(-sum(adjustedProfileLik(dispersion,y,design,offset)),error=function(e) 1e10)
 	}
 
 	par0 <- c(log(0.1),0)

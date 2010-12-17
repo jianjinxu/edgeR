@@ -145,7 +145,7 @@ adjustedProfileLik <- function(dispersion, y, design, offset)
 		loglik <- dpois(y,lambda=mu,log=TRUE)
 	else
 		loglik <- dnbinom(y,size=1/dispersion,mu=mu,log=TRUE)
-	cr <- rep.int(0,tags)
+	cr <- rep.int(0,ntags)
 	for(i in 1:ntags) {
 		R <- chol(crossprod(design,.vecmat(mu[i,]/(1+dispersion[i]*mu[i,]),design)))
 		cr[i] <- sum(log(abs(diag(R))))
