@@ -127,30 +127,30 @@ estimateCRDisp <- function(y, design=NULL, offset=0, npts=10, min.disp=0, max.di
 }
 
 adjustedProfileLik <- function(dispersion, y, design, offset)
-## Cox-Reid adjusted profile-likelihood for multiple response
-## given dispersion, design matrix and response.
-## y is simply a table of counts: rows are genes/tags/transcripts, columns are samples/libraries
-## offset needs to be a matrix of offsets of the same dimensions as y
+## tagwise Cox-Reid adjusted profile likelihoods for the dispersion
+## dispersion can be scalar or tagwise vector
+## y is matrix: rows are genes/tags/transcripts, columns are samples/libraries
+## offset is matrix of the same dimensions as y
 ## Yunshun Chen, Gordon Smyth
-## Created June 2010. Last modified 3 Nov 2010.
+## Created June 2010. Last modified 17 Nov 2010.
 {
-	if(any(dim(y)!=dim(offset))) stop("offset must be a matrix with the same dimensions as y, the table of counts.")
-	tgw.apl <- rep(0,nrow(y))
-	start <- matrix(0,nrow(y),ncol(design))
-	start[,1] <- mglmOneGroup(y,offset,dispersion)
+	if(any(dim(y)!=dim(offset))) stop("offset must be a matrix of same dimensions as y, the matrix of counts.")
+	ntags <- nrow(y)
+	nlibs <- ncol(y)
+	if(length(dispersion)==1) dispersion <- rep(dispersion,ntags)
+	tgw.apl <- rep(0,ntags)
 	ls <- mglmLS(y, design, dispersion, offset = offset)
 	mu <- ls$fitted
-		for(i in 1:nrow(y)) {
-			if(dispersion == 0){
-				loglik <- sum(dpois(y[i,],lambda=mu[i,],log = TRUE))
-			} else {
-				loglik <- sum(dnbinom(y[i,],size=1/dispersion,mu=mu[i,],log = TRUE))
-			}
-			R <- chol(crossprod(design,.vecmat(mu[i,]/(1+dispersion*mu[i,]),design)))
-			cr <- sum(log(abs(diag(R))))
-			tgw.apl[i] <- loglik - cr
-		}
-	tgw.apl
+	if(dispersion[1]==0)
+		loglik <- dpois(y,lambda=mu,log=TRUE)
+	else
+		loglik <- dnbinom(y,size=1/dispersion,mu=mu,log=TRUE)
+	cr <- rep.int(0,tags)
+	for(i in 1:ntags) {
+		R <- chol(crossprod(design,.vecmat(mu[i,]/(1+dispersion[i]*mu[i,]),design)))
+		cr[i] <- sum(log(abs(diag(R))))
+	}
+	rowSums(loglik)-cr
 }
 
 .maximize.by.interpolation <- function(x,z,maxit=10,eps=1e-7,plot=FALSE)
