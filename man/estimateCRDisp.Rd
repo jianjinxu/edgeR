@@ -2,14 +2,18 @@
 \alias{estimateCRDisp}
 \alias{adjustedProfileLik}
 
-\title{Estimate the dispersion parameter for a negative binomial model using Cox-Reid approximate conditional inference}
+\title{Estimate Negative Binomial Dispersion By Cox-Reid Adjusted Profile Likelihood}
 
-\description{Estimates the common dispersion parameter for a DGE dataset for general experimental designs by using Cox-Reid approximate conditional inference for a negative binomial generalized linear model for each transcript (tag) with the unadjusted counts and design matrix provided. }
+\description{
+Estimates the dispersion parameter for a DGE dataset for general experimental designs by using Cox-Reid approximate conditional inference for a negative binomial generalized linear model for each transcript (tag) with the unadjusted counts and design matrix provided.
+}
 
 
-\usage{estimateCRDisp(y, design=NULL, offset=0, npts=10, min.disp=0, max.disp=2, nselect=200,
-rowsum.filter=5, tagwise=FALSE, prior.n=10, trend=FALSE, lib.size=NULL, verbose=TRUE)
-adjustedProfileLik(dispersion, y, design, offset)}
+\usage{
+estimateCRDisp(y, design=NULL, offset=0, npts=10, min.disp=0, max.disp=2, nselect=200,
+               rowsum.filter=5, tagwise=FALSE, prior.n=10, trend=FALSE, lib.size=NULL, verbose=TRUE)
+adjustedProfileLik(dispersion, y, design, offset)
+}
 
 \arguments{ 
 
@@ -53,8 +57,7 @@ To obtain estimates of the common and tagwise (i.e., genewise) dispersion parame
 
 
 \references{
-Cox DR and Reid N (1987). Parameter orthogonality and approximate conditional inference. \emph{Journal of the Royal Statistical Society. Series B (Methodological)},
-49, 1, 1--39.
+Cox, DR, and Reid, N (1987). Parameter orthogonality and approximate conditional inference. \emph{Journal of the Royal Statistical Society Series B} 49, 1-39.
 }
 
 \author{Yunshun Chen, Gordon Smyth}
