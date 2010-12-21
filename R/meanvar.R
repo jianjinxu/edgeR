@@ -20,14 +20,20 @@ binMeanVar <- function(x, conc=NULL, group, nbins=100, common.dispersion=FALSE, 
     }
     bins <- split(1:nrow(x),f)
     var.bins <- means.bins <- list()
-    if(common.dispersion)
+    if(common.dispersion) {
         comdisp.bin <- rep(NA, nbins)
+        dispersions <- rep(NA, nrow(x))
+    }
+    else dispersions <- NULL
     for(i in 1:nbins){
         means.bins[[i]] <- means[bins[[i]]]
         var.bins[[i]] <- vars[bins[[i]]]
-        if(common.dispersion)
-            if(!is.null(object))
+        if(common.dispersion) {
+            if(!is.null(object)) {
                 comdisp.bin[i] <- estimateCommonDisp(object[bins[[i]],], rowsum.filter=0)$common.dispersion
+                dispersions[bins[[i]]] <- comdisp.bin[i]
+            }
+        }
     }
     ave.means <- sapply(means.bins, mean)
     ave.vars <- sapply(var.bins, mean)
@@ -37,7 +43,7 @@ binMeanVar <- function(x, conc=NULL, group, nbins=100, common.dispersion=FALSE, 
         comdisp.vars <- NULL
         comdisp.bin <- NULL
     }
-    list(avemeans=ave.means,avevars=ave.vars,bin.means=means.bins, bin.vars=var.bins, means=means, vars=vars, common.dispersion.vars=comdisp.vars, binned.common.dispersion=comdisp.bin)
+    list(avemeans=ave.means,avevars=ave.vars,bin.means=means.bins, bin.vars=var.bins, means=means, vars=vars, common.dispersion.vars=comdisp.vars, binned.common.dispersion=comdisp.bin, dispersions=dispersions, bins=bins)
 }
 
 pooledVar <- function(y,group) {

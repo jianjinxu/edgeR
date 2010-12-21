@@ -61,7 +61,8 @@ pooledVar(y,group)
 	\item{bin.means}{list containing the average (mean) expression level for genes divided into bins based on amount of expression}
 	\item{bin.vars}{list containing the pooled variance for genes divided into bins based on amount of expression}
 	\item{means}{vector giving the mean expression level for each gene}
-	\item{vars}{vectore giving the pooled variance for each gene}
+	\item{vars}{vector giving the pooled variance for each gene}
+	\item{bins}{list giving the indices of the tags in each bin, ordered from lowest expression bin to highest}
 
 \code{pooledVar} returns a scalar for the pooled variance of the given data vector.
 
