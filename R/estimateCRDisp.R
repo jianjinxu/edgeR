@@ -1,7 +1,8 @@
 estimateCRDisp <- function(y, design=NULL, offset=0, npts=10, min.disp=0, max.disp=2, nselect=200, rowsum.filter=5, tagwise=FALSE, prior.n=10, trend=FALSE, lib.size=NULL, verbose=TRUE)
-	## Function to estimate the common dispersion and tagwise disperisons using CoxReid Adjusted Profile-likelihood
-	## The function uses cubic spline interpolation in finding the MLEs.
-	## Written by Yunshun Chen, August 2010. Last modified by Yunshun Chen, 05 Oct 2010
+## Estimate NB dispersion by maximizing the CoxReid Adjusted Profile-likelihood
+## The function uses cubic spline interpolation in finding the MLEs.
+## Yunshun Chen
+## Created August 2010. Last modified 06 Jan 2011
 
 {
 	if( is(y,"DGEList") ) {
@@ -27,6 +28,7 @@ estimateCRDisp <- function(y, design=NULL, offset=0, npts=10, min.disp=0, max.di
 		else
 			stop("No design matrix supplied as an argument with matrix of counts.")
 	}
+	if(!is.fullrank(design)) stop("design matrix must be full column rank")
 	ngenes <- nrow(y.mat)
 	narrays <- ncol(y.mat)
 	if( length(offset)==length(y.mat) ) {

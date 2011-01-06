@@ -1,7 +1,7 @@
 dispCoxReidPowerTrend <- function(y, design, lib.size, abundance=NULL, trace=0)
 #	Estimate trend dispersion=a*mean^b, log(dispersion)
 #	Gordon Smyth
-#	16 Dec 2010
+#	16 Dec 2010.  Last modified 17 Dec 2010.
 {
 	y <- as.matrix(y)
 	nlibs <- ncol(y)
@@ -17,5 +17,6 @@ dispCoxReidPowerTrend <- function(y, design, lib.size, abundance=NULL, trace=0)
 	par0 <- c(log(0.1),0)
 	out <- optim(par0,fun,y=y,design=design,offset=offset,abundance=abundance,control=list(trace=trace))
 	out$dispersion <- exp(out$par[1]+out$par[2]*abundance)
+	out$abundance <- abundance
 	out
 }

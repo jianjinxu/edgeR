@@ -1,5 +1,6 @@
 \name{goodTuring}
 \alias{goodTuring}
+\alias{goodTuringProportions}
 
 \title{Good-Turing Frequency Estimation}
 
@@ -7,19 +8,23 @@
 Non-parametric empirical Bayes estimates of the frequencies of observed (and unobserved) species.
 }
 
-\usage{goodTuring(x, plot=FALSE)}
+\usage{goodTuring(x, plot=FALSE)
+goodTuringProportions(counts)}
 
 \arguments{ 
 	\item{x}{numeric vector of non-negative integers, representing the observed frequency of each species.}
 	\item{plot}{logical, whether to plot log-probability (i.e., log frequencies of frequencies)versus log-frequency.}
+	\item{counts}{matrix of counts}
 }
 
 \value{
-A list with components
+\code{goodTuring} returns a list with components
 	\item{count}{observed frequencies, i.e., the unique positive values of \code{x}}
 	\item{proportion}{estimated proportion of species given the count}
 	\item{P0}{estimated combined proportion of all undetected species}
 	\item{n0}{number of zeros found in \code{x}}
+\code{goodTuringProportions} returns a matrix of proportions of the same size
+as \code{counts}.
 }
 
 \details{
@@ -34,6 +39,9 @@ The number of zero values in \code{x} are not used in the algorithm, but is retu
 Sampson gives a C code version on his webpage at
 \url{http://www.grsampson.net/RGoodTur.html}
 which gives identical results to this function.
+
+\code{goodTuringProportions} runs \code{goodTuring} on each column of data, then
+uses the results to predict the proportion of each tag in each library.
 }
 
 \references{

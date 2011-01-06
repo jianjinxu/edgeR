@@ -4,7 +4,7 @@ exportPattern("^[^\\.]")
 exportClasses("DGEList","DGEExact","TopTags","DGEGLM","DGELRT")
 exportMethods("show")
 
-importFrom(limma, removeExt, trimWhiteSpace, asMatrixWeights, decideTests)
+importFrom(limma,is.fullrank,removeExt,trimWhiteSpace,asMatrixWeights,decideTests)
 importClassesFrom(limma, "LargeDataObject", "MArrayLM", "TestResults")
 importMethodsFrom(limma, "show")
 
