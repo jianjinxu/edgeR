@@ -6,7 +6,7 @@
 \description{Maximizes the negative binomial conditional common likelihood to give the estimate of the common dispersion across all tags for the unadjusted counts provided. }
 
 
-\usage{ 
+\Sage{
 estimateCommonDisp(object, tol=1e-06, rowsum.filter=5)
 }
 

@@ -7,7 +7,7 @@
 
 \description{Split the counts from a DGEList object according to group, creating a list where each element consists of a numeric matrix of counts for a particular experimental group. Given a pair of groups, split pseudocounts for these groups, creating a list where each element is a matrix of pseudocounts for a particular gourp.}
 
-\usage{ 
+\Sage{
 splitIntoGroups(object)
 splitIntoGroupsPseudo(pseudo, group, pair)
 }

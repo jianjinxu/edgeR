@@ -5,7 +5,7 @@
 
 \description{Weighted conditional log-likelihood parameterized in terms of delta (\code{phi / (phi+1)}) for a given tag/gene - maximized to find the smoothed (moderated) estimate of the dispersion parameter}
 
-\usage{ 
+\usage{
 weightedCondLogLikDerDelta(y, delta, tag, prior.n=10, ntags=nrow(y[[1]]), der=0, doSum=FALSE)
 }
 \arguments{ 

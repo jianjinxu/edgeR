@@ -5,7 +5,7 @@
 
 \description{Returns the \code{counts} slot of a DGEList object}
 
-\usage{ 
+\Sage{
 getCounts(object) 
 }
 \arguments{ 

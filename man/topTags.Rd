@@ -8,7 +8,7 @@
 
 \description{Extracts the top DE tags in a data frame for a given pair of groups, ranked by p-value or absolute log-fold change.}
 
-\usage{ 
+\Sage{
 topTags(object, n=10, adjust.method="BH", sort.by="p.value")
 }
 

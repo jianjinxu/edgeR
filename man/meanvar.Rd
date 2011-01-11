@@ -8,7 +8,7 @@
 \description{Appropriate modelling of the mean-variance relationship in DGE data is important for making inferences about differential expression. Here are functions to compute tag/gene means and variances, as well at looking at these quantities when data is binned based on overall expression level.}
 
 
-\usage{ 
+\Sage{
 plotMeanVar(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, show.binned.common.disp.vars=TRUE, show.ave.raw.vars=FALSE, dispersion.method="coxreid", scalar=NULL, NBline=FALSE, nbins=100, log="xy", xlab=NULL, ylab=NULL,  ...) 
 binMeanVar(x, conc=NULL, group, nbins=100, common.dispersion=FALSE, object=NULL)
 pooledVar(y,group)

@@ -6,7 +6,7 @@
 
 \description{Carry out an exact test for differences between two negative binomial groups, based on conditioning on sums of (quantile-adjusted pseudo-)counts; calculations performed by \code{exactTest.matrix}}
 
-\usage{ 
+\Sage{
 exactTest(object,pair=NULL,dispersion=NULL,common.disp=TRUE)
 exactTest.matrix(y1,y2,mus,r,all.zeros=rep(FALSE,nrow(y1)))
 }

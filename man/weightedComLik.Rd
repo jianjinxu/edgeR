@@ -5,7 +5,7 @@
 
 \description{Allow a flexible approach to accounting for a potential dependence of the dispersion on the abundance (expression level) of tags/genes by calculating a weighted 'common' log-likelihood for each gene.}
 
-\usage{ 
+\Sage{
 weightedComLik(object,l0,prop.used=0.25)
 }
 

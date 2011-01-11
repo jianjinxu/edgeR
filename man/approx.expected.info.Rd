@@ -6,7 +6,7 @@
 \description{Using a linear fit (for simplicity), the expected information from the conditional log likelihood of the dispersion parameter of the negative binomial is calculated over all genes.}
 
 
-\usage{ 
+\Sage{
 approx.expected.info(object, d, pseudo, robust = FALSE) 
 }
 \arguments{ 
