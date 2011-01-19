@@ -128,33 +128,6 @@ estimateCRDisp <- function(y, design=NULL, offset=0, npts=10, min.disp=0, max.di
 	}
 }
 
-adjustedProfileLik <- function(dispersion, y, design, offset)
-## tagwise Cox-Reid adjusted profile likelihoods for the dispersion
-## dispersion can be scalar or tagwise vector
-## y is matrix: rows are genes/tags/transcripts, columns are samples/libraries
-## offset is matrix of the same dimensions as y
-## Yunshun Chen, Gordon Smyth
-## Created June 2010. Last modified 17 Nov 2010.
-{
-	if(any(dim(y)!=dim(offset))) stop("offset must be a matrix of same dimensions as y, the matrix of counts.")
-	ntags <- nrow(y)
-	nlibs <- ncol(y)
-	if(length(dispersion)==1) dispersion <- rep(dispersion,ntags)
-	tgw.apl <- rep(0,ntags)
-	ls <- mglmLS(y, design, dispersion, offset = offset)
-	mu <- ls$fitted
-	if(dispersion[1]==0)
-		loglik <- dpois(y,lambda=mu,log=TRUE)
-	else
-		loglik <- dnbinom(y,size=1/dispersion,mu=mu,log=TRUE)
-	cr <- rep.int(0,ntags)
-	for(i in 1:ntags) {
-		R <- chol(crossprod(design,.vecmat(mu[i,]/(1+dispersion[i]*mu[i,]),design)))
-		cr[i] <- sum(log(abs(diag(R))))
-	}
-	rowSums(loglik)-cr
-}
-
 .maximize.by.interpolation <- function(x,z,maxit=10,eps=1e-7,plot=FALSE)
 #	Maximize a function given a table of values
 #	by spline interpolation
@@ -190,14 +163,3 @@ adjustedProfileLik <- function(dispersion, y, design, offset)
 	x
 }
 
-.vecmat <- function(v,M) {
-#	Multiply the rows of matrix by the elements of a vector,
-#	i.e., compute diag(v) %*% M
-#	Gordon Smyth
-#	5 July 1999
-#
-	v <- as.vector(v)
-	M <- as.matrix(M)
-	if(length(v)!=dim(M)[1]) stop("Dimensions do not match")
-	v * M
-}
