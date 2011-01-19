@@ -5,7 +5,7 @@
 
 \description{Conditional negative binomial log-likelihood parameterized in terms of delta (\code{phi / (phi+1)}) }
 
-\Sage{
+\usage{
 condLogLikDerDelta(y, delta, grid = TRUE, der = 1, doSum = TRUE) 
 }
 \arguments{ 

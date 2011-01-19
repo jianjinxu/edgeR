@@ -5,7 +5,7 @@
 
 \description{Common conditional log-likelihood parameterized in terms of delta (\code{phi / (phi+1)}) }
 
-\Sage{
+\usage{
 commonCondLogLikDerDelta(y, delta, der = 0, doSum = FALSE) 
 }
 \arguments{ 

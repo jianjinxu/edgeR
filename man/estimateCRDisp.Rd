@@ -1,6 +1,7 @@
 \name{estimateCRDisp}
 \alias{estimateCRDisp}
 \alias{adjustedProfileLik}
+\alias{dispCoxReidPowerTrend}
 
 \title{Estimate Negative Binomial Dispersion By Cox-Reid Adjusted Profile Likelihood}
 
@@ -13,6 +14,7 @@ Estimates the dispersion parameter for a DGE dataset for general experimental de
 estimateCRDisp(y, design=NULL, offset=0, npts=10, min.disp=0, max.disp=2, nselect=200,
                rowsum.filter=5, tagwise=FALSE, prior.n=10, trend=FALSE, lib.size=NULL, verbose=TRUE)
 adjustedProfileLik(dispersion, y, design, offset)
+dispCoxReidPowerTrend(y, design, lib.size, offset=NULL, abundance=NULL, method.optim="Nelder-Mead", trace=0)
 }
 
 \arguments{ 
@@ -44,6 +46,12 @@ adjustedProfileLik(dispersion, y, design, offset)
 \item{verbose}{logical scalar, if \code{TRUE} (default) then certain notification messages are displayed in some circumstances, if \code{FALSE} then these messages are not displayed.}
 
 \item{dispersion}{numeric scalar providing the common value for the dispersion parameter (the 'size' parameter in the GLM fit is equal to \code{1/dispersion}) that is used in fitting the GLM for each transcript. Poisson GLM is fitted if \code{dispersion} is set at 0. \code{estimateCRDisp} maximizes the Cox-Reid adjusted profile likelihood over dispersion to obtain the estimate for the common dispersion.}
+
+\item{abundance}{numeric vector, tagwise log-abundance measure}
+\item{method.optim}{method input to \code{optim}.
+Acceptable values are \code{"Nelder-Mead"} or \code{"BFGS"}.}
+\item{trace}{integer, if non-zero, request information about the optimization.
+See \code{\link{optim}} for more information.}
 }
 
 \value{\code{estimateCRDisp} produces a \code{DGEList} object, which contains the estimate of the common dispersion parameter for the negative binomial model that maximizes the Cox-Reid adjusted profile likelihood, and also the tagwise Cox-Reid dispersion estimates.

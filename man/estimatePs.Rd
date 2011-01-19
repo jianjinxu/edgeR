@@ -5,7 +5,7 @@
 
 \description{Estimate expression levels (i.e. proportion of all sample mRNA corresponding to each tag; or, concentration of mRNA for each tag in sample mRNA) using maximum likelihood with dispersion parameter fixed based on the negative binomial model for each tag/gene and sample group. Expression proportions are used to determine overall abundance of each tag/gene and differential expression of tags/genes between groups.}
 
-\Sage{
+\usage{
 estimatePs(object, r, tol = 1e-10, maxit = 30) 
 }
 

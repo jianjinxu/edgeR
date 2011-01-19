@@ -5,7 +5,7 @@
 
 \description{Approximate the tail probabilities of a conditional negative binomial exact test of equality of means between groups. }
 
-\Sage{
+\usage{
 betaApproxNBTest(x1, x2, dispersion)
 }
 

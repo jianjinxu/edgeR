@@ -6,7 +6,7 @@
 \description{A function that uses a NB quantile-to-quantile method to adjust the libraries of counts so that library sizes are equal for a fixed value of the dispersion parameter.}
 
 
-\Sage{
+\usage{
 equalizeLibSizes(object, disp=0, N=exp(mean(log(object$samples$lib.size*object$samples$norm.factors))),null.hypothesis=FALSE)
 }
 

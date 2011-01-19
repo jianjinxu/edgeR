@@ -6,7 +6,7 @@
 \description{Estimate the prior weight, prior.n, using an approximate empirical Bayes rule given the estimate of the common dispersion. The prior weight determines how much smoothing takes place to squeeze tag/genewise estimates of the dispersion closer to the estimate of the common dispersion.}
 
 
-\Sage{
+\usage{
 estimateSmoothing(object,verbose=TRUE) 
 }
 \arguments{ 

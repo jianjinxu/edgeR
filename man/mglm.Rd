@@ -12,7 +12,7 @@ Fit the same log-link negative binomial or Poisson generalized linear model to e
 }
 
 
-\Sage{
+\usage{
 mglmLS(y, design, dispersion=0, offset=0, start=NULL, tol=1e-5, maxit=50, trace=FALSE)
 mglmOneGroup(y, dispersion=0, offset=0, maxit=50, trace=FALSE)
 mglmSimple(y, design, dispersion=0, offset=0, weights=NULL)

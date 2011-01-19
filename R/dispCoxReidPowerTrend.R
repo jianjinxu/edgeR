@@ -7,7 +7,7 @@ dispCoxReidPowerTrend <- function(y, design, lib.size, offset=NULL, abundance=NU
 	nlibs <- ncol(y)
 	ntags <- nrow(y)
 	if(is.null(offset)) offset <- matrix(log(lib.size),ntags,nlibs,byrow=TRUE)
-	method.optim <- match.args(method.optim, c("Nelder-Mead", "BFGS"))
+	method.optim <- match.arg(method.optim, c("Nelder-Mead", "BFGS"))
 	
 	if(is.null(abundance)) abundance <- mglmOneGroup(y,offset=offset)
 	
