@@ -11,7 +11,6 @@
 Fit the same log-link negative binomial or Poisson generalized linear model to each row of a matrix of counts.
 }
 
-
 \usage{
 mglmLS(y, design, dispersion=0, offset=0, start=NULL, tol=1e-5, maxit=50, trace=FALSE)
 mglmOneGroup(y, dispersion=0, offset=0, maxit=50, trace=FALSE)
@@ -29,7 +28,7 @@ Assumed to be full column rank.}
 \item{dispersion}{numeric scalar or vector giving the dispersion parameter for each GLM.
 Can be a scalar giving one value for all tags, or a vector of length equal to the number of tags giving tag-wise dispersions.}
 
-\item{offset}{numeric vector or matrix giving the offset that is to be included in the log-linear model predictor.  Can be a vector of length equal to the number of libraries, or a matrix of the same size as \code{y}.}
+\item{offset}{numeric vector or matrix giving the offset that is to be included in the log-linear model predictor.  Can be a scalar, a vector of length equal to the number of libraries, or a matrix of the same size as \code{y}.}
 
 \item{weights}{numeric vector or matrix of non-negative quantitative weights.
 Can be a vector of length equal to the number of libraries, or a matrix of the same size as \code{y}.}

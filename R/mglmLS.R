@@ -44,7 +44,7 @@ mglmLS <- function(y,design,dispersion=0,offset=0,start=NULL,tol=1e-5,maxit=50,t
 #  Fit negative binomial generalized linear model with log link
 #  by approximate Fisher scoring with simple line search
 #  Yunshun Chen and Gordon Smyth
-#  12 November 2010.  Revised 26 Nov 2010.
+#  12 November 2010.  Revised 26 Jan 2011.
 {
 #	Check input
 	X <- as.matrix(design)
@@ -62,13 +62,7 @@ mglmLS <- function(y,design,dispersion=0,offset=0,start=NULL,tol=1e-5,maxit=50,t
 		ispoisson <- FALSE
 	}
 	phi <- rep(phi,length=ntags)
-	loffset <- length(offset)
-	if(loffset==1 || loffset==nlibs) 
-		offset <- matrix(offset,ntags,nlibs,byrow=TRUE)
-	else {
-		offset <- as.matrix(offset)
-		if(any(dim(offset)!=dim(y))) stop("dim(offset) doesn't match dimensions of y")
-	}
+	offset <- expandAsMatrix(offset,dim(y))
 
 #	Define deviance functions
 	deviances <- deviances.function(dispersion)

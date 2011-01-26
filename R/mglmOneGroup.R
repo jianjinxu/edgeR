@@ -1,13 +1,13 @@
 mglmOneGroup <- function(y,dispersion=0,offset=0,maxit=50,trace=FALSE)
 #	Fit null (single-group) negative-binomial glm with log-link to DGE data
-#	18 Aug 2010. Last modified 19 Aug 2010.
+#	18 Aug 2010. Last modified 26 Jan 2011.
 {
 	if(any(y<0)) stop("y must be non-negative")
 	y <- as.matrix(y)
 	if(any(dispersion<0)) stop("dispersion must be non-negative")
 	ntags <- nrow(y)
 	nlib <- ncol(y)
-	offset <- matrix(offset,ntags,nlib,byrow=TRUE)
+	offset <- expandAsMatrix(offset,dim(y))
 	dispersion <- rep(dispersion,length=ntags)
 
 	beta <- rep(-Inf,nrow(y))
