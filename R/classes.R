@@ -62,8 +62,8 @@ DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, norm.factors=NULL, grou
 	ntags <- nrow(counts)
 	if(nlib>0 & is.null(colnames(counts)))
 		colnames(counts) <- paste("sample",1:ncol(counts),sep=".")
-        group <- as.character(group)
-        group <- as.factor(group)
+		group <- as.character(group)
+		group <- as.factor(group)
 	if(nlib != length(group))
 		stop("Length of 'group' must equal number of columns in 'counts'")
 	if(is.null(lib.size)) {
@@ -86,16 +86,16 @@ DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, norm.factors=NULL, grou
 	if(!is.null(genes)) {
 		genes <- as.data.frame(genes, stringsAsFactors=FALSE)
 		if(nrow(genes) != nrow(x$counts)) stop("counts and genes have different nrows")
-                rownames(genes) <- rownames(counts)
+		rownames(genes) <- rownames(counts)
 		x$genes <- genes
 	}
-  all.zeros <- rowSums(counts,na.rm=TRUE)==0
-  x$all.zeros <- all.zeros
+	all.zeros <- rowSums(counts,na.rm=TRUE)==0
+	x$all.zeros <- all.zeros
 	if(remove.zeros) {
-            if(any(all.zeros)) {
-                x <- x[!all.zeros,]
-                warning("Removing ",sum(all.zeros)," rows that all have zero counts.")
-            }
+		if(any(all.zeros)) {
+			x <- x[!all.zeros,]
+			warning("Removing ",sum(all.zeros)," rows that all have zero counts.")
+		}
 	}
 	x
 }
@@ -105,3 +105,9 @@ getCounts <- function(object)
   object$counts
 }
 
+getOffsets <- function(object)
+#	Gordon Smyth
+#	26 Jan 2011.
+{
+	log(object$samples$lib.size*object$samples$norm.factors)
+}

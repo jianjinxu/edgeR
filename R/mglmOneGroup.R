@@ -1,4 +1,13 @@
-mglmOneGroup <- function(y,dispersion=0,offset=0,maxit=50,trace=FALSE)
+mglmOneGroup <- function(y,dispersion=0,offset=NULL,maxit=50,trace=FALSE) 
+UseMethod("mglmOneGroup")
+
+mglmOneGroup.DGEList <- function(y,dispersion=0,offset=NULL,maxit=50,trace=FALSE)
+{
+	if(is.null(offset)) offset <- getOffsets(y)
+	mglmOneGroup(y$counts,dispersion=dispersion,offset=offset,maxit=maxit,trace=trace)
+}
+
+mglmOneGroup.default <- function(y,dispersion=0,offset=NULL,maxit=50,trace=FALSE)
 #	Fit null (single-group) negative-binomial glm with log-link to DGE data
 #	18 Aug 2010. Last modified 26 Jan 2011.
 {
@@ -7,6 +16,7 @@ mglmOneGroup <- function(y,dispersion=0,offset=0,maxit=50,trace=FALSE)
 	if(any(dispersion<0)) stop("dispersion must be non-negative")
 	ntags <- nrow(y)
 	nlib <- ncol(y)
+	if(is.null(offset)) offset <- 0
 	offset <- expandAsMatrix(offset,dim(y))
 	dispersion <- rep(dispersion,length=ntags)
 
