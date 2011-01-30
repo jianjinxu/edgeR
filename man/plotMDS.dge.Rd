@@ -1,8 +1,8 @@
-\title{Multidimensional scaling plot of SAGE data}
+\title{Multidimensional scaling plot of digital gene expression data}
 \name{plotMDS.dge}
 \alias{plotMDS.dge}
 \description{
-Plot the sample relations based on Multidimensional Scaling.
+Calculate distances between RNA-seq or DGE libraries, then produce a multidimensional scaling plot.
 }
 \usage{
 plotMDS.dge(x, top=500, labels=colnames(x), col=NULL, cex=1, dim.plot=c(1,2), ndim=max(dim.plot),...)
@@ -19,15 +19,23 @@ plotMDS.dge(x, top=500, labels=colnames(x), col=NULL, cex=1, dim.plot=c(1,2), nd
 }
 
 \details{
-This function is a variation on the usual multdimensional scaling (or principle coordinate) plot, in that a distance measure particularly appropriate for the digital gene expression (DGE) context is used. The distance between each pair of samples (columns) is the square root of the common dispersion for the top \code{top} genes which best distinguish that pair of samples. These top \code{top} genes are selected according to the tagwise dispersion of all the samples.
-
+This function is a variation on the usual multdimensional scaling (or principle coordinate) plot, in that a distance measure particularly appropriate for the digital gene expression (DGE) context is used.
+A set of top genes are chosen that have largest biological variation between the libraries
+(those with largest tagwise dispersion treating all libraries as one group).
+Then the distance between each pair of libraries (columns) is the biological coefficient of variation (square root of the common dispersion) between those two libraries alone, using
+the top genes.
 See \code{\link[graphics]{text}} for possible values for \code{col} and \code{cex}.
+
+This function can be slow when there are many libraries.
 }
 
 \value{A plot is created on the current graphics device.}
 
 \author{Yunshun Chen and Gordon Smyth}
 
+\seealso{
+\code{\link{cmdscale}}, \code{\link{as.dist}}, \code{\link[limma]{plotMDS}}
+}
 
 \examples{
 # Simulate DGE data for 1000 genes(tags) and 6 samples.
