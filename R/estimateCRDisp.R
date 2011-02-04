@@ -2,7 +2,7 @@ estimateCRDisp <- function(y, design=NULL, offset=0, npts=10, min.disp=0, max.di
 ## Estimate NB dispersion by maximizing the CoxReid Adjusted Profile-likelihood
 ## The function uses cubic spline interpolation in finding the MLEs.
 ## Yunshun Chen
-## Created August 2010. Last modified 06 Jan 2011
+## Created August 2010. Last modified 04 Feb 2011
 
 {
 	if( is(y,"DGEList") ) {
@@ -19,6 +19,8 @@ estimateCRDisp <- function(y, design=NULL, offset=0, npts=10, min.disp=0, max.di
 				cat("No lib.size supplied, so lib.size is taken as the column sums of the matrix of counts.")
 		}
 	}
+    if( any( abs(y.mat - round(y.mat)) > .Machine$double.eps^0.5 ) )
+        stop("Non-integer entries in y (count data matrix) - all entries must integer-valued for estimateCRDisp() to work.") 
 	if(is.null(design)) {
 		if( is(y, "DGEList") ) {
 			design <- model.matrix(~y$samples$group)
