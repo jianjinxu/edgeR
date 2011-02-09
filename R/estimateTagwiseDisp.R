@@ -1,10 +1,15 @@
 estimateTagwiseDisp <- function(object, prior.n=10, trend=FALSE, prop.used=NULL, tol=1e-06, grid=TRUE, grid.length=200, verbose=TRUE)
-    ## Written by Davis McCarthy, 2009. Last modified 11 June 2010.
+    ## Written by Davis McCarthy, 2009. Last modified 10 February 2011.
     ## A function to estimate the common dispersion (using conditional maximum likelihood) for fixed counts (y), assuming library sizes are equal
     ## Must take equalized counts (pseudocounts), not raw counts
     ## Calculated on the delta = phi/(1+phi) scale, returns dispersion on the phi and the delta scale
     ## Now uses optimize instead of a grid search to estimate delta when not using NR methd - improves speed of function
 {
+    if( !is(object, "DGEList") ) stop("The object argument to estimateTagwiseDisp() must be a DGEList.\n")
+    if( is.null(object$pseudo.alt) ) {
+        cat("Running estimateCommonDisp() on DGEList object before proceeding with estimateTagwiseDisp().\n")
+        object <- estimateCommonDisp(object)
+    }
 	ntags<-nrow(object$counts)
 	group<-object$samples$group<-as.factor(object$samples$group)
 	levs.group<-levels(object$samples$group)
