@@ -60,6 +60,9 @@ calcNormFactors <- function(object, method=c("TMM","RLE","quantile"), refColumn=
   if( all(obs==ref) )
     return(1)
 
+  obs <- as.numeric(obs)
+  ref <- as.numeric(ref)
+
   nO <- sum(obs)
   nR <- sum(ref)
   logR <- log2((obs/nO)/(ref/nR))          # log ratio of expression, accounting for library size
