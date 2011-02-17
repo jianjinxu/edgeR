@@ -9,7 +9,7 @@
 
 
 \usage{
-plotMeanVar(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, show.binned.common.disp.vars=TRUE, show.ave.raw.vars=FALSE, dispersion.method="coxreid", scalar=NULL, NBline=FALSE, nbins=100, log="xy", xlab=NULL, ylab=NULL,  ...) 
+plotMeanVar(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, show.binned.common.disp.vars=FALSE, show.ave.raw.vars=TRUE, dispersion.method="coxreid", scalar=NULL, NBline=FALSE, nbins=100, log.axes="xy", xlab=NULL, ylab=NULL,  ...) 
 binMeanVar(x, conc=NULL, group, nbins=100, common.dispersion=FALSE, object=NULL)
 pooledVar(y,group)
 }
@@ -23,9 +23,9 @@ pooledVar(y,group)
 
 \item{show.tagwise.vars}{logical, whether or not to display the estimated genewise/tagwise variances on the mean-variance plot. Default is \code{FALSE}.}
 
-\item{show.binned.common.disp.vars}{logical, whether or not to compute the common dispersion for each bin of tags and show the variances computed from those binned common dispersions and the mean expression level of the respective bin of tags. Default is \code{TRUE}.}
+\item{show.binned.common.disp.vars}{logical, whether or not to compute the common dispersion for each bin of tags and show the variances computed from those binned common dispersions and the mean expression level of the respective bin of tags. Default is \code{FALSE}.}
 
-\item{show.ave.raw.vars}{logical, whether or not to show the average of the raw variances for each bin of tags plotted against the average expression level of the tags in the bin. Likely to be biased, so the default is \code{FALSE}.}
+\item{show.ave.raw.vars}{logical, whether or not to show the average of the raw variances for each bin of tags plotted against the average expression level of the tags in the bin. Averages are taken on the square root scale as regular arithmetic means are likely to be upwardly biased for count data, whereas averaging on the square scale gives a better summary of the mean-variance relationship in the data. The default is \code{TRUE}.}
 
 \item{dispersion.method}{character string giving the method that has been used to estimate the common and tagwise dispersion values used to calculate the estimated variances. Default is \code{"coxreid"} indicating that the Cox-Reid method for GLMs has been used to compute the dispersions; other option is \code{"qcml"} to indicate that conditional inference methods (e.g. \code{estimateCommonDisp} and \code{estimateTagwiseDisp} were used.}
 
@@ -35,7 +35,7 @@ pooledVar(y,group)
 
 \item{nbins}{scalar giving the number of bins (formed by using the quantiles of the genewise mean expression levels) for  which to compute average means and variances for exploring the mean-variance relationship. Default is \code{100} bins}
 
-\item{log}{character vector indicating if any of the axes should use a log scale. Default is \code{"xy"}, which makes both y and x axes on the log scale. Other valid options are \code{"x"} (log scale on x-axis only), \code{"y"} (log scale on y-axis only) and \code{""} (linear scale on x- and y-axis).}
+\item{log.axes}{character vector indicating if any of the axes should use a log scale. Default is \code{"xy"}, which makes both y and x axes on the log scale. Other valid options are \code{"x"} (log scale on x-axis only), \code{"y"} (log scale on y-axis only) and \code{""} (linear scale on x- and y-axis).}
 
 \item{xlab}{character string giving the label for the x-axis. Standard graphical parameter. If left as the default \code{NULL}, then the x-axis label will be set to "logConc".}
 
@@ -56,8 +56,8 @@ pooledVar(y,group)
 }
 
 \value{ \code{plotMeanVar} produces a mean-variance plot for the DGE data using the options described above. \code{plotMeanVar} and \code{binMeanVar} both return a list with the following components:
-	\item{avemeans}{vector of the average expression level within each bin of genes}
-	\item{avevars}{vector of the average raw pooled gene-wise variance within each bin of genes}
+	\item{avemeans}{vector of the average expression level within each bin of genes, with the average taken on the square-root scale}
+	\item{avevars}{vector of the average raw pooled gene-wise variance within each bin of genes, with the average taken on the square-root scale}
 	\item{bin.means}{list containing the average (mean) expression level for genes divided into bins based on amount of expression}
 	\item{bin.vars}{list containing the pooled variance for genes divided into bins based on amount of expression}
 	\item{means}{vector giving the mean expression level for each gene}
@@ -69,7 +69,7 @@ pooledVar(y,group)
 }
 
 \details{
-This function is useful for exploring the mean-variance relationship in the data. Raw variances are, for each gene, the pooled variance of the counts from each sample, divided by a scaling factor (by default the effective library size). The function will plot the average raw variance for tags split into \code{nbins} bins by overall expression level. This provides a useful summary of how the variance of the gene counts change with respect to average expression level (abundance). A line showing the Poisson mean-variance relationship (mean equals variance) is always shown to illustrate how the genewise variances may differ from a Poisson mean-variance relationship. Optionally, the raw variances and estimated tagwise variances can also be plotted. Estimated tagwise variances can be calculated using either qCML estimates of the tagwise dispersions (\code{estimateTagwiseDisp}) or Cox-Reid conditional inference estimates (\code{CRDisp}). A log-log scale is used for the plot.
+This function is useful for exploring the mean-variance relationship in the data. Raw variances are, for each gene, the pooled variance of the counts from each sample, divided by a scaling factor (by default the effective library size). The function will plot the average raw variance for tags split into \code{nbins} bins by overall expression level. The averages are taken on the square-root scale as for count data the arithmetic mean is upwardly biased. Taking averages on the square-root scale provides a useful summary of how the variance of the gene counts change with respect to expression level (abundance). A line showing the Poisson mean-variance relationship (mean equals variance) is always shown to illustrate how the genewise variances may differ from a Poisson mean-variance relationship. Optionally, the raw variances and estimated tagwise variances can also be plotted. Estimated tagwise variances can be calculated using either qCML estimates of the tagwise dispersions (\code{estimateTagwiseDisp}) or Cox-Reid conditional inference estimates (\code{CRDisp}). A log-log scale is used for the plot.
 }
 
 

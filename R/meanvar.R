@@ -35,8 +35,13 @@ binMeanVar <- function(x, conc=NULL, group, nbins=100, common.dispersion=FALSE, 
             }
         }
     }
-    ave.means <- sapply(means.bins, mean)
-    ave.vars <- sapply(var.bins, mean)
+    ## Take the averages of mean and variance for each bin on the square-root scale - more appropriate for the count data and reduces upward bias
+    sqrt.means <- lapply(means.bins, sqrt)
+    sqrt.vars <- lapply(var.bins, sqrt)
+    ave.means <- sapply(sqrt.means, mean)
+    ave.means <- ave.means^2
+    ave.vars <- sapply(sqrt.vars, mean)
+    ave.vars <- ave.vars^2
     if(common.dispersion)
         comdisp.vars <- ave.means + comdisp.bin * ave.means^2
     else {
@@ -62,7 +67,7 @@ pooledVar <- function(y,group) {
     numerator/denominator
 }
 
-plotMeanVar <- function(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, show.binned.common.disp.vars=TRUE, show.ave.raw.vars=FALSE, dispersion.method="coxreid", scalar=NULL, NBline=FALSE, nbins=100, log="xy", xlab=NULL, ylab=NULL, ...) {
+plotMeanVar <- function(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, show.binned.common.disp.vars=FALSE, show.ave.raw.vars=TRUE, dispersion.method="coxreid", scalar=NULL, NBline=FALSE, nbins=100, log.axes="xy", xlab=NULL, ylab=NULL, ...) {
     ## Creates a mean-variance plot (with binned values) for a given DGEList object
     ## Uses the pooledVar and binMeanVar functions and operates on pseudo-counts to account for differences in library sizes
     if(!is(object,"DGEList"))
@@ -78,8 +83,9 @@ plotMeanVar <- function(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.
         scalar <- scalar
     }
     else
-        scalar <- object$samples$lib.size*object$samples$norm.factors/exp(mean(log(object$samples$lib.size*object$samples$norm.factors)))
-    scalingmatrix <- outer(rep(1,nrow(object$counts)), scalar)
+        offset <- getOffsets(object)
+        scalar <- exp(offset)/exp(mean(offset))
+    scalingmatrix <- expandAsMatrix(scalar, dim(object$counts))
     x <- object$counts/scalingmatrix
     dispersion.method <- match.arg(dispersion.method,c("coxreid","qcml"))
     if(NBline | show.tagwise.vars) {
@@ -117,42 +123,48 @@ plotMeanVar <- function(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.
             stop("Cannot extract tagwise dispersions. Try running estimateTagwiseDisp() on your object first.")
         tagvars <- meanvar$means + meanvar$means^2*tagwise.dispersion
     }
+    ## Averaging of means and variances in bins is now done on the square root scale to get less upward bias (done within binMeanVar) - more appropriate for count data
+    avemeans <- meanvar$avemeans
+    avevars <- meanvar$avevars
+    
+    common.dispersion.vars <- meanvar$common.dispersion.vars
+    
     ## Having done the necessary calculations, now do the plotting
     if(is.null(xlab))
         xlab <- "Mean gene expression level (log10 scale)"
     if(is.null(ylab))
         ylab <- "Pooled gene-level variance (log10 scale)"
     if(show.raw.vars) {
-        plot(meanvar$means, meanvar$vars, log=log, col="gray60", cex=0.6, xlab=xlab, ylab=ylab, plot.first=grid(), ...)
+        plot(meanvar$means, meanvar$vars, log=log.axes, col="gray60", cex=0.6, xlab=xlab, ylab=ylab, plot.first=grid(), ...)
         if(show.tagwise.vars)
             points(meanvar$means, tagvars, col="lightskyblue", cex=0.6)
         if(show.ave.raw.vars)
-            points(meanvar$avemeans, meanvar$avevars, pch="x", col="red", cex=1.5)
+            points(avemeans, avevars, pch="x", col="red", cex=1.5)
         if(show.binned.common.disp.vars)
-            points(meanvar$avemeans, meanvar$common.dispersion.vars, pch="x", col="darkgreen", cex=1.5)
+            points(avemeans, meanvar$common.dispersion.vars, pch="x", col="darkgreen", cex=1.5)
     }
     else {
         if(show.tagwise.vars) {
-            plot(meanvar$means, tagvars, col="lightskyblue", log=log, cex=0.6, xlab=xlab, ylab=ylab, plot.first=grid(), ...)
+            plot(meanvar$means, tagvars, col="lightskyblue", log=log.axes, cex=0.6, xlab=xlab, ylab=ylab, plot.first=grid(), ...)
             if(show.ave.raw.vars)
-                points(meanvar$avemeans, meanvar$avevars, pch="x", col="red", cex=1.5)
+                points(avemeans, avevars, pch="x", col="red", cex=1.5)
             if(show.binned.common.disp.vars)
-                points(meanvar$avemeans, meanvar$common.dispersion.vars, pch="x", col="darkgreen", cex=1.5)
+                points(avemeans, meanvar$common.dispersion.vars, pch="x", col="darkgreen", cex=1.5)
         }
         else {
-            if( any(!is.finite(meanvar$avevars)) )
+            if( any(!is.finite(avevars)) )
                 maxy <- max(meanvar$vars)
             else
-                maxy <- max(meanvar$avevars)
+                maxy <- max(avevars)
             if(show.ave.raw.vars) {
-                plot(meanvar$avemeans, meanvar$avevars, pch="x", col="red", cex=1.5, ylim=c(0.1,maxy), log=log, xlab=xlab, ylab=ylab, plot.first=grid(), ...)
+                plot(avemeans, avevars, pch="x", col="red", cex=1.5, ylim=c(0.1,maxy), log=log.axes, xlab=xlab, ylab=ylab, plot.first=grid(), ...)
                 if(show.binned.common.disp.vars)
-                    points(meanvar$avemeans, meanvar$common.dispersion.vars, pch="x", col="darkgreen", cex=1.5)
+                    points(avemeans, meanvar$common.dispersion.vars, pch="x", col="darkgreen", cex=1.5)
             }
             else {
-                plot(meanvar$avemeans, meanvar$common.dispersion.vars, pch="x", col="darkgreen", cex=1.5, ylim=c(0.1,maxy), log=log, xlab=xlab, ylab=ylab, plot.first=grid(), ...)
+                plot(avemeans, meanvar$common.dispersion.vars, pch="x", col="darkgreen", cex=1.5, ylim=c(0.1,maxy), log=log.axes, xlab=xlab, ylab=ylab, plot.first=grid(), ...)
                 if(show.ave.raw.vars)
-                    points(meanvar$avemeans, meanvar$avevars, pch="x", col="red", cex=1.5)
+                    points(avemeans, avevars, pch="x", col="red", cex=1.5)
             }
         }
     }
