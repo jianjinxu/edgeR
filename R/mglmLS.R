@@ -88,7 +88,7 @@ mglmLS <- function(y,design,dispersion=0,offset=0,start=NULL,tol=1e-5,maxit=50,t
 	
 #	Index tags still iterating
 	i <- nypos >= 1
-	ls.fail <- rep(FALSE,sum(i))
+	ls.fail <- rep(FALSE,ntags)
 
 #	Starting values
 	if(any(i))
