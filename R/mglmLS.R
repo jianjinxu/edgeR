@@ -5,7 +5,7 @@ deviances.function <- function(dispersion)
 {
 	i <- dispersion>0
 	if(all(i)) {
-#		Negative binomial
+#		All Negative binomial
 		deviances <- function(y,mu,dispersion) {
 			logymu <- log(y/mu)
 			logymu[y<1e-14] <- 0
@@ -24,7 +24,7 @@ deviances.function <- function(dispersion)
 				dev
 			}
 		} else {
-#			Poisson
+#			All Poisson
 			deviances <- function(y,mu,dispersion) {
 				logymu <- log(y/mu)
 				logymu[y<1e-14] <- 0
@@ -40,8 +40,8 @@ deviances.function <- function(dispersion)
 ######################################################
 
 mglmLS <- function(y,design,dispersion=0,offset=0,start=NULL,tol=1e-5,maxit=50,trace=FALSE)
-
-#  Fit negative binomial generalized linear model with log link
+#  Fit the same negative binomial generalized linear model with log link
+#  to multipe response vectors
 #  by approximate Fisher scoring with simple line search
 #  Yunshun Chen and Gordon Smyth
 #  12 November 2010.  Revised 26 Jan 2011.
@@ -186,5 +186,5 @@ mglmLS <- function(y,design,dispersion=0,offset=0,start=NULL,tol=1e-5,maxit=50,t
 
 	R <- qr.R(qrX)
 	beta <- t(solve(R,t(beta)))
-	list(coefficients=beta,fitted=mu,fail=which(ls.fail),not.converged=which(i))
+	list(coefficients=beta,fitted.values=mu,fail=which(ls.fail),not.converged=which(i))
 }

@@ -40,3 +40,4 @@ estimateCommonDisp <- function(object,tol=1e-06,rowsum.filter=5)
     delta <- delta$maximum
     list(dispersion=delta/(1-delta), dispersion.delta=delta)
 }
+

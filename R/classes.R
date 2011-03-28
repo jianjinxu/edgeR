@@ -100,10 +100,9 @@ DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, norm.factors=NULL, grou
 	x
 }
 
-getCounts <- function(object)
-{
-  object$counts
-}
+as.matrix.DGEList <- function(x,...) as.matrix(x$counts)
+
+getCounts <- function(object) as.matrix(object$counts)
 
 getOffsets <- function(object)
 #	Gordon Smyth

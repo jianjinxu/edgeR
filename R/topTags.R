@@ -4,7 +4,7 @@ topTags <- function(object,n=10,adjust.method="BH",sort.by="p.value")
 #	Created September 2008.  Last modified 19 July 2010.
 {
 	sort.by <- match.arg(sort.by,c("p.value","logFC"))
-	alfc <-abs(object$table$logFC)
+	alfc <- abs(object$table$logFC)
 	switch(sort.by,
 		"logFC" = {o <- order(alfc,decreasing=TRUE)},
 		"p.value" = {o <- order(object$table$p.value,1/alfc)}
@@ -16,6 +16,7 @@ topTags <- function(object,n=10,adjust.method="BH",sort.by="p.value")
 		tab <- cbind(object$genes[chosen,,drop=FALSE], tab) # Assumes that object$genes is a data.frame
 	}
 	rownames(tab) <- rownames(object$table[chosen,])
+#	This conflicts with show method for TopTags!
 	colnames(tab) <- c(colnames(object$genes), "logConc","logFC","PValue","FDR")
 	new("TopTags",list(table=tab, adjust.method=as.character(adjust.method),comparison=as.character(object$comparison)))
 }

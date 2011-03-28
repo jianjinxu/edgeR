@@ -4,10 +4,10 @@
 
 \title{Fit negative binomial generalized linear model for each transcript}
 
-\description{Fit a negative binomial generalized linear model for each transcript (tag) with the unadjusted counts provided, a value for the dispersion parameter and, optionally, offsets and weights for different libraries or transcripts.}
+\description{Fit a negative binomial generalized linear model (GLM) for each transcript (tag) with the unadjusted counts provided, a value for the dispersion parameter and, optionally, offsets and weights for different libraries or transcripts.}
 
 
-\usage{glmFit(y, design, dispersion, offset=NULL, weights=NULL, lib.size=NULL) 
+\usage{glmFit(y, design, dispersion, offset=NULL, weights=NULL, lib.size=NULL, start=NULL)
 glmLRT(y, glmfit, coef=ncol(glmfit$design), contrast=NULL)}
 
 \arguments{ 
@@ -23,7 +23,9 @@ Must be of full column rank.}
 
 \item{weights}{optional numeric matrix giving the matrix of weights for the observations (for each library and transcript) to be used in the GLM calculations. Not currently used in the GLM calculations.}
 
-\item{lib.size}{optional vector providing the (effective) library size for each library (must have length equal to the number of columns, or libraries, in the matrix of counts). If \code{NULL}, then a default is used. If \code{y} is a \code{DGEList} object then the default for \code{lib.size} is the product of the library sizes and the normalization factors (in the \code{samples} slot of the object). If \code{y} is a simple matrix of counts, then the default for \code{lib.size} is the vector of column sums of \code{y}.}
+\item{lib.size}{optional numeric vector providing the (effective) library size for each library (must have length equal to the number of columns, or libraries, in the matrix of counts). If \code{NULL}, then a default is used. If \code{y} is a \code{DGEList} object then the default for \code{lib.size} is the product of the library sizes and the normalization factors (in the \code{samples} slot of the object). If \code{y} is a simple matrix of counts, then the default for \code{lib.size} is the vector of column sums of \code{y}.}
+
+\item{start}{optional numeric matrix of initial estimates for the fitted coefficients}
 
 \item{glmfit}{a \code{DGEGLM} object, the output from \code{glmFit}.}
 

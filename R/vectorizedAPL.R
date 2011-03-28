@@ -1,13 +1,13 @@
 
-adjustedProfileLik <- function(dispersion, y, design, offset)
+adjustedProfileLik <- function(dispersion, y, design, offset, adjust=TRUE)
 ## tagwise Cox-Reid adjusted profile likelihoods for the dispersion
 ## dispersion can be scalar or tagwise vector
 ## y is matrix: rows are genes/tags/transcripts, columns are samples/libraries
 ## offset is matrix of the same dimensions as y
 ## Yunshun Chen, Gordon Smyth
-## Created June 2010. Last modified 19 Jan 2011.
+## Created June 2010. Last modified 3 March 2011.
 {
-	if(any(dim(y)!=dim(offset))) stop("offset must be a matrix of same dimensions as y, the matrix of counts.")
+	if(any(dim(y)!=dim(offset))) offset <- expandAsMatrix(offset,dim(y))
 	ntags <- nrow(y)
 	nlibs <- ncol(y)
 	if(length(dispersion)==1) dispersion <- rep(dispersion,ntags)
@@ -22,12 +22,18 @@ adjustedProfileLik <- function(dispersion, y, design, offset)
 	} else {
 		loglik <- rowSums(dnbinom(y,size=1/dispersion,mu=mu,log = TRUE))
 	}
-
+	if(!adjust) return(loglik)
+	
 #	Cox-Reid adjustment
-	A <- .vectorizedXWX(design, mu, dispersion)
-	D <- .vectorizedLDL(A)
-	cr <- 0.5*rowSums(log(abs(D)))
-
+	if(ncol(design)==1){
+		D <- sum(mu/(1+mu*dispersion))
+		cr <- 0.5*log(abs(D))
+	} else {
+		A <- .vectorizedXWX(design, mu, dispersion)
+		D <- .vectorizedLDL(A)
+		cr <- 0.5*rowSums(log(abs(D)))
+	}
+	
 	loglik - cr
 }
 

@@ -1,31 +1,25 @@
 binMeanVar <- function(x, conc=NULL, group, nbins=100, common.dispersion=FALSE, object=NULL) {
     ## Function to bin DGE data based on abundance and calculate the mean and pooled variance for each tag, as well as the average mean and variance for each bin. Allows us to investigate the mean-variance relationship in the data.
     ## Expect x to be a matrix of counts or pseudocounts---pseudocounts preferable as this adjusts for library size.
+    ntags <- nrow(x)
     means <- rowMeans(x)
     vars <- apply(x,1,pooledVar,group=group)
-    means.quantiles <- quantile(means, probs=seq(0,1,length=nbins+1))
-    means.quantiles[1] <- 0
-    if(!is.null(conc))
-       conc.quantiles <- quantile(conc, probs=seq(0,1,length=nbins+1))
-    if(any(duplicated(means.quantiles))) {
-        cat("Duplicated quantiles for the means, so using quantiles of conc instead\n")
-        if(is.null(conc))
-            stop("conc is NULL, so cannot bin data.\n")
-        else {
-            f <- cut(conc, breaks=conc.quantiles)
-        }
-    }
-    else {
-        f <- cut(means,breaks=means.quantiles)
-    }
-    bins <- split(1:nrow(x),f)
-    var.bins <- means.bins <- list()
+
+    bins <- var.bins <- means.bins <- vector("list", nbins)
+    o <- order(means)
+    ntagsinbin <- floor(ntags / nbins)
+    
     if(common.dispersion) {
         comdisp.bin <- rep(NA, nbins)
         dispersions <- rep(NA, nrow(x))
     }
     else dispersions <- NULL
     for(i in 1:nbins){
+        if( i==nbins )
+            bins[[i]] <- o[ (1 + (i-1)*ntagsinbin):ntags]
+        else
+            bins[[i]] <- o[ (1 + (i-1)*ntagsinbin):( i*ntagsinbin)]
+
         means.bins[[i]] <- means[bins[[i]]]
         var.bins[[i]] <- vars[bins[[i]]]
         if(common.dispersion) {
@@ -139,17 +133,17 @@ plotMeanVar <- function(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.
         if(show.tagwise.vars)
             points(meanvar$means, tagvars, col="lightskyblue", cex=0.6)
         if(show.ave.raw.vars)
-            points(avemeans, avevars, pch="x", col="red", cex=1.5)
+            points(avemeans, avevars, pch="x", col="darkred", cex=1.5)
         if(show.binned.common.disp.vars)
-            points(avemeans, meanvar$common.dispersion.vars, pch="x", col="darkgreen", cex=1.5)
+            points(avemeans, meanvar$common.dispersion.vars, pch="x", col="firebrick2", cex=1.5)
     }
     else {
         if(show.tagwise.vars) {
             plot(meanvar$means, tagvars, col="lightskyblue", log=log.axes, cex=0.6, xlab=xlab, ylab=ylab, plot.first=grid(), ...)
             if(show.ave.raw.vars)
-                points(avemeans, avevars, pch="x", col="red", cex=1.5)
+                points(avemeans, avevars, pch="x", col="darkred", cex=1.5)
             if(show.binned.common.disp.vars)
-                points(avemeans, meanvar$common.dispersion.vars, pch="x", col="darkgreen", cex=1.5)
+                points(avemeans, meanvar$common.dispersion.vars, pch="x", col="firebrick2", cex=1.5)
         }
         else {
             if( any(!is.finite(avevars)) )
@@ -157,14 +151,14 @@ plotMeanVar <- function(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.
             else
                 maxy <- max(avevars)
             if(show.ave.raw.vars) {
-                plot(avemeans, avevars, pch="x", col="red", cex=1.5, ylim=c(0.1,maxy), log=log.axes, xlab=xlab, ylab=ylab, plot.first=grid(), ...)
+                plot(avemeans, avevars, pch="x", col="darkred", cex=1.5, ylim=c(0.1,maxy), log=log.axes, xlab=xlab, ylab=ylab, plot.first=grid(), ...)
                 if(show.binned.common.disp.vars)
-                    points(avemeans, meanvar$common.dispersion.vars, pch="x", col="darkgreen", cex=1.5)
+                    points(avemeans, meanvar$common.dispersion.vars, pch="x", col="firebrick2", cex=1.5)
             }
             else {
-                plot(avemeans, meanvar$common.dispersion.vars, pch="x", col="darkgreen", cex=1.5, ylim=c(0.1,maxy), log=log.axes, xlab=xlab, ylab=ylab, plot.first=grid(), ...)
+                plot(avemeans, meanvar$common.dispersion.vars, pch="x", col="firebrick2", cex=1.5, ylim=c(0.1,maxy), log=log.axes, xlab=xlab, ylab=ylab, plot.first=grid(), ...)
                 if(show.ave.raw.vars)
-                    points(avemeans, avevars, pch="x", col="red", cex=1.5)
+                    points(avemeans, avevars, pch="x", col="darkred", cex=1.5)
             }
         }
     }

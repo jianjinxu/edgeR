@@ -4,7 +4,7 @@ assign("[.DGEList",
 function(object, i, j, ...) {
 #  Subsetting for DGEList objects
 #  Davis McCarthy, Gordon Smyth 
-#  24 September 2009.  Last modified 9 Oct 2009.
+#  24 September 2009.  Last modified 24 Feb 2011.
 
 	if(nargs() != 3) stop("Two subscripts required",call.=FALSE)
 	if(missing(i))
@@ -12,9 +12,7 @@ function(object, i, j, ...) {
 			return(object)
 		else {
 			object$counts <- object$counts[,j,drop=FALSE]
-			object$samples <- object$samples[j,,drop=FALSE]
-			object$samples$group <- as.factor(as.character(object$samples$group))
-			#object$samples$lib.size <- object$samples$lib.size[j,drop=FALSE]
+			object$samples <- droplevels(object$samples[j,,drop=FALSE])
 			object$pseudo.alt <- object$pseudo.alt[,j,drop=FALSE]
 		}
 	else {
@@ -33,10 +31,8 @@ function(object, i, j, ...) {
 			object$all.zeros <- object$all.zeros[i,drop=FALSE]
 		} else {
 			object$counts <- object$counts[i,j,drop=FALSE]
-			object$samples <- object$samples[j,,drop=FALSE]
-			object$samples$group <- as.factor(as.character(object$samples$group))
+			object$samples <- droplevels(object$samples[j,,drop=FALSE])
 			object$pseudo.alt <- object$pseudo.alt[i,j,drop=FALSE]
-			#object$samples$lib.size <- object$samples$lib.size[j,drop=FALSE]
 			object$conc$conc.common <- object$conc$conc.common[i,drop=FALSE]
 			object$conc$conc.group <- object$conc$conc.group[i,,drop=FALSE]
 			object$tagwise.dispersion <- object$tagwise.dispersion[i,drop=FALSE]

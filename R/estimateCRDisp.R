@@ -1,10 +1,12 @@
-estimateCRDisp <- function(y, design=NULL, offset=0, npts=10, min.disp=0, max.disp=2, nselect=200, rowsum.filter=5, tagwise=FALSE, prior.n=10, trend=FALSE, lib.size=NULL, verbose=TRUE)
+estimateCRDisp <- function(y, design=NULL, offset=NULL, npts=10, rowsum.filter=5, subset=1000, tagwise=FALSE, prior.n=10, nbins=50, lib.size=NULL, disp.trend=NULL, method.trend="binned-spline", verbose=TRUE)
 ## Estimate NB dispersion by maximizing the CoxReid Adjusted Profile-likelihood
 ## The function uses cubic spline interpolation in finding the MLEs.
+## 'dispCoxReidPowerTrend' or 'dispCoxReidBinTrend' is called to get the trended common dispersions and the boundaries of tagwise dispersions
 ## Yunshun Chen
-## Created August 2010. Last modified 04 Feb 2011
+## Created August 2010. Last modified 17 Feb 2011.
 
 {
+	.Deprecated("estimateGLMTrendedDisp")
 	if( is(y,"DGEList") ) {
 		if(is.null(y$samples$norm.factors))
 			y$samples$norm.factors <- rep(1, ncol(y$counts))
@@ -16,11 +18,9 @@ estimateCRDisp <- function(y, design=NULL, offset=0, npts=10, min.disp=0, max.di
 		if(is.null(lib.size)) {
 			lib.size <- colSums(y.mat)
 			if(verbose)
-				cat("No lib.size supplied, so lib.size is taken as the column sums of the matrix of counts.")
+				cat("No lib.size supplied, so lib.size is taken as the column sums of the matrix of counts.\n")
 		}
 	}
-    if( any( abs(y.mat - round(y.mat)) > .Machine$double.eps^0.5 ) )
-        stop("Non-integer entries in y (count data matrix) - all entries must integer-valued for estimateCRDisp() to work.") 
 	if(is.null(design)) {
 		if( is(y, "DGEList") ) {
 			design <- model.matrix(~y$samples$group)
@@ -31,106 +31,97 @@ estimateCRDisp <- function(y, design=NULL, offset=0, npts=10, min.disp=0, max.di
 			stop("No design matrix supplied as an argument with matrix of counts.")
 	}
 	if(!is.fullrank(design)) stop("design matrix must be full column rank")
+	
 	ngenes <- nrow(y.mat)
 	narrays <- ncol(y.mat)
-	if( length(offset)==length(y.mat) ) {
-		offset.mat <- as.matrix(offset, nrow=ngenes, ncol=narrays)
-	} else {
-		offset.mat <- matrix(0, nrow=ngenes, ncol=narrays)
-		if(length(offset)==narrays | length(offset)==1)
-			offset.mat <- matrix(offset, nrow=ngenes, ncol=narrays, byrow=TRUE)
-		else 
-			stop("Number of entries in argument 'offset' incompatible with 'y'. Must have length equal to 1 or to the number of entries in the matrix of counts or to the number of columns in the matrix of counts.\n")
-	}
-	lib.size.mat <- outer(rep(1,nrow(y.mat)), log(lib.size))
 	tags.used <- rowSums(y.mat) > rowsum.filter
 	y.filt <- y.mat[tags.used,]
-	offset.mat.filt <- offset.mat[tags.used,]
 	ntags <- nrow(y.filt)
-	if(nselect > ntags) {
-		nselect <- ntags
-	}
-	abundance <- rowSums(y.filt)	
-	index <- cbind(abundance,c(1:ntags))
-	index.order <- index[order(index[,1],decreasing = TRUE),]
-	index.select <- floor(seq(1,ntags,ntags/nselect))
-	tags.select <- index.order[index.select,][,2]
 
-	offset.mat.select <- offset.mat.filt[tags.select,]
-	y.select <- y.filt[tags.select,]
-	lib.size.mat.select <- outer(rep(1,nrow(y.select)), log(lib.size))
-	lib.size.mat.filt <- outer(rep(1,nrow(y.filt)), log(lib.size))	
+	if(is.null(offset)){
+	if( is( y, "DGEList") )
+		offset.mat <- getOffsets(y)
+	else
+		offset.mat <- log(lib.size)
+		offset.mat.filt <- expandAsMatrix(offset.mat, dim(y.filt))
+	}else{
+		if( length(offset)==length(y.mat) ) {
+			offset.mat <- as.matrix(offset, nrow=ngenes, ncol=narrays)
+		} else {
+			offset.mat <- matrix(0, nrow=ngenes, ncol=narrays)
+			if(length(offset)==narrays | length(offset)==1)
+				offset.mat <- matrix(offset, nrow=ngenes, ncol=narrays, byrow=TRUE)
+			else 
+				stop("Number of entries in argument 'offset' incompatible with 'y'. Must have length equal to 1 or to the number of entries in the matrix of counts or to the number of columns in the matrix of counts.\n")
+		}
+		offset.mat.filt <- offset.mat[tags.used,]
+	}
+	abundance <- mglmOneGroup(y.mat, offset=offset.mat)
 	
-	lower <- min.disp^(0.25)
-	upper <- max.disp^(0.25)
-	spline.pts <- lower + (0:(20-1))*(upper-lower)/(20-1)
-	spline.disp <- (spline.pts)^4
-	apl.com.select <- c()
-	apl.tgw.select <- matrix(0, nrow=20, ncol=nselect)
-	for(i in 1:20){
-		y.apl <- adjustedProfileLik(spline.disp[i], y.select, design=design, offset=offset.mat.select+lib.size.mat.select)
-		apl.tgw.select[i,] <- y.apl
+	method.trend <- match.arg(method.trend, c("binned-spline", "binned-loess", "power"))
+	if(!is.null(disp.trend)){
+		if(length(disp.trend) != ngenes) stop("dispersion trend has to have the same length as the number of genes")
+		tagwise <- TRUE
+		disp.trend.filt <- disp.trend[tags.used]
+		#abundance <- mglmOneGroup(y.filt, offset=offset.mat.filt)
+	} else {
+		if( method.trend=="binned-spline" )
+			trend <- dispBinTrend(y.filt, design, offset=offset.mat.filt, nbins=nbins, method.trend="spline")
+		if( method.trend=="binned-loess" )
+			trend <- dispBinTrend(y.filt, design, offset=offset.mat.filt, nbins=nbins, method.trend="loess")
+		if( method.trend=="power")
+			trend <- dispCoxReidPowerTrend(y.filt, design, offset=offset.mat.filt, subset=subset)
+		disp.trend.filt <- trend$dispersion
+		#abundance <- trend$abundance
 	}
-	apl.com.select <- rowSums(apl.tgw.select)/nselect
-	bound <- max(apl.com.select) - 5/prior.n
-	select <- apl.com.select > bound
-	min.disp.new <- min(spline.disp[select])
-	max.disp.new <- max(spline.disp[select])
-
-	lower.new <- min.disp.new^(0.25)
-	upper.new <- max.disp.new^(0.25)
-	spline.pts <- lower.new + (0:(npts-1))*(upper.new-lower.new)/(npts-1)
-	spline.disp <- (spline.pts)^4
-	apl.tgw <- smoothy <- matrix(0, nrow=npts, ncol=ntags)
+	#cat("Trended dispersions = ", disp.trend.filt, "\n")
+	#cat("Abundance = ", abundance, "\n")
+	#return(list(abundance = abundance, disp = disp.trend.filt))
+	spline.pts <- (0:(npts-1))*2/(npts-1) - 1
+	spline.disp <- apl.tgw <- smoothy <- matrix(0, nrow=npts, ncol=ntags)
+	for(i in 1:npts) spline.disp[i,] <- disp.trend.filt*2^(4*spline.pts[i])
 
 	abundance.rank <- rank(rowSums(y.filt))
 	for(i in 1:npts){
-		y.apl <- adjustedProfileLik(spline.disp[i], y.filt, design=design, offset=offset.mat.filt+lib.size.mat.filt)
+		y.apl <- adjustedProfileLik(spline.disp[i,], y.filt, design=design, offset=offset.mat.filt)
 		apl.tgw[i,] <- y.apl
-		if(trend){
-			fit <- loess(y.apl ~ abundance.rank, span = 0.3, degree = 0, family = "gaussian", iterations = 1)
-			smoothy[i,] <- fitted(fit)
+		if(tagwise & prior.n!=0){
+            fit <- loess(y.apl ~ abundance.rank, span = 0.3, degree = 0, family = "gaussian", iterations = 1)
+            smoothy[i,] <- fitted(fit)
 		}
 	}
 	apl.com <- rowSums(apl.tgw)/ntags
-	if(trend){
-			cr.com.filt <- rep(0,ntags)
-			for(j in 1:ntags) cr.com.filt[j] <- (.maximize.by.interpolation(spline.pts, smoothy[,j]))^4
-			cr.com <- rep(max(cr.com.filt),ngenes)
-			cr.com[tags.used] <- cr.com.filt
-		} else {	
-			cr.com <- (.maximize.by.interpolation(spline.pts, apl.com))^4
-			if(cr.com == min.disp || cr.com == max.disp)	
-			warning("Common dispersion not within the selected range. Reset the 'min.disp' or the 'max.disp'.")
-	}
+	
+	cr.com.filt <- disp.trend.filt
+	cr.com <- rep(max(cr.com.filt),ngenes)
+	cr.com[tags.used] <- cr.com.filt
+
 	if(tagwise){
 		cr.tgw.filt <- rep(0, ntags)
-		if(trend){
-			cr.tgw.all <- rep(max(cr.com), ngenes)
-			for(j in 1:ntags) cr.tgw.filt[j] <- (.maximize.by.interpolation(spline.pts, apl.tgw[,j]+ prior.n*smoothy[,j]))^4
-		} else {
-			cr.tgw.all <- rep(cr.com, ngenes)
-			for(j in 1:ntags) cr.tgw.filt[j] <- (.maximize.by.interpolation(spline.pts, apl.tgw[,j]+ prior.n*apl.com))^4
-		}
+		cr.tgw.all <- rep(max(cr.com), ngenes)
+		for(j in 1:ntags) cr.tgw.filt[j] <- disp.trend.filt[j]*2^(4*(maximizeInterpolant(spline.pts, apl.tgw[,j]+ prior.n*smoothy[,j])))
 		cr.tgw.all[tags.used] <- cr.tgw.filt
 	}
 	if(is(y,"DGEList")){
 		y$design <- design
-		y$CR.common.dispersion=cr.com
-		if(tagwise)	y$CR.tagwise.dispersion=cr.tgw.all
+		y$abundance <- abundance
+		y$CR.common.dispersion <- cr.com
+		if(tagwise)	y$CR.tagwise.dispersion <- cr.tgw.all
 		return(y)
 	} else {
+        samples <- data.frame(lib.size=lib.size)
+        rownames(samples) <- colnames(y.mat)
 		if(tagwise){
-			new("DGEList",list(samples=y$samples, counts=y$counts, genes=y$genes, design = design, 
+			new("DGEList",list(samples=y$samples, counts=y$counts, genes=y$genes, design = design, abundance = abundance,
 			CR.common.dispersion=cr.com, CR.tagwise.dispersion=cr.tgw.all))
 		} else {
-			new("DGEList",list(samples=y$samples, counts=y$counts, genes=y$genes, design = design, 
+			new("DGEList",list(samples=NULL, counts=y.mat, genes=NULL, design = design, abundance = abundance,
 			CR.common.dispersion=cr.com))
 		}
 	}
 }
 
-.maximize.by.interpolation <- function(x,z,maxit=10,eps=1e-7,plot=FALSE)
+maximizeInterpolant <- function(x,z,maxit=10,eps=1e-7,plot=FALSE)
 #	Maximize a function given a table of values
 #	by spline interpolation
 #	Gordon Smyth

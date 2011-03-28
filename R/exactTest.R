@@ -17,6 +17,7 @@ exactTest<-function(object, pair=NULL, dispersion=NULL, common.disp=TRUE)
     if(length(pair)!=2) stop("Pair must be of length 2.")
     if(is.numeric(pair)) pair <- levels(object$samples$group)[pair]
     else pair <- as.character(pair)	
+
     this.pair <- ( object$samples$group %in% pair )
     cat("Comparison of groups: ",as.vector(pair[2]),"-",as.vector(pair[1]),"\n")
     group.pair <- factor(as.vector(object$samples$group[this.pair]))
@@ -37,13 +38,17 @@ exactTest<-function(object, pair=NULL, dispersion=NULL, common.disp=TRUE)
             dispersion <- object$tagwise.dispersion
         }
     }
+
     q2q.pair <- equalizeLibSizes(obj.pair,disp=dispersion,null.hypothesis=TRUE)
     mus <- q2q.pair$N*q2q.pair$conc$conc.common
     y<-splitIntoGroupsPseudo(q2q.pair$pseudo,group.pair,pair)
+
     exact.pvals<- exactTest.matrix(y$y1,y$y2,mus,r=1/dispersion, all.zeros=obj.pair$all.zeros)
+
     logConc<-(log2(q2q.pair$conc$conc.group[,pair[1]==levs.pair])+log2(q2q.pair$conc$conc.group[,pair[2]==levs.pair]))/2
     logFC<-log2(q2q.pair$conc$conc.group[,pair[2]==levs.pair]/q2q.pair$conc$conc.group[,pair[1]==levs.pair])
     logFC[obj.pair$all.zeros] <- 0
+
     de.out<-data.frame(logConc=logConc, logFC=logFC, p.value=exact.pvals)
     rownames(de.out) <- rownames(obj.pair$counts)
     new("DGEExact",list(table=de.out, comparison=pair, genes=object$genes))

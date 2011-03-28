@@ -1,6 +1,6 @@
 #  GENERALIZED LINEAR MODELS
 
-glmFit <- function(y, design, dispersion, offset=NULL, weights=NULL, lib.size=NULL)
+glmFit <- function(y, design, dispersion, offset=NULL, weights=NULL, lib.size=NULL, start=NULL)
 	##	Fit negative binomial generalized linear model for each transcript
 	##  to a series of digital expression libraries
 	##	Davis McCarthy and Gordon Smyth
@@ -25,19 +25,26 @@ glmFit <- function(y, design, dispersion, offset=NULL, weights=NULL, lib.size=NU
 	ngenes <- nrow(y.mat)
 	nlibs <- ncol(y.mat)
 	design <- as.matrix(design)
+
 	if(is.null(offset)) offset <- log(lib.size)
 	offset <- expandAsMatrix(offset,dim(y.mat))
-	if(!is.null(weights)) {
+
+    if(!is.null(weights)) {
 		warning("weights not currently supported")
-		weights <- expandAsMatrix(weights,dim(y.mat))
-		weights[weights <= 0] <- NA
-		y.mat[!is.finite(weights)] <- NA
+#		weights <- expandAsMatrix(weights,dim(y.mat))
+#		weights[weights <= 0] <- NA
+#		y.mat[!is.finite(weights)] <- NA
 	}
 
-#	Fit a glm to each gene using the line-search algorithm implemented in mglmLS()
-	fit <- mglmLS(y.mat, design=design, dispersion=dispersion, start=NULL, offset=offset, tol=1e-5, maxit=50, trace=FALSE)
+#	Fit a glm to each gene
+	group <- designAsFactor(design)
+	if(nlevels(group)==ncol(design)) {
+		fit <- mglmOneWay(y.mat,design=design,dispersion=dispersion,offset=offset)
+	} else {
+		fit <- mglmLS(y.mat, design=design, dispersion=dispersion, start=start, offset=offset, tol=1e-5, maxit=50, trace=FALSE)
+	}
 	coefficients <- fit$coefficients
-	fitted.values <- fit$fitted
+	fitted.values <- fit$fitted.values
 	colnames(coefficients) <- colnames(design)
 	rownames(coefficients) <- rownames(y.mat)
 	dimnames(fitted.values) <- dimnames(y.mat)
@@ -48,7 +55,7 @@ glmFit <- function(y, design, dispersion, offset=NULL, weights=NULL, lib.size=NU
 	df.residual <- rep(nlibs-ncol(design),ngenes)
 										# What do we do about weights with this new function?
 ##	abundance <- log2( rowMeans(t( t(y.mat)/lib.size )) )
-	abundance <- mglmOneGroup(y.mat, offset=offset, dispersion=dispersion, maxit=50) # Is this the best way to get the abundance?
+	abundance <- mglmOneGroup(y.mat, offset=offset, dispersion=dispersion)
 	new("DGEGLM",list(coefficients=coefficients, df.residual=df.residual, deviance=dev, design=design, 
 					 offset=offset, samples=samples, genes=genes, dispersion=dispersion, 
 					 lib.size=lib.size, weights=weights, fitted.values=fitted.values, abundance=abundance))

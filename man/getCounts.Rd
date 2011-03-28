@@ -3,7 +3,7 @@
 
 \title{Extract Table of Counts from DGEList Object}
 
-\description{Returns the \code{counts} slot of a DGEList object}
+\description{Returns the \code{counts} component of a DGEList object}
 
 \usage{
 getCounts(object) 
@@ -27,6 +27,7 @@ print(dim(getCounts(d)))
 
 \seealso{
 \code{\link{DGEList}} for more information about the \code{DGEList} class.
+\code{\link{as.matrix.DGEList}}.
 }
 
 \keyword{file}

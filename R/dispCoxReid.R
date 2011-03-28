@@ -1,24 +1,29 @@
-dispCoxReid <- function(y, design, offset=NULL, interval=c(0,4), tol=0.001, ...) 
-UseMethod("dispCoxReid")
-
-dispCoxReid.DGEList <- function(y, design, offset=NULL, interval=c(0,4), tol=0.001)
-{
-	if(is.null(offset)) offset <- getOffsets(y)
-	dispCoxReid(y=y$counts, design=design, offset=offset, interval=interval)
-}
-
-dispCoxReid.default <- function(y, design, offset=0, interval=c(0,4), tol=0.001)
-#	Estimate common dispersion by optimize
-#	Gordon Smyth
-#	26 Jan 2011.  Last modified 19 Jan 2011.
+dispCoxReid <- function(y, design, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5, subset=1000)
+#	Cox-Reid APL estimator of common dispersion
+#	Gordon Smyth, Davis McCarthy
+#	26 Jan 2011.  Last modified 24 Mar 2011.
 {
 	y <- as.matrix(y)
+	design <- as.matrix(design)
+	if(is.null(offset)) offset <- 0
 	offset <- expandAsMatrix(offset,dim(y))
-	
-	fun <- function(par,y,design,offset) {
-		tryCatch(sum(adjustedProfileLik(par,y,design,offset),na.rm=TRUE),error=function(e) -1e10)
+	small.row.sum <- rowSums(y)<min.row.sum
+	if(any(small.row.sum)) {
+		y <- y[!small.row.sum,,drop=FALSE]
+		offset <- offset[!small.row.sum,,drop=FALSE]
+	}
+	if(nrow(y)<1) stop("no data rows with required number of counts")
+	if(!is.null(subset) && subset<=nrow(y)/2) {
+		A <- mglmOneGroup(y,offset=offset)
+		i <- systematicSubset(subset,A)
+		y <- y[i,,drop=FALSE]
+		offset <- offset[i,,drop=FALSE]
 	}
 
-	out <- optimize(f=fun,interval=interval,y=y,design=design,offset=offset,maximum=TRUE,tol=tol)
-	out$maximum
+	fun <- function(par,y,design,offset) {
+		sum(adjustedProfileLik(par^4,y,design,offset))
+	}
+
+	out <- optimize(f=fun,interval=interval^0.25,y=y,design=design,offset=offset,maximum=TRUE,tol=tol)
+	out$maximum^4
 }

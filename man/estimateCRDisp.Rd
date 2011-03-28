@@ -1,9 +1,8 @@
 \name{estimateCRDisp}
 \alias{estimateCRDisp}
 \alias{adjustedProfileLik}
-\alias{dispCoxReidPowerTrend}
 
-\title{Estimate Negative Binomial Dispersion By Cox-Reid Adjusted Profile Likelihood}
+\title{Estimate Negative Binomial Dispersion By Cox-Reid Adjusted Profile Likelihood (Deprecated)}
 
 \description{
 Estimates the dispersion parameter for a DGE dataset for general experimental designs by using Cox-Reid approximate conditional inference for a negative binomial generalized linear model for each transcript (tag) with the unadjusted counts and design matrix provided.
@@ -11,10 +10,8 @@ Estimates the dispersion parameter for a DGE dataset for general experimental de
 
 
 \usage{
-estimateCRDisp(y, design=NULL, offset=0, npts=10, min.disp=0, max.disp=2, nselect=200,
-               rowsum.filter=5, tagwise=FALSE, prior.n=10, trend=FALSE, lib.size=NULL, verbose=TRUE)
-adjustedProfileLik(dispersion, y, design, offset)
-dispCoxReidPowerTrend(y, design, lib.size, offset=NULL, abundance=NULL, method.optim="Nelder-Mead", trace=0)
+estimateCRDisp(y, design=NULL, offset=NULL, npts=10, rowsum.filter=5, subset=1000, tagwise=FALSE, prior.n=10, nbins=50, lib.size=NULL, disp.trend=NULL, method.trend="binned-spline",verbose=TRUE)
+adjustedProfileLik(dispersion, y, design, offset, adjust=TRUE)
 }
 
 \arguments{ 
@@ -27,31 +24,28 @@ dispCoxReidPowerTrend(y, design, lib.size, offset=NULL, abundance=NULL, method.o
 
 \item{npts}{scalar, the number of points at which to place knots for the spline-based estimation of the common and tagwise dispersion estimates.}
 
-\item{min.disp}{scalar, the minimum possible value for the dispersion. May need to be set smaller (e.g. 1e-04 or less) if there is no biological variability in the data.}
-
-\item{max.disp}{scalar, the maximum possible value for the dispersion.}
-
-\item{nselect}{scalar, the number of genes/tags to be used to get an initial 'ballpark' estimate of the magnitude of the dispersions in the dataset. Used to finesse the calculation of the estimates using all the data.}
-
 \item{rowsum.filter}{numeric scalar giving a value for the filtering out of low abundance tags in the estimation of the common dispersion. Only tags with total sum of counts above this value are used in the estimation of the common dispersion. Low abundance tags can adversely affect the estimation of the common dispersion, so this argument allows the user to select an appropriate filter threshold for the tag abundance.}
+
+\item{subset}{integer, number of rows to use in the calculation.  Rows used are chosen evenly spaced by abundance.}
 
 \item{tagwise}{logical scalar, if \code{FALSE} (default) then the tagwise dispersions are not calculated, if \code{TRUE} then the tagwise dispersions are calculated.}
 
 \item{prior.n}{numeric scalar, smoothing parameter that indicates the weight to give to the common likelihood compared to the individual tag's likelihood; default \code{10} means that the common likelihood is given 10 times the weight of the individual tag/gene's likelihood in the estimation of the tag/genewise dispersion}
 
-\item{trend}{logical scalar, if \code{FALSE} (default) then the abundance-dispersion trend is not considered in calculating both the common dispersion and the tagwise dispersions, if \code{TRUE} then such trend is introduced in calculating both dispersions.}
+\item{nbins}{integer, the number of bins for the calculation of trended dispersions. Passed to \code{dispBinTrend}.}
 
 \item{lib.size}{optional vector providing the (effective) library size for each library (must have length equal to the number of columns, or libraries, in the matrix of counts). If \code{NULL}, then a default is used. If \code{y} is a \code{DGEList} object then the default for \code{lib.size} is the product of the library sizes and the normalization factors (in the \code{samples} slot of the object). If \code{y} is a simple matrix of counts, then the default for \code{lib.size} is the vector of column sums of \code{y}.}
+
+\item{disp.trend}{optional vector providing trended dispersion estimates if these have already been computed. If left as the default value, \code{NULL}, then trended dispersions are computed in \code{estimateCRDisp}.}
+
+\item{method.trend}{character determining the method to be used to obtain trended dispersion estimates. Only required if \code{disp.trend=NULL}. If \code{"binned-spline"} or \code{"binned-loess"} then \code{dispBinTrend} is called to compute trended dispersions using a spline fit or a loess fit, respectively, through binned common dispersion values. If \code{"power"} then \code{dispCoxReidPowerTrend} is used to obtain trended dispersion estimates.}
 
 \item{verbose}{logical scalar, if \code{TRUE} (default) then certain notification messages are displayed in some circumstances, if \code{FALSE} then these messages are not displayed.}
 
 \item{dispersion}{numeric scalar providing the common value for the dispersion parameter (the 'size' parameter in the GLM fit is equal to \code{1/dispersion}) that is used in fitting the GLM for each transcript. Poisson GLM is fitted if \code{dispersion} is set at 0. \code{estimateCRDisp} maximizes the Cox-Reid adjusted profile likelihood over dispersion to obtain the estimate for the common dispersion.}
 
-\item{abundance}{numeric vector, tagwise log-abundance measure}
-\item{method.optim}{method input to \code{optim}.
-Acceptable values are \code{"Nelder-Mead"} or \code{"BFGS"}.}
-\item{trace}{integer, if non-zero, request information about the optimization.
-See \code{\link{optim}} for more information.}
+\item{adjust}{logical, apply Cox-Reid adjustment to the log-likelihood or not?}
+
 }
 
 \value{\code{estimateCRDisp} produces a \code{DGEList} object, which contains the estimate of the common dispersion parameter for the negative binomial model that maximizes the Cox-Reid adjusted profile likelihood, and also the tagwise Cox-Reid dispersion estimates.
@@ -68,18 +62,19 @@ To obtain estimates of the common and tagwise (i.e., genewise) dispersion parame
 Cox, DR, and Reid, N (1987). Parameter orthogonality and approximate conditional inference. \emph{Journal of the Royal Statistical Society Series B} 49, 1-39.
 }
 
-\author{Yunshun Chen, Gordon Smyth}
+\author{Yunshun Chen, Gordon Smyth, Davis McCarthy}
 \examples{
-y<-matrix(rnbinom(1000,mu=10,size=2),ncol=4)
-d<-DGEList(counts=y,group=c(1,1,2,2),lib.size=c(1000:1003))
-design <- model.matrix(~d$samples$group) # Define the design matrix for the full model
-d<-estimateCRDisp(d, design)
-d
+## This function has been deprecated, but code below can be uncommented to run an example
+#y<-matrix(rnbinom(1000,mu=10,size=2),ncol=4)
+#d<-DGEList(counts=y,group=c(1,1,2,2),lib.size=c(1000:1003))
+#design <- model.matrix(~d$samples$group) # Define the design matrix for the full model
+#d<-estimateCRDisp(d, design)
+#d
 }
 
 \seealso{
 \code{\link{estimateTagwiseDisp}}, and \code{\link{estimateCommonDisp}} can be used to estimate a value for the dispersion parameter for each tag/transcript and a common dispersion value, respectively. The estimates are stabilized by squeezing the estimates towards the common value calculated by \code{estimateCommonDisp}. These functions use exact conditional methods, but are restricted to less complicated experimental designs; they can deal with multiple groups, but nothing more complicated.
-
+This function is now deprecated, so \code{\link{estimateGLMTrendedDisp}} and \code{\link{estimateGLMTagwiseDisp}} should be used instead to estimate trended and tagwise dispersions. See \code{\link{dispBinTrend}} and \code{\link{dispCoxReidPowerTrend}} for details on how dispersions are computed.
 }
 
 \keyword{algebra}

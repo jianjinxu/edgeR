@@ -6,7 +6,7 @@ estimatePs<-function(object,r,tol=1e-10,maxit=30)
 {
 	nrows<-nrow(object$counts)
 	lib.size<-object$samples$lib.size * object$samples$norm.factors
-	group<-object$samples$group
+	group<-as.factor(object$samples$group)
 	levs.group <- levels(group)
 	onev<-rep(1,nrows)
 	y<-splitIntoGroups(object)
