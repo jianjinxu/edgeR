@@ -6,7 +6,7 @@ estimateCRDisp <- function(y, design=NULL, offset=NULL, npts=10, rowsum.filter=5
 ## Created August 2010. Last modified 17 Feb 2011.
 
 {
-	.Deprecated("estimateGLMTrendedDisp")
+	message("estimateCRDisp is now obsolete, please use one of estimateGLMCommonDisp, estimateGLMTrendedDisp or estimateGLMTagwiseDisp instead")
 	if( is(y,"DGEList") ) {
 		if(is.null(y$samples$norm.factors))
 			y$samples$norm.factors <- rep(1, ncol(y$counts))
