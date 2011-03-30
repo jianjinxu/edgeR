@@ -20,6 +20,7 @@ This function returns a list with the following components:
 \item{gof.statistics}{numeric vector of deviance statistics, which are the statistics used for the goodness of fit test}
 \item{gof.pvalues}{numeric vector of p-values providing evidence of poor fit; computed from the chi-square distribution on the residual degrees of freedom from the GLM fits.}
 \item{outlier}{logical vector indicating whether or not each gene is a `dispersion outlier' (i.e.~the model fit is poor for that gene indicating that the dispersion estimate is not good for that gene).} 
+\item{df}{scalar, the residual degrees of freedom from the GLM fit for which the goodness of fit statistics have been computed. Also the degrees of freedom for the goodness of fit statistics for the LR (chi-quare) test for significance.}
 }
 
 \author{Davis McCarthy}

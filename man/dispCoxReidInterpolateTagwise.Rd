@@ -1,6 +1,5 @@
 \name{dispCoxReidInterpolateTagwise}
 \alias{dispCoxReidInterpolateTagwise}
-\alias{adjustedProfileLik}
 
 \title{Estimate Tagwise Dispersion for Negative Binomial GLMs by Cox-Reid Adjusted Profile Likelihood}
 
@@ -10,7 +9,6 @@ Estimate tagwise dispersion parameters across multiple negative binomial general
 
 \usage{
 dispCoxReidInterpolateTagwise(y, design, offset=NULL, dispersion, abundance=NULL, npts=11, min.row.sum=5, prior.n=10, span=0.3)
-adjustedProfileLik(dispersion, y, design, offset, adjust=TRUE)
 }
 
 \arguments{ 
@@ -31,9 +29,6 @@ adjustedProfileLik(dispersion, y, design, offset, adjust=TRUE)
 \item{prior.n}{numeric scalar, smoothing parameter that indicates the weight to give to the common likelihood compared to the individual tag's likelihood; default \code{10} means that the common likelihood is given 10 times the weight of the individual tag/gene's likelihood in the estimation of the tag/genewise dispersion}
 
 \item{span}{numeric parameter between 0 and 1 specifying proportion of data to be used in the local regression moving window. Larger numbers give smoother fits.}
-
-\item{adjust}{logical, if \code{TRUE} then Cox-Reid adjustment is made to the log-likelihood, if \code{FALSE} then the log-likelihood is returned without adjustment. Default is \code{TRUE}.}
-
 }
 
 \value{\code{dispCoxReidInterpolateTagwise} produces a vector of tagwise dispersions having the same length as the number of genes in the count data.

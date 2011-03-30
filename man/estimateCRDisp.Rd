@@ -1,6 +1,5 @@
 \name{estimateCRDisp}
 \alias{estimateCRDisp}
-\alias{adjustedProfileLik}
 
 \title{Estimate Negative Binomial Dispersion By Cox-Reid Adjusted Profile Likelihood (Deprecated)}
 
@@ -11,7 +10,6 @@ Estimates the dispersion parameter for a DGE dataset for general experimental de
 
 \usage{
 estimateCRDisp(y, design=NULL, offset=NULL, npts=10, rowsum.filter=5, subset=1000, tagwise=FALSE, prior.n=10, nbins=50, lib.size=NULL, disp.trend=NULL, method.trend="binned-spline",verbose=TRUE)
-adjustedProfileLik(dispersion, y, design, offset, adjust=TRUE)
 }
 
 \arguments{ 
@@ -41,16 +39,9 @@ adjustedProfileLik(dispersion, y, design, offset, adjust=TRUE)
 \item{method.trend}{character determining the method to be used to obtain trended dispersion estimates. Only required if \code{disp.trend=NULL}. If \code{"binned-spline"} or \code{"binned-loess"} then \code{dispBinTrend} is called to compute trended dispersions using a spline fit or a loess fit, respectively, through binned common dispersion values. If \code{"power"} then \code{dispCoxReidPowerTrend} is used to obtain trended dispersion estimates.}
 
 \item{verbose}{logical scalar, if \code{TRUE} (default) then certain notification messages are displayed in some circumstances, if \code{FALSE} then these messages are not displayed.}
-
-\item{dispersion}{numeric scalar providing the common value for the dispersion parameter (the 'size' parameter in the GLM fit is equal to \code{1/dispersion}) that is used in fitting the GLM for each transcript. Poisson GLM is fitted if \code{dispersion} is set at 0. \code{estimateCRDisp} maximizes the Cox-Reid adjusted profile likelihood over dispersion to obtain the estimate for the common dispersion.}
-
-\item{adjust}{logical, apply Cox-Reid adjustment to the log-likelihood or not?}
-
 }
 
 \value{\code{estimateCRDisp} produces a \code{DGEList} object, which contains the estimate of the common dispersion parameter for the negative binomial model that maximizes the Cox-Reid adjusted profile likelihood, and also the tagwise Cox-Reid dispersion estimates.
-
-\code{adjustedProfileLik} produces a vector of the tagwise Cox-Reid adjusted profile likelihood for the given counts, dispersion  value, offset and design matrices (i.e. the APL for each gene/tag).
 }
 
 \details{
@@ -64,17 +55,17 @@ Cox, DR, and Reid, N (1987). Parameter orthogonality and approximate conditional
 
 \author{Yunshun Chen, Gordon Smyth, Davis McCarthy}
 \examples{
-## This function has been deprecated, but code below can be uncommented to run an example
-#y<-matrix(rnbinom(1000,mu=10,size=2),ncol=4)
-#d<-DGEList(counts=y,group=c(1,1,2,2),lib.size=c(1000:1003))
-#design <- model.matrix(~d$samples$group) # Define the design matrix for the full model
-#d<-estimateCRDisp(d, design)
-#d
+## This function is obsolete, but code below shows usage
+y<-matrix(rnbinom(1000,mu=10,size=2),ncol=4)
+d<-DGEList(counts=y,group=c(1,1,2,2),lib.size=c(1000:1003))
+design <- model.matrix(~d$samples$group) # Define the design matrix for the full model
+d<-estimateCRDisp(d, design)
+d
 }
 
 \seealso{
 \code{\link{estimateTagwiseDisp}}, and \code{\link{estimateCommonDisp}} can be used to estimate a value for the dispersion parameter for each tag/transcript and a common dispersion value, respectively. The estimates are stabilized by squeezing the estimates towards the common value calculated by \code{estimateCommonDisp}. These functions use exact conditional methods, but are restricted to less complicated experimental designs; they can deal with multiple groups, but nothing more complicated.
-This function is now deprecated, so \code{\link{estimateGLMTrendedDisp}} and \code{\link{estimateGLMTagwiseDisp}} should be used instead to estimate trended and tagwise dispersions. See \code{\link{dispBinTrend}} and \code{\link{dispCoxReidPowerTrend}} for details on how dispersions are computed.
+This function is now obsolete, so \code{\link{estimateGLMTrendedDisp}} and \code{\link{estimateGLMTagwiseDisp}} should be used instead to estimate trended and tagwise dispersions. See \code{\link{dispBinTrend}} and \code{\link{dispCoxReidPowerTrend}} for details on how dispersions are computed.
 }
 
 \keyword{algebra}

@@ -9,7 +9,7 @@ gof <- function( glmfit, pcutoff=0.1 )
     gof.pvals <- pchisq(gof.stats, df=glmfit$df.residual, lower.tail=FALSE, log.p=FALSE)
     outlier <- p.adjust(gof.pvals, method="holm") < pcutoff
 
-    new("list", list(gof.statistics=gof.stats, gof.pvalues=gof.pvals, outlier=outlier))
+    new("list", list(gof.statistics=gof.stats, gof.pvalues=gof.pvals, outlier=outlier, df=glmfit$df.residual[1]))
 }
 
 
