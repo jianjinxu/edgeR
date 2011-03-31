@@ -1,9 +1,12 @@
 \name{estimateCRDisp}
 \alias{estimateCRDisp}
 
-\title{Estimate Negative Binomial Dispersion By Cox-Reid Adjusted Profile Likelihood (Deprecated)}
+\title{Estimate Negative Binomial Dispersion By Cox-Reid Adjusted Profile Likelihood (Obsolete)}
 
 \description{
+This function has been replaced by \code{estimateGLMCommonDisp}, \code{estimateGLMTrendedDisp} and \code{estimateGLMTagwiseDisp}.
+It is kept in this release of the package for backward capatability, but will be removed in future releases.
+
 Estimates the dispersion parameter for a DGE dataset for general experimental designs by using Cox-Reid approximate conditional inference for a negative binomial generalized linear model for each transcript (tag) with the unadjusted counts and design matrix provided.
 }
 
@@ -64,8 +67,7 @@ d
 }
 
 \seealso{
-\code{\link{estimateTagwiseDisp}}, and \code{\link{estimateCommonDisp}} can be used to estimate a value for the dispersion parameter for each tag/transcript and a common dispersion value, respectively. The estimates are stabilized by squeezing the estimates towards the common value calculated by \code{estimateCommonDisp}. These functions use exact conditional methods, but are restricted to less complicated experimental designs; they can deal with multiple groups, but nothing more complicated.
-This function is now obsolete, so \code{\link{estimateGLMTrendedDisp}} and \code{\link{estimateGLMTagwiseDisp}} should be used instead to estimate trended and tagwise dispersions. See \code{\link{dispBinTrend}} and \code{\link{dispCoxReidPowerTrend}} for details on how dispersions are computed.
+This function is now obsolete, replaced by \code{\link{estimateGLMCommonDisp}}, \code{\link{estimateGLMTrendedDisp}} and \code{\link{estimateGLMTagwiseDisp}}.
 }
 
 \keyword{algebra}
