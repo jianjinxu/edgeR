@@ -9,7 +9,7 @@
 
 
 \usage{
-plotMeanVar(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, show.binned.common.disp.vars=FALSE, show.ave.raw.vars=TRUE, dispersion.method="coxreid", scalar=NULL, NBline=FALSE, nbins=100, log.axes="xy", xlab=NULL, ylab=NULL,  ...) 
+plotMeanVar(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, show.binned.common.disp.vars=FALSE, show.ave.raw.vars=TRUE, dispersion.method="qcml", scalar=NULL, NBline=FALSE, nbins=100, log.axes="xy", xlab=NULL, ylab=NULL,  ...) 
 binMeanVar(x, conc=NULL, group, nbins=100, common.dispersion=FALSE, object=NULL)
 pooledVar(y,group)
 }
@@ -27,7 +27,7 @@ pooledVar(y,group)
 
 \item{show.ave.raw.vars}{logical, whether or not to show the average of the raw variances for each bin of tags plotted against the average expression level of the tags in the bin. Averages are taken on the square root scale as regular arithmetic means are likely to be upwardly biased for count data, whereas averaging on the square scale gives a better summary of the mean-variance relationship in the data. The default is \code{TRUE}.}
 
-\item{dispersion.method}{character string giving the method that has been used to estimate the common and tagwise dispersion values used to calculate the estimated variances. Default is \code{"coxreid"} indicating that the Cox-Reid method for GLMs has been used to compute the dispersions; other option is \code{"qcml"} to indicate that conditional inference methods (e.g. \code{estimateCommonDisp} and \code{estimateTagwiseDisp} were used.}
+\item{dispersion.method}{character string giving the method that has been used to estimate the common and tagwise dispersion values used to calculate the estimated variances. Default is \code{"qcml"} to indicate that conditional inference methods (e.g. \code{estimateCommonDisp} and \code{estimateTagwiseDisp} were used to compute the dispersions; other option is \code{"coxreid"} indicating that the Cox-Reid method for GLMs was used.}
 
 \item{scalar}{vector (optional) of scaling values to divide counts by. Would expect to have this the same length as the number of columns in the count matrix (i.e. the number of libraries).}
 

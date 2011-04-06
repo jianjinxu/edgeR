@@ -18,7 +18,7 @@ estimateTagwiseDisp(object, prior.n=10, trend=FALSE, prop.used=NULL, tol=1e-06, 
 
 \item{trend}{logical, whether or not to let the tagwise dispersion estimates vary with tag/gene abundance (expression level), that is, whether or not to allow a trend with tag abundance in the tagwise dispersion estimates}
 
-\item{prop.used}{optional scalar giving the proportion of all tags/genes to be used for the locally weighted estimation of the tagwise dispersion, allowing the dispersion estimates to vary with abundance (expression level). If \code{NULL}, then a default value of 0.4 (i.e. 40 per cent of tags) are used. That means that for each tag/gene the estimate of its dispersion is based on the closest 40 per cent of all of the genes to that gene, where 'closeness' is based on similarity in expression level.}
+\item{prop.used}{optional scalar giving the proportion of all tags/genes to be used for the locally weighted estimation of the tagwise dispersion, allowing the dispersion estimates to vary with abundance (expression level). If \code{NULL}, then a default value of 0.3 (i.e. 30 per cent of tags) are used. That means that for each tag/gene the estimate of its dispersion is based on the closest 40 per cent of all of the genes to that gene, where 'closeness' is based on similarity in expression level.}
 
 \item{tol}{numeric scalar, if \code{grid=FALSE}, tolerance for Newton-Rhapson iterations}
 

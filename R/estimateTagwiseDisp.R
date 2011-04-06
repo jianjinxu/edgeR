@@ -26,7 +26,7 @@ estimateTagwiseDisp <- function(object, prior.n=10, trend=FALSE, prop.used=NULL,
         if(trend) {
             method <- match.arg(method, c("movingave", "tricube"))
             if(is.null(prop.used))
-                prop.used <- 0.05
+                prop.used <- 0.3
             if( method=="movingave" )
                 m0 <- ntags*weightedComLikMA(object, l0, prop.used=prop.used)
             if( method=="tricube" )

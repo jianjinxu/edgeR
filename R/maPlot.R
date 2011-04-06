@@ -5,6 +5,10 @@ maPlot <- function(x,y, logAbundance=NULL, logFC=NULL, normalize=FALSE, smearWid
         A <- logAbundance
         M <- logFC
         w <- rep(FALSE, length(A))
+        w <- A < -25
+        shift <- max(abs(M[w])) - max(abs(M[!w]))
+        A[w] <- min(A[!w]) - runif(sum(w),min=0,max=smearWidth)
+        M[w] <- sign(M[w]) * (abs(M[w]) - shift) 
     } else {
         if(normalize) {
             x <- x/sum(x)

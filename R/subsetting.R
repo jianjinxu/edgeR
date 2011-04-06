@@ -46,7 +46,7 @@ function(object, i, j, ...) {
 
 assign("[.DGEExact",
 function(object, i, j, ...)
-#  Subsetting for DGEList objects
+#  Subsetting for DGEExact objects
 #  Davis McCarthy    
 #  6 October 2010.  Last modified 6 Oct 2010.
 {
@@ -58,6 +58,22 @@ function(object, i, j, ...)
 	}
 	object
 })
+
+assign("[.DGELRT",
+function(object, i, j, ...)
+#  Subsetting for DGELRT objects
+#  Davis McCarthy    
+#  6 April 2011.  Last modified 6 Apr 2011.
+{
+	if(!missing(j))
+	    stop("Subsetting columns not allowed for DGELRT object. Try subsetting object$table instead.",call.=FALSE)
+	if(!missing(i)) {
+	    object$table <- object$table[i,,drop=FALSE]
+	    object$genes <- object$genes[i,,drop=FALSE]
+	}
+	object
+})
+
 
 
 assign("[.TopTags",

@@ -1,8 +1,10 @@
-plotSmear <- function (object, pair=NULL, de.tags=NULL, xlab="logConc", ylab="logFC", pch=19, cex=.2, smearWidth=.5, panel.first=grid(), smooth.scatter=FALSE, lowess=FALSE, ...) {
+plotSmear <- function (object, pair=NULL, de.tags=NULL, xlab="logConc", ylab="logFC", pch=19, cex=.2, smearWidth=.5, panel.first=grid(), smooth.scatter=FALSE, lowess=FALSE, ...)
     ## User-level function for creating an MA-plot for DGE data.
-    ## Created by Mark Robinson. Last modified by Davis McCarthy, 19 November 2010.
-    if ( !(class(object) %in% c("DGEList", "DGELRT")) ) 
-        stop("Currently only supports DGEList/DGELRT objects as the object argument.")
+    ## Created by Mark Robinson. Last modified by Davis McCarthy, 6 Apr 2011.
+ 
+{
+    if ( !(class(object) %in% c("DGEList", "DGELRT", "DGEExact")) ) 
+        stop("Currently only supports DGEList/DGELRT/DGEExact objects as the object argument.")
     if( is(object, "DGEList") & is.null(object$samples$group) )
         stop("Cannot produce a smear plot if no experimental groups are defined. Here, d$samples$groups is NULL.\n")
     if( is(object, "DGEList") ) {
@@ -19,8 +21,8 @@ plotSmear <- function (object, pair=NULL, de.tags=NULL, xlab="logConc", ylab="lo
         cols2 <- pair[2]==object$samples$group
         
         lib.size <- object$samples$lib.size*object$samples$norm.factors
-        x <- rowMeans(t( t(object$counts[,cols1])/lib.size[cols1]))
-        y <- rowMeans(t( t(object$counts[,cols2])/lib.size[cols2]))
+        x <- rowMeans( object$counts[,cols1] / expandAsMatrix( lib.size[cols1], dim(object$counts[,cols1])) )
+        y <- rowMeans( object$counts[,cols2] / expandAsMatrix( lib.size[cols2], dim(object$counts[,cols2])) )
         
         ylab <- paste(ylab, ":", paste(pair[c(2,1)], collapse="-"), paste="")
         i <- match(de.tags,rownames(object$counts))
@@ -28,6 +30,8 @@ plotSmear <- function (object, pair=NULL, de.tags=NULL, xlab="logConc", ylab="lo
         
         maPlot( x, y, xlab=xlab, ylab=ylab, pch=pch, cex=cex, smearWidth=smearWidth, de.tags=i, panel.first=panel.first, smooth.scatter=smooth.scatter, lowess=lowess, ...)
     } else {
+        if(is.null(object$table$logFC))
+            stop("table$logFC slot in DGELRT object is NULL. We cannot produce an MA (smear) plot if more than one coefficient from the GLM is being tested in the likelihood ratio test as this results in more one logFC value per gene---one for each coefficient.\n")
         i <- match(de.tags,rownames(object$table))
         i <- i[!is.na(i)]
         maPlot( x=NULL, y=NULL, logAbundance=object$table$logConc, logFC=object$table$logFC, xlab=xlab, ylab=ylab, pch=pch, cex=cex, smearWidth=smearWidth, de.tags=i, panel.first=panel.first, smooth.scatter=smooth.scatter, lowess=lowess, ...)

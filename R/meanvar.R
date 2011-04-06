@@ -61,7 +61,7 @@ pooledVar <- function(y,group) {
     numerator/denominator
 }
 
-plotMeanVar <- function(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, show.binned.common.disp.vars=FALSE, show.ave.raw.vars=TRUE, dispersion.method="coxreid", scalar=NULL, NBline=FALSE, nbins=100, log.axes="xy", xlab=NULL, ylab=NULL, ...) {
+plotMeanVar <- function(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, show.binned.common.disp.vars=FALSE, show.ave.raw.vars=TRUE, dispersion.method="qcml", scalar=NULL, NBline=FALSE, nbins=100, log.axes="xy", xlab=NULL, ylab=NULL, ...) {
     ## Creates a mean-variance plot (with binned values) for a given DGEList object
     ## Uses the pooledVar and binMeanVar functions and operates on pseudo-counts to account for differences in library sizes
     if(!is(object,"DGEList"))
