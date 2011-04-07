@@ -10,9 +10,9 @@ estimateGLMTagwiseDisp.DGEList <- function(y, design, method="trend", ...)
         abundance <- y$abundance
     }
     if(method=="common") {
-        if( is.null(y$trended.dispersion) ) stop("method is common, but DGEList object has a NULL common.dispersion slot. Run estimateGLMCommonDisp on DGEList object before estimateGLMTagwiseDisp to smooth tagwise dispersions towards a common value.\n")
+        if( is.null(y$common.dispersion) ) stop("method is common, but DGEList object has a NULL common.dispersion slot. Run estimateGLMCommonDisp on DGEList object before estimateGLMTagwiseDisp to smooth tagwise dispersions towards a common value.\n")
         dispersion <- rep(y$common.dispersion, nrow(y))
-        abundance <- mglmOneGroup(y,offset=getOffsets(y))
+        abundance <- mglmOneGroup(y$counts,offset=getOffsets(y))
     }
 	d <- estimateGLMTagwiseDisp(y=y$counts, design=design, offset=getOffsets(y), dispersion=dispersion, abundance=abundance, ...)
 	y$tagwise.dispersion <- d
