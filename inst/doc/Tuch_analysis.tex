@@ -12,149 +12,240 @@ DE tags.
 The dataset is obtained from the NCBI's Gene Expression Omnibus (GEO)
 (\url{http://www.ncbi.nlm.nih.gov/geo/}). It was produced using the
 Applied Biosystems (AB) SOLiD System 3.0, and is described in
-\citet{Tuch:2010p457}. The data downloaded from GEO consisted of a
-file for each of the six samples, each of which contained mapped reads
-in AB's MAX format (similar to FASTA). The raw reads had been mapped
-by \citet{Tuch:2010p457} to the UCSC hg18 reference genome. In order
-to analyse these data in \R\ it was necessary to generate, from the
-MAX files, a file for each sample that contained the number of counts
-for each gene sequenced and successfully mapped, as well as the gene
-ID's corresponding to the reads.
+\citet{Tuch:2010p457}. The raw reads had been mapped
+by \citet{Tuch:2010p457} to the UCSC hg18 reference genome. The raw
+counts, summarised at the level of refSeq transcripts were made
+available as a supplementary table in their paper. In order
+to analyse these data in \R\ it is necessary to manipulate the data a
+little further.
 
-AB supply some software tools for the analysis of RNA-seq data from
-the SOLiD platform. One function, \code{count\_tags.pl} exists to
-count the number of reads mapping to each position of the genome and
-provide the associated gene and transcript ID's, as well as other
-information such as chromosome and precise start and end points of the
-read.
+The table that \citet{Tuch:2010p457} provide contains approximately $15
+000$ refSeq transcripts. Many transcripts can map to the same gene,
+which is not ideal for our analysis in edgeR. It may upset the
+modeling of the mean-variance relationship for these data if we have
+several entries for each gene. To get around this problem we have used
+only the transcipt with the greatest number of exons for each gene,
+the idea being that this will provide a reasonable summary of the
+overall expression level for the gene. If the counts were summarised
+at the exon level, then there are other methods that could be used to
+find genes with differential isoform expression (or splice variants) from the data.
 
-According to \citet{Tuch:2010p457}'s paper, the reads were mapped to
-the UCSC hg18 reference genome. A reference annotation file was
-created using the AB function \code{refgene2gff.sh} (the default
-annotation for the AB software).
-
-The file produced by \code{count\_tags.pl} contains a row for each
-unique exon position in the genome to which reads map. For each row
-there are many columns which provide information including the
-matching gene and transcript ID's, the starting point and ending
-points for the reads and the count (number) of reads for that position
-in the genome. One such file was produced for each of the six samples.
-
-The final task to produce data files that \edgeR\ can handle was to
-simplify the files output by \code{count\_tags.pl} into files with
-just one row for each gene ID and the appropriate count for each gene
-ID.
-
-\subsection{Reading in the data and creating a \texttt{DGEList} object}
+\subsection{Reading in the data and creating a \code{DGEList} object}
 
 Our first task is to load the \edgeR\ package, read the data into \R\
-and organise the data into a \texttt{DGEList} object that the
+and organise the data into a \code{DGEList} object that the
 functions in the package can recognise. The library size is usually
 the total sum of all of the counts for a library, and that is how
-library size is defined in this analysis. The easiest way to construct
-an appropriate \texttt{DGEList} object for these data is described
-below. In this case, the tag counts for the four individual libraries
-are stored in six separate plain text files.
+library size is defined in this analysis. One way to construct
+an appropriate \code{DGEList} object for these data is described
+below. In this case, the tag counts for the six individual libraries
+are stored in one table, which is a trimmed version (some irrelevant columns
+dropped) of the supplementary table from \citet{Tuch:2010p457}.
 
-In each file, the tag IDs and counts for each tag are provided in a
-table. It is best to create a tab-delimited, plain-text `Targets'
-file, which, under the headings `files', `group' and `description',
-gives the filename, the experimental group and a brief description for
-each sample.
+It is usually straight-forward to produce a \code{DGEList} object from
+a table of counts, but the task is complicated here because we have
+many transcripts mapping to the same gene and also the gene symbols
+provided in the table do not all match exactly to official gene
+symbols. The commands below show how to ensure that all genes have the
+official gene symbol (using \code{alias2SymbolTable} from the \limma\
+package) and that we use only the transcript with the greatest number
+of exons to represent each gene.
 
-The \texttt{targets} object is produced when the \texttt{Targets.txt}
-file is read into the \R\ session. This object makes a convenient
-argument to the function \texttt{readDGE} which reads the tables of
-counts into our \R\ session, calculates the sizes of the count
-libraries and produces a \texttt{DGEList} object for use by subsequent
-functions.
+Furthermore, not all of the refSeq IDs provided match the refSeq IDs
+currently in use---a result of the original study being undertaken
+several years ago. To avoid potential problems in downstream analysis
+(particularly in GO or gene set analysis) we retain in our dataset
+only those transcripts that match to refSeq IDs in the current Entrez
+database, which is provided by the \code{org.HS.eg.db} package from
+Bioconductor.
+
+The output below shows the commands for manipulating the dataset to
+produce a neat \code{DGEList} object for use by subsequent functions
+for the DE analysis. We also compute the TMM normalization factors for
+these libraries in the third last command below.
 
 
 \begin{Schunk}
 \begin{Sinput}
+> path <- getwd()
 > library(edgeR)
+> library(limma)
 > setwd("/Users/dmccarthy/Documents/DGE/TuchData")
-> targets <- read.delim(file = "targets.txt", stringsAsFactors = FALSE)
-> targets$tissue <- factor(targets$group)
-> targets$patient <- factor(c(8, 8, 33, 33, 51, 51))
-> targets
+> rawdata <- read.csv(file = "tuch_counts.csv", stringsAsFactors = FALSE)
+> head(rawdata)
 \end{Sinput}
 \begin{Soutput}
-                              files  group
-1  GSM515513_N8_gene_agg_counts.txt normal
-2  GSM515514_T8_gene_agg_counts.txt tumour
-3 GSM515515_N33_gene_agg_counts.txt normal
-4 GSM515516_T33_gene_agg_counts.txt tumour
-5 GSM515517_N51_gene_agg_counts.txt normal
-6 GSM515518_T51_gene_agg_counts.txt tumour
-                                          description tissue patient
-1                 healthy mouth tissue from patient 8 normal       8
-2  oral squamous cell carcinoma tissue from patient 8 tumour       8
-3                healthy mouth tissue from patient 33 normal      33
-4 oral squamous cell carcinoma tissue from patient 33 tumour      33
-5                healthy mouth tissue from patient 51 normal      51
-6 oral squamous cell carcinoma tissue from patient 51 tumour      51
+          X        X.1           X.2    X8N    X8T   X33N   X33T   X51N   X51T
+1                                    counts counts counts counts counts counts
+2  idRefSeq nameOfGene numberOfExons    sum    sum    sum    sum    sum    sum
+3 NM_182502  TMPRSS11B            10   2592      3   7805    321   3372      9
+4 NM_003280      TNNC1             6   1684      0   1787      7   4894    559
+5 NM_152381      XIRP2            10   9915     15  10396     48  23309   7181
+6 NM_022438        MAL             3   2496      2   3585    239   1596      7
 \end{Soutput}
 \begin{Sinput}
-> d.tuch <- readDGE(targets, skip = 1, comment.char = "#")
-> colnames(d.tuch) <- c("N8", "T8", "N33", "T33", "N51", "T51")
+> library(org.Hs.eg.db)
+> rawtable <- rawdata[-c(1, 2), ]
+> refseqid <- as.character(rawtable[, 1])
+> head(refseqid)
+\end{Sinput}
+\begin{Soutput}
+[1] "NM_182502"    "NM_003280"    "NM_152381"    "NM_022438"    "NM_001100112"
+[6] "NM_017534"   
+\end{Soutput}
+\begin{Sinput}
+> idfound <- refseqid %in% mappedRkeys(org.Hs.egREFSEQ)
+> table(idfound)
+\end{Sinput}
+\begin{Soutput}
+idfound
+FALSE  TRUE 
+  313 15355 
+\end{Soutput}
+\begin{Sinput}
+> rawtable <- rawtable[idfound, ]
+> head(rawtable)
+\end{Sinput}
+\begin{Soutput}
+             X       X.1 X.2  X8N X8T  X33N X33T  X51N X51T
+3    NM_182502 TMPRSS11B  10 2592   3  7805  321  3372    9
+4    NM_003280     TNNC1   6 1684   0  1787    7  4894  559
+5    NM_152381     XIRP2  10 9915  15 10396   48 23309 7181
+6    NM_022438       MAL   3 2496   2  3585  239  1596    7
+7 NM_001100112      MYH2  40 4389   7  7944   16  9262 1818
+8    NM_017534      MYH2  40 4402   7  7943   16  9244 1815
+\end{Soutput}
+\begin{Sinput}
+> dim(rawtable)
+\end{Sinput}
+\begin{Soutput}
+[1] 15355     9
+\end{Soutput}
+\begin{Sinput}
+> genes <- rawtable[, 2]
+> genes.sym <- alias2SymbolTable(genes, species = "Hs")
+> genes <- genes.sym[!is.na(genes.sym)]
+> head(genes)
+\end{Sinput}
+\begin{Soutput}
+[1] "TMPRSS11B" "TNNC1"     "XIRP2"     "MAL"       "MYH2"      "MYH2"     
+\end{Soutput}
+\begin{Sinput}
+> length(genes)
+\end{Sinput}
+\begin{Soutput}
+[1] 15317
+\end{Soutput}
+\begin{Sinput}
+> nexons <- as.numeric(rawtable[!is.na(genes.sym), 3])
+> head(nexons)
+\end{Sinput}
+\begin{Soutput}
+[1] 10  6 10  3 40 40
+\end{Soutput}
+\begin{Sinput}
+> length(nexons)
+\end{Sinput}
+\begin{Soutput}
+[1] 15317
+\end{Soutput}
+\begin{Sinput}
+> counts <- matrix(as.numeric(unlist(rawtable[!is.na(genes.sym), 
++     -c(1, 2, 3)])), nrow = sum(!is.na(genes.sym)), ncol = 6)
+> rownames(counts) <- rawtable[!is.na(genes.sym), 1]
+> colnames(counts) <- c("N8", "T8", "N33", "T33", "N51", "T51")
+> head(counts)
+\end{Sinput}
+\begin{Soutput}
+               N8 T8   N33 T33   N51  T51
+NM_182502    2592  3  7805 321  3372    9
+NM_003280    1684  0  1787   7  4894  559
+NM_152381    9915 15 10396  48 23309 7181
+NM_022438    2496  2  3585 239  1596    7
+NM_001100112 4389  7  7944  16  9262 1818
+NM_017534    4402  7  7943  16  9244 1815
+\end{Soutput}
+\begin{Sinput}
+> dim(counts)
+\end{Sinput}
+\begin{Soutput}
+[1] 15317     6
+\end{Soutput}
+\begin{Sinput}
+> o <- order(nexons, decreasing = TRUE)
+> counts.ord <- counts[o, ]
+> genes.ord <- genes[o]
+> keep <- !duplicated(genes.ord)
+> sum(keep)
+\end{Sinput}
+\begin{Soutput}
+[1] 10464
+\end{Soutput}
+\begin{Sinput}
+> counts.uniq <- counts.ord[keep, ]
+> genes.uniq <- genes.ord[keep]
+> o2 <- order(genes.uniq)
+> d.tuch <- DGEList(counts.uniq[o2, ], group = rep(c("normal", 
++     "tumour"), 3), genes = genes.uniq[o2])
 > d.tuch <- calcNormFactors(d.tuch)
 > d.tuch
 \end{Sinput}
 \begin{Soutput}
 An object of class "DGEList"
 $samples
-                                files  group
-N8   GSM515513_N8_gene_agg_counts.txt normal
-T8   GSM515514_T8_gene_agg_counts.txt tumour
-N33 GSM515515_N33_gene_agg_counts.txt normal
-T33 GSM515516_T33_gene_agg_counts.txt tumour
-N51 GSM515517_N51_gene_agg_counts.txt normal
-T51 GSM515518_T51_gene_agg_counts.txt tumour
-                                            description tissue patient lib.size
-N8                  healthy mouth tissue from patient 8 normal       8  8859892
-T8   oral squamous cell carcinoma tissue from patient 8 tumour       8  8270556
-N33                healthy mouth tissue from patient 33 normal      33 17635449
-T33 oral squamous cell carcinoma tissue from patient 33 tumour      33 15741712
-N51                healthy mouth tissue from patient 51 normal      51 24009496
-T51 oral squamous cell carcinoma tissue from patient 51 tumour      51 16967249
-    norm.factors
-N8     1.1510827
-T8     1.0695499
-N33    0.7049137
-T33    0.9524320
-N51    1.0427154
-T51    1.1602638
+     group lib.size norm.factors
+N8  normal  7795290    1.1570441
+T8  tumour  7205310    1.0908009
+N33 normal 15761188    0.6618443
+T33 tumour 14070267    0.9575164
+N51 normal 21083214    1.0386291
+T51 tumour 14819300    1.2037661
 
 $counts
-         N8  T8   N33  T33   N51  T51
-A1CF      0   0     0    0     0    0
-A2BP1   188   1   154    1   711   57
-A2LD1    10   0    18   13    40   22
-A2M    2238 261  2375  612 15351 2003
-A2ML1 11751 911 13305 3080  6935 1156
-21783 more rows ...
+             N8  T8   N33  T33   N51  T51
+NM_000014  2242 261  2285  597 15121 1991
+NM_144670 11731 912 13308 3071  6944 1160
+NM_017436   162 296   111  362   751  182
+NM_015665   199  81   215  344   512  342
+NM_023928   470 710   573 1112   690  728
+10459 more rows ...
+
+$genes
+[1] "A2M"    "A2ML1"  "A4GALT" "AAAS"   "AACS"  
+10459 more rows ...
+
+$all.zeros
+NM_000014 NM_144670 NM_017436 NM_015665 NM_023928 
+    FALSE     FALSE     FALSE     FALSE     FALSE 
+10459 more elements ...
 \end{Soutput}
+\begin{Sinput}
+> setwd(path)
+\end{Sinput}
 \end{Schunk}
 
-This \texttt{DGEList} is now ready to be passed to the functions that
+This \code{DGEList} is now ready to be passed to the functions that
 do the calculations to determine differential expression levels for
-the genes. Note that when we `see' the \texttt{DGEList} object
-\texttt{d.tuch}, the counts for just the first five genes in the table
-are shown, as well as the \texttt{samples} element, which is a data
-frame constructed from the `Targets.txt' file and provides the
-filenames, groups, descriptions and library sizes for the samples.
+the genes. Note that when we `see' the \code{DGEList} object
+\code{d.tuch}, the counts for just the first five genes in the table
+are shown, as well as the \code{samples} element, which is a data
+frame containing information about groups, descriptions and library
+sizes for the samples.
 
-However, for this dataset, there were over 20 000 unique tags
-sequenced, some of which have a very small number of counts in total
-across all libraries. It is not possible to achieve statistical
-significance with fewer than ten counts in total for a tag, and we
-also do not want to waste effort finding spurious DE (such as when a
-gene is only expressed in one library), so we filter
-out tags with fewer than 1 count per million in four or more libraries---this
-also helps to speed up the calculations we need to perform. The
-subsetting capability of \texttt{DGEList} objects makes such filtering
-very easy to carry out.
+For this dataset (after our tweaking of it), there are over 10 000
+unique tags (genes) sequenced, some of which may have a very small
+number of counts in total across all libraries. It is not possible to
+achieve statistical significance with fewer than ten counts in total
+for a tag, and we also do not want to waste effort finding spurious DE
+(such as when a gene is only expressed in one library), so we filter
+out tags with fewer than 1 count per million in four or more
+libraries---this also helps to speed up the calculations we need to
+perform. The subsetting capability of \code{DGEList} objects makes
+such filtering very easy to carry out (as shown below). Interestingly,
+no genes are filtered out for this dataset, indicating that some
+filtering of low expression transcripts may have been done by
+\citet{Tuch:2010p457} in producing the table of counts that we have
+used here.
 
 \begin{Schunk}
 \begin{Sinput}
@@ -163,7 +254,7 @@ very easy to carry out.
 > nrow(d.tuch)
 \end{Sinput}
 \begin{Soutput}
-[1] 15318
+[1] 10464
 \end{Soutput}
 \end{Schunk}
 
@@ -173,14 +264,13 @@ Now the dataset is ready to be analysed for differential expression.
 
 Before proceeding with the computations for differential expression,
 it is possible to produce a plot showing the sample relations based on
-multidimensional scaling. The function \texttt{plotMDS.dge} produces
-an MDS plot for the samples when provided with the \texttt{DGEList}
+multidimensional scaling. The function \code{plotMDS.dge} produces
+an MDS plot for the samples when provided with the \code{DGEList}
 object, as shown in Figure~\ref{fig:Tuch_MDS}.
 
 \begin{Schunk}
 \begin{Sinput}
-> png(file = "edgeR_case_study_Tuch_MDSplot.png", height = 600, 
-+     width = 600)
+> pdf(file = "edgeR_case_study_Tuch_MDSplot.pdf", height = 6, width = 6)
 > plotMDS.dge(d.tuch, main = "MDS Plot for Tuch Data")
 \end{Sinput}
 \begin{Soutput}
@@ -193,6 +283,9 @@ Using grid search to estimate tagwise dispersion.
 null device 
           1 
 \end{Soutput}
+\begin{Sinput}
+> tools::compactPDF("edgeR_case_study_Tuch_MDSplot.pdf")
+\end{Sinput}
 \end{Schunk}
 
 From the MDS plot, it can be seen that the libraries T33 and T8
@@ -202,7 +295,7 @@ analysis as we will just be demonstrating the use of \edgeR.
 
 \begin{figure}[ht]
 \begin{center}
-\includegraphics[height=0.45\textheight]{edgeR_case_study_Tuch_MDSplot.png}
+\includegraphics[height=0.45\textheight]{edgeR_case_study_Tuch_MDSplot}
 \caption{Multidimensional scaling (MDS) plot for the Tuch data,
   showing the relations between the samples in two dimensions. From
   this plot, the samples T33 and T8 can be identified easily as outliers---there is a large distance between these two samples and the others.}
@@ -222,24 +315,27 @@ follows.
 
 \begin{Schunk}
 \begin{Sinput}
-> design <- model.matrix(~patient + tissue, data = targets)
+> patient <- factor(c(8, 8, 33, 33, 51, 51))
+> design <- model.matrix(~patient + d.tuch$samples$group)
+> rownames(design) <- rownames(d.tuch$samples)
+> colnames(design)[4] <- "tumour"
 > design
 \end{Sinput}
 \begin{Soutput}
-  (Intercept) patient33 patient51 tissuetumour
-1           1         0         0            0
-2           1         0         0            1
-3           1         1         0            0
-4           1         1         0            1
-5           1         0         1            0
-6           1         0         1            1
+    (Intercept) patient33 patient51 tumour
+N8            1         0         0      0
+T8            1         0         0      1
+N33           1         1         0      0
+T33           1         1         0      1
+N51           1         0         1      0
+T51           1         0         1      1
 attr(,"assign")
 [1] 0 1 1 2
 attr(,"contrasts")
 attr(,"contrasts")$patient
 [1] "contr.treatment"
 
-attr(,"contrasts")$tissue
+attr(,"contrasts")$`d.tuch$samples$group`
 [1] "contr.treatment"
 \end{Soutput}
 \end{Schunk}
@@ -260,8 +356,8 @@ paired design experiment, so the dispersion has to be estimated in a
 different way such that both the cell-type and the patient factors are
 taken into account.
 
-Like the qCML method (i.e.,the \texttt{estimateCommonDisp()} and the
-\texttt{estimateTagwiseDisp()} function) we used in previous case
+Like the qCML method (i.e.,the \code{estimateCommonDisp()} and the
+\code{estimateTagwiseDisp()} function) we used in previous case
 studies, the CR method also calculates both the common dispersion and
 tagwise dispersions. The most straight-forward analysis for a paired
 design experiment uses the CR common dispersion estimate as the
@@ -270,43 +366,44 @@ and it may not be necessary to estimate the CR tagwise dispersions,
 i.e.~estimate the CR dispersion separately for each tag.
 
 Estimating the CR common dispersion is done using the function
-\texttt{estimateGLMCommonDisp()}. Once we have the design matrix, we
-pass it to the \texttt{estimateGLMCommonDisp()} function, together
-with the \texttt{DGEList} object `d.tuch'.
+\code{estimateGLMCommonDisp()}. Once we have the design matrix, we
+pass it to the \code{estimateGLMCommonDisp()} function, together
+with the \code{DGEList} object `d.tuch'.
 \begin{Schunk}
 \begin{Sinput}
 > d.tuch <- estimateGLMCommonDisp(d.tuch, design)
 > names(d.tuch)
 \end{Sinput}
 \begin{Soutput}
-[1] "samples"           "counts"            "common.dispersion"
+[1] "samples"           "counts"            "genes"            
+[4] "all.zeros"         "common.dispersion"
 \end{Soutput}
 \end{Schunk}
 
-The output of \code{estimateCRDisp} is a \texttt{DGEList} object with
-several new elements. The element \texttt{common.dispersion}, as the
+The output of \code{estimateCRDisp} is a \code{DGEList} object with
+several new elements. The element \code{common.dispersion}, as the
 name suggests, provides the estimate of the Cox-Reid common
-dispersion, and \texttt{design} gives the design matrix as we defined at
+dispersion, and \code{design} gives the design matrix as we defined at
 the start.
 
 Under the negative binomial model, the square root of the common
 dispersion gives the coefficient of variation of biological
 variation. Here the common dispersion is found to be
-
-
+0.161, so the
+coefficient of biological variation is around 0.401.
 
 \begin{Schunk}
 \begin{Sinput}
 > d.tuch$common.dispersion
 \end{Sinput}
 \begin{Soutput}
-[1] 0.209996
+[1] 0.160527
 \end{Soutput}
 \begin{Sinput}
 > sqrt(d.tuch$common.dispersion)
 \end{Sinput}
 \begin{Soutput}
-[1] 0.4582532
+[1] 0.4006582
 \end{Soutput}
 \end{Schunk}
 
@@ -321,15 +418,15 @@ The GLM method fits a negative binomial generalized linear model for
 each gene/tag with the unadjusted counts provided, a value for the
 dispersion parameter and, optionally, offsets and weights for
 different libraries or transcripts. This is done using the funtion
-\texttt{glmFit()} and \texttt{glmLRT()}.
+\code{glmFit()} and \code{glmLRT()}.
 
-The function \texttt{glmFit()} calls the in-built function
-\texttt{glm.fit()} to fit the NB GLM for each tag and produces an
-object of class \texttt{DGEGLM}. Once we have a fit for a given design
-matrix, \texttt{glmLRT()} can be run with a given coefficient or
+The function \code{glmFit()} calls the in-built function
+\code{glm.fit()} to fit the NB GLM for each tag and produces an
+object of class \code{DGEGLM}. Once we have a fit for a given design
+matrix, \code{glmLRT()} can be run with a given coefficient or
 contrast specified and evidence for differential expression can be
-assessed using a likelihood ratio test. The \texttt{glmLRT} function
-produces an object of class \texttt{DGELRT} with a table containing
+assessed using a likelihood ratio test. The \code{glmLRT} function
+produces an object of class \code{DGELRT} with a table containing
 the abundance of each tag (log-concentration, logConc), the log-fold
 change of expression between conditions/contrasts being tested
 (logFC), the likelihood ratio statistic (LR.statistic) and the p-value
@@ -339,9 +436,9 @@ either the $p$-value or the log-fold change of expression computed for
 each tag.
 
 The results of the NB GLM likelihood ratio test can be accessed
-conveniently using the \texttt{topTags} function applied to the object
-produced by \texttt{glmLRT}. The user can specify the number,
-\texttt{n}, of tags for which they would like to see the differential
+conveniently using the \code{topTags} function applied to the object
+produced by \code{glmLRT}. The user can specify the number,
+\code{n}, of tags for which they would like to see the differential
 expression information, ranked by $p$-value (default) or fold
 change. As the same test is conducted for many thousands of tags,
 adjusting the $p$-values for multiple testing is recommended. The
@@ -353,23 +450,23 @@ shows the top $10$ DE genes ranked by $p$-value.
 \begin{Schunk}
 \begin{Sinput}
 > glmfit.tuch <- glmFit(d.tuch, design, dispersion = d.tuch$common.dispersion)
-> lrt.tuch <- glmLRT(d.tuch, glmfit.tuch)
+> lrt.tuch <- glmLRT(d.tuch, glmfit.tuch, coef = 4)
 > options(digits = 4)
 > topTags(lrt.tuch)
 \end{Sinput}
 \begin{Soutput}
-Coefficient: tissuetumour 
-          logConc  logFC    PValue       FDR
-TMPRSS11B  -8.654 -7.351 5.074e-22 7.773e-18
-CKM        -8.083 -7.161 4.690e-20 3.592e-16
-TNNC2     -10.123 -6.794 1.047e-19 5.344e-16
-MAL        -9.089 -6.852 1.688e-19 6.384e-16
-CRNN       -7.129 -7.241 2.084e-19 6.384e-16
-PI16      -10.817 -6.547 1.719e-18 4.390e-15
-MYBPC1     -8.293 -7.018 2.798e-18 6.123e-15
-IL1F6     -10.217 -6.129 7.368e-18 1.411e-14
-KRT36     -11.217 -7.356 2.087e-17 3.552e-14
-MUC21      -8.938 -6.770 4.265e-17 6.533e-14
+Coefficient:  tumour 
+                 genes logConc  logFC     LR   P.Value       FDR
+NM_182502    TMPRSS11B  -8.506 -7.322 121.55 2.892e-28 3.026e-24
+NM_016190         CRNN  -6.987 -7.256 107.46 3.538e-25 1.851e-21
+NM_002371          MAL  -8.952 -6.810 106.38 6.089e-25 2.124e-21
+NM_002465       MYBPC1  -8.157 -7.019  99.75 1.727e-23 4.518e-20
+NM_014440        IL1F6 -10.060 -6.148  96.06 1.114e-22 2.332e-19
+NM_002272         KRT4  -5.621 -7.133  92.79 5.800e-22 9.311e-19
+NM_001010909     MUC21  -8.797 -6.724  92.65 6.229e-22 9.311e-19
+NM_001100        ACTA1  -8.390 -6.281  92.08 8.329e-22 1.089e-18
+NM_003280        TNNC1  -9.188 -6.958  91.38 1.186e-21 1.379e-18
+NM_006063      KBTBD10  -8.232 -6.215  89.07 3.813e-21 3.990e-18
 \end{Soutput}
 \end{Schunk}
 
@@ -392,17 +489,17 @@ false positives.
 > d.tuch$counts[top, order(d.tuch$samples$group)]
 \end{Sinput}
 \begin{Soutput}
-             N8   N33   N51 T8  T33  T51
-TMPRSS11B  2601  7874  3399  3  322    9
-CKM        4120  5203 24175  5   24 1225
-TNNC2       590  1627  1239  1    8   39
-MAL        2742  3977  1772  3  264    8
-CRNN      24178 22055 12533 49 2353   26
-PI16        231   216  1950  0    2   35
-MYBPC1     4791  4145 15766 10   14 1319
-IL1F6       367  1825   809 10   45    1
-KRT36       711   104    70  2    1    1
-MUC21      4161  3432  1722  7  517    5
+                N8   N33   N51  T8   T33  T51
+NM_182502     2592  7805  3372   3   321    9
+NM_016190    24146 22026 12480  49  2353   26
+NM_002371     2697  3941  1750   3   265    8
+NM_002465     4809  4146 15623  10    14 1311
+NM_014440      367  1824   802  10    45    1
+NM_002272    76461 99082 47411 353 20651   31
+NM_001010909  4160  3425  1720   7   516    5
+NM_001100     3334  3198 13643   8    32 1063
+NM_003280     1684  1787  4894   0     7  559
+NM_006063     4325  3115 16007  24    17 1461
 \end{Soutput}
 \end{Schunk}
 
@@ -422,44 +519,44 @@ $p$-value.
 > topTags(lrt.tuch, sort.by = "logFC")
 \end{Sinput}
 \begin{Soutput}
-Coefficient: tissuetumour 
-         logConc   logFC    PValue       FDR
-FBP2      -13.54 -10.089 1.743e-12 2.871e-10
-EMX1      -13.42   9.681 2.170e-10 1.741e-08
-ATP6V0D2  -13.90   9.653 2.278e-10 1.817e-08
-TUSC5     -14.12  -9.436 1.242e-09 7.927e-08
-UTS2R     -14.19  -9.419 2.976e-09 1.740e-07
-HTR3A     -14.26  -9.242 1.800e-09 1.091e-07
-C3orf43   -14.38  -9.143 7.732e-09 4.052e-07
-FAM180B   -14.47  -8.967 1.971e-08 9.178e-07
-PCSK2     -14.55  -8.869 1.006e-07 3.825e-06
-SLCO1B3   -12.74   8.127 9.867e-11 8.588e-09
+Coefficient:  tumour 
+                 genes logConc  logFC     LR   P.Value       FDR
+NM_001100112      MYH2  -8.126 -7.347  86.96 1.107e-20 1.053e-17
+NM_182502    TMPRSS11B  -8.506 -7.322 121.55 2.892e-28 3.026e-24
+NM_016190         CRNN  -6.987 -7.256 107.46 3.538e-25 1.851e-21
+NM_002272         KRT4  -5.621 -7.133  92.79 5.800e-22 9.311e-19
+NM_002465       MYBPC1  -8.157 -7.019  99.75 1.727e-23 4.518e-20
+NM_003280        TNNC1  -9.188 -6.958  91.38 1.186e-21 1.379e-18
+NM_152381        XIRP2  -7.427 -6.927  75.86 3.049e-18 9.969e-16
+NM_002371          MAL  -8.952 -6.810 106.38 6.089e-25 2.124e-21
+NM_001010909     MUC21  -8.797 -6.724  92.65 6.229e-22 9.311e-19
+NM_198060         NRAP  -8.451 -6.441  82.70 9.543e-20 5.548e-17
 \end{Soutput}
 \begin{Sinput}
 > top <- rownames(topTags(lrt.tuch, sort.by = "logFC")$table)
 > d.tuch$counts[top, order(d.tuch$samples$group)]
 \end{Sinput}
 \begin{Soutput}
-         N8 N33 N51 T8 T33 T51
-FBP2     40  38  28  0   0   0
-EMX1      0   0   0 43  67   0
-ATP6V0D2  0   0   0 10  55  14
-TUSC5    16   8  52  0   0   0
-UTS2R     3  22  46  0   0   0
-HTR3A    12  20  27  0   0   0
-C3orf43  11  21  18  0   0   0
-FAM180B  11  10  29  0   0   0
-PCSK2    11  21   7  0   0   0
-SLCO1B3   1   0   0  2  22 300
+                N8   N33   N51  T8   T33  T51
+NM_001100112  4389  7944  9262   7    16 1818
+NM_182502     2592  7805  3372   3   321    9
+NM_016190    24146 22026 12480  49  2353   26
+NM_002272    76461 99082 47411 353 20651   31
+NM_002465     4809  4146 15623  10    14 1311
+NM_003280     1684  1787  4894   0     7  559
+NM_152381     9915 10396 23309  15    48 7181
+NM_002371     2697  3941  1750   3   265    8
+NM_001010909  4160  3425  1720   7   516    5
+NM_198060     3741  1990 12531   4    17 1829
 \end{Soutput}
 \end{Schunk}
 
 
-We see in the output below that over $2000$ tags are significantly
+We see in the output below that over $1200$ tags are significantly
 differentially expressed according to \edgeR~when using the CR common
 dispersion estimate and GLM likelihood ratio test. Of those tags,
-$491$ are up-regulated in the tumour tissues compared with the normal
-tissues and $1691$ are down-regulated in the tumour tissues compared
+$297$ are up-regulated in the tumour tissues compared with the normal
+tissues and $975$ are down-regulated in the tumour tissues compared
 with normal tissues.
 
 \begin{Schunk}
@@ -467,10 +564,10 @@ with normal tissues.
 > summary(decideTestsDGE(lrt.tuch))
 \end{Sinput}
 \begin{Soutput}
-   [,1] 
--1  1691
-0  13136
-1    491
+   [,1]
+-1  975
+0  9192
+1   297
 \end{Soutput}
 \end{Schunk}
 
@@ -480,13 +577,13 @@ with normal tissues.
 
 It has been noted that the dispersion parameter in RNA-seq data can
 depend on the expression level of the gene \citep{Anders:2010p792}. The
-function \texttt{estimateGLMTrendedDisp} in \edgeR~estimates
+function \code{estimateGLMTrendedDisp} in \edgeR~estimates
 dispersion values that depend on the overall expression level of the
 genes. Typically, lowly expressed genes have a higher value for the
 dispersion parameter than more highly expressed genes. There are a
 number of possible options for the type of trend that is to be fit for
 the dispersion parameters. These options are detailed in the help file
-for \texttt{estimateGLMTrendedDisp}.
+for \code{estimateGLMTrendedDisp}.
 
 \begin{Schunk}
 \begin{Sinput}
@@ -495,7 +592,7 @@ for \texttt{estimateGLMTrendedDisp}.
 \end{Sinput}
 \begin{Soutput}
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-  0.123   0.147   0.176   0.238   0.277   1.170 
+  0.124   0.129   0.150   0.162   0.172   0.558 
 \end{Soutput}
 \end{Schunk}
 
@@ -555,23 +652,24 @@ dispersion estimates to the DGEList object provided as an argument.
 > names(d.tuch)
 \end{Sinput}
 \begin{Soutput}
-[1] "samples"            "counts"             "common.dispersion" 
-[4] "trended.dispersion" "abundance"          "bin.dispersion"    
-[7] "bin.abundance"      "tagwise.dispersion"
+ [1] "samples"            "counts"             "genes"             
+ [4] "all.zeros"          "common.dispersion"  "trended.dispersion"
+ [7] "abundance"          "bin.dispersion"     "bin.abundance"     
+[10] "tagwise.dispersion"
 \end{Soutput}
 \begin{Sinput}
 > head(d.tuch$tagwise.dispersion)
 \end{Sinput}
 \begin{Soutput}
- A2BP1  A2LD1    A2M  A2ML1 A4GALT   AAAS 
-0.2499 0.5713 0.1838 0.2310 0.2096 0.1557 
+NM_000014 NM_144670 NM_017436 NM_015665 NM_023928 NM_024666 
+   0.1933    0.2415    0.2051    0.1528    0.1157    0.1246 
 \end{Soutput}
 \end{Schunk}
 
 It is interesting to consider the distribution of the CR tagwise
 dispersion estimates. As we can see from the output below, the CR
-tagwise dispersion estimates range from a minimum of $0.109$ to a
-maximum of $1.700$. The range of dispersions is therefore large, but
+tagwise dispersion estimates range from a minimum of $0.11$ to a
+maximum of $0.69$. The range of dispersions is therefore large, but
 the tags in the middle two quartiles of the CR tagwise dispersion
 estimates have dispersion estimates close to the CR common dispersion
 estimate.
@@ -582,7 +680,7 @@ estimate.
 \end{Sinput}
 \begin{Soutput}
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-  0.109   0.141   0.175   0.239   0.285   1.700 
+  0.110   0.125   0.148   0.161   0.172   0.686 
 \end{Soutput}
 \end{Schunk}
 
@@ -592,9 +690,9 @@ carried out exactly as for the CR common dispersion, as described
 above. Here we carry out the testing using the CR tagwise dispersion
 estimates calculated using a \code{prior.n} value of eight. The GLM fit
 and the likelihood ratio test are done using the same functions as
-before (i.e.~\texttt{glmFit()} and \texttt{glmLRT()}), the only
+before (i.e.~\code{glmFit()} and \code{glmLRT()}), the only
 difference is that we use CR tagwise dispersions as the dispersion in
-the \texttt{glmFit()} function.
+the \code{glmFit()} function.
 
 \begin{Schunk}
 \begin{Sinput}
@@ -622,18 +720,18 @@ found to be among the top ten tags using tagwise dispersions.
 > topTags(lrt.tuch.tgw)
 \end{Sinput}
 \begin{Soutput}
-Coefficient: tissuetumour 
-          logConc  logFC    PValue       FDR
-PI16      -10.816 -6.469 2.668e-22 4.088e-18
-IL1F6     -10.217 -6.103 4.879e-21 3.737e-17
-PYGM       -9.650 -5.508 1.585e-20 7.019e-17
-PTGFR     -10.656 -5.143 1.833e-20 7.019e-17
-TNNC2     -10.123 -6.786 3.196e-20 9.791e-17
-TMPRSS11B  -8.654 -7.376 4.109e-20 1.049e-16
-DNAH17    -10.056  5.471 7.050e-20 1.543e-16
-MYBPC2     -9.422 -5.418 3.265e-19 6.251e-16
-PLA2G2A   -10.398 -5.513 8.882e-19 1.512e-15
-PTHLH      -9.147  3.973 1.748e-18 2.678e-15
+Coefficient:  tumour 
+                 genes logConc  logFC     LR   P.Value       FDR
+NM_014440        IL1F6 -10.060 -6.142 100.20 1.374e-23 1.438e-19
+NM_001039585     PTGFR -10.519 -5.193  95.02 1.883e-22 9.854e-19
+NM_005609         PYGM  -9.653 -5.476  89.85 2.567e-21 8.955e-18
+NM_182502    TMPRSS11B  -8.506 -7.412  87.33 9.182e-21 2.402e-17
+NM_004533       MYBPC2  -9.299 -5.458  82.56 1.027e-19 2.150e-16
+NM_004320       ATP2A1  -9.669 -4.622  78.52 7.920e-19 1.381e-15
+NM_002371          MAL  -8.952 -6.902  76.58 2.117e-18 2.961e-15
+NM_057088         KRT3  -9.301 -5.838  76.45 2.264e-18 2.961e-15
+NM_001111283      IGF1  -9.841 -3.992  75.10 4.464e-18 5.191e-15
+NM_001976         ENO3  -9.423 -5.179  73.12 1.218e-17 1.275e-14
 \end{Soutput}
 \end{Schunk}
 
@@ -649,26 +747,26 @@ differentially expressed, and not false positives.
 > d.tuch$counts[top.tgw, order(d.tuch$samples$group)]
 \end{Sinput}
 \begin{Soutput}
-            N8  N33  N51   T8  T33  T51
-PI16       231  216 1950    0    2   35
-IL1F6      367 1825  809   10   45    1
-PYGM      1666 1420 2477   22   17  127
-PTGFR      455  287 1736    7   12   46
-TNNC2      590 1627 1239    1    8   39
-TMPRSS11B 2601 7874 3399    3  322    9
-DNAH17       4   22  107  678  614 2628
-MYBPC2     971  488 8140   11    6  460
-PLA2G2A    515  634 1914    1   29   52
-PTHLH       96  223  270 1190 4182 3687
+               N8  N33  N51 T8 T33 T51
+NM_014440     367 1824  802 10  45   1
+NM_001039585  455  287 1736  7  12  46
+NM_005609    1399 1267 2171 22  16 103
+NM_182502    2592 7805 3372  3 321   9
+NM_004533     966  486 8045 11   6 457
+NM_004320     988 1558 2285 25  52 161
+NM_002371    2697 3941 1750  3 265   8
+NM_057088    1069 3774  885  7 358   5
+NM_001111283  460  343 4703 25  26 257
+NM_001976    1092 1292 4841  4  74 223
 \end{Soutput}
 \end{Schunk}
 
-We see in the output below that $1917$ tags are significantly
+We see in the output below that $1272$ tags are significantly
 differentially expressed according to \edgeR~when using the CR tagwise
 dispersion estimate and GLM likelihood ratio test. It is slightly less
 the total number of DE tags under the CR common dispersion method. Of
-those $1917$ tags, $485$ are up-regulated in the tumour tissues
-compared with the normal tissues and $1432$ are down-regulated in the
+those $1272$ tags, $313$ are up-regulated in the tumour tissues
+compared with the normal tissues and $959$ are down-regulated in the
 tumour tissues compared with normal tissues.
 
 \begin{Schunk}
@@ -676,10 +774,10 @@ tumour tissues compared with normal tissues.
 > summary(decideTestsDGE(lrt.tuch.tgw))
 \end{Sinput}
 \begin{Soutput}
-   [,1] 
--1  1432
-0  13401
-1    485
+   [,1]
+-1  959
+0  9192
+1   313
 \end{Soutput}
 \end{Schunk}
 
@@ -702,10 +800,12 @@ attached base packages:
 [8] base     
 
 other attached packages:
-[1] edgeR_2.1.15
+[1] org.Hs.eg.db_2.5.0    RSQLite_0.9-4         DBI_0.2-5            
+[4] AnnotationDbi_1.13.18 Biobase_2.11.10       limma_3.7.26         
+[7] edgeR_2.1.17         
 
 loaded via a namespace (and not attached):
-[1] limma_3.7.26
+[1] tools_2.13.0
 \end{Soutput}
 \end{Schunk}
 
