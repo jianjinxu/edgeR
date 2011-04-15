@@ -75,29 +75,94 @@ The row names are transcript IDs.
 \item
 \texttt{lib.size}: vector of the same length as \texttt{group} giving the total number of reads sequenced for each sample.
 \end{enumerate}
-We assume that the counts are stored in one of two formats.
-Either there is a single file containing a table of counts with the first column containing the tag identifiers and the remaining columns containing the tag counts for each library sequenced, or there is an individual file for each library, each with first column for tag identifiers and second column for counts. 
+We assume that the counts are stored in one of two formats.  Either
+there is a single file containing a table of counts with the first
+column containing the tag identifiers and the remaining columns
+containing the tag counts for each library sequenced, or there is an
+individual file for each library, each with first column for tag
+identifiers and second column for counts.
 
-If the counts for all libraries are stored in a single file, then an appriopriate in-built \texttt{R} function (such as \texttt{read.delim} or \texttt{read.csv}) can be used to read the table of counts into \texttt{R}. The library sizes can be the column sums from the table of counts, and thus easily obtained, or the user can specify the the library sizes throught \texttt{lib.size} argument of the \texttt{DGEList()} constructor.  See the help documentation (\texttt{?DGEList} or \texttt{?"DGEList-class"}) or the examples below for further details.
+If the counts for all libraries are stored in a single file, then an
+appriopriate in-built \texttt{R} function (such as \texttt{read.delim}
+or \texttt{read.csv}) can be used to read the table of counts into
+\texttt{R}. The library sizes can be the column sums from the table of
+counts, and thus easily obtained, or the user can specify the the
+library sizes throught \texttt{lib.size} argument of the
+\texttt{DGEList()} constructor.  See the help documentation
+(\texttt{?DGEList} or \texttt{?"DGEList-class"}) or the examples below
+for further details.
 
-If the counts are stored in separate files, then, given a vector containing the filenames the \edgeR~function \texttt{readDGE} will read in the data from the individual files, collate the counts into a table and compute the library sizes and return a \texttt{DGEList} object.  See the help documentation (\texttt{?readDGE}) or the examples below for further details.
+If the counts are stored in separate files, then, given a vector
+containing the filenames the \edgeR~function \texttt{readDGE} will
+read in the data from the individual files, collate the counts into a
+table and compute the library sizes and return a \texttt{DGEList}
+object.  See the help documentation (\texttt{?readDGE}) or the
+examples below for further details.
 
 
 \section{Normalization issues for digital counts}
 
 \subsection{General comments}
 
-The \edgeR\ methodology needs to work with the original digital expression counts, so these should not be transformed in any way by users prior to analysis.
-\edgeR\ automatically takes into account the total size (total read number) of each library in all calculations of fold-changes, concentration and statistical significance.
-For some datasets, no other normalization is required for evaluating differential expression.
+The \edgeR\ methodology needs to work with the original digital
+expression counts, so these should not be transformed in any way by
+users prior to analysis.  \edgeR\ automatically takes into account the
+total size (total read number) of each library in all calculations of
+fold-changes, concentration and statistical significance.  For some
+datasets, no other normalization is required for evaluating
+differential expression.
+
+It bears emphasizing that RPKM values should \emph{not} be used for
+assessing differential expression of genes between samples in
+\edgeR. We use the raw counts, because the methods implemented in edgeR
+are based on the negative binomial distribution, a discrete
+distribution. To be able to perform good inference on differential
+expression it is very important to model the mean-variance
+relationship in the data appropriately. There are good reasons why the
+NB model is appropriate for the raw count data, but transforming the
+data using RPKM (or FPKM or similar) renders our distributional
+assumptions invalid and we cannot guarantee that our methods will be
+reliable for such transformed data. 
+
+There are methods implemented in \edgeR\ to normalize the counts for
+compositional bias in sequenced libraries and for differences between
+libraries in sequencing depth. These adjustments are offsets
+in the models used for testing DE and do not transform the counts in
+any way.
+
+The reason we do not worry about gene length bias, GC bias and so on
+when conducting DE analysis of the same genes \emph{between} samples
+is that we expect (and hope) that the biases will affect the same gene
+in the same way in different samples. This being the case, then it is
+OK to test for DE gene between samples because such biases in effect
+``cancel out'' when making the comparison between samples. This
+reasoning does not hold for comparing the expression level of
+\emph{different genes} in \emph{one sample}---to do this you would probably need
+to account for gene length and other biases, but this is not what \edgeR\ is
+designed to do.
 
 
 \subsection{Calculating normalization factors}
 
 
-Recently, \citet{Robinson:2010p145} described a method to account for a bias introduced by what they call RNA composition.  In brief, there are occasions when comparing different DGE libraries where a small number of genes are very highly expressed in one sample, but not in another.  Because these highly expressed genes consume a substantial proportion of the sequencing ``real estate'', the remaining genes in the library are undersampled.  Similarly, this situation may occur when the two tissues being compared have transcriptomes of different sizes, i.e.~when there are noticeably more transcripts expressed in one tissues than the other.
-\citet{Robinson:2010p145} show that in comparing kidney and liver RNA, there are a large number of genes expressed in kidney but not in liver, causing the remaining genes to be undersampled and skewing the differential expression calls.
-To account for this, the authors developed an empirical approach to estimate the bias and proposed to build that into the library size (or, an offset in a generalized linear model), making it an {\em effective} library size.  We demonstrate this below on the \citet{Marioni:2008p93} RNA-seq dataset.
+Recently, \citet{Robinson:2010p145} described a method to account for
+a bias introduced by what they call RNA composition.  In brief, there
+are occasions when comparing different DGE libraries where a small
+number of genes are very highly expressed in one sample, but not in
+another.  Because these highly expressed genes consume a substantial
+proportion of the sequencing ``real estate'', the remaining genes in
+the library are undersampled.  Similarly, this situation may occur
+when the two tissues being compared have transcriptomes of different
+sizes, i.e.~when there are noticeably more transcripts expressed in
+one tissues than the other.  \citet{Robinson:2010p145} show that in
+comparing kidney and liver RNA, there are a large number of genes
+expressed in kidney but not in liver, causing the remaining genes to
+be undersampled and skewing the differential expression calls.  To
+account for this, the authors developed an empirical approach to
+estimate the bias and proposed to build that into the library size
+(or, an offset in a generalized linear model), making it an {\em
+  effective} library size.  We demonstrate this below on the
+\citet{Marioni:2008p93} RNA-seq dataset.
 
 
 Given a table counts or a \texttt{DGEList} object, one can calculate normalization factors using the \texttt{calcNormFactors()} function.

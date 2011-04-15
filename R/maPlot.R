@@ -6,9 +6,11 @@ maPlot <- function(x,y, logAbundance=NULL, logFC=NULL, normalize=FALSE, smearWid
         M <- logFC
         w <- rep(FALSE, length(A))
         w <- A < -25
-        shift <- max(abs(M[w])) - max(abs(M[!w]))
-        A[w] <- min(A[!w]) - runif(sum(w),min=0,max=smearWidth)
-        M[w] <- sign(M[w]) * (abs(M[w]) - shift) 
+        if( any(w) ) {
+            shift <- max(abs(M[w])) - max(abs(M[!w]))
+            A[w] <- min(A[!w]) - runif(sum(w),min=0,max=smearWidth)
+            M[w] <- sign(M[w]) * (abs(M[w]) - shift)
+        }
     } else {
         if(normalize) {
             x <- x/sum(x)
@@ -17,17 +19,21 @@ maPlot <- function(x,y, logAbundance=NULL, logFC=NULL, normalize=FALSE, smearWid
         A <- (log2(x)+log2(y))/2
         M <- log2(y) - log2(x)
         w <- x==min(x) | y==min(y)
-        A[w] <- min(A[!w]) - runif(sum(w),min=0,max=smearWidth)
-        M[w] <- log2(y[w]+min(y[!w])) - log2(x[w]+min(x[!w]))
+        if( any(w) ) {
+            A[w] <- min(A[!w]) - runif(sum(w),min=0,max=smearWidth)
+            M[w] <- log2(y[w]+min(y[!w])) - log2(x[w]+min(x[!w]))
+        }
     }
     if( is.null(col) ) {
       col <- rep(allCol, length(A))
-      col[w] <- lowCol
+      if( any(w) )
+          col[w] <- lowCol
     }
     if(smooth.scatter) {
         smoothScatter(A, M, col=col, ...)
         grid()
-        points(A[w], M[w], col=lowCol, ...)
+        if( any(w) )
+            points(A[w], M[w], col=lowCol, ...)
     }
     else
         plot(A,M,col=col,...)
