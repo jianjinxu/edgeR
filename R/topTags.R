@@ -23,7 +23,6 @@ topTags <- function(object,n=10,adjust.method="BH",sort.by="p.value")
 		tab <- cbind(object$genes[chosen,,drop=FALSE], tab) # Assumes that object$genes is a data.frame
 	}
 	rownames(tab) <- rownames(object$table[chosen,])
-#	This conflicts with show method for TopTags!
     if( is(object, "DGELRT") ) {
         lfc.cols <- grep("logFC",tabnames)
         colnames(tab) <- c(colnames(object$genes),"logConc",sub("logFC.","",tabnames[lfc.cols]), "LR","P.Value","adj.P.Val")
