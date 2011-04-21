@@ -21,10 +21,10 @@ dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, ab
 	}
 	if(is.null(abundance)) abundance <- mglmOneGroup(y,offset=offset)
 
-#	Apply rowsum.filter and use input dispersion for small count tags
+#	Apply min.row.sum and use input dispersion for small count tags
 	i <- (rowSums(y) >= min.row.sum)
 	if(any(!i)) {
-		if(any(i)) dispersion[i] <- Recall(y=y[i,],design=design,offset=offset[i,],dispersion=dispersion[i],abundance=abundance[i],npts=npts,rowsum.filter=0,prior.n=prior.n,span=span)
+		if(any(i)) dispersion[i] <- Recall(y=y[i,],design=design,offset=offset[i,],dispersion=dispersion[i],abundance=abundance[i],npts=npts,min.row.sum=0,prior.n=prior.n,span=span)
 		return(dispersion)
 	}
 

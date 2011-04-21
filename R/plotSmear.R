@@ -21,8 +21,8 @@ plotSmear <- function (object, pair=NULL, de.tags=NULL, xlab="logConc", ylab="lo
         cols2 <- pair[2]==object$samples$group
         
         lib.size <- object$samples$lib.size*object$samples$norm.factors
-        x <- rowMeans( object$counts[,cols1] / expandAsMatrix( lib.size[cols1], dim(object$counts[,cols1])) )
-        y <- rowMeans( object$counts[,cols2] / expandAsMatrix( lib.size[cols2], dim(object$counts[,cols2])) )
+        x <- rowMeans( object$counts[,cols1,drop=FALSE] / expandAsMatrix( lib.size[cols1], dim(object$counts[,cols1,drop=FALSE])) )
+        y <- rowMeans( object$counts[,cols2,drop=FALSE] / expandAsMatrix( lib.size[cols2], dim(object$counts[,cols2,drop=FALSE])) )
         
         ylab <- paste(ylab, ":", paste(pair[c(2,1)], collapse="-"), paste="")
         i <- match(de.tags,rownames(object$counts))

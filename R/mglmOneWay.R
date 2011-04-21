@@ -15,7 +15,7 @@ mglmOneWay <- function(y,design=NULL,dispersion=0,offset=0,maxit=50,trace=FALSE)
 #	by Fisher scoring with
 #	only a single explanatory factor in the model
 #  Gordon Smyth
-#	11 March 2011.  Last modified 22 March 2011.
+#	11 March 2011.  Last modified 18 April 2011.
 {
 	y <- as.matrix(y)
 	ntags <- nrow(y)
@@ -41,3 +41,4 @@ mglmOneWay <- function(y,design=NULL,dispersion=0,offset=0,maxit=50,trace=FALSE)
 	mu <- exp(mu+offset)
 	list(coefficients=beta,fitted.values=mu)
 }
+
