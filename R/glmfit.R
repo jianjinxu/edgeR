@@ -1,22 +1,41 @@
 #  GENERALIZED LINEAR MODELS
 
-glmFit <- function(y, design, dispersion, offset=NULL, weights=NULL, lib.size=NULL, start=NULL)
+glmFit <- function(y, design, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, start=NULL)
 	##	Fit negative binomial generalized linear model for each transcript
 	##  to a series of digital expression libraries
 	##	Davis McCarthy and Gordon Smyth
 	##  User-level function. Takes a matrix of counts or a DGElist object (y).
 
-	##	Created 17 August 2010. Last modified 26 Jan 2011.
+	##	Created 17 August 2010. Last modified 29 Apr 2011.
 {
 	if(!is.null(offset) & !is.null(lib.size))
 		warning("offset and lib.size both supplied: offset takes precedence, lib.size ignored.")
+    if( !is.null(dispersion) )
+        if( !( length(dispersion)==1 | length(dispersion)==nrow(y) ) )
+            stop("Length of dispersion vector incompatible with count matrix. Dispersion argument must be either of length 1 (i.e. common dispersion) or length equal to the number of rows of y (i.e. individual dispersion value for each tag/gene).\n")
 	if(is(y,"DGEList")) {
 		y.mat <- y$counts
 		samples <- y$samples
 		genes <- y$genes
 		if(is.null(lib.size)) lib.size <- y$samples$lib.size
 		lib.size <- lib.size*y$samples$norm.factors
+        if( is.null(dispersion) ) {
+            if( !is.null(y$tagwise.dispersion) )
+                dispersion <- y$tagwise.dispersion
+            else {
+                if( !is.null(y$trended.dispersion) )
+                    dispersion <- y$trended.dispersion
+                else {
+                    if( !is.null(y$common.dispersion) )
+                        dispersion <- y$common.dispersion
+                    else
+                        stop("No dispersion values found in DGEList object. Run dispersion estimation functions such as estimateGLMCommonDisp, estimateGLMTrendedDisp and estimateGLMTagwiseDisp before using glmFit.\n")
+                }
+            }
+        }
 	} else {
+        if( is.null(dispersion) )
+            stop("No dispersion values provided. Argument y is a matrix of counts so dispersion value(s) must be provided.\n")
 		y.mat <- as.matrix(y)
 		samples <- genes <- NULL
 		if(is.null(lib.size)) lib.size <- colSums(y.mat)
