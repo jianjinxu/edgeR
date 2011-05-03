@@ -1,4 +1,4 @@
-estimateGLMTagwiseDisp <- function(y, design, ...) 
+estimateGLMTagwiseDisp <- function(y, design, offset=NULL, ...) 
 UseMethod("estimateGLMTagwiseDisp")
 
 estimateGLMTagwiseDisp.DGEList <- function(y, design, offset=NULL, method="trend", ...)

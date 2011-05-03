@@ -1,4 +1,4 @@
-estimateGLMTrendedDisp <- function(y, design, offset, method="bin.spline", ...) 
+estimateGLMTrendedDisp <- function(y, design, offset=NULL, method="bin.spline", ...) 
 UseMethod("estimateGLMTrendedDisp")
 
 estimateGLMTrendedDisp.DGEList <- function(y, design, offset=NULL, method="bin.spline", ...)

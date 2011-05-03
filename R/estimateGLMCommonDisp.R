@@ -1,4 +1,4 @@
-estimateGLMCommonDisp <- function(y, design, offset, method="CoxReid", ...) 
+estimateGLMCommonDisp <- function(y, design, offset=NULL, method="CoxReid", ...) 
 UseMethod("estimateGLMCommonDisp")
 
 estimateGLMCommonDisp.DGEList <- function(y, design, offset=NULL, method="CoxReid", ...)

@@ -109,7 +109,10 @@ getCounts <- function(object) as.matrix(object$counts)
 
 getOffsets <- function(object)
 #	Gordon Smyth
-#	26 Jan 2011.
+#	26 Jan 2011. Last modified 3 May 2011.
 {
-	log(object$samples$lib.size*object$samples$norm.factors)
+	if(is.null(object$offset))
+		log(object$samples$lib.size*object$samples$norm.factors)
+	else
+		as.matrix(object$offset)
 }

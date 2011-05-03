@@ -1,11 +1,11 @@
 \name{binomTest}
 \alias{binomTest}
 
-\title{Multiple Exact Binomial Tests}
+\title{Exact Binomial Tests for Comparing Two Digital Libraries}
 \description{
-Compute p-values for differential expression for each tag between two digital libraries,
+Computes p-values for differential abundance for each tag between two digital libraries,
 conditioning on the total count for each tag.
-The counts are assumed to be Poisson distributed, so the counts in each group as a proportion of the whole are assumed to binomial.
+The counts in each group as a proportion of the whole are assumed to follow a binomial distribution.
 }
 
 \usage{
@@ -26,14 +26,21 @@ Non-integer values are rounded to the nearest integer. Not required if \code{p} 
 }
 
 \details{
-Computes an exact two-sided binomial test for each tag.
-For each tag, the counts are treated as binomial, conditioning on the total number of counts for that tag.
+This function can be used to compare two libraries from SAGE, RNA-Seq, ChIP-Seq or other sequencing technologies with respect to technical variation.
+
+An exact two-sided binomial test is computed for each tag.
+This test is closely related to Fisher's exact test for 2x2 contingency tables but, unlike Fisher's test, it conditions on the total number of counts for each tag.
 The null hypothesis is that the expected counts are in the same proportions as the library sizes, i.e., that the binomial probability for the first library is \code{n1/(n1+n2)}.
 
-There are a number of ways to conduct two-sided tests.
-This function computes the test equivalent to the shortest possible confidence interval for a given confidence level.
+The two-sided rejection region is chosen analogously to Fisher's test.
+Specifically, the rejection region consists of those values with smallest probabilities
+under the null hypothesis.
 
-This function is the same as \code{sage.test} in the statmod package.
+When the counts are reasonably large, the binomial test, Fisher's test and Pearson's chisquare all give the same results.
+When the counts are smaller, the binomial test is usually to be preferred in this context.
+
+This function replaces the earlier \code{sage.test} functions in the statmod and sagenhaft packages.
+It produces the same results as \code{\link{binom.test}} in the stats packge, but is much faster.
 }
 
 \value{
@@ -42,12 +49,18 @@ Numeric vector of p-values.
 
 \references{
 \url{http://en.wikipedia.org/wiki/Binomial_test}
+
+\url{http://en.wikipedia.org/wiki/Fisher's_exact_test}
+
+\url{http://en.wikipedia.org/wiki/Serial_analysis_of_gene_expression}
+
+http://en.wikipedia.org/wiki/RNA-Seq
 }
 
 \author{Gordon Smyth}
 
 \seealso{
-\code{\link[statmod:sage.test]{sage.test}}, \code{\link{binom.test}}
+\code{\link[statmod:sage.test]{sage.test}} (statmod package), \code{\link{binom.test}} (stats package)
 }
 
 \examples{
