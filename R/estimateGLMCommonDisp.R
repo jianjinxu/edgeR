@@ -1,14 +1,16 @@
-estimateGLMCommonDisp <- function(y, design, method="CoxReid", ...) 
+estimateGLMCommonDisp <- function(y, design, offset, method="CoxReid", ...) 
 UseMethod("estimateGLMCommonDisp")
 
-estimateGLMCommonDisp.DGEList <- function(y, design, method="CoxReid", ...)
+estimateGLMCommonDisp.DGEList <- function(y, design, offset=NULL, method="CoxReid", ...)
 {
-	d <- estimateGLMCommonDisp(y=y$counts, design=design, offset=getOffsets(y), method=method, ...)
+    if( is.null(offset) )
+        offset <- getOffsets(y)
+	d <- estimateGLMCommonDisp(y=y$counts, design=design, offset=offset, method=method, ...)
 	y$common.dispersion <- d
 	y
 }
 
-estimateGLMCommonDisp.default <- function(y, design, method="CoxReid", offset=NULL, ...)
+estimateGLMCommonDisp.default <- function(y, design, offset=NULL, method="CoxReid", ...)
 {
 	y <- as.matrix(y)
 	method <- match.arg(method, c("CoxReid","Pearson","deviance"))

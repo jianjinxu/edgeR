@@ -1,7 +1,7 @@
 dispBinTrend <- function(y, design, offset=NULL, degree = 10, span=0.3, nbins=50, method.bin="CoxReid", method.trend="spline", trace=0, ...)
     ## Estimate dispersions with a trend by computing common dispersion Cox-Reid estimates of the dispersion in bins based on abundance and then fit a curve through the common dispersions using either natural cubic splines or loess. From the fitted curve, estimates of the dispersion for each tag/gene are obtained.
     ## Davis McCarthy, Gordon Smyth
-    ## 10 Feb 2011.  Last modified 24 Mar 2011.
+    ## 10 Feb 2011.  Last modified 3 May 2011.
 {
 	y <- as.matrix(y)
 	nlibs <- ncol(y)
@@ -14,6 +14,7 @@ dispBinTrend <- function(y, design, offset=NULL, degree = 10, span=0.3, nbins=50
 	method.trend <- match.arg(method.trend, c("spline", "loess"))
 
     abundance.full <- mglmOneGroup(y,offset=offset)
+    abundance.full[is.infinite(abundance.full)] <- min(abundance.full[is.finite(abundance.full)], na.rm=TRUE) - 0.5
 
     bindisp <- binGLMDispersion( y, design, nbins=nbins, offset=offset, method=method.bin, ...) 
 
@@ -37,7 +38,7 @@ dispBinTrend <- function(y, design, offset=NULL, degree = 10, span=0.3, nbins=50
             dispersion <- predict(fit, data.frame(abundance=abundance.full), se=TRUE)$fit
 	}
 	neg <- dispersion < 0
-    	dispersion[neg] <- min(bindisp$dispersion)
-    	new("list", list(abundance=abundance.full, dispersion=dispersion, bin.abundance=bindisp$abundance, bin.dispersion=bindisp$dispersion))
+    dispersion[neg] <- min(bindisp$dispersion)
+    new("list", list(abundance=abundance.full, dispersion=dispersion, bin.abundance=bindisp$abundance, bin.dispersion=bindisp$dispersion))
 }
 

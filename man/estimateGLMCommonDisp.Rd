@@ -11,8 +11,8 @@ Estimates the dispersion parameter for a DGE dataset for general experimental de
 
 
 \usage{
-\S3method{estimateGLMCommonDisp}{DGEList}(y, design, method="CoxReid", ...)
-\S3method{estimateGLMCommonDisp}{default}(y, design, method="CoxReid", offset=NULL, ...)
+\S3method{estimateGLMCommonDisp}{DGEList}(y, design, offset=NULL, method="CoxReid", ...)
+\S3method{estimateGLMCommonDisp}{default}(y, design, offset=NULL, method="CoxReid", ...)
 }
 
 \arguments{ 
@@ -24,7 +24,7 @@ Estimates the dispersion parameter for a DGE dataset for general experimental de
 \item{method}{method (low-level function) used to estimated the dispersion.
 Possible values are \code{"CoxReid"}, \code{"Pearson"} or \code{"deviance"}.}
 
-\item{offset}{numeric scalar, vector or matrix giving the offset (in addition to the log of the effective library size) that is to be included in the NB GLM for the transcripts. If a scalar, then this value will be used as an offset for all transcripts and libraries. If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each transcript. If a matrix, then each library for each transcript can have a unique offset, if desired. In \code{adjustedProfileLik} the \code{offset} must be a matrix with the same dimension as the table of counts.}
+\item{offset}{numeric scalar, vector or matrix giving the offset (in addition to the log of the effective library size) that is to be included in the NB GLM for the transcripts. If a scalar, then this value will be used as an offset for all transcripts and libraries. If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each transcript. If a matrix, then each library for each transcript can have a unique offset, if desired. In \code{adjustedProfileLik} the \code{offset} must be a matrix with the same dimension as the table of counts. Default is \code{NULL}; if object is a \code{DGEList} and offset is \code{NULL} then offset will be calculated automatically from code{y$samples}.}
 
 \item{\ldots}{other arguments are passed to lower-level functions.}
 }

@@ -1,9 +1,11 @@
-estimateGLMTrendedDisp <- function(y, design, method="bin.spline", ...) 
+estimateGLMTrendedDisp <- function(y, design, offset, method="bin.spline", ...) 
 UseMethod("estimateGLMTrendedDisp")
 
-estimateGLMTrendedDisp.DGEList <- function(y, design, method="bin.spline", ...)
+estimateGLMTrendedDisp.DGEList <- function(y, design, offset=NULL, method="bin.spline", ...)
 {
-	d <- estimateGLMTrendedDisp(y=y$counts, design=design, offset=getOffsets(y), method=method, ...)
+    if( is.null(offset) )
+        offset <- getOffsets(y)
+	d <- estimateGLMTrendedDisp(y=y$counts, design=design, offset=offset, method=method, ...)
 	y$trended.dispersion <- d$dispersion
 	y$abundance <- d$abundance
 	if( !is.null(d$bin.dispersion) ) y$bin.dispersion <- d$bin.dispersion
@@ -11,7 +13,7 @@ estimateGLMTrendedDisp.DGEList <- function(y, design, method="bin.spline", ...)
 	y
 }
 
-estimateGLMTrendedDisp.default <- function(y, design, method="bin.spline", offset=NULL, ...)
+estimateGLMTrendedDisp.default <- function(y, design, offset=NULL, method="bin.spline", ...)
 {
 	y <- as.matrix(y)
 	method <- match.arg(method, c("bin.spline","bin.loess","power","spline"))

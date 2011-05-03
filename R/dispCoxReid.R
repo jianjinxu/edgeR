@@ -27,3 +27,4 @@ dispCoxReid <- function(y, design, offset=NULL, interval=c(0,4), tol=1e-5, min.r
 	out <- optimize(f=fun,interval=interval^0.25,y=y,design=design,offset=offset,maximum=TRUE,tol=tol)
 	out$maximum^4
 }
+
