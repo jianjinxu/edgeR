@@ -1,12 +1,13 @@
 dispPearson <- function(y, design, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5, subset=1000, robust=FALSE, trace = FALSE)
 #	Pearson estimator of the common dispersion
 #	Gordon Smyth, Davis McCarthy, Yunshun Chen
-#	1 Feb 2011. Last modified 24 Mar 2011.
+#	1 Feb 2011. Last modified 4 May 2011.
 {
 	y <- as.matrix(y)
 	design <- as.matrix(design)
 	if(is.null(offset)) offset <- 0
 	offset <- expandAsMatrix(offset,dim(y))
+	if(min(interval)<0) stop("please give a non-negative interval for the dispersion")
 	small.row.sum <- rowSums(y)<min.row.sum
 	if(any(small.row.sum)) {
 		y <- y[!small.row.sum,,drop=FALSE]
@@ -34,6 +35,16 @@ dispPearson <- function(y, design, offset=NULL, interval=c(0,4), tol=1e-5, min.r
 		if(trace) cat(par^4,bias(X2),"\n")
 		bias(X2)
 	}
+
+	if(fun(interval[1],y,design,offset)<=0) {
+		return(interval[1])
+	}
+
+	if(fun(interval[2],y,design,offset)>0) {
+		warning("dispersion estimate above interval upper limit")
+		return(interval[2])
+	}
+
 	out <- uniroot(f=fun,interval=interval^0.25,y=y,design=design,offset=offset,tol=tol)
 	out$root^4
 }		
