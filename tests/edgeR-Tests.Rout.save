@@ -1,5 +1,5 @@
 
-R version 2.13.0 Under development (unstable) (2011-03-05 r54672)
+R version 2.13.0 Patched (2011-04-25 r55638)
 Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: i386-pc-mingw32/i386 (32-bit)
@@ -20,57 +20,119 @@ Type 'q()' to quit R.
 > 
 > set.seed(0); u <- runif(100)
 > 
-> #y <- matrix(rnbinom(2*4,mu=4,size=1.5),2,4)
-> #lib.size <- rep(50000,4)
-> #group <- c(1,1,2,2)
-> 
-> #d<-list(data=y,lib.size=lib.size,group=group)
-> 
-> 
 > # generate raw counts from NB, create list object
-> y<-matrix(rnbinom(80,size=5,mu=10),nrow=20)
-> d<-DGEList(counts=y,group=rep(1:2,each=2),lib.size=rep(c(1000:1001),2))
-> rownames(d$counts)<-paste("tagno",1:nrow(d$counts),sep=".")
+> y <- matrix(rnbinom(80,size=5,mu=10),nrow=20)
+> y <- rbind(0,c(0,0,2,2),y)
+> rownames(y) <- paste("Tag",1:nrow(y),sep=".")
+> d <- DGEList(counts=y,group=rep(1:2,each=2),lib.size=1001:1004)
 > 
 > # estimate common dispersion and find differences in expression
-> d<-estimateCommonDisp(d)
-> de<-exactTest(d)
+> d <- estimateCommonDisp(d)
+> d$common.dispersion
+[1] 0.210292
+> de <- exactTest(d)
 Comparison of groups:  2 - 1 
-> 
-> # example using exactTest.matrix directly
-> y<-matrix(rnbinom(20,mu=10,size=1.5),nrow=5)
-> group<-factor(c(1,1,2,2))
-> y<-splitIntoGroupsPseudo(y,group,pair=c(1,2))
-> mus<-rep(10,5)
-> f<-exactTest.matrix(y$y1,y$y2,mus,r=1.5,all.zeros=rep(FALSE,length=nrow(y$y1)))
+> summary(de$table)
+    logConc            logFC            p.value        
+ Min.   :-50.016   Min.   :-1.7577   Min.   :0.002348  
+ 1st Qu.: -7.088   1st Qu.:-0.4922   1st Qu.:0.208428  
+ Median : -6.887   Median : 0.2280   Median :0.481652  
+ Mean   : -9.818   Mean   : 1.8656   Mean   :0.490494  
+ 3rd Qu.: -6.552   3rd Qu.: 0.5323   3rd Qu.:0.759968  
+ Max.   : -5.804   Max.   :41.0452   Max.   :1.000000  
+> topTags(de)
+Comparison of groups: 2-1 
+          logConc      logFC     P.Value        FDR
+Tag.17  -6.760425  2.0751158 0.002348436 0.05166558
+Tag.21  -7.091791 -1.7577397 0.026103035 0.28713339
+Tag.6   -7.808390 -1.6811127 0.115043291 0.66977380
+Tag.12  -5.803735  0.7130994 0.160686241 0.66977380
+Tag.20  -6.448417  0.8637539 0.182483276 0.66977380
+Tag.16  -6.688425  0.9447004 0.182665581 0.66977380
+Tag.2  -29.493440 41.0452294 0.285714286 0.79421052
+Tag.3   -6.694062 -0.7395680 0.314268746 0.79421052
+Tag.19  -6.980938 -0.8103825 0.324904305 0.79421052
+Tag.22  -6.507075  0.5816843 0.399984627 0.87996618
 > 
 > # mglmOneWay
-> design <- model.matrix(~group)
+> design <- model.matrix(~group,data=d$samples)
 > mglmOneWay(d[1:10,],design,dispersion=0.2)
 $coefficients
-      (Intercept)     group2
- [1,]    2.525729 -0.5108256
- [2,]    2.525729  0.1484200
- [3,]    2.140066 -0.1941560
- [4,]    2.079442 -1.1631508
- [5,]    2.014903  0.2363888
- [6,]    1.945910 -0.5596158
- [7,]    1.504077  0.2006707
- [8,]    2.302585  0.2623643
- [9,]    2.772589 -0.2876821
-[10,]    2.639057  0.4964369
+        (Intercept)        group2
+ [1,] -1.000000e+08  0.000000e+00
+ [2,] -1.000000e+08  1.000000e+08
+ [3,]  2.525729e+00 -5.108256e-01
+ [4,]  2.525729e+00  1.484200e-01
+ [5,]  2.140066e+00 -1.941560e-01
+ [6,]  2.079442e+00 -1.163151e+00
+ [7,]  2.014903e+00  2.363888e-01
+ [8,]  1.945910e+00 -5.596158e-01
+ [9,]  1.504077e+00  2.006707e-01
+[10,]  2.302585e+00  2.623643e-01
 
 $fitted.values
       [,1] [,2] [,3] [,4]
- [1,] 12.5 12.5  7.5  7.5
- [2,] 12.5 12.5 14.5 14.5
- [3,]  8.5  8.5  7.0  7.0
- [4,]  8.0  8.0  2.5  2.5
- [5,]  7.5  7.5  9.5  9.5
- [6,]  7.0  7.0  4.0  4.0
- [7,]  4.5  4.5  5.5  5.5
- [8,] 10.0 10.0 13.0 13.0
- [9,] 16.0 16.0 12.0 12.0
-[10,] 14.0 14.0 23.0 23.0
+ [1,]  0.0  0.0  0.0  0.0
+ [2,]  0.0  0.0  2.0  2.0
+ [3,] 12.5 12.5  7.5  7.5
+ [4,] 12.5 12.5 14.5 14.5
+ [5,]  8.5  8.5  7.0  7.0
+ [6,]  8.0  8.0  2.5  2.5
+ [7,]  7.5  7.5  9.5  9.5
+ [8,]  7.0  7.0  4.0  4.0
+ [9,]  4.5  4.5  5.5  5.5
+[10,] 10.0 10.0 13.0 13.0
 
+> mglmOneWay(d[1:10,],design,dispersion=0)
+$coefficients
+        (Intercept)        group2
+ [1,] -1.000000e+08  0.000000e+00
+ [2,] -1.000000e+08  1.000000e+08
+ [3,]  2.525729e+00 -5.108256e-01
+ [4,]  2.525729e+00  1.484200e-01
+ [5,]  2.140066e+00 -1.941560e-01
+ [6,]  2.079442e+00 -1.163151e+00
+ [7,]  2.014903e+00  2.363888e-01
+ [8,]  1.945910e+00 -5.596158e-01
+ [9,]  1.504077e+00  2.006707e-01
+[10,]  2.302585e+00  2.623643e-01
+
+$fitted.values
+      [,1] [,2] [,3] [,4]
+ [1,]  0.0  0.0  0.0  0.0
+ [2,]  0.0  0.0  2.0  2.0
+ [3,] 12.5 12.5  7.5  7.5
+ [4,] 12.5 12.5 14.5 14.5
+ [5,]  8.5  8.5  7.0  7.0
+ [6,]  8.0  8.0  2.5  2.5
+ [7,]  7.5  7.5  9.5  9.5
+ [8,]  7.0  7.0  4.0  4.0
+ [9,]  4.5  4.5  5.5  5.5
+[10,] 10.0 10.0 13.0 13.0
+
+> 
+> fit <- glmFit(d,design)
+> lrt <- glmLRT(d,fit,coef=2)
+> topTags(lrt)
+Coefficient:  group2 
+         logConc         logFC        LR    P.Value       FDR
+Tag.17 -4.446814  2.075116e+00 6.0485417 0.01391779 0.3058697
+Tag.2  -6.910425  1.442695e+08 4.8400348 0.02780633 0.3058697
+Tag.21 -4.740745 -1.757740e+00 4.0777825 0.04345065 0.3186381
+Tag.6  -5.251712 -1.681113e+00 3.0078205 0.08286364 0.4557500
+Tag.16 -4.583298  9.447004e-01 1.3477682 0.24566867 0.8276702
+Tag.20 -4.425464  8.637539e-01 1.1890032 0.27553071 0.8276702
+Tag.19 -4.799990 -8.103825e-01 0.9279152 0.33540526 0.8276702
+Tag.12 -3.992555  7.130994e-01 0.9095513 0.34023349 0.8276702
+Tag.3  -4.607548 -7.395680e-01 0.8300307 0.36226364 0.8276702
+Tag.8  -5.205333 -8.107246e-01 0.7830377 0.37621371 0.8276702
+> 
+> # example using exactTest.matrix directly
+> y <- matrix(rnbinom(20,mu=10,size=1.5),nrow=5)
+> group <- factor(c(1,1,2,2))
+> y <- splitIntoGroupsPseudo(y,group,pair=c(1,2))
+> mus <- rep(10,5)
+> f <- exactTest.matrix(y$y1,y$y2,mus,r=1.5,all.zeros=rep(FALSE,length=nrow(y$y1)))
+> f
+[1] 0.2057875 0.5666736 0.7345375 1.0000000 0.4492410
 > 
