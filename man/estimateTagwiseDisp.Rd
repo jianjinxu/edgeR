@@ -7,14 +7,14 @@
 
 
 \usage{
-estimateTagwiseDisp(object, prior.n=10, trend=FALSE, prop.used=NULL, tol=1e-06, grid=TRUE, grid.length=200, method="movingave", verbose=TRUE)
+estimateTagwiseDisp(object, prior.n=getPriorN(object), trend=FALSE, prop.used=NULL, tol=1e-06, grid=TRUE, grid.length=200, method="movingave", verbose=TRUE)
 }
 
 \arguments{ 
 
 \item{object}{a \code{DGEList} object containing (at least) the elements \code{counts} (table of raw counts), \code{group} (factor indicating group), \code{lib.size} (numeric vector of library sizes) and \code{pseudo,alt} (numeric matrix of quantile-adjusted pseudocounts calculated under the alternative hypothesis of a true difference between groups; recommended to use the \code{DGEList} object provided as the output of \code{estimateCommonDisp}}
 
-\item{prior.n}{numeric scalar, smoothing parameter that indicates the weight to give to the common likelihood compared to the individual tag's likelihood; default \code{10} means that the common likelihood is given 10 times the weight of the individual tag/gene's likelihood in the estimation of the tag/genewise dispersion}
+\item{prior.n}{numeric scalar, smoothing parameter that indicates the weight to give to the common likelihood compared to the individual tag's likelihood; default \code{getPriorN(object)} gives a value for \code{prior.n} that is equivalent to giving the common likelihood 20 prior degrees of freedom in the estimation of the tag/genewise dispersion.}
 
 \item{trend}{logical, whether or not to let the tagwise dispersion estimates vary with tag/gene abundance (expression level), that is, whether or not to allow a trend with tag abundance in the tagwise dispersion estimates}
 

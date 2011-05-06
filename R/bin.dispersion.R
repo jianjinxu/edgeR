@@ -57,7 +57,6 @@ binGLMDispersion <- function( y, design, nbins=50, offset=NULL, method="CoxReid"
     o <- order(abundance)
     ntagsinbin <- floor(ntags / nbins)
     dispersion <- ave.abundance <- rep(NA,nbins)
-    first.valid.bin <- NULL
     
     for(i in 1:nbins) {
         if( i==nbins )
@@ -75,6 +74,7 @@ binGLMDispersion <- function( y, design, nbins=50, offset=NULL, method="CoxReid"
         dispersion <- dispersion[keep]
         ave.abundance <- ave.abundance[keep]
     }
+    
     new("list", list(dispersion=dispersion, abundance=ave.abundance))
 }
 

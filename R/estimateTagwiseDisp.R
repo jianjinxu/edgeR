@@ -1,4 +1,4 @@
-estimateTagwiseDisp <- function(object, prior.n=10, trend=FALSE, prop.used=NULL, tol=1e-06, grid=TRUE, grid.length=200, method="movingave", verbose=TRUE)
+estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend=FALSE, prop.used=NULL, tol=1e-06, grid=TRUE, grid.length=200, method="movingave", verbose=TRUE)
     ## Written by Davis McCarthy, 2009. Last modified 10 February 2011.
     ## A function to estimate the common dispersion (using conditional maximum likelihood) for fixed counts (y), assuming library sizes are equal
     ## Uses equalized counts (pseudocounts), not raw counts, so this must be available in object
