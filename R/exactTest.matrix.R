@@ -7,7 +7,7 @@ exactTest.matrix <- function(y1,y2,r=NULL,dispersion=0,all.zeros=NULL)
 ## of the count for each tag under the null hypothesis of no difference between the two groups (i.e. common library size * common concentration)
 ## r is the size parameter for the NB distribution (r = 1/phi) - can be either the same or different for each tag
 ## Mark Robinson, Davis McCarthy, Gordon Smyth.
-## 17 June 2009.  Last modified 1 March 2010.
+## 17 June 2009.  Last modified 6 May 2010.
 {
 	ntags <- nrow(y1)
 	if(ntags!=nrow(y2)) stop("Number of rows of y1 not equal to number of rows of y2")
@@ -31,7 +31,7 @@ exactTest.matrix <- function(y1,y2,r=NULL,dispersion=0,all.zeros=NULL)
 	pvals <- rep(1,ntags)
 	if(ntags==0) return(pvals)
 	if(any(all.zeros)) {
-		pvals[!all.zeros] <- Recall(y1[!all.zeros,,drop=FALSE],y2[!all.zeros,,drop=FALSE],mu[!all.zeros],r[!all.zeros])
+		pvals[!all.zeros] <- Recall(y1=y1[!all.zeros,,drop=FALSE],y2=y2[!all.zeros,,drop=FALSE],r=r[!all.zeros])
 		return(pvals)
 	}
 	for (i in 1:ntags) {
