@@ -16,7 +16,9 @@ Divides the range of \code{x} into intervals, so that each interval contains a m
 }
 
 \value{
-An integer vector of the same length as \code{x}, containing values from 1 to \code{intervals}.
+A list with components:
+\item{group}{integer vector of same length as \code{x} indicating which interval each value belongs to.}
+\item{breaks}{numeric vector of length \code{intervals+1} giving the left and right limits of each interval.}
 }
 
 \details{

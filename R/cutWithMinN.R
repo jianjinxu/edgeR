@@ -2,7 +2,7 @@ cutWithMinN <- function(x, intervals=2, min.n=1)
 #	Cut numeric x into intervals, as equally spaced as possible subject
 #	to including a minimum number of values in each interval
 #	Gordon Smyth
-#	7 May 2011
+#	7 May 2011.  Last modified 9 May 2011.
 {
 #	Check input
 	if(any(is.na(x))) stop("missing values not allowed")
@@ -14,7 +14,7 @@ cutWithMinN <- function(x, intervals=2, min.n=1)
 #	First try
 	z <- cut(x,breaks=intervals,labels=FALSE)
 	n <- tabulate(z)
-	if(all(n>=min.n)) return(z)
+	if(all(n>=min.n)) return(list(group=z,breaks=breaks))
 
 	if(length(unique(x)) < intervals*min.n) stop("too few unique values for x")
 
@@ -29,7 +29,7 @@ cutWithMinN <- function(x, intervals=2, min.n=1)
 		breaks <- (i*breaks.eqn+(10-i)*breaks.eqx)/10
 		z <- cut(x,breaks=breaks,labels=FALSE)
 		n <- tabulate(z)
-		if(all(n>=min.n)) return(z)
+		if(all(n>=min.n)) return(list(group=z,breaks=breaks))
 	}
 
 	stop("function has failed, perhaps because of too many tied values?")

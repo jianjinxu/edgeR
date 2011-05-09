@@ -1,8 +1,10 @@
-\title{Multidimensional scaling plot of digital gene expression data}
+\title{Multidimensional scaling plot of digital gene expression profiles}
 \name{plotMDS.dge}
 \alias{plotMDS.dge}
 \description{
 Calculate distances between RNA-seq or DGE libraries, then produce a multidimensional scaling plot.
+Distances on the plot represent coefficient of variation of expression between samples
+for the top genes that best distinguish the samples.
 }
 \usage{
 plotMDS.dge(x, top=500, labels=colnames(x), col=NULL, cex=1, dim.plot=c(1,2), ndim=max(dim.plot),...)
