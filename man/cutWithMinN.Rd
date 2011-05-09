@@ -1,9 +1,10 @@
 \name{cutWithMinN}
 \alias{cutWithMinN}
 
-\title{Cut numeric vector into intervals}
+\title{Cut numeric vector into non-empty intervals}
 
 \description{
+Discretizes a numeric vector.
 Divides the range of \code{x} into intervals, so that each interval contains a minimum number of values, and codes the values in \code{x} according to which interval they fall.
 }
 
@@ -22,7 +23,9 @@ A list with components:
 }
 
 \details{
-This function calls \code{rbinom} with \code{size=x} and \code{prob=prob} to generate the new counts.
+This function strikes a compromise between the base functions \code{cut},
+which by default cuts a vector into equal length intervals,
+and \code{quantile}, which is suited to finding equally populated intervals.
 }
 
 \author{Gordon Smyth}
