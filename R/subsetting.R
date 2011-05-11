@@ -44,6 +44,31 @@ function(object, i, j, ...) {
 	object
 })
 
+
+assign("[.DGEGLM",
+function(object, i, j, ...)
+#  Subsetting for DGEGLM objects
+#  Davis McCarthy    
+#  11 May 2011.  Last modified 11 May 2011.
+{
+	if(!missing(j))
+	    stop("Subsetting columns not allowed for DGEGLM object. Try subsetting elements of DGEGLM object instead.",call.=FALSE)
+	if(!missing(i)) {
+	    object$coefficients <- object$coeffcients[i,,drop=FALSE]
+        object$df.residual <- object$df.residual[i,drop=FALSE]
+        object$deviance <- object$deviance[i,drop=FALSE]
+        object$offset <- object$offset[i,,drop=FALSE]
+	    object$genes <- object$genes[i,,drop=FALSE]
+        if(length(object$dispersion) > 1)
+            object$dispersion <- object$dispersion[i,drop=FALSE]
+        object$weights <- object$weights[i,,drop=FALSE]
+        object$fitted.values <- object$fitted.values[i,,drop=FALSE]
+        object$abundance <- object$abundance[i,drop=FALSE]
+	}
+	object
+})
+
+
 assign("[.DGEExact",
 function(object, i, j, ...)
 #  Subsetting for DGEExact objects

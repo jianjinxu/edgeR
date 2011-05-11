@@ -3,26 +3,28 @@
 \alias{[.DGEList}
 \alias{[.DGEExact}
 \alias{[.DGELRT}
-\title{Subset DGEList, DGEExact and DGELRT Objects}
+\alias{[.DGEGLM}
+\title{Subset DGEList, DGEGLM, DGEExact and DGELRT Objects}
 \description{
-Extract a subset of a \code{DGEList}, \code{DGEExact} or \code{DGELRT} object.
+Extract a subset of a \code{DGEList}, \code{DGEGLM}, \code{DGEExact} or \code{DGELRT} object.
 }
 \usage{
 \method{[}{DGEList}(object, i, j, \ldots)
+\method{[}{DGEGLM}(object, i, j, \ldots)
 \method{[}{DGEExact}(object, i, j, \ldots)
 \method{[}{DGELRT}(object, i, j, \ldots)
 }
 \arguments{
- \item{object}{object of class \code{DGEList}, \code{DGEExact} or \code{DGELRT}, respectively}
-  \item{i,j}{elements to extract. \code{i} subsets the tags or genes while \code{j} subsets the libraries. Note, columns of \code{DGEExact} and \code{DGELRT} objects cannot be subsetted.}
+ \item{object}{object of class \code{DGEList}, \code{DGEGLM}, \code{DGEExact} or \code{DGELRT}, respectively}
+  \item{i,j}{elements to extract. \code{i} subsets the tags or genes while \code{j} subsets the libraries. Note, columns of \code{DGEGLM}, \code{DGEExact} and \code{DGELRT} objects cannot be subsetted.}
   \item{\ldots}{not used}
 }
 \details{
 \code{i,j} may take any values acceptable for the matrix components of \code{object} of class \code{DGEList}.
-See the \link{Extract} help entry for more details on subsetting matrices. For \code{DGEExact} and \code{DGELRT} objects, only rows (i.e. \code{i}) may be subsetted.
+See the \link{Extract} help entry for more details on subsetting matrices. For \code{DGEGLM}, \code{DGEExact} and \code{DGELRT} objects, only rows (i.e. \code{i}) may be subsetted.
 }
 \value{
-An object of class \code{DGEList}, \code{DGEExact} or \code{DGELRT} as appropriate, holding data from the specified subset of tags/genes and libraries.
+An object of class \code{DGEList}, \code{DGEGLM}, \code{DGEExact} or \code{DGELRT} as appropriate, holding data from the specified subset of tags/genes and libraries.
 }
 \author{Davis McCarthy, Gordon Smyth}
 \seealso{
