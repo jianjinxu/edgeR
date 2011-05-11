@@ -4,7 +4,7 @@ UseMethod("estimateGLMTrendedDisp")
 estimateGLMTrendedDisp.DGEList <- function(y, design, offset=NULL, method="bin.spline", ...)
 {
     if( is.null(offset) )
-        offset <- getOffsets(y)
+        offset <- getOffset(y)
 	d <- estimateGLMTrendedDisp(y=y$counts, design=design, offset=offset, method=method, ...)
 	y$trended.dispersion <- d$dispersion
 	y$abundance <- d$abundance

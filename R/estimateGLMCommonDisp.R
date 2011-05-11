@@ -4,7 +4,7 @@ UseMethod("estimateGLMCommonDisp")
 estimateGLMCommonDisp.DGEList <- function(y, design, offset=NULL, method="CoxReid", ...)
 {
     if( is.null(offset) )
-        offset <- getOffsets(y)
+        offset <- getOffset(y)
 	d <- estimateGLMCommonDisp(y=y$counts, design=design, offset=offset, method=method, ...)
 	y$common.dispersion <- d
 	y

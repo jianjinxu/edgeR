@@ -1,6 +1,6 @@
 mglmOneGroup <- function(y,dispersion=0,offset=0,maxit=50,trace=FALSE)
 #	Fit null (single-group) negative-binomial glm with log-link to DGE data
-#	18 Aug 2010. Last modified 26 Jan 2011.
+#	18 Aug 2010. Last modified 11 May 2011.
 {
 	if(any(y<0)) stop("y must be non-negative")
 	y <- as.matrix(y)
@@ -18,6 +18,7 @@ mglmOneGroup <- function(y,dispersion=0,offset=0,maxit=50,trace=FALSE)
 
 #	Starting values
 	betaold <- log(rowMeans(y[i,,drop=FALSE]/exp(offset[i,,drop=FALSE])))
+	if(nlib==1) return(betaold)
 	mu <- exp(betaold+offset[i,,drop=FALSE])
 
 #	Fisher scoring iteration	

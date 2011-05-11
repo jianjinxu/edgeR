@@ -40,7 +40,7 @@ estimateCRDisp <- function(y, design=NULL, offset=NULL, npts=10, rowsum.filter=5
 
 	if(is.null(offset)){
 	if( is( y, "DGEList") )
-		offset.mat <- getOffsets(y)
+		offset.mat <- getOffset(y)
 	else
 		offset.mat <- log(lib.size)
 		offset.mat.filt <- expandAsMatrix(offset.mat, dim(y.filt))

@@ -127,6 +127,58 @@ Tag.12 -3.992555  7.130994e-01 0.9095513 0.34023349 0.8276702
 Tag.3  -4.607548 -7.395680e-01 0.8300307 0.36226364 0.8276702
 Tag.8  -5.205333 -8.107246e-01 0.7830377 0.37621371 0.8276702
 > 
+> example(glmFit)
+
+glmFit> nlibs <- 3
+
+glmFit> ntags <- 100
+
+glmFit> dispersion.true <- 0.1
+
+glmFit> # Make first transcript respond to covariate x
+glmFit> x <- 0:2
+
+glmFit> design <- model.matrix(~x)
+
+glmFit> beta.true <- cbind(Beta1=2,Beta2=c(2,rep(0,ntags-1)))
+
+glmFit> mu.true <- 2^(beta.true %*% t(design))
+
+glmFit> # Generate count data
+glmFit> y <- rnbinom(ntags*nlibs,mu=mu.true,size=1/dispersion.true)
+
+glmFit> y <- matrix(y,ntags,nlibs)
+
+glmFit> colnames(y) <- c("x0","x1","x2")
+
+glmFit> rownames(y) <- paste("Gene",1:ntags,sep="")
+
+glmFit> d <- DGEList(y)
+Calculating library sizes from column totals.
+
+glmFit> # Normalize
+glmFit> d <- calcNormFactors(d)
+
+glmFit> # Fit the NB GLMs
+glmFit> fit <- glmFit(d, design, dispersion=dispersion.true)
+
+glmFit> ## Likelihood ratio tests for trend
+glmFit> results <- glmLRT(d, fit, coef=2)
+
+glmFit> topTags(results)
+Coefficient:  x 
+          logConc      logFC        LR      P.Value          FDR
+Gene1   -2.834559  2.6735731 28.192832 1.098105e-07 1.098105e-05
+Gene71  -4.536897  1.8613695  7.367477 6.641404e-03 3.320702e-01
+Gene15  -4.615666  1.6138278  5.267609 2.172583e-02 7.241943e-01
+Gene75  -4.705181  1.2683697  3.714271 5.394917e-02 8.759906e-01
+Gene16  -5.157053  1.3989012  2.981689 8.421137e-02 8.759906e-01
+Gene100 -4.210569  0.9643974  2.913948 8.781668e-02 8.759906e-01
+Gene49  -4.803219 -1.1892653  2.879298 8.972514e-02 8.759906e-01
+Gene42  -4.541616 -1.0388992  2.834035 9.228620e-02 8.759906e-01
+Gene56  -4.541616 -1.0388992  2.834035 9.228620e-02 8.759906e-01
+Gene62  -4.542761 -0.9670153  2.640892 1.041450e-01 8.759906e-01
+> 
 > # example using exactTest.matrix directly
 > y <- matrix(rnbinom(20,mu=10,size=1.5),nrow=5)
 > group <- factor(c(1,1,2,2))
@@ -134,5 +186,5 @@ Tag.8  -5.205333 -8.107246e-01 0.7830377 0.37621371 0.8276702
 > mus <- rep(10,5)
 > f <- exactTest.matrix(y$y1,y$y2,mus,r=1.5,all.zeros=rep(FALSE,length=nrow(y$y1)))
 > f
-[1] 0.2057875 0.5666736 0.7345375 1.0000000 0.4492410
+[1] 0.7156777 0.9351131 0.9645848 0.6754741 0.1309771
 > 

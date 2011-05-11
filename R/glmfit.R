@@ -1,84 +1,112 @@
-#  GENERALIZED LINEAR MODELS
+#  FIT GENERALIZED LINEAR MODELS
 
-glmFit <- function(y, design, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, start=NULL)
+glmFit <- function(y, design, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, start=NULL, method="auto")
+UseMethod("glmFit")
+
+glmFit.DGEList <- function(y, design, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, start=NULL, method="auto", ...)
+{
+	if( is.null(dispersion) ) {
+		if( !is.null(y$tagwise.dispersion) )
+			dispersion <- y$tagwise.dispersion
+		else {
+			if( !is.null(y$trended.dispersion) )
+				dispersion <- y$trended.dispersion
+			else {
+				if( !is.null(y$common.dispersion) )
+					dispersion <- y$common.dispersion
+				else
+					stop("No dispersion values found in DGEList object. Run dispersion estimation functions such as estimateGLMCommonDisp, estimateGLMTrendedDisp and estimateGLMTagwiseDisp before using glmFit.\n")
+			}
+		}
+	}
+	if(is.null(offset) && is.null(lib.size)) offset <- getOffset(y)
+	fit <- glmFit(y=y$counts,design=design,dispersion=dispersion,offset=offset,weights=weights,lib.size=lib.size,start=start,method=method,...)
+	fit$counts <- y$counts
+	fit$samples <- y$samples
+	fit$genes <- y$genes
+	new("DGEGLM",fit)
+}
+
+glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, start=NULL, method="auto", ...)
 	##	Fit negative binomial generalized linear model for each transcript
 	##  to a series of digital expression libraries
 	##	Davis McCarthy and Gordon Smyth
-	##  User-level function. Takes a matrix of counts or a DGElist object (y).
 
-	##	Created 17 August 2010. Last modified 29 Apr 2011.
+	##	Created 17 August 2010. Last modified 11 May 2011.
 {
-	if(!is.null(offset) & !is.null(lib.size))
-		warning("offset and lib.size both supplied: offset takes precedence, lib.size ignored.")
-    if( !is.null(dispersion) )
-        if( !( length(dispersion)==1 | length(dispersion)==nrow(y) ) )
-            stop("Length of dispersion vector incompatible with count matrix. Dispersion argument must be either of length 1 (i.e. common dispersion) or length equal to the number of rows of y (i.e. individual dispersion value for each tag/gene).\n")
-	if(is(y,"DGEList")) {
-		y.mat <- y$counts
-		samples <- y$samples
-		genes <- y$genes
-		if(is.null(lib.size)) lib.size <- y$samples$lib.size
-		lib.size <- lib.size*y$samples$norm.factors
-        if( is.null(dispersion) ) {
-            if( !is.null(y$tagwise.dispersion) )
-                dispersion <- y$tagwise.dispersion
-            else {
-                if( !is.null(y$trended.dispersion) )
-                    dispersion <- y$trended.dispersion
-                else {
-                    if( !is.null(y$common.dispersion) )
-                        dispersion <- y$common.dispersion
-                    else
-                        stop("No dispersion values found in DGEList object. Run dispersion estimation functions such as estimateGLMCommonDisp, estimateGLMTrendedDisp and estimateGLMTagwiseDisp before using glmFit.\n")
-                }
-            }
-        }
+#	Check input
+	y <- as.matrix(y)
+	if(is.null(design)) {
+		design <- matrix(1,nrow(y),1)
 	} else {
-        if( is.null(dispersion) )
-            stop("No dispersion values provided. Argument y is a matrix of counts so dispersion value(s) must be provided.\n")
-		y.mat <- as.matrix(y)
-		samples <- genes <- NULL
-		if(is.null(lib.size)) lib.size <- colSums(y.mat)
+		design <- as.matrix(design)
 	}
-	if(any(is.na(y.mat))) stop("Not currently supporting NAs in y")
-	ngenes <- nrow(y.mat)
-	nlibs <- ncol(y.mat)
-	design <- as.matrix(design)
-
+	if(is.null(dispersion)) {
+		stop("No dispersion values provided.")
+	} else {
+		if(!( length(dispersion)==1 | length(dispersion)==nrow(y) ))
+			stop("Length of dispersion vector incompatible with count matrix. Dispersion argument must be either of length 1 (i.e. common dispersion) or length equal to the number of rows of y (i.e. individual dispersion value for each tag/gene).")
+	}
+	if(!is.null(offset) && !is.null(lib.size)) warning("offset and lib.size both supplied: offset takes precedence, lib.size ignored.")
+	if(is.null(lib.size)) lib.size <- colSums(y)
 	if(is.null(offset)) offset <- log(lib.size)
-	offset <- expandAsMatrix(offset,dim(y.mat))
+	offset <- expandAsMatrix(offset,dim(y))
+	iswt <- !is.null(weights)
+	if(iswt) {
+		weights <- expandAsMatrix(weights,dim(y))
+		weights[weights <= 0] <- NA
+		y[!is.finite(weights)] <- NA
+	}
+	method <- match.arg(method,c("auto","linesearch","levenberg","simple"))
+#	End of input checking
 
-    if(!is.null(weights)) {
-		warning("weights not currently supported")
-#		weights <- expandAsMatrix(weights,dim(y.mat))
-#		weights[weights <= 0] <- NA
-#		y.mat[!is.finite(weights)] <- NA
+	ngenes <- nrow(y)
+	nlibs <- ncol(y)
+	isna <- any(is.na(y))
+
+#	Choose fitting algorithm
+	if(method=="auto") {
+		if(isna || iswt) {
+			method <- "simple"
+		} else {
+			group <- designAsFactor(design)
+			if(nlevels(group)==ncol(design)) {
+				method <- "oneway"
+			} else {
+				method <- "linesearch"
+			}
+		}
+	}
+	if(method!="simple") {
+		if(iswt) stop("weights only supported by simple fitting method")
+		if(isna) stop("NAs only supported by simple fitting method")
 	}
 
 #	Fit a glm to each gene
-	group <- designAsFactor(design)
-	if(nlevels(group)==ncol(design)) {
-		fit <- mglmOneWay(y.mat,design=design,dispersion=dispersion,offset=offset)
-	} else {
-		fit <- mglmLS(y.mat, design=design, dispersion=dispersion, start=start, offset=offset, tol=1e-5, maxit=50, trace=FALSE)
-	}
-	coefficients <- fit$coefficients
-	fitted.values <- fit$fitted.values
-	colnames(coefficients) <- colnames(design)
-	rownames(coefficients) <- rownames(y.mat)
-	dimnames(fitted.values) <- dimnames(y.mat)
-										# Compute deviances
-	deviances <- deviances.function(dispersion)
-	dev <- deviances(y.mat,fitted.values,dispersion)
-										# Compute residual degrees of freedom
-	df.residual <- rep(nlibs-ncol(design),ngenes)
-										# What do we do about weights with this new function?
-##	abundance <- log2( rowMeans(t( t(y.mat)/lib.size )) )
-	abundance <- mglmOneGroup(y.mat, offset=offset, dispersion=dispersion)
-	new("DGEGLM",list(coefficients=coefficients, df.residual=df.residual, deviance=dev, design=design, 
-					 offset=offset, samples=samples, genes=genes, dispersion=dispersion, 
-					 lib.size=lib.size, weights=weights, fitted.values=fitted.values, abundance=abundance))
+	fit <- switch(method,
+		linesearch=mglmLS(y,design=design,dispersion=dispersion,start=start,offset=offset,...),
+		oneway=mglmOneWay(y,design=design,dispersion=dispersion,offset=offset),
+		levenberg=mglmLevenberg(y,design=design,dispersion=dispersion,offset=offset),
+		simple=mglmSimple(y,design=design,dispersion=dispersion,offset=offset,weights=weights)
+	)
 
+#	Prepare output
+	fit$coefficients <- as.matrix(fit$coefficients)
+	colnames(fit$coefficients) <- colnames(design)
+	rownames(fit$coefficients) <- rownames(y)
+	fit$fitted.values <- as.matrix(fit$fitted.values)
+	dimnames(fit$fitted.values) <- dimnames(y)
+	if(is.null(fit$deviance)) {
+		deviances <- deviances.function(dispersion)
+		fit$deviance <- deviances(y,fit$fitted.values,dispersion)
+	}
+	if(is.null(fit$df.residual)) fit$df.residual <- rep(nlibs-ncol(design),ngenes)
+	if(is.null(fit$abundance)) fit$abundance <- mglmOneGroup(y, offset=offset, dispersion=dispersion)
+	if(is.null(fit$design)) fit$design <- design
+	if(is.null(fit$offset)) fit$offset <- offset
+	if(is.null(fit$dispersion)) fit$dispersion <- dispersion
+	fit$method <- method
+	new("DGEGLM",fit)
 }
 
 
@@ -125,7 +153,7 @@ glmLRT <- function(y,glmfit,coef=ncol(glmfit$design),contrast=NULL)
 	design0 <- design[,-coef,drop=FALSE]
 
 #	Null fit
-	fit.null <- glmFit(y,design=design0,offset=glmfit$offset,weights=glmfit$weights,dispersion=glmfit$dispersion,lib.size=NULL)
+	fit.null <- glmFit(y,design=design0,offset=glmfit$offset,weights=glmfit$weights,dispersion=glmfit$dispersion)
 
 	LR <- fit.null$deviance - glmfit$deviance
 	LRT.pvalue <- pchisq(LR, df=( fit.null$df.residual - glmfit$df.residual ), lower.tail = FALSE, log.p = FALSE)

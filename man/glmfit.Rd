@@ -1,5 +1,7 @@
 \name{glmFit}
 \alias{glmFit}
+\alias{glmFit.DGEList}
+\alias{glmFit.default}
 \alias{glmLRT}
 
 \title{Fit negative binomial generalized linear model for each transcript}
@@ -7,8 +9,10 @@
 \description{Fit a negative binomial generalized linear model (GLM) for each transcript (tag) with the unadjusted counts provided, a value for the dispersion parameter and, optionally, offsets and weights for different libraries or transcripts.}
 
 
-\usage{glmFit(y, design, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, start=NULL)
-glmLRT(y, glmfit, coef=ncol(glmfit$design), contrast=NULL)}
+\usage{
+\method{glmFit}{DGEList}(y, design, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, start=NULL, method="auto", ...)
+glmLRT(y, glmfit, coef=ncol(glmfit$design), contrast=NULL)
+}
 
 \arguments{ 
 
@@ -21,11 +25,15 @@ Must be of full column rank.}
 
 \item{offset}{numeric scalar, vector or matrix giving the offset that is to be included in the NB GLM for the transcripts. Only one of \code{offset} and \code{lib.size} should be supplied---if both are supplied then \code{offset} will be used and \code{lib.size} will be ignored. If a scalar, then this value will be used as an offset for all transcripts and libraries. If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each transcript. If a matrix, then each library for each transcript can have a unique offset, if desired. If \code{NULL} (the default) then the log of the effective library size (library size multiplied by normalization factors) will be used as the offsets in the GLMs.}
 
-\item{weights}{optional numeric matrix giving the matrix of weights for the observations (for each library and transcript) to be used in the GLM calculations. Not currently used in the GLM calculations.}
+\item{weights}{optional numeric matrix giving prior weights for the observations (for each library and transcript) to be used in the GLM calculations.  Not supported by methods \code{"linesearch"} or \code{"levenberg"}.}
 
 \item{lib.size}{optional numeric vector providing the (effective) library size for each library (must have length equal to the number of columns, or libraries, in the matrix of counts). If \code{NULL}, then a default is used. If \code{y} is a \code{DGEList} object then the default for \code{lib.size} is the product of the library sizes and the normalization factors (in the \code{samples} slot of the object). If \code{y} is a simple matrix of counts, then the default for \code{lib.size} is the vector of column sums of \code{y}.}
 
 \item{start}{optional numeric matrix of initial estimates for the fitted coefficients}
+
+\item{method}{which fitting algorithm to use.  Possible values are \code{"auto"}, \code{"linesearch"}, \code{"levenberg"} or \code{"simple"}.}
+
+\item{...}{other arguments are passed to lower-level functions, for example to \code{mglmLS}.}
 
 \item{glmfit}{a \code{DGEGLM} object, the output from \code{glmFit}.}
 

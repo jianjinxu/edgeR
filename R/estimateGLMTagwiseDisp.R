@@ -4,7 +4,7 @@ UseMethod("estimateGLMTagwiseDisp")
 estimateGLMTagwiseDisp.DGEList <- function(y, design, offset=NULL, method="trend", ...)
 {
     if( is.null(offset) )
-        offset <- getOffsets(y)
+        offset <- getOffset(y)
     method <- match.arg(method, c("trend","common"))
     if(method=="trend") {
         if( is.null(y$trended.dispersion) ) stop("method is trend, but DGEList object has a NULL trended.dispersion slot. Run estimateGLMTrendedDisp on DGEList object before estimateGLMTagwiseDisp to smooth tagwise dispersions towards trended dispersions.\n")

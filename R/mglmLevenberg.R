@@ -6,9 +6,8 @@ mglmLevenberg <- function(y, design, dispersion=0, offset=0, start=NULL)
 #	using tagwise calls to statmod:::glmnb.fit().
 #	Lower-level function. Takes a matrix of counts (y).
 
-#	Gordon Smyth
-#	Created 3 March 2011.
-#	Last edited by Yunshun Chen on 8 March 2011
+#	Gordon Smyth and Yunshun Chen
+#	Created 3 March 2011.  Last modified 11 May 2011
 {
 #	Check arguments
 	require(statmod)
@@ -18,7 +17,6 @@ mglmLevenberg <- function(y, design, dispersion=0, offset=0, start=NULL)
 	design <- as.matrix(design)
 	if(length(dispersion)<ngenes) dispersion <- rep(dispersion,length.out=ngenes)
 	offset <- expandAsMatrix(offset,dim(y))
-
 	if(!is.null(start)) start <- as.matrix(start)
 
 #	Define objects in which to store various results from the glm fits
@@ -37,19 +35,13 @@ mglmLevenberg <- function(y, design, dispersion=0, offset=0, start=NULL)
 		if(sum(obs) > 0) {
 			X <- design[obs,,drop=FALSE]
 			z <- z[obs]
-			if(!is.null(start)) {
-				start.val <- start[i,]
-			} else {
-				start.val <- NULL
-			}
-			out <- glmnb.fit(X=X,y=z,dispersion=dispersion[i],offset=offset[i,],start=start.val) 
+			out <- glmnb.fit(X=X,y=z,dispersion=dispersion[i],offset=offset[i,],start=start[i,]) 
 			coefficients[i,] <- out$coefficients
 			fitted.values[i,] <- fitted(out)
 			dev[i] <- out$deviance
-			#df.residual[i] <- out$df.residual
 		}
 	}
    list(coefficients=coefficients, deviance=dev, design=design, 
-		offset=offset, dispersion=dispersion, weights=weights, fitted.values=fitted.values)
+		offset=offset, dispersion=dispersion, fitted.values=fitted.values)
 }
 

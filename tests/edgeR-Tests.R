@@ -24,6 +24,8 @@ fit <- glmFit(d,design)
 lrt <- glmLRT(d,fit,coef=2)
 topTags(lrt)
 
+example(glmFit)
+
 # example using exactTest.matrix directly
 y <- matrix(rnbinom(20,mu=10,size=1.5),nrow=5)
 group <- factor(c(1,1,2,2))

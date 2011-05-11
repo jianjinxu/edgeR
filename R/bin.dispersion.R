@@ -37,7 +37,7 @@ binGLMDispersion <- function( y, design, nbins=50, offset=NULL, method="CoxReid"
 {
     if( is(y, "DGEList") ) {
         if(is.null(offset))
-           offset <- getOffsets(y)
+           offset <- getOffset(y)
         y <- y$counts
     }
     else {

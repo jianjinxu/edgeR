@@ -77,7 +77,7 @@ plotMeanVar <- function(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.
         scalar <- scalar
     }
     else
-        offset <- getOffsets(object)
+        offset <- getOffset(object)
         scalar <- exp(offset)/exp(mean(offset))
     scalingmatrix <- expandAsMatrix(scalar, dim(object$counts))
     x <- object$counts/scalingmatrix
