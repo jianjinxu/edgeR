@@ -178,6 +178,162 @@ Gene49  -4.803219 -1.1892653  2.879298 8.972514e-02 8.759906e-01
 Gene42  -4.541616 -1.0388992  2.834035 9.228620e-02 8.759906e-01
 Gene56  -4.541616 -1.0388992  2.834035 9.228620e-02 8.759906e-01
 Gene62  -4.542761 -0.9670153  2.640892 1.041450e-01 8.759906e-01
+> fit <- glmFit(d,design,dispersion=dispersion.true,method="simple")
+Loading required package: MASS
+> fit
+An object of class "DGEGLM"
+$coefficients
+      (Intercept)           x
+Gene1   -5.517295  1.85317716
+Gene2   -4.649150 -0.15834016
+Gene3   -4.632706  0.01512539
+Gene4   -5.733474  0.01512539
+Gene5   -4.996081  0.18859094
+95 more rows ...
+
+$df.residual
+[1] 1 1 1 1 1
+95 more elements ...
+
+$deviance
+[1] 4.615056 4.443603 1.065608 2.945867 4.443603
+95 more elements ...
+
+$design
+  (Intercept) x
+1           1 0
+2           1 1
+3           1 2
+attr(,"assign")
+[1] 0 1
+
+$offset
+         [,1]     [,2]     [,3]
+[1,] 6.028353 5.988596 5.998102
+[2,] 6.028353 5.988596 5.998102
+[3,] 6.028353 5.988596 5.998102
+[4,] 6.028353 5.988596 5.998102
+[5,] 6.028353 5.988596 5.998102
+95 more rows ...
+
+$dispersion
+[1] 0.1
+
+$weights
+     [,1] [,2] [,3]
+[1,]    1    1    1
+[2,]    1    1    1
+[3,]    1    1    1
+[4,]    1    1    1
+[5,]    1    1    1
+95 more rows ...
+
+$fitted.values
+            x0        x1        x2
+Gene1 1.667053 10.221340 65.835622
+Gene2 3.971734  3.257974  2.807436
+Gene3 4.037587  3.939349  4.037587
+Gene4 1.342963  1.310288  1.342963
+Gene5 2.807436  3.257974  3.971734
+95 more rows ...
+
+$abundance
+    Gene1     Gene2     Gene3     Gene4     Gene5 
+-2.834559 -4.799236 -4.617611 -5.718411 -4.798476 
+95 more elements ...
+
+$method
+[1] "simple"
+
+$counts
+      x0 x1 x2
+Gene1  0 16 55
+Gene2  2  7  1
+Gene3  3  6  3
+Gene4  2  0  2
+Gene5  1  7  2
+95 more rows ...
+
+$samples
+   group lib.size norm.factors
+x0     1      390    1.0641817
+x1     1      392    1.0174851
+x2     1      436    0.9235409
+
+> fit <- glmFit(d,design,dispersion=dispersion.true,method="levenberg")
+Loading required package: statmod
+> fit
+An object of class "DGEGLM"
+$coefficients
+      (Intercept)           x
+Gene1   -5.517329  1.85321186
+Gene2   -4.649124 -0.15836726
+Gene3   -4.632735  0.01515446
+Gene4   -5.733491  0.01514244
+Gene5   -4.996104  0.18861374
+95 more rows ...
+
+$deviance
+[1] 4.615056 4.443603 1.065608 2.945867 4.443603
+95 more elements ...
+
+$design
+  (Intercept) x
+1           1 0
+2           1 1
+3           1 2
+attr(,"assign")
+[1] 0 1
+
+$offset
+         [,1]     [,2]     [,3]
+[1,] 6.028353 5.988596 5.998102
+[2,] 6.028353 5.988596 5.998102
+[3,] 6.028353 5.988596 5.998102
+[4,] 6.028353 5.988596 5.998102
+[5,] 6.028353 5.988596 5.998102
+95 more rows ...
+
+$dispersion
+[1] 0.1 0.1 0.1 0.1 0.1
+95 more elements ...
+
+$fitted.values
+            x0        x1        x2
+Gene1 1.666997 10.221349 65.837964
+Gene2 3.971838  3.257972  2.807358
+Gene3 4.037468  3.939348  4.037703
+Gene4 1.342941  1.310288  1.342986
+Gene5 2.807372  3.257974  3.971825
+95 more rows ...
+
+$df.residual
+[1] 1 1 1 1 1
+95 more elements ...
+
+$abundance
+    Gene1     Gene2     Gene3     Gene4     Gene5 
+-2.834559 -4.799236 -4.617611 -5.718411 -4.798476 
+95 more elements ...
+
+$method
+[1] "levenberg"
+
+$counts
+      x0 x1 x2
+Gene1  0 16 55
+Gene2  2  7  1
+Gene3  3  6  3
+Gene4  2  0  2
+Gene5  1  7  2
+95 more rows ...
+
+$samples
+   group lib.size norm.factors
+x0     1      390    1.0641817
+x1     1      392    1.0174851
+x2     1      436    0.9235409
+
 > 
 > # example using exactTest.matrix directly
 > y <- matrix(rnbinom(20,mu=10,size=1.5),nrow=5)

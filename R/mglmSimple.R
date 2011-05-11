@@ -62,7 +62,7 @@ mglmSimple <- function(y, design, dispersion=0, offset=0, weights=NULL)
 			X <- design[obs,,drop=FALSE]
 			z <- z[obs]
 			w <- as.vector(weights[i,obs])
-			out <- glm.fit(X,z,w,offset=offset[obs,],family=f)
+			out <- glm.fit(X,z,w,offset=offset[i,obs],family=f)
 			coefficients[i,] <- out$coefficients
 			fitted.values[i,] <- fitted(out)
 			dev[i] <- out$deviance

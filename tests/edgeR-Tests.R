@@ -25,6 +25,10 @@ lrt <- glmLRT(d,fit,coef=2)
 topTags(lrt)
 
 example(glmFit)
+fit <- glmFit(d,design,dispersion=dispersion.true,method="simple")
+fit
+fit <- glmFit(d,design,dispersion=dispersion.true,method="levenberg")
+fit
 
 # example using exactTest.matrix directly
 y <- matrix(rnbinom(20,mu=10,size=1.5),nrow=5)
