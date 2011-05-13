@@ -12,7 +12,7 @@ Estimates the dispersion parameter for a DGE dataset for general experimental de
 
 
 \usage{
-estimateCRDisp(y, design=NULL, offset=NULL, npts=10, rowsum.filter=5, subset=10000, tagwise=FALSE, prior.n=10, nbins=50, lib.size=NULL, disp.trend=NULL, method.trend="binned-spline",verbose=TRUE)
+estimateCRDisp(y, design=NULL, offset=NULL, npts=10, rowsum.filter=5, subset=10000, tagwise=FALSE, prior.n=10, min.n=500, lib.size=NULL, disp.trend=NULL, method.trend="binned-spline",verbose=TRUE)
 }
 
 \arguments{ 
@@ -33,7 +33,7 @@ estimateCRDisp(y, design=NULL, offset=NULL, npts=10, rowsum.filter=5, subset=100
 
 \item{prior.n}{numeric scalar, smoothing parameter that indicates the weight to give to the common likelihood compared to the individual tag's likelihood; default \code{10} means that the common likelihood is given 10 times the weight of the individual tag/gene's likelihood in the estimation of the tag/genewise dispersion}
 
-\item{nbins}{integer, the number of bins for the calculation of trended dispersions. Passed to \code{dispBinTrend}.}
+\item{min.n}{integer, the minimum number of genes for each bin for the calculation of trended dispersions. Passed to \code{dispBinTrend}.}
 
 \item{lib.size}{optional vector providing the (effective) library size for each library (must have length equal to the number of columns, or libraries, in the matrix of counts). If \code{NULL}, then a default is used. If \code{y} is a \code{DGEList} object then the default for \code{lib.size} is the product of the library sizes and the normalization factors (in the \code{samples} slot of the object). If \code{y} is a simple matrix of counts, then the default for \code{lib.size} is the vector of column sums of \code{y}.}
 
@@ -62,7 +62,7 @@ Cox, DR, and Reid, N (1987). Parameter orthogonality and approximate conditional
 y<-matrix(rnbinom(1000,mu=10,size=2),ncol=4)
 d<-DGEList(counts=y,group=c(1,1,2,2),lib.size=c(1000:1003))
 design <- model.matrix(~d$samples$group) # Define the design matrix for the full model
-d<-estimateCRDisp(d, design)
+d<-estimateCRDisp(d, design, min.n=20)
 d
 }
 

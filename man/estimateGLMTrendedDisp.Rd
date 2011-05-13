@@ -49,7 +49,7 @@ Cox, DR, and Reid, N (1987). Parameter orthogonality and approximate conditional
 y <- matrix(rnbinom(1000,mu=10,size=10),ncol=4)
 d <- DGEList(counts=y,group=c(1,1,2,2),lib.size=c(1000:1003))
 design <- model.matrix(~group, data=d$samples) # Define the design matrix for the full model
-disp <- estimateGLMTrendedDisp(d, design)
+disp <- estimateGLMTrendedDisp(d, design, min.n=10)
 }
 
 \seealso{

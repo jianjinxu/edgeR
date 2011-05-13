@@ -10,7 +10,7 @@ Estimates the common dispersion parameter for each of a number of bins of data f
 
 \usage{
 binCMLDispersion(y, nbins=50)
-binGLMDispersion(y, design, nbins=50, offset=NULL,  method="CoxReid", ...)
+binGLMDispersion(y, design, min.n=500, offset=NULL,  method="CoxReid", ...)
 }
 
 \arguments{ 
@@ -20,6 +20,8 @@ binGLMDispersion(y, design, nbins=50, offset=NULL,  method="CoxReid", ...)
 \item{nbins}{scalar, the number of bins for which to compute common dispersions. Default is \code{50} bins.}
 
 \item{design}{numeric matrix giving the design matrix for the GLM that is to be fit.}
+
+\item{min.n}{scalar, the minimum number of genes to be included in each bin.}
 
 \item{offset}{(optional) numeric scalar, vector or matrix giving the offset (in addition to the log of the effective library size) that is to be included in the NB GLM for the transcripts. If a scalar, then this value will be used as an offset for all transcripts and libraries. If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each transcript. If a matrix, then each library for each transcript can have a unique offset, if desired. Default is \code{NULL}. If \code{NULL}, then offset is \code{log(lib.size)} if \code{y} is a matrix or \code{log(y$samples$lib.size * y$samples$norm.factors)} if \code{y} is a \code{DGEList} object.}
 
@@ -35,7 +37,7 @@ Returns a list with two components:
 }
 
 \details{
-To obtain estimates of the common dispersion parameters conditional maximum likelihood (\code{\link{estimateCommonDisp}}) is used for \code{binCMLDispersion} and one of Cox-Reid approximate conditional inference (\code{\link{dispCoxReid}}), the deviance (\code{\link{dispDeviance}}) or Pearson (\code{\link{dispPearson}}) estimates are used for \code{binGLMDispersion}. 
+To obtain estimates of the common dispersion parameters conditional maximum likelihood (\code{\link{estimateCommonDisp}}) is used for \code{binCMLDispersion} and one of Cox-Reid approximate conditional inference (\code{\link{dispCoxReid}}), the deviance (\code{\link{dispDeviance}}) or Pearson (\code{\link{dispPearson}}) estimates are used for \code{binGLMDispersion}. Genes are assigned to bins using the \code{\link{cutWithMinN}} function to obtain bins spread over the abundance range of the genes while ensuring that each bin has a minimum number of genes, thus permitting reliable estimation of the common dispersion for each bin.
 }
 
 
@@ -49,7 +51,7 @@ y <- matrix(rnbinom(1000,mu=10,size=10),ncol=4)
 d <- DGEList(counts=y,group=c(1,1,2,2),lib.size=c(1000:1003))
 design <- model.matrix(~group, data=d$samples) # Define the design matrix for the full model
 bindisp.CML <- binCMLDispersion(d, nbins=50)
-bindisp.GLM <- binGLMDispersion(d, design, nbins=50)
+bindisp.GLM <- binGLMDispersion(d, design, min.n=10)
 }
 
 \seealso{

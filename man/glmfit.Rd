@@ -38,7 +38,7 @@ Defaults to a single column of ones, equivalent to treating the columns as repli
 
 \item{glmfit}{a \code{DGEGLM} object, the output from \code{glmFit}.}
 
-\item{coef}{scalar or vector indicating the column(s) of \code{design} that are to be dropped when creating the null model for the Likelihood Ratio (LR) Test. The \code{glmLRT} fits the null model and then conducts an LR test of the model fit provided in \code{glmfit} against the null model defined by the choice of \code{coef}.}
+\item{coef}{scalar or vector indicating the column(s) of \code{design} that are to be dropped when creating the null model for the Likelihood Ratio (LR) Test. Can be numeric or character. If character, the string(s) provided to \code{coef} must match a column of the design matrix in the \code{glmfit} object passed to \code{glmLRT}. The \code{glmLRT} fits the null model and then conducts an LR test of the model fit provided in \code{glmfit} against the null model defined by the choice of \code{coef}. By default, the last column of the design matrix is dropped to form the design matrix for the null model.}
 
 \item{contrast}{contrast vector for which the test is required, of length equal to the number of columns of \code{design}. If specified, then takes precedence over \code{coef}.}
 }

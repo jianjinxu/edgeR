@@ -8,7 +8,7 @@ Estimate a dispersion parameter for each of many negative binomial generalized l
 }
 
 \usage{
-dispBinTrend(y, design, offset=NULL, degree = 10, span=0.3, nbins=50, method.bin="CoxReid", method.trend="spline", trace=0, ...)
+dispBinTrend(y, design, offset=NULL, degree = 10, span=0.3, min.n=500, method.bin="CoxReid", method.trend="spline", trace=0, ...)
 }
 
 \arguments{ 
@@ -23,7 +23,7 @@ dispBinTrend(y, design, offset=NULL, degree = 10, span=0.3, nbins=50, method.bin
 
 \item{span}{scalar, passed to \code{loess} to determine the amount of smoothing for the loess fit. Default is \code{0.3}.}
 
-\item{nbins}{scalar, number of bins into which to sort genes to form the basis for interpolating the dispersions.}
+\item{min.n}{scalar, minimim number of genes in each of the bins into which genes are sorted to form the basis for interpolating the dispersions. Setting a minimum value ensures that there will be sufficient genes in each bin to allow reliable estimation of the common dispersion for each bin.}
 
 \item{method.bin}{character, passed to \code{binGLMDispersion}, to specify the method used to compute the common dispersion within each bin of genes. Default is \code{"CoxReid"}, other options are \code{"Pearson"} and \code{"deviance"}.}
 
@@ -43,7 +43,7 @@ list with the following components:
 }
 
 \details{
-This function takes the binned common dispersion and abundance from \code{binGLMDispersion} and fits a smooth curve through these binned values using either natural cubic splines or loess. From this smooth curve it predicts the dispersion value for each gene based on the gene's overall abundance. This results in estimates for the NB dispersion parameter which have a dependence on the overall expression level of the gene, and thus have an abundance-dependent trend. This function is called by \code{estimateGLMTrendedDisp}.
+This function takes the binned common dispersion and abundance from \code{\link{binGLMDispersion}} and fits a smooth curve through these binned values using either natural cubic splines or loess. From this smooth curve it predicts the dispersion value for each gene based on the gene's overall abundance. This results in estimates for the NB dispersion parameter which have a dependence on the overall expression level of the gene, and thus have an abundance-dependent trend. This function is called by \code{\link{estimateGLMTrendedDisp}}.
 }
 
 \references{
@@ -61,7 +61,7 @@ y <- y[keep,]
 group <- factor(c(1,1,2,2))
 lib.size <- colSums(y)
 design <- model.matrix(~group) # Define the design matrix for the full model
-disp <- dispBinTrend(y, design, offset=log(lib.size), nbins=5, degree=3)
+disp <- dispBinTrend(y, design, offset=log(lib.size), min.n=100, span=0.3)
 plot(disp$abundance, disp$dispersion)
 }
 

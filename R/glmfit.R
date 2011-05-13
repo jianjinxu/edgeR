@@ -134,11 +134,18 @@ glmLRT <- function(y,glmfit,coef=ncol(glmfit$design),contrast=NULL)
 #	Evaluate contrast
 #	Reform design matrix so that contrast of interest is last column
 	if(is.null(contrast)) {
-		logFC <- glmfit$coefficients[,coef]/log(2)
-		if(is.character(coef))
+        if(length(coef) > 1)
+            coef <- unique(coef)
+		if(is.character(coef)) {
+            check.coef <- coef %in% colnames(design)
+            if( any(!check.coef) )
+                stop("One or more named coef arguments do not match a column of the design matrix.\n")
 			coef.name <- coef
-		else
-			coef.name <- coef.names[coef]
+            coef <- match(coef, colnames(design))
+        }
+        else
+            coef.name <- coef.names[coef]
+        logFC <- glmfit$coefficients[,coef]/log(2)
 	} else {
 		logFC <- (glmfit$coefficients %*% contrast)/log(2)
 		i <- contrast!=0

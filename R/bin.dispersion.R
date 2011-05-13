@@ -30,10 +30,10 @@ binCMLDispersion <- function(y, nbins=50) {
 }
 
 
-binGLMDispersion <- function( y, design, nbins=50, offset=NULL, method="CoxReid", ... )
+binGLMDispersion <- function( y, design, min.n=500, offset=NULL, method="CoxReid", ... )
     ## Bin DGE data based on abundance and compute the Cox-Reid estimate of the common dispersion in each bin
     ## Written by Davis McCarthy.
-    ## 7 Feb 2011. Last modified 3 May 2011.
+    ## 7 Feb 2011. Last modified 13 May 2011.
 {
     if( is(y, "DGEList") ) {
         if(is.null(offset))
@@ -53,26 +53,32 @@ binGLMDispersion <- function( y, design, nbins=50, offset=NULL, method="CoxReid"
     method <- match.arg(method, c("CoxReid", "Pearson", "deviance"))
     all.zero <- rowSums(y)==0
     y[all.zero,1] <- 1
+    y.nonzero <- y[!all.zero,]
     abundance <- mglmOneGroup(y,offset=offset)
-    o <- order(abundance)
-    ntagsinbin <- floor(ntags / nbins)
+#    o <- order(abundance)
+#    ntagsinbin <- floor(ntags / nbins)
+ 
+    ## Define bins of genes; based on min.n in each bin
+    nbins <- floor(length(unique(abundance))/min.n)
+    if( nbins < 8)
+        warning("With ",nrow(y)," genes and minimum number (min.n) of ",min.n," genes in each bin there are fewer than 8 bins. This number may not be sufficient for reliable estimation of a trend on the dispersions.\n") 
+    bins <- cutWithMinN(abundance[!all.zero], intervals=nbins, min.n=min.n)
     dispersion <- ave.abundance <- rep(NA,nbins)
-    
+   
     for(i in 1:nbins) {
-        if( i==nbins )
-            bin <- o[ (1 + (i-1)*ntagsinbin):ntags]
-        else
-            bin <- o[ (1 + (i-1)*ntagsinbin):( i*ntagsinbin)]
-        if( any(!all.zero[bin]) ) {
-            dispersion[i] <- estimateGLMCommonDisp(y[bin,], design, method=method, offset[bin,], min.row.sum=0, ...)
-            ave.abundance[i] <- mean(abundance[bin])
-        }
+        ##if( i==nbins )
+        ##    bin <- o[ (1 + (i-1)*ntagsinbin):ntags]
+        ##else
+        ##    bin <- o[ (1 + (i-1)*ntagsinbin):( i*ntagsinbin)]
+        bin <- bins$group==i
+        dispersion[i] <- estimateGLMCommonDisp(y[bin,], design, method=method, offset[bin,], min.row.sum=0, ...)
+        ave.abundance[i] <- mean(abundance[bin])
     }
-    if( any(is.na(dispersion)) ) {
-        warning("Some bins contained only tags/genes with zero counts in all libraries. These bins were ignored.\n")
-        keep <- !is.na(dispersion)
-        dispersion <- dispersion[keep]
-        ave.abundance <- ave.abundance[keep]
+    if( any(is.na(all.zero)) ) {
+        warning("Some tags/genes have zero counts in all libraries. These genes were ignored when computing binned dispersions.\n")
+#        keep <- !is.na(dispersion)
+#        dispersion <- dispersion[keep]
+#        ave.abundance <- ave.abundance[keep]
     }
     
     new("list", list(dispersion=dispersion, abundance=ave.abundance))

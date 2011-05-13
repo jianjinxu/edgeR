@@ -1,4 +1,4 @@
-estimateCRDisp <- function(y, design=NULL, offset=NULL, npts=10, rowsum.filter=5, subset=10000, tagwise=FALSE, prior.n=10, nbins=50, lib.size=NULL, disp.trend=NULL, method.trend="binned-spline", verbose=TRUE)
+estimateCRDisp <- function(y, design=NULL, offset=NULL, npts=10, rowsum.filter=5, subset=10000, tagwise=FALSE, prior.n=10, min.n=500, lib.size=NULL, disp.trend=NULL, method.trend="binned-spline", verbose=TRUE)
 ## Estimate NB dispersion by maximizing the CoxReid Adjusted Profile-likelihood
 ## The function uses cubic spline interpolation in finding the MLEs.
 ## 'dispCoxReidPowerTrend' or 'dispCoxReidBinTrend' is called to get the trended common dispersions and the boundaries of tagwise dispersions
@@ -66,9 +66,9 @@ estimateCRDisp <- function(y, design=NULL, offset=NULL, npts=10, rowsum.filter=5
 		#abundance <- mglmOneGroup(y.filt, offset=offset.mat.filt)
 	} else {
 		if( method.trend=="binned-spline" )
-			trend <- dispBinTrend(y.filt, design, offset=offset.mat.filt, nbins=nbins, method.trend="spline")
+			trend <- dispBinTrend(y.filt, design, offset=offset.mat.filt, min.n=min.n, method.trend="spline")
 		if( method.trend=="binned-loess" )
-			trend <- dispBinTrend(y.filt, design, offset=offset.mat.filt, nbins=nbins, method.trend="loess")
+			trend <- dispBinTrend(y.filt, design, offset=offset.mat.filt, min.n=min.n, method.trend="loess")
 		if( method.trend=="power")
 			trend <- dispCoxReidPowerTrend(y.filt, design, offset=offset.mat.filt, subset=subset)
 		disp.trend.filt <- trend$dispersion
