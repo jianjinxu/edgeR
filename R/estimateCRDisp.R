@@ -1,4 +1,4 @@
-estimateCRDisp <- function(y, design=NULL, offset=NULL, npts=10, rowsum.filter=5, subset=1000, tagwise=FALSE, prior.n=10, nbins=50, lib.size=NULL, disp.trend=NULL, method.trend="binned-spline", verbose=TRUE)
+estimateCRDisp <- function(y, design=NULL, offset=NULL, npts=10, rowsum.filter=5, subset=10000, tagwise=FALSE, prior.n=10, nbins=50, lib.size=NULL, disp.trend=NULL, method.trend="binned-spline", verbose=TRUE)
 ## Estimate NB dispersion by maximizing the CoxReid Adjusted Profile-likelihood
 ## The function uses cubic spline interpolation in finding the MLEs.
 ## 'dispCoxReidPowerTrend' or 'dispCoxReidBinTrend' is called to get the trended common dispersions and the boundaries of tagwise dispersions

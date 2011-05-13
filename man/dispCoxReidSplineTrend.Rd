@@ -9,8 +9,8 @@ Estimate trended common dispersion parameters across multiple negative binomial 
 }
 
 \usage{
-dispCoxReidSplineTrend(y, design, offset=NULL, degree = 5, subset=1000, method.optim="Nelder-Mead", trace=0)
-dispCoxReidPowerTrend(y, design, offset=NULL, subset=1000, method.optim="Nelder-Mead", trace=0)
+dispCoxReidSplineTrend(y, design, offset=NULL, degree = 5, subset=10000, method.optim="Nelder-Mead", trace=0)
+dispCoxReidPowerTrend(y, design, offset=NULL, subset=10000, method.optim="Nelder-Mead", trace=0)
 }
 
 \arguments{ 

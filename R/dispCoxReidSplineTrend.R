@@ -1,4 +1,4 @@
-dispCoxReidSplineTrend <- function(y, design, offset=NULL, degree = 5, subset=1000, method.optim="Nelder-Mead", trace=0)
+dispCoxReidSplineTrend <- function(y, design, offset=NULL, degree = 5, subset=10000, method.optim="Nelder-Mead", trace=0)
 #	Estimate spline trend dispersion
 #	Gordon Smyth, Yunshun Chen, Davis McCarthy
 #	16 Dec 2010.  Last modified 4 May 2011.

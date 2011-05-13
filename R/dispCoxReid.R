@@ -1,4 +1,4 @@
-dispCoxReid <- function(y, design, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5, subset=1000)
+dispCoxReid <- function(y, design, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5, subset=10000)
 #	Cox-Reid APL estimator of common dispersion
 #	Gordon Smyth, Davis McCarthy
 #	26 Jan 2011.  Last modified 24 Mar 2011.

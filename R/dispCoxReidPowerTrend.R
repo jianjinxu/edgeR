@@ -1,4 +1,4 @@
-dispCoxReidPowerTrend <- function(y, design, offset=NULL, subset=1000, method.optim="Nelder-Mead", trace=0)
+dispCoxReidPowerTrend <- function(y, design, offset=NULL, subset=10000, method.optim="Nelder-Mead", trace=0)
 #	Estimate trend dispersion=a*mean^b
 #	Gordon Smyth, Davis McCarthy
 #	16 Dec 2010.  Last modified 3 May 2011.

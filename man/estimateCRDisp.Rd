@@ -12,7 +12,7 @@ Estimates the dispersion parameter for a DGE dataset for general experimental de
 
 
 \usage{
-estimateCRDisp(y, design=NULL, offset=NULL, npts=10, rowsum.filter=5, subset=1000, tagwise=FALSE, prior.n=10, nbins=50, lib.size=NULL, disp.trend=NULL, method.trend="binned-spline",verbose=TRUE)
+estimateCRDisp(y, design=NULL, offset=NULL, npts=10, rowsum.filter=5, subset=10000, tagwise=FALSE, prior.n=10, nbins=50, lib.size=NULL, disp.trend=NULL, method.trend="binned-spline",verbose=TRUE)
 }
 
 \arguments{ 

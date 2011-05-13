@@ -1,4 +1,4 @@
-dispPearson <- function(y, design, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5, subset=1000, robust=FALSE, trace = FALSE)
+dispPearson <- function(y, design, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5, subset=10000, robust=FALSE, trace = FALSE)
 #	Pearson estimator of the common dispersion
 #	Gordon Smyth, Davis McCarthy, Yunshun Chen
 #	1 Feb 2011. Last modified 4 May 2011.

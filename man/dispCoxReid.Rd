@@ -10,9 +10,9 @@ Estimate a common dispersion parameter across multiple negative binomial general
 }
 
 \usage{
-dispCoxReid(y, design, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5, subset=1000)
-dispDeviance(y, design, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5, subset=1000, robust=FALSE, trace=FALSE)
-dispPearson(y, design, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5, subset=1000, robust=FALSE, trace=FALSE)
+dispCoxReid(y, design, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5, subset=10000)
+dispDeviance(y, design, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5, subset=10000, robust=FALSE, trace=FALSE)
+dispPearson(y, design, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5, subset=10000, robust=FALSE, trace=FALSE)
 }
 
 \arguments{ 
