@@ -10,7 +10,7 @@
 
 
 \usage{
-\method{glmFit}{DGEList}(y, design, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, start=NULL, method="auto", ...)
+\method{glmFit}{DGEList}(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, start=NULL, method="auto", ...)
 glmLRT(y, glmfit, coef=ncol(glmfit$design), contrast=NULL)
 }
 
@@ -19,7 +19,8 @@ glmLRT(y, glmfit, coef=ncol(glmfit$design), contrast=NULL)
 \item{y}{an object that contains the raw counts for each library (the measure of expression level); alternatively, a matrix of counts, or a \code{DGEList} object with (at least) elements \code{counts} (table of unadjusted counts) and \code{samples} (data frame containing information about experimental group, library size and normalization factor for the library size)}
 
 \item{design}{numeric matrix giving the design matrix for the GLM that is to be fit.
-Must be of full column rank.}
+Must be of full column rank.
+Defaults to a single column of ones, equivalent to treating the columns as replicate libraries.}
 
 \item{dispersion}{numeric scalar or vector providing the value for the dispersion parameter that is used in fitting the GLM for each transcript. Can be a common value for all tags, or a vector of values can provide a unique dispersion value for each tag. If \code{NULL} (default) then dispersion will be detected and extracted from \code{y}, if possible, with order of precedence: tagwise dispersion, trended dispersions, common dispersion.}
 

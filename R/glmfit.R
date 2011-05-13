@@ -3,7 +3,7 @@
 glmFit <- function(y, design, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, start=NULL, method="auto")
 UseMethod("glmFit")
 
-glmFit.DGEList <- function(y, design, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, start=NULL, method="auto", ...)
+glmFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, start=NULL, method="auto", ...)
 {
 	if( is.null(dispersion) ) {
 		if( !is.null(y$tagwise.dispersion) )
@@ -32,12 +32,14 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 	##  to a series of digital expression libraries
 	##	Davis McCarthy and Gordon Smyth
 
-	##	Created 17 August 2010. Last modified 11 May 2011.
+	##	Created 17 August 2010. Last modified 13 May 2011.
 {
 #	Check input
 	y <- as.matrix(y)
 	if(is.null(design)) {
-		design <- matrix(1,nrow(y),1)
+		design <- matrix(1,ncol(y),1)
+		rownames(design) <- colnames(y)
+		colnames(design) <- "Intercept"
 	} else {
 		design <- as.matrix(design)
 	}
