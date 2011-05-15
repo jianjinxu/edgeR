@@ -95,13 +95,17 @@ d <- calcNormFactors(d)
 # Fit the NB GLMs
 fit <- glmFit(d, design, dispersion=dispersion.true)
 
-## Likelihood ratio tests for trend
+# Likelihood ratio tests for trend
 results <- glmLRT(d, fit, coef=2)
 topTags(results)
+
+# Estimate the dispersion (may be unreliable with so few tags)
+d <- estimateGLMCommonDisp(d, design)
+d$common.dispersion
 }
 
 \seealso{
-\code{\link{estimateCRDisp}} for estimating the negative binomial dispersion.
+\code{\link{estimateGLMCommonDisp}}, \code{\link{estimateGLMTrendedDisp}} or \code{\link{estimateGLMTagwiseDisp}} for estimating the negative binomial dispersion.
 
 \code{\link{topTags}} for displaying results from \code{glmLRT}.
 }

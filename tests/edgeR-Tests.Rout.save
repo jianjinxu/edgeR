@@ -162,7 +162,7 @@ glmFit> d <- calcNormFactors(d)
 glmFit> # Fit the NB GLMs
 glmFit> fit <- glmFit(d, design, dispersion=dispersion.true)
 
-glmFit> ## Likelihood ratio tests for trend
+glmFit> # Likelihood ratio tests for trend
 glmFit> results <- glmLRT(d, fit, coef=2)
 
 glmFit> topTags(results)
@@ -178,6 +178,12 @@ Gene49  -4.803219 -1.1892653  2.879298 8.972514e-02 8.759906e-01
 Gene42  -4.541616 -1.0388992  2.834035 9.228620e-02 8.759906e-01
 Gene56  -4.541616 -1.0388992  2.834035 9.228620e-02 8.759906e-01
 Gene62  -4.542761 -0.9670153  2.640892 1.041450e-01 8.759906e-01
+
+glmFit> # Estimate the dispersion (may be unreliable with so few tags)
+glmFit> d <- estimateGLMCommonDisp(d, design)
+
+glmFit> d$common.dispersion
+[1] 0.1356192
 > fit <- glmFit(d,design,dispersion=dispersion.true,method="simple")
 Loading required package: MASS
 > fit

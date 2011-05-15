@@ -6,51 +6,67 @@
 \title{Estimate Common Dispersion for Negative Binomial GLMs}
 
 \description{
-Estimates the dispersion parameter for a DGE dataset for general experimental designs by using Cox-Reid approximate conditional inference for a negative binomial generalized linear model for each transcript (tag) with the unadjusted counts and design matrix provided.
+Estimates a common negative binomial dispersion parameter for a DGE dataset with a general experimental design.
 }
 
-
 \usage{
-\S3method{estimateGLMCommonDisp}{DGEList}(y, design, offset=NULL, method="CoxReid", ...)
-\S3method{estimateGLMCommonDisp}{default}(y, design, offset=NULL, method="CoxReid", ...)
+\S3method{estimateGLMCommonDisp}{DGEList}(y, design=NULL, offset=NULL, method="CoxReid", ...)
+\S3method{estimateGLMCommonDisp}{default}(y, design=NULL, offset=NULL, method="CoxReid", ...)
 }
 
 \arguments{ 
 
 \item{y}{an object that contains the raw counts for each library (the measure of expression level); it can either be a matrix of counts, or a \code{DGEList} object with (at least) elements \code{counts} (table of unadjusted counts) and \code{samples} (data frame containing information about experimental group, library size and normalization factor for the library size)}
 
-\item{design}{numeric matrix giving the design matrix for the GLM that is to be fit.}
+\item{design}{numeric matrix giving the design matrix for the GLM that is to be fit.
+Must be of full column rank.
+Defaults to a single column of ones, equivalent to treating the columns as replicate libraries.}
 
 \item{method}{method (low-level function) used to estimated the dispersion.
 Possible values are \code{"CoxReid"}, \code{"Pearson"} or \code{"deviance"}.}
 
-\item{offset}{numeric scalar, vector or matrix giving the offset (in addition to the log of the effective library size) that is to be included in the NB GLM for the transcripts. If a scalar, then this value will be used as an offset for all transcripts and libraries. If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each transcript. If a matrix, then each library for each transcript can have a unique offset, if desired. In \code{adjustedProfileLik} the \code{offset} must be a matrix with the same dimension as the table of counts. Default is \code{NULL}; if object is a \code{DGEList} and offset is \code{NULL} then offset will be calculated automatically from code{y$samples}.}
+\item{offset}{numeric scalar, vector or matrix giving the offsets for the log-linear models.
+If a scalar, then this value will be used as an offset for all transcripts and libraries.
+If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each transcript.
+If a matrix, then it should have the same row and column dimensions as \code{y}.
+
+In the \code{DGEList} method, the offset is calculated by default from the library sizes and normalization factors found in \code{y$samples}.}
 
 \item{\ldots}{other arguments are passed to lower-level functions.}
 }
 
 \value{
-The default method returns a numeric vector of length 1.
+The default method returns a numeric vector of length 1 containing the estimated dispersion.
 
-The method for \code{DGEList} objects returns a , which contains the estimate of the common dispersion parameter for the negative binomial model that maximizes the Cox-Reid adjusted profile likelihood, and also the tagwise Cox-Reid dispersion estimates.
-
+The method for \code{DGEList} objects adds a component \code{common.dispersion} to \code{y}.
 }
 
 \details{
-To obtain estimates of the common and tagwise (i.e., genewise) dispersion parameters for negative binomial GLMs we use Cox-Reid approximate conditional inference. The approach is to maximize the adjusted profile likelihood over the dispersion value, for both the common and tagwise models and use these values as the common and tagwise dispersion parameters for differential signal testing in downstream analysis.
+This function calls \code{dispCoxReid}, \code{dispPearson} or \code{dispDeviance} depending on the \code{method} specified.
+See \code{\link{dispCoxReid}} for details of the three methods and a discussion of their relative performance.
 }
 
 
 \references{
-Cox, DR, and Reid, N (1987). Parameter orthogonality and approximate conditional inference. \emph{Journal of the Royal Statistical Society Series B} 49, 1-39.
+Robinson MD and Smyth GK (2008). Small-sample estimation of negative
+binomial dispersion, with applications to SAGE data.
+\emph{Biostatistics}, 9, 321-332
 }
 
 \author{Gordon Smyth}
 \examples{
+#  True dispersion is 1/size=0.1
 y <- matrix(rnbinom(1000,mu=10,size=10),ncol=4)
-d <- DGEList(counts=y,group=c(1,1,2,2),lib.size=c(1000:1003))
-design <- model.matrix(~group, data=d$samples) # Define the design matrix for the full model
-disp <- estimateGLMCommonDisp(d, design)
+d <- DGEList(counts=y,group=c(1,1,2,2))
+design <- model.matrix(~group, data=d$samples)
+d1 <- estimateGLMCommonDisp(d, design)
+d1$common.disp
+
+#  Compare with classic CML estimator:
+d2 <- estimateCommonDisp(d)
+d2$common.disp
+
+#  See example(glmFit) for a different example
 }
 
 \seealso{
@@ -59,4 +75,4 @@ disp <- estimateGLMCommonDisp(d, design)
 \code{\link{estimateGLMTrendedDisp}}, \code{\link{estimateGLMTagwiseDisp}}
 }
 
-\keyword{algebra}
+\keyword{models}

@@ -1,10 +1,16 @@
-dispDeviance <- function(y, design, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5, subset=10000, robust=FALSE, trace=FALSE)
+dispDeviance <- function(y, design=NULL, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5, subset=10000, robust=FALSE, trace=FALSE)
 #	Deviance estimator of common dispersion
 #	Gordon Smyth, Davis McCarthy
-#	26 Jan 2011.  Last modified 4 May 2011.
+#	26 Jan 2011.  Last modified 15 May 2011.
 {
 	y <- as.matrix(y)
-	design <- as.matrix(design)
+	if(is.null(design)) {
+		design <- matrix(1,ncol(y),1)
+		rownames(design) <- colnames(y)
+		colnames(design) <- "Intercept"
+	} else {
+		design <- as.matrix(design)
+	}
 	if(is.null(offset)) offset <- 0
 	offset <- expandAsMatrix(offset,dim(y))
 	if(min(interval)<0) stop("please give a non-negative interval for the dispersion")

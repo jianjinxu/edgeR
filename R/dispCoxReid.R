@@ -1,10 +1,16 @@
-dispCoxReid <- function(y, design, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5, subset=10000)
+dispCoxReid <- function(y, design=NULL, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5, subset=10000)
 #	Cox-Reid APL estimator of common dispersion
 #	Gordon Smyth, Davis McCarthy
-#	26 Jan 2011.  Last modified 24 Mar 2011.
+#	26 Jan 2011.  Last modified 15 May 2011.
 {
 	y <- as.matrix(y)
-	design <- as.matrix(design)
+	if(is.null(design)) {
+		design <- matrix(1,ncol(y),1)
+		rownames(design) <- colnames(y)
+		colnames(design) <- "Intercept"
+	} else {
+		design <- as.matrix(design)
+	}
 	if(is.null(offset)) offset <- 0
 	offset <- expandAsMatrix(offset,dim(y))
 	small.row.sum <- rowSums(y)<min.row.sum
