@@ -74,7 +74,7 @@ getDispersions(binned)$bin.dispersion.used # Look at the estimated dispersions f
 }
 
 \seealso{
-\code{\link{plotMeanVar}}, \code{\link{plotMDS.dge}}, \code{\link{plotSmear}} and \code{\link{maPlot}} provide more ways of visualizing DGE data.
+\code{\link{plotMeanVar}}, \code{\link{plotMDS.DGEList}}, \code{\link{plotSmear}} and \code{\link{maPlot}} provide more ways of visualizing DGE data.
 
 }
 

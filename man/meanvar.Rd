@@ -89,7 +89,7 @@ plotMeanVar(d, meanvar=meanvar, show.tagwise.vars=TRUE, NBline=TRUE, dispersion.
 }
 
 \seealso{
-\code{\link{plotMDS.dge}}, \code{\link{plotSmear}} and
+\code{\link{plotMDS.DGEList}}, \code{\link{plotSmear}} and
 \code{\link{maPlot}} provide more ways of visualizing DGE data.
 
 }

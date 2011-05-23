@@ -63,6 +63,7 @@ rownames(m) <- paste("Gene",1:1000)
 m[1:300,4:6] <- m[1:300,4:6] + 10
 m <- DGEList(counts=m)
 # without labels, indexes of samples are plotted.
+library(limma)
 mds <- plotMDS(m,  col=c(rep("black",3), rep("red",3)) )
 # or labels can be provided, here group indicators:
 plotMDS(mds,  col=c(rep("black",3), rep("red",3)), labels= c(rep("Grp1",3), rep("Grp2",3)))
