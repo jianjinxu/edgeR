@@ -1,13 +1,13 @@
 \title{Multidimensional scaling plot of digital gene expression profiles}
-\name{plotMDS.dge}
-\alias{plotMDS.dge}
+\name{plotMDS.DGEList}
+\alias{plotMDS.DGEList}
 \description{
 Calculate distances between RNA-seq or DGE libraries, then produce a multidimensional scaling plot.
 Distances on the plot represent coefficient of variation of expression between samples
 for the top genes that best distinguish the samples.
 }
 \usage{
-plotMDS.dge(x, top=500, labels=colnames(x), col=NULL, cex=1, dim.plot=c(1,2), ndim=max(dim.plot),...)
+\method{plotMDS}{DGEList}(x, top=500, labels=colnames(x), col=NULL, cex=1, dim.plot=c(1, 2), ndim=max(dim.plot), xlab=paste("Dimension",dim.plot[1]), ylab=paste("Dimension",dim.plot[2]), ...)
 }
 \arguments{
   \item{x}{any matrix or \code{DGEList} object.}
@@ -17,6 +17,8 @@ plotMDS.dge(x, top=500, labels=colnames(x), col=NULL, cex=1, dim.plot=c(1,2), nd
   \item{cex}{numeric vector of plot symbol expansions.}
   \item{dim.plot}{which two dimensions should be plotted, numeric vector of length two.}
   \item{ndim}{number of dimensions in which data is to be represented}
+  \item{xlab}{title for the x-axis}
+  \item{ylab}{title for the y-axis}
   \item{...}{any other arguments are passed to \code{plot}.}
 }
 
@@ -31,7 +33,17 @@ See \code{\link[graphics]{text}} for possible values for \code{col} and \code{ce
 This function can be slow when there are many libraries.
 }
 
-\value{A plot is created on the current graphics device.}
+\value{
+A plot is created on the current graphics device.
+
+An object of class \code{"MDS"} is invisibly returned.
+This is a list containing the following components:
+\item{distance.matrix}{numeric matrix of pairwise distances between columns of \code{x}}
+\item{cmdscale.out}{output from the function \code{cmdscale} given the distance matrix}
+\item{dim.plot}{dimensions plotted}
+\item{x}{x-xordinates of plotted points}
+\item{y}{y-cordinates of plotted points}
+}
 
 \author{Yunshun Chen and Gordon Smyth}
 
@@ -49,10 +61,11 @@ counts <- rnbinom(6000, size = 5, mu = x)
 m <- matrix(counts, 1000, 6)
 rownames(m) <- paste("Gene",1:1000)
 m[1:300,4:6] <- m[1:300,4:6] + 10
-plotMDS.dge(m)
-
-# Indexes of samples are plotted.
-plotMDS.dge(m,  col=c(rep("black",3), rep("red",3)) )
+m <- DGEList(counts=m)
+# without labels, indexes of samples are plotted.
+mds <- plotMDS(m,  col=c(rep("black",3), rep("red",3)) )
+# or labels can be provided, here group indicators:
+plotMDS(mds,  col=c(rep("black",3), rep("red",3)), labels= c(rep("Grp1",3), rep("Grp2",3)))
 }
 
 \keyword{hplot}
