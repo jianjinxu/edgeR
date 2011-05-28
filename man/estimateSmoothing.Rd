@@ -1,9 +1,14 @@
 \name{estimateSmoothing}
 \alias{estimateSmoothing}
 
-\title{Estimate the Prior Weight}
+\title{Estimate the Prior Weight for Tagwise Dispersions}
 
-\description{Estimate the prior weight, prior.n, using an approximate empirical Bayes rule given the estimate of the common dispersion. The prior weight determines how much smoothing takes place to squeeze tag/genewise estimates of the dispersion closer to the estimate of the common dispersion.}
+\description{
+This function is no longer recommended or required.
+Use \code{getPriorN} instead.
+
+Estimate the prior weight, prior.n, using an approximate empirical Bayes rule given the estimate of the common dispersion. The prior weight determines how much smoothing takes place to squeeze tag/genewise estimates of the dispersion closer to the estimate of the common dispersion.
+}
 
 
 \usage{
@@ -19,10 +24,16 @@ estimateSmoothing(object,verbose=TRUE)
 	\item{prior.n}{scalar; estimate of the prior weight, i.e. the smoothing parameter that indicates the weight to put on the common likelihood compared to the individual tag's likelihood; prior.n of 10 means that the common likelihood is given 10 times the weight of the individual tag/gene's likelihood in the estimation of the tag/genewise dispersion}
 }
 
-\details{We are not recommending this function for routine use at the moment, as it has given unexpected results on some deep-sequenced data sets. It should be considered experimental. We are instead recommending that \code{prior.n} be chosen by the user.
-Values in the range 10-50 give good results in practice.}
+\details{
+We are no longer recommending this function, as it produces variable results.
+\code{prior.n} is now set automatically using \code{getPriorN}.
+}
 
 \author{Mark Robinson, Davis McCarthy}
+
+\seealso{
+\code{\link{getPriorN}}
+}
 
 \examples{
 y<-matrix(rnbinom(20,size=1,mu=10),nrow=5)
