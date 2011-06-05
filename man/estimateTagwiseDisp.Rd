@@ -24,7 +24,7 @@ estimateTagwiseDisp(object, prior.n=getPriorN(object), trend=FALSE, prop.used=NU
 
 \item{grid}{logical, whether to use a grid search (default = \code{TRUE}); if \code{FALSE}, uses \code{optimize}, but this is very slow if there is a large number of tags/genes to be analysed (i.e. more than 5000)}
 
-\item{grid.length}{if \code{grid=TRUE}, the number of points at which the likelihood is evaluated for each tag, so larger values improve the accuracy of the dispersion estimates; default \code{1000}}
+\item{grid.length}{if \code{grid=TRUE}, the number of points at which the likelihood is evaluated for each tag, so larger values improve the accuracy of the dispersion estimates.}
 
 \item{method}{names the method to use to fit the trend (so only relevant if \code{trend=TRUE}). The default is \code{"movingave"}, which uses a moving average to locally smooth the common likelihood to apply a mean-dependent trend to the dispersions. The other option is \code{"tricube"}, which uses a tricube weighting function to locally smooth the common likelihood. The moving average method is much faster and results are similar.}
 

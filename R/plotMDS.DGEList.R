@@ -1,7 +1,7 @@
 plotMDS.DGEList <- function (x, top=500, labels=colnames(x), col=NULL, cex=1, dim.plot=c(1, 2), ndim=max(dim.plot), xlab=paste("Dimension",dim.plot[1]), ylab=paste("Dimension",dim.plot[2]), ...)
 #	Multidimensional scaling plot of digital gene expression profiles
 #	Yunshun Chen and Gordon Smyth
-#	23 May 2011
+#	23 May 2011.  Last modified 6 June 2011.
 {
 	library(edgeR)
 #	Check input
@@ -25,7 +25,7 @@ plotMDS.DGEList <- function (x, top=500, labels=colnames(x), col=NULL, cex=1, di
 	cn <- colnames(x)
 	dd <- matrix(0,nrow=nsamples,ncol=nsamples,dimnames=list(cn,cn))	
 
-	twd <- estimateTagwiseDisp(estimateCommonDisp(x), prior.n = 10, grid.length = 500)
+	twd <- estimateTagwiseDisp(estimateCommonDisp(x), grid.length = 500)
     	o <- order(twd$tagwise.dispersion, decreasing = TRUE)[1:min(nprobes,top)]
     	subdata <- x$counts[o,]
 
