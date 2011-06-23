@@ -88,13 +88,20 @@ assign("[.DGELRT",
 function(object, i, j, ...)
 #  Subsetting for DGELRT objects
 #  Davis McCarthy    
-#  6 April 2011.  Last modified 6 Apr 2011.
+#  6 April 2011.  Last modified 23 June 2011.
 {
 	if(!missing(j))
 	    stop("Subsetting columns not allowed for DGELRT object. Try subsetting object$table instead.",call.=FALSE)
 	if(!missing(i)) {
 	    object$table <- object$table[i,,drop=FALSE]
 	    object$genes <- object$genes[i,,drop=FALSE]
+        object$all.zeros <- object$all.zeros[i,drop=FALSE]
+        object$trended.dispersion <- object$trended.dispersion[i,drop=FALSE]
+        object$abundance <- object$abundance[i,drop=FALSE]
+        object$tagwise.dispersion <- object$tagwise.dispersion[i,drop=FALSE]
+        object$coefficients.full <- object$coefficients.full[i,,drop=FALSE]
+        object$coefficients.null <- object$coefficients.null[i,,drop=FALSE]
+        object$dispersion.used <- object$dispersion.used[i,drop=FALSE]
 	}
 	object
 })
