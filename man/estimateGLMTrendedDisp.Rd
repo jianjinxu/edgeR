@@ -11,8 +11,8 @@ Estimates the dispersion parameter for each transcript (tag) with a trend that d
 
 
 \usage{
-\S3method{estimateGLMTrendedDisp}{DGEList}(y, design, offset=NULL, method="bin.spline", ...)
-\S3method{estimateGLMTrendedDisp}{default}(y, design, offset=NULL, method="bin.spline",  ...)
+\S3method{estimateGLMTrendedDisp}{DGEList}(y, design, offset=NULL, method="bin.loess", ...)
+\S3method{estimateGLMTrendedDisp}{default}(y, design, offset=NULL, method="bin.loess",  ...)
 }
 
 \arguments{ 

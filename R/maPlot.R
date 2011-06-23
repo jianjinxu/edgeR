@@ -4,13 +4,14 @@ maPlot <- function(x,y, logAbundance=NULL, logFC=NULL, normalize=FALSE, smearWid
     if( !is.null(logAbundance) & !is.null(logFC) ) {
         A <- logAbundance
         M <- logFC
-        w <- rep(FALSE, length(A))
+        w <- v <- rep(FALSE, length(A))
         w <- A < -25
         if( any(w) ) {
             shift <- max(abs(M[w])) - max(abs(M[!w]))
             A[w] <- min(A[!w]) - runif(sum(w),min=0,max=smearWidth)
             M[w] <- sign(M[w]) * (abs(M[w]) - shift)
         }
+        
     } else {
         if(normalize) {
             x <- x/sum(x)
@@ -24,25 +25,31 @@ maPlot <- function(x,y, logAbundance=NULL, logFC=NULL, normalize=FALSE, smearWid
             M[w] <- log2(y[w]+min(y[!w])) - log2(x[w]+min(x[!w]))
         }
     }
+    qs <- quantile(M, c(0.05,0.95))
+    range <- qs[2]-qs[1]
+    v <- (M < (median(M) - 5*range)) | (M > (median(M) + 5*range))
+    if( any(v) ) {
+        M[v] <- sign(M[v]) * (max(abs(M[!v])) + 0.5*range)
+    }
     if( is.null(col) ) {
       col <- rep(allCol, length(A))
-      if( any(w) )
-          col[w] <- lowCol
+      if( any(w) | any(v) )
+          col[w | v] <- lowCol
     }
     if(smooth.scatter) {
         smoothScatter(A, M, col=col, ...)
         grid()
-        if( any(w) )
-            points(A[w], M[w], col=lowCol, ...)
+        if( any(w) | any(v) )
+            points(A[w | v], M[w | v], col=lowCol, ...)
     }
     else
         plot(A,M,col=col,...)
     points(A[de.tags],M[de.tags],col=deCol,...)
     if(lowess) {
-        keep <- A > min(A[!w]) + 1
+        keep <- A > min(A[!(w |v)]) + 1
         low <- lowess(A[keep],M[keep], f=1/4)
         lines(low,col="red",lwd=4)
     }
-    invisible(list(A=A,M=M,w=w))
+    invisible(list(A=A,M=M,w=w,v=v))
 }
 

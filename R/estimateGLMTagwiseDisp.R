@@ -7,9 +7,14 @@ estimateGLMTagwiseDisp.DGEList <- function(y, design, offset=NULL, method="trend
         offset <- getOffset(y)
     method <- match.arg(method, c("trend","common"))
     if(method=="trend") {
-        if( is.null(y$trended.dispersion) ) stop("method is trend, but DGEList object has a NULL trended.dispersion slot. Run estimateGLMTrendedDisp on DGEList object before estimateGLMTagwiseDisp to smooth tagwise dispersions towards trended dispersions.\n")
-        dispersion <- y$trended.dispersion
-        abundance <- y$abundance
+        if( is.null(y$trended.dispersion) & is.null(y$common.dispersion) ) stop("method is trend, but DGEList object has a NULL trended.dispersion slot. Run estimateGLMTrendedDisp on DGEList object before estimateGLMTagwiseDisp to smooth tagwise dispersions towards trended dispersions.\n")
+        if( is.null(y$trended.dispersion) & !is.null(y$common.dispersion) ) {
+            warning("method is trend, but DGEList object has a NULL trended.dispersion slot. Common dispersion value used for this calculation.\n")
+            dispersion <- y$common.dispersion
+        } else {
+            dispersion <- y$trended.dispersion
+            abundance <- y$abundance
+        }
     }
     if(method=="common") {
         if( is.null(y$common.dispersion) ) stop("method is common, but DGEList object has a NULL common.dispersion slot. Run estimateGLMCommonDisp on DGEList object before estimateGLMTagwiseDisp to smooth tagwise dispersions towards a common value.\n")
