@@ -1,9 +1,9 @@
-dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, abundance=NULL, npts=11, min.row.sum=5, prior.n=getPriorN(y, design), span=0.3)
+dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, abundance=NULL, min.row.sum=5, prior.n=getPriorN(y, design), span=0.3, grid.npts=11, grid.range=c(-4,4))
 #	Estimate tagwise NB dispersions
 #	using weighted Cox-Reid Adjusted Profile-likelihood
 #	and cubic spline interpolation over a tagwise grid.
 #	Yunshun Chen and Gordon Smyth
-#	Created August 2010. Last modified 12 Feb 2011.
+#	Created August 2010. Last modified 24 June 2011.
 {
 #	Check input arguments
 	y <- as.matrix(y)
@@ -24,15 +24,15 @@ dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, ab
 #	Apply min.row.sum and use input dispersion for small count tags
 	i <- (rowSums(y) >= min.row.sum)
 	if(any(!i)) {
-		if(any(i)) dispersion[i] <- Recall(y=y[i,],design=design,offset=offset[i,],dispersion=dispersion[i],abundance=abundance[i],npts=npts,min.row.sum=0,prior.n=prior.n,span=span)
+		if(any(i)) dispersion[i] <- Recall(y=y[i,],design=design,offset=offset[i,],dispersion=dispersion[i],abundance=abundance[i],grid.npts=grid.npts,min.row.sum=0,prior.n=prior.n,span=span)
 		return(dispersion)
 	}
 
 #	Posterior profile likelihood
-	spline.pts <- seq(from=-4,to=4,length=npts)
+	spline.pts <- seq(from=grid.range[1],to=grid.range[2],length=grid.npts)
 	abundance.rank <- rank(abundance)
-	apl <- apl.smooth <- matrix(0, nrow=ntags, ncol=npts)
-	for(i in 1:npts){
+	apl <- apl.smooth <- matrix(0, nrow=ntags, ncol=grid.npts)
+	for(i in 1:grid.npts){
 		spline.disp <- dispersion * 2^spline.pts[i]
 		apl[,i] <- adjustedProfileLik(spline.disp, y=y, design=design, offset=offset)
 		apl.smooth[,i] <- loessFit(apl[,i],abundance.rank,span=span,iterations=1)$fitted

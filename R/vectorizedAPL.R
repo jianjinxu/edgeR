@@ -5,7 +5,7 @@ adjustedProfileLik <- function(dispersion, y, design, offset, adjust=TRUE)
 ## y is matrix: rows are genes/tags/transcripts, columns are samples/libraries
 ## offset is matrix of the same dimensions as y
 ## Yunshun Chen, Gordon Smyth
-## Created June 2010. Last modified 3 March 2011.
+## Created June 2010. Last modified 22 June 2011.
 {
 	if(any(dim(y)!=dim(offset))) offset <- expandAsMatrix(offset,dim(y))
 	ntags <- nrow(y)
@@ -13,10 +13,11 @@ adjustedProfileLik <- function(dispersion, y, design, offset, adjust=TRUE)
 	if(length(dispersion)==1) dispersion <- rep(dispersion,ntags)
 
 #	Fit tagwise linear models
-	ls <- mglmLS(y, design, dispersion, offset = offset)
+#	ls <- mglmLS(y, design, dispersion, offset = offset)
+	fit <- glmFit(y,design=design,dispersion=dispersion,offset=offset)
 
 #	Compute log-likelihood
-	mu <- ls$fitted
+	mu <- fit$fitted
 	if(dispersion[1] == 0){
 		loglik <- rowSums(dpois(y,lambda=mu,log = TRUE))
 	} else {
