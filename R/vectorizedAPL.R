@@ -5,7 +5,7 @@ adjustedProfileLik <- function(dispersion, y, design, offset, adjust=TRUE)
 ## y is matrix: rows are genes/tags/transcripts, columns are samples/libraries
 ## offset is matrix of the same dimensions as y
 ## Yunshun Chen, Gordon Smyth
-## Created June 2010. Last modified 22 June 2011.
+## Created June 2010. Last modified 27 June 2011.
 {
 	if(any(dim(y)!=dim(offset))) offset <- expandAsMatrix(offset,dim(y))
 	ntags <- nrow(y)
@@ -32,6 +32,7 @@ adjustedProfileLik <- function(dispersion, y, design, offset, adjust=TRUE)
 	} else {
 		A <- .vectorizedXWX(design, mu, dispersion)
 		D <- .vectorizedLDL(A)
+		D <- pmax(D,1e-10)
 		cr <- 0.5*rowSums(log(abs(D)))
 	}
 	
