@@ -1,7 +1,7 @@
-dispCoxReidSplineTrend <- function(y, design, offset=NULL, degree = 5, subset=10000, method.optim="Nelder-Mead", trace=0)
+dispCoxReidSplineTrend <- function(y, design, offset=NULL, df = 5, subset=10000, method.optim="Nelder-Mead", trace=0)
 #	Estimate spline trend dispersion
 #	Gordon Smyth, Yunshun Chen, Davis McCarthy
-#	16 Dec 2010.  Last modified 4 May 2011.
+#	Created 16 Dec 2010.  Last modified 7 July 2011.
 {
 	y <- as.matrix(y)
 	nlibs <- ncol(y)
@@ -24,12 +24,12 @@ dispCoxReidSplineTrend <- function(y, design, offset=NULL, degree = 5, subset=10
     
 #	Spline basis
 	require("splines")
-	p1 <- (1:(degree-1))/degree
+	p1 <- (1:(df-1))/df
 	knots1 <- quantile(abundance.nonzero,p=p1)
 	r <- range(abundance.nonzero)
 	knots2 <- r[1]+p1*(r[2]-r[1])
 	knots <- 0.3*knots1+0.7*knots2
-	X <- cbind(1, ns(abundance.nonzero, degree, knots=knots))
+	X <- cbind(1, ns(abundance.nonzero, df, knots=knots))
 	
 	fun <- function(par,y,design,offset,abundance,X) {
 		eta <- X %*% par
@@ -37,7 +37,7 @@ dispCoxReidSplineTrend <- function(y, design, offset=NULL, degree = 5, subset=10
 		tryCatch(-sum(adjustedProfileLik(as.vector(dispersion),y,design,offset)),error=function(e) 1e10)
 	}
 
-	par0 <- rep(0,degree+1)
+	par0 <- rep(0,df+1)
 	par0[1] <- median(abundance.nonzero[i]) + log(0.1)
 	out <- optim(par0,fun,y=y.nonzero[i,],design=design,offset=offset.nonzero[i,],abundance=abundance.nonzero[i],X=X[i,],control=list(trace=trace),method=method.optim)
     disp <- rep(NA, ntags)
