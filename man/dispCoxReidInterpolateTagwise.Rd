@@ -8,7 +8,7 @@ Estimate tagwise dispersion parameters across multiple negative binomial general
 }
 
 \usage{
-dispCoxReidInterpolateTagwise(y, design, offset=NULL, dispersion, abundance=NULL, min.row.sum=5, prior.n=getPriorN(y, design), span=0.3, grid.npts=11, grid.range=c(-4,4))
+dispCoxReidInterpolateTagwise(y, design, offset=NULL, dispersion, abundance=NULL, min.row.sum=5, prior.n=getPriorN(y, design), span=2/3, grid.npts=11, grid.range=c(-6,6))
 }
 
 \arguments{ 

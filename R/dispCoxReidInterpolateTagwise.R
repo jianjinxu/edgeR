@@ -1,9 +1,9 @@
-dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, abundance=NULL, min.row.sum=5, prior.n=getPriorN(y, design), span=0.3, grid.npts=11, grid.range=c(-4,4))
+dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, abundance=NULL, min.row.sum=5, prior.n=getPriorN(y, design), span=2/3, grid.npts=11, grid.range=c(-6,6))
 #	Estimate tagwise NB dispersions
 #	using weighted Cox-Reid Adjusted Profile-likelihood
 #	and cubic spline interpolation over a tagwise grid.
 #	Yunshun Chen and Gordon Smyth
-#	Created August 2010. Last modified 24 June 2011.
+#	Created August 2010. Last modified 7 July 2011.
 {
 #	Check input arguments
 	y <- as.matrix(y)
