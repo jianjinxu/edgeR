@@ -8,7 +8,7 @@ Estimate a dispersion parameter for each of many negative binomial generalized l
 }
 
 \usage{
-dispBinTrend(y, design, offset=NULL, degree = 10, span=0.3, min.n=500, method.bin="CoxReid", method.trend="spline", trace=0, ...)
+dispBinTrend(y, design, offset=NULL, df = 5, span=2/3, min.n=500, method.bin="CoxReid", method.trend="spline", trace=0, ...)
 }
 
 \arguments{ 
@@ -19,9 +19,9 @@ dispBinTrend(y, design, offset=NULL, degree = 10, span=0.3, min.n=500, method.bi
 
 \item{offset}{numeric scalar, vector or matrix giving the offset (in addition to the log of the effective library size) that is to be included in the NB GLM for the transcripts. If a scalar, then this value will be used as an offset for all transcripts and libraries. If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each transcript. If a matrix, then each library for each transcript can have a unique offset, if desired. In \code{adjustedProfileLik} the \code{offset} must be a matrix with the same dimension as the table of counts.}
 
-\item{degree}{scalar, the degree for the natural cubic splines fit, used to determine the placement of the knots. Default is \code{10}.}
+\item{df}{scalar, the degrees of freedom for the natural cubic splines fit, used to determine the placement of the knots (number of knots is \code{df - 1}. Default is \code{5}.}
 
-\item{span}{scalar, passed to \code{loess} to determine the amount of smoothing for the loess fit. Default is \code{0.3}.}
+\item{span}{scalar, passed to \code{loess} to determine the amount of smoothing for the loess fit. Default is \code{2/3}.}
 
 \item{min.n}{scalar, minimim number of genes in each of the bins into which genes are sorted to form the basis for interpolating the dispersions. Setting a minimum value ensures that there will be sufficient genes in each bin to allow reliable estimation of the common dispersion for each bin.}
 

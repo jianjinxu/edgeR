@@ -9,7 +9,7 @@ Estimate trended common dispersion parameters across multiple negative binomial 
 }
 
 \usage{
-dispCoxReidSplineTrend(y, design, offset=NULL, degree = 5, subset=10000, method.optim="Nelder-Mead", trace=0)
+dispCoxReidSplineTrend(y, design, offset=NULL, df = 5, subset=10000, method.optim="Nelder-Mead", trace=0)
 dispCoxReidPowerTrend(y, design, offset=NULL, subset=10000, method.optim="Nelder-Mead", trace=0)
 }
 
@@ -21,7 +21,7 @@ dispCoxReidPowerTrend(y, design, offset=NULL, subset=10000, method.optim="Nelder
 
 \item{offset}{numeric scalar, vector or matrix giving the offset (in addition to the log of the effective library size) that is to be included in the NB GLM for the transcripts. If a scalar, then this value will be used as an offset for all transcripts and libraries. If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each transcript. If a matrix, then each library for each transcript can have a unique offset, if desired. In \code{adjustedProfileLik} the \code{offset} must be a matrix with the same dimension as the table of counts.}
 
-\item{degree}{integer giving the degree of the spline function.}
+\item{df}{integer giving the degrees of freedom of the spline function. The number of knots used for the spline function is \code{df - 1}.}
 
 \item{subset}{integer, number of rows to use in the calculation.  Rows used are chosen evenly spaced by abundance.}
 
@@ -50,7 +50,17 @@ Cox, DR, and Reid, N (1987). Parameter orthogonality and approximate conditional
 \examples{
 design <- matrix(1,4,1)
 y <- matrix((rnbinom(400,mu=100,size=2)),100,4)
-dispCoxReidSplineTrend(y, design, degree=3)
+dispCoxReidSplineTrend(y, design, df
+
+
+
+
+
+
+
+
+
+=3)
 dispCoxReidPowerTrend(y, design)
 }
 
