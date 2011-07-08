@@ -27,15 +27,20 @@ dispBinTrend <- function(y, design, offset=NULL, df=5, span=2/3, min.n=500, meth
 		r <- range(bindisp$abundance)
 		knots2 <- r[1]+p1*(r[2]-r[1])
 		knots <- 0.3*knots1+0.7*knots2
+        ind <- rep(NA, df+1)
+        ind[1] <- which.min(bindisp$abundance)
+        ind[df+1] <- which.max(bindisp$abundance)
+        for(i in 2:df)
+            ind[i] <- which.min(abs(knots[i-1]-bindisp$abundance))
 		fit <- lm(dispersion ~ ns(abundance, df=df, knots=knots), data=bindisp)
-		dispersion <- predict(fit, data.frame(abundance=abundance.full))
+        f <- splinefun(bindisp$abundance[ind], fit$fitted.value[ind], method="natural")
+        dispersion <- f(abundance.full)
 	}
 	if( method.trend=="loess" ) {
-			## Loess approach
-			bindisp$abundance <- c(min(abundance.full), bindisp$abundance, max(abundance.full))
-			bindisp$dispersion <- c(bindisp$dispersion[1], bindisp$dispersion, tail(bindisp$dispersion, n=1) )
-			fit <- loess(dispersion ~ abundance, bindisp, span=span)
-			dispersion <- predict(fit, data.frame(abundance=abundance.full), se=TRUE)$fit
+        ## Loess approach
+        fit <- loessFit(bindisp$dispersion, bindisp$abundance, span=span)
+        f <- approxfun(bindisp$abundance, fit$fitted, method="linear", rule=2)
+        dispersion <- f(abundance.full)
 	}
 	neg <- dispersion < 0
 	dispersion[neg] <- min(bindisp$dispersion)
