@@ -1,416 +1,76 @@
 \documentclass[12pt]{article}
+\usepackage{Sweave}
+\usepackage{natbib}
 
 \topmargin 0in
 \headheight 0in
 \headsep 0in
-\oddsidemargin 0in
-\evensidemargin 0in
-\textwidth 176mm
-\textheight 215mm
-\usepackage{natbib}
-\usepackage{Sweave}
-\usepackage{url}
+\oddsidemargin 0.1in
+\evensidemargin 0.1in
+\textwidth 6.1in
+\textheight 8in
 \DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
+\DefineVerbatimEnvironment{Sinput}{Verbatim}{fontsize=\footnotesize}
+\DefineVerbatimEnvironment{Soutput}{Verbatim}{fontsize=\footnotesize}
+\DefineVerbatimEnvironment{Scode}{Verbatim}{fontsize=\footnotesize}
+\DefineVerbatimEnvironment{Rcode}{Verbatim}{fontsize=\footnotesize}
 \newcommand{\edgeR}{\textsf{edgeR}}
 \newcommand{\limma}{\textsf{limma}}
 \newcommand{\code}[1]{{\small\texttt{#1}}}
 \newcommand{\R}{\textsf{R}}
+\newcommand{\Illumina}{Illumina\texttrademark}
 
 
 \begin{document}
 
-%\VignetteIndexEntry{edgeR User's Guide}
+%\VignetteIndexEntry{edgeR Vignette}
 
 \title{\edgeR: differential expression analysis \\ of digital gene expression data}
-\author{Mark Robinson \\ \texttt{mrobinson@wehi.edu.au}
-\and
-Davis McCarthy \\ \texttt{dmccarthy@wehi.edu.au}
-\and
-Yunshun Chen \\ \texttt{yuchen@wehi.edu.au}
-\and
-Gordon K.\ Smyth}
+\author{Mark Robinson, Davis McCarthy,\\
+Yunshun Chen, Gordon K.\ Smyth}
 % Please increment date when working on this document, so that
 % date shows genuine change date, not merely date of compile.
-\date{14 Oct 2010}
+\date{9 July 2011}
 \maketitle
 
-\section{Introduction}
 
-This document gives an introduction and overview of the
-\R~Bioconductor package \edgeR~\citep{Robinson:2010p249}, which
-provides statistical routines for determining differential expression
-in digital gene expression data. The package implements methods
-developed by~\citet{Robinson07, Robinson08}.  The routines can be
-applied equally to RNA-seq, Tag-seq, SAGE, CAGE, Illumina/Solexa, 454
-or ABI SOLiD experiments.  In fact, the methods may be useful in other
-experiments where counts are observed.
-
-
-\section{How to get help}
-
-Most questions about \edgeR~will hopefully be answered by the documentation or references.
-Every function mentioned in this guide has its own help page.
-For example, a detailed description of the arguments and output of the \code{exactTest} function can be read by typing \code{?exactTest} or \code{help(exactTest)} at the \R~prompt.
-
-The authors of the package always appreciate receiving reports of bugs in the package functions or in the documentation.
-The same goes for well-considered suggestions for improvements.
-Other questions about how to use \edgeR~are best sent to the Bioconductor mailing list \url{bioconductor@stat.math.ethz.ch}.
-To subscribe to the mailing list, see \url{https://stat.ethz.ch/mailman/listinfo/bioconductor}.
-Please send requests for general assistance and advice to the mailing list rather than to the individual authors.
-Users posting to the mailing list for the first time may find it helpful to read the 
-helpful posting guide at \url{http://www.bioconductor.org/doc/postingGuide.html}.
-
-
-\section{Reading data}
-
-%\R~packages for the processing of raw data files for digital gene expression (DGE) datasets are still in development stages (e.g. \texttt{ShortRead}) at time of writing.
-
-\edgeR~requires three pieces of information:
-\begin{enumerate}
-\item
-\texttt{counts}: a matrix of counts where each row represents a gene/exon (or whatever genomic feature is being tracked) and each column is a different sample.
-The row names are transcript IDs.
-\item
-\texttt{group}: a factor (with length equal to the number of columns of \texttt{counts}) denoting the experimental group.
-\item
-\texttt{lib.size}: vector of the same length as \texttt{group} giving the total number of reads sequenced for each sample.
-\end{enumerate}
-We assume that the counts are stored in one of two formats.  Either
-there is a single file containing a table of counts with the first
-column containing the tag identifiers and the remaining columns
-containing the tag counts for each library sequenced, or there is an
-individual file for each library, each with first column for tag
-identifiers and second column for counts.
-
-If the counts for all libraries are stored in a single file, then an
-appriopriate in-built \texttt{R} function (such as \texttt{read.delim}
-or \texttt{read.csv}) can be used to read the table of counts into
-\texttt{R}. The library sizes can be the column sums from the table of
-counts, and thus easily obtained, or the user can specify the the
-library sizes throught \texttt{lib.size} argument of the
-\texttt{DGEList()} constructor.  See the help documentation
-(\texttt{?DGEList} or \texttt{?"DGEList-class"}) or the examples below
-for further details.
-
-If the counts are stored in separate files, then, given a vector
-containing the filenames the \edgeR~function \texttt{readDGE} will
-read in the data from the individual files, collate the counts into a
-table and compute the library sizes and return a \texttt{DGEList}
-object.  See the help documentation (\texttt{?readDGE}) or the
-examples below for further details.
-
-
-\section{Normalization issues for digital counts}
-
-\subsection{General comments}
-
-The \edgeR\ methodology needs to work with the original digital
-expression counts, so these should not be transformed in any way by
-users prior to analysis.  \edgeR\ automatically takes into account the
-total size (total read number) of each library in all calculations of
-fold-changes, concentration and statistical significance.  For some
-datasets, no other normalization is required for evaluating
-differential expression.
-
-It bears emphasizing that RPKM values should \emph{not} be used for
-assessing differential expression of genes between samples in
-\edgeR. We use the raw counts, because the methods implemented in edgeR
-are based on the negative binomial distribution, a discrete
-distribution. To be able to perform good inference on differential
-expression it is very important to model the mean-variance
-relationship in the data appropriately. There are good reasons why the
-NB model is appropriate for the raw count data, but transforming the
-data using RPKM (or FPKM or similar) renders our distributional
-assumptions invalid and we cannot guarantee that our methods will be
-reliable for such transformed data. 
-
-There are methods implemented in \edgeR\ to normalize the counts for
-compositional bias in sequenced libraries and for differences between
-libraries in sequencing depth. These adjustments are offsets
-in the models used for testing DE and do not transform the counts in
-any way.
-
-The reason we do not worry about gene length bias, GC bias and so on
-when conducting DE analysis of the same genes \emph{between} samples
-is that we expect (and hope) that the biases will affect the same gene
-in the same way in different samples. This being the case, then it is
-OK to test for DE gene between samples because such biases in effect
-``cancel out'' when making the comparison between samples. This
-reasoning does not hold for comparing the expression level of
-\emph{different genes} in \emph{one sample}---to do this you would probably need
-to account for gene length and other biases, but this is not what \edgeR\ is
-designed to do.
-
-
-\subsection{Calculating normalization factors}
-
-
-Recently, \citet{Robinson:2010p145} described a method to account for
-a bias introduced by what they call RNA composition.  In brief, there
-are occasions when comparing different DGE libraries where a small
-number of genes are very highly expressed in one sample, but not in
-another.  Because these highly expressed genes consume a substantial
-proportion of the sequencing ``real estate'', the remaining genes in
-the library are undersampled.  Similarly, this situation may occur
-when the two tissues being compared have transcriptomes of different
-sizes, i.e.~when there are noticeably more transcripts expressed in
-one tissues than the other.  \citet{Robinson:2010p145} show that in
-comparing kidney and liver RNA, there are a large number of genes
-expressed in kidney but not in liver, causing the remaining genes to
-be undersampled and skewing the differential expression calls.  To
-account for this, the authors developed an empirical approach to
-estimate the bias and proposed to build that into the library size
-(or, an offset in a generalized linear model), making it an {\em
-  effective} library size.  We demonstrate this below on the
-\citet{Marioni:2008p93} RNA-seq dataset.
-
-
-Given a table counts or a \texttt{DGEList} object, one can calculate normalization factors using the \texttt{calcNormFactors()} function.
-
-\begin{Schunk}
-\begin{Sinput}
-> head(D)
-\end{Sinput}
-\begin{Soutput}
-   R1L1Kidney R1L2Liver R1L3Kidney R1L4Liver
-10          0         0          0         0
-15          4        35          7        32
-17          0         2          0         0
-18        110       177        131       135
-19      12685      9246      13204      9312
-22          0         1          0         0
-\end{Soutput}
-\begin{Sinput}
-> g <- gsub("R[1-2]L[1-8]", "", colnames(D))
-> d <- DGEList(counts = D, group = substr(colnames(D), 5, 30))
-> d$samples
-\end{Sinput}
-\begin{Soutput}
-            group lib.size norm.factors
-R1L1Kidney Kidney  1804977            1
-R1L2Liver   Liver  1691734            1
-R1L3Kidney Kidney  1855190            1
-R1L4Liver   Liver  1696308            1
-\end{Soutput}
-\begin{Sinput}
-> d <- calcNormFactors(d)
-> d$samples
-\end{Sinput}
-\begin{Soutput}
-            group lib.size norm.factors
-R1L1Kidney Kidney  1804977        1.209
-R1L2Liver   Liver  1691734        0.821
-R1L3Kidney Kidney  1855190        1.225
-R1L4Liver   Liver  1696308        0.823
-\end{Soutput}
-\end{Schunk}
-
-By default, \texttt{calcNormFactors} uses the TMM method and the sample whose 75\%-ile (of library-scale-scaled counts) is closest to the mean of 75\%-iles as the reference.  Alternatively, the reference can be specified through the \texttt{refColumn} argument.  Also, you can specify different levels of trimming on the log-ratios or log-concentrations, as well as a cutoff on the log-concentrations (See the help documentation for further details, including other specification of estimating the normalization factors).   
-
-To see the bias and normalization visually, consider a smear plot between the first (kidney) and second (liver) sample.  In the left panel of Figure \ref{fig:Marioni_normalization}, we show a smear plot (X-axis: log-concentration, Y-axis: log fold-change of liver over kidney, those with 0 in either sample are shown in the smear on the left) of the raw data (Note: the argument \texttt{normalize=TRUE} {\em only} divides by the sum of counts in each sample and has nothing to do with the normalization factors mentioned above).  One should notice a shift downward in the log-ratios, presumably caused by the genes highly expressed in liver that are taking away sequencing capacity from the remainder of the genes in the liver RNA sample.  The red line signifies the estimated TMM (trimmed mean of M values) normalization factor, which in this case represents the adjustment applied to the library size to account for the compositional bias.  The right panel of Figure \ref{fig:Marioni_normalization} simply shows the M and A values after correction.  Here, one should find that the bulk of the M-values are centred around 0.
-
-
-\begin{Schunk}
-\begin{Sinput}
-> par(mfrow = c(1, 2))
-> maPlot(d$counts[, 1], d$counts[, 2], normalize = TRUE, pch = 19, 
-+     cex = 0.4, ylim = c(-8, 8))
-> grid(col = "blue")
-> abline(h = log2(d$samples$norm.factors[2]/d$samples$norm.factors[1]), 
-+     col = "red", lwd = 4)
-> eff.libsize <- d$samples$lib.size * d$samples$norm.factors
-> maPlot(d$counts[, 1]/eff.libsize[1], d$counts[, 2]/eff.libsize[2], 
-+     normalize = FALSE, pch = 19, cex = 0.4, ylim = c(-8, 8))
-> grid(col = "blue")
-\end{Sinput}
-\end{Schunk}
-
-
-\begin{figure}[ht]
-\begin{center}
-\includegraphics[width=\textwidth]{edgeR_normalization_example_marioni}
-\caption{Smear plots before (left) and after (right) composition normalization.}
-\label{fig:Marioni_normalization}
-\end{center}
-\end{figure}
-
-
-
-\section{Negative binomial models}
-The basic model we use for DGE data is based on the negative binomial distribution.  The model is very flexible.  For example, if $Y$ is distributed as $NB(\mu,\phi)$, then the expected value of $Y$ is $\mu$ and the variance is $\mu + \mu^2 \cdot \phi$, thus giving sufficient flexibility for many scenarios in observing count data.
-
-The observed data can be denoted as $Y_{gij}$ where $g$ is the gene (tag, exon, etc.), $i$ is the experimental group and $j$ is the index of the replicate.  We can model the counts as
-\[  Y_{gij} \sim NB(M_j \cdot p_{gi}, \phi_g) \]
-where $p_{gi}$ represents the proportion of the sequenced sample for group $i$ that is tag $g$ and $M_j$ represents the library size. 
-
-It is of interest to find genes where, for example, $p_{g1}$ is significantly different from $p_{g2}$.  The parameter $\phi_g$ is the overdispersion (relative to the Poisson) and represents the biological, or sample-to-sample variability.   The methods we developed moderate the dispersion estimates towards a common dispersion, much like how the \limma~package moderates the variances in the analysis of microarray data. It is also possible to analyse DGE data using a common dispersion for each tag using \edgeR.
-
-\section{Estimating dispersions}
-
-\subsection{Two ways of estimating dispersions}
-
-When a negative binomial model is fitted, we need to estimate the dispersion(s) before we carry out the analysis. \edgeR\ provides two ways of estimating the dispersion(s), the quantile-adjusted conditional maximum likelihood (qCML) method and the Cox-Reid profile-adjusted likelihood (CR) method. In general, we apply the qCML method to experiments with single factor and the CR method to experiments with multiple factors.
-
-\subsection{Experiment with single factor}
-
-Compared against several other estimators (e.g.~maximum likelihood estimator, Quasi-likelihood estimator etc.) using an extensive simulation study, qCML is the most reliable in terms of bias on a wide range of conditions and specifically performs best in the situation of many small samples with a common dispersion, the model which is applicable to Next-Gen sequencing data. We have deliberately focused on very small samples due to the fact that DNA sequencing costs prevent large number of replicates for SAGE and RNA-seq experiments.
-
-For a single tag with a small number of libraries, all estimators offer mediocre performance and here is no clear winner. As the number of tags used to estimate the common dispersion increases while holding the number of libraries at a small number, qCML is clearly the best estimator. With more libraries, CR method performs about as well as qCML.
-
-The qCML method calculates the likelihood conditioning on the total counts for each tag, and uses pseudo counts after adjusted for library sizes. Given a table counts or a \texttt{DGEList} object, the qCML common dispersion can be calculated using the \texttt{estimateCommonDisp()} function, and the qCML tagwise dispersions can be calculated using the \texttt{estimateTagwiseDisp()} function.  
-
-However, the qCML method is only applicable on dataset with single factor design since it fails to take into account the effects from multiple factors in a more complicated experiment. Therefore, the qCML method (i.e.~the \texttt{estimateCommonDisp()} and \texttt{estimateTagwiseDisp()} function) is recommended for a study with single factor. When experiment has more than one factor involved, we need to seek a new way of estimating dispersions.
-
-For more detailed examples, see the case studies in section \ref{zhang} (Zhang's data), section \ref{hoen} ('t Hoen's data) and section \ref{li} (Li's data)
-
-\subsection{Experiment with multiple factors}
-
-The CR method is derived to overcome the limitations of the qCML method as mentioned above. It takes care of multiple factors by fitting generalized linear models (GLM) with a design matrix.
-
-The CR method is based on the idea of approximate conditional likelihood which reduces to residual maximum likelihood. Given a table counts or a \texttt{DGEList} object and the design matrix of the experiment, generalized linear models are fitted. This allows valid estimation of the dispersion, since all systematic sources of variation are accounted for. The CR common dispersion and tagwise dispersions can be calculated using the \texttt{estimateCRDisp()} function (for tagwise dispersions, set \texttt{`tagwise = TRUE'} within the function), and it is strongly recommended in multi-factor experiment cases.
-
-For more detailed examples, see the case study in section \ref{tuch} (Tuch's data).
-
-\subsection{Tagwise dispersion or common dispersion}
-
-\edgeR\ can estimate a common dispersion for all the tags or it can estimate separate dispersions for individual tags.
-As individual tags typically don't provide enough data to estimate the dispersion reliably, \edgeR\ implements an empirical Bayes strategy for squeezing the tagwise dispersions towards the common dispersion.
-The amount of shrinkage is determined by the prior weight given to the common dispersion and the precision of the tagwise estimates.
-The prior can be thought of arising from a number of prior observations, equivalent to \code{prior.n} tags with common dispersion and the same number of libraries per tag as in the current experiment.
-The prior number of tags \code{prior.n} can be set by the user.
-The precision of the tagwise estimators is roughly proportion to the per-tag degrees of freedom, equal to the number of libraries minus the number of groups or the number of GLM coefficients.
-We generally recommend choosing \code{prior.n} so that the total degrees of freedom (\code{prior.n*df}) associated with the prior is about 50, subject to \code{prior.n} not going below 1.
-For example, if there are four libraries and two groups, the tagwise degrees of freedom are 2, so we would recommend \code{prior.n=25}.
-This is an empirical rule of thumb borne out of experience with a number of datasets.
-
-
-
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
-\section{Testing for DE genes/tags}
-
-\subsection{Two ways of testing for differential expression}
-
-For all the Next-Gen squencing data analyses we consider here, people are most interested in finding differentially expressed genes/tags between two (or more) groups. 
-
-Once negative binomial models are fitted and dispersion estimates are obtained, we can proceed with testing procedures for determing differential expression. \edgeR\ provides two ways of testing differential expression, the exact test and the generalized linear model (GLM) likelihood ratio test.   
-
-\subsection{Experiment with single factor}
-
-The exact test is based on the qCML methods. Knowing the conditional distribution for the sum of counts in a group, we can compute exact $p$-values by summing over all sums of counts that have a probability less than the probability under the null hypothesis of the observed sum of counts. The exact test for the negative binomial distribution has strong parallels with Fisher's exact test.
-
-As we dicussed in the previous section, the exact test is only applicable to experiments with a single factor. The testing can be done by using the function \texttt{exactTest()}, and the function allows both common dispersion and tagwise dispersion approaches. 
-
-For more detailed examples, see the case studies in section \ref{zhang} (Zhang's data), section \ref{hoen} ('t Hoen's data) and section \ref{li} (Li's data).
-
-\subsection{Experiment with multiple factors}
-
-The GLM likelihood ratio test is based on the idea of fitting negative binomial GLMs with the Cox-Reid dispersion estimates. By doing this, it automatically takes all known sources of varations into account. Therefore, the GLM likelihood ratio test is recommended for experiment with multiple factors. 
-
-The testing can be done by using the functions \texttt{glmFit()} and \texttt{glmLRT()}. Given raw counts, a fixed value for the dispersion parameter and a design matrix, the function \texttt{glmFit()} fits the negative binomial GLM for each tag and produces an object of class \texttt{DGEGLM} with some new components. 
-
-Then this \texttt{DGEGLM} object can be passed to the function \texttt{glmLRT()} to carry out the likelihood ratio test. User can select coefficient(s) to drop from the full design matrix. This gives the null model against which the full model is compared with in the likelihood ratio test. Tags can then be ranked in order of evidence for differential expression, based on the $p$-value computed for each tag. 
-
-For more detailed examples, see the case study in section \ref{tuch} (Tuch's data).
-
-
-
-%%% CASE STUDIES
-
-%%% Case Study: SAGE Data (Zhang)
-
-\include{Zhang_SAGE_analysis}
-
-%%% Case Study: Tag-Seq Data (`t Hoen)
-
-\include{tHoen_tagSeq_analysis}
-
-%%% Case Study: RNA-seq Data (Li)
-
-\include{Li_RNAseq_analysis}
-
-%%% Case Study: Oral Carcinomas vs Matched Normal Tissue (Tuch Data)
-
-\include{Tuch_analysis}
-
-
-\section{Poisson example}
-
-It has been noted that, in some deep sequencing approaches, not a
-great deal of overdispersion is observed.  Specifically, the means and
-variances appear to be very close to each other, suggesting the
-Poisson distribution is a good fit.  Methods within the \edgeR~package
-may still be useful, including the quantile adjustment (effectively a
-normalization) and the exact testing routines.
-
-To illustrate this, we sample Poisson data and carry out the exact
-testing procedure by setting the dispersion parameter in the NB model
-very close to zero. The NB model reduces to the Poisson model as the
-dispersion parameter goes to zero, and our investigations have shown
-that using the NB exact test with very small dispersion gives results
-entirely consistent with using a `true' Poisson model and testing
-procedure. The data are quantile-adjusted before the exact test is
-carried out, with the dispersion parameter is set to (near) 0. The
-function \code{exactTest} operates only on \code{DGEList} objects, as
-illustrated in the case studies above, so we need to form a
-\code{DGEList} object containing our data before carrying out the
-Poisson test.
-
-Nevertheless, an analysis using the Poisson distribution can be
-carried out as follows:
-
-<<poisson,width=7,height=4>>=
-library(edgeR)
-set.seed(101)
-n <- 10000
-lib.sizes <- c(40000,50000,38000,40000)
-p <- runif(n,min=.0001,.001)
-mu <- outer(p,lib.sizes)
-mu[1:5,3:4]<-mu[1:5,3:4]*8
-y <- matrix(rpois(4*n,lambda=mu),nrow=n)
-dP <- DGEList(counts=y,group=rep(1:2,each=2),lib.size=lib.sizes)
-dP$common.lib.size <- exp(mean(log(dP$samples$lib.size)))
-@
-
-And you can proceed as before (setting the dispersion close to zero to
-allow exact test for Poisson data):
-
-<<poissonstats,height=6,width=8>>=
-de.P <- exactTest(dP, dispersion=1e-06) 
-topTags(de.P)
-@
-
-The \code{binomTest} function in \edgeR~also provides an exact test
-for DE under a Poisson model and for some applications this will be
-easier to use than the steps for the Poisson example shown above.
-
-%\section{Future improvements and extension}
-
-%Here, we list some improvements/extensions that are planned for the \edgeR~package:
-
-%\begin{enumerate}
-%\item As the packages for the processing of raw high-throughput sequencing data become more mature, \edgeR~may need to adapt and operate on different objects.  As shown above, \edgeR~operates on a simple object containing simple data summaries which will  presumably be readily available from pre-processing steps.
-%\item Significant speed improvements have been made since the earlier
-%  versions of \edgeR, but as the datasets become larger, some further optimizations may be necessary.  We are exploring various ways to do this.
-%\item The current quantile-based normalization assumes the library sizes are fixed.  Depending on the circumstances of the samples in question, it may be necessary to explore something like an {\em effective} library size.
-%\item We are exploring more general testing procedures.
-%\end{enumerate}
-
-%<<setupfiles>>=
-%getwd()
-%dir("")
-%@
-
-\section{Setup}
-
-This vignette was built on:
-
-<<setup>>=
-sessionInfo()
-@
-
-
-\bibliographystyle{plainnat}
-\bibliography{edgeR_case_study_bib}
-
+\edgeR\ \citep{Robinson:2010p249} is a package of the Bioconductor
+software development project.
+\edgeR\ implements statistical methods for assessing differential expression
+from digital gene expression data
+developed by~\citet{Robinson07, Robinson08}.
+The methodology can be
+applied to RNA-Seq, SAGE-Seq or ChIP-Seq data arising from sequencing
+technologies such as \Illumina, 454
+or ABI SOLiD.
+
+For a detailed introduction to the package, including a number of fully worked case studies, see the \edgeR\ User's Guide.
+
+
+\begin{thebibliography}{3}
+\providecommand{\natexlab}[1]{#1}
+\providecommand{\url}[1]{\texttt{#1}}
+\expandafter\ifx\csname urlstyle\endcsname\relax
+  \providecommand{\doi}[1]{doi: #1}\else
+  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
+
+\bibitem[Robinson and Smyth(2007)]{Robinson07}
+MD Robinson and GK Smyth.
+\newblock Moderated statistical tests for assessing differences in tag
+  abundance.
+\newblock \emph{Bioinformatics}, 23\penalty0 (21):\penalty0 2881--2887, 2007.
+
+\bibitem[Robinson and Smyth(2008)]{Robinson08}
+MD Robinson and GK Smyth.
+\newblock Small-sample estimation of negative binomial dispersion, with
+  applications to {SAGE} data.
+\newblock \emph{Biostatistics}, 9\penalty0 (2):\penalty0 321--332, 2008.
+
+\bibitem[Robinson et~al.(2010)Robinson, McCarthy, and Smyth]{Robinson:2010p249}
+MD Robinson, DJ McCarthy, and GK Smyth.
+\newblock {edgeR}: a bioconductor package for differential expression analysis
+  of digital gene expression data.
+\newblock \emph{Bioinformatics}, 26\penalty0 (1):\penalty0 139--40, Jan 2010.
+
+\end{thebibliography}
 \end{document}
