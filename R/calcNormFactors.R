@@ -1,6 +1,6 @@
-calcNormFactors <- function(object, method=c("TMM","RLE","quantile"), refColumn=NULL,
+calcNormFactors <- function(object, method=c("TMM","RLE","upperquartile"), refColumn=NULL,
                             logratioTrim=.3, sumTrim=0.05, doWeighting=TRUE, Acutoff=-1e10, 
-                            quantile=0.75) {
+                            p=0.75) {
                             
   method <- match.arg(method)
                             
@@ -12,7 +12,7 @@ calcNormFactors <- function(object, method=c("TMM","RLE","quantile"), refColumn=
   } else if(is(object, "DGEList")) {
     data <- object$counts
     if(method=="TMM" & is.null(refColumn)) {      
-      f75 <- .calcFactorQuantile(data=data, lib.size=object$samples$lib.size, q=0.75)
+      f75 <- .calcFactorQuantile(data=data, lib.size=object$samples$lib.size, p=0.75)
       refColumn <- which.min(abs(f75-mean(f75)))
       if(length(refColumn)==0)
         refColumn <- 1
@@ -28,7 +28,7 @@ calcNormFactors <- function(object, method=c("TMM","RLE","quantile"), refColumn=
                           logratioTrim=logratioTrim, sumTrim=sumTrim, doWeighting=doWeighting, 
                           Acutoff=Acutoff),
               RLE = .calcFactorRLE(data)/libsize,
-              quantile = .calcFactorQuantile(data, libsize, q=quantile))
+              upperquartile = .calcFactorQuantile(data, libsize, p=p))
               
   f <- f/exp(mean(log(f)))
 
@@ -48,9 +48,11 @@ calcNormFactors <- function(object, method=c("TMM","RLE","quantile"), refColumn=
     apply(data, 2, function(u) median((u/gm)[gm > 0]))
 }
 
-.calcFactorQuantile <- function (data, lib.size, q=0.75) {
+.calcFactorQuantile <- function (data, lib.size, p=0.75) {
+    i <- apply(data<=0,1,all)
+    if(any(i)) data <- data[!i,,drop=FALSE]
     y <- t(t(data)/lib.size)
-    f <- apply(y,2,function(x) quantile(x,p=q))
+    f <- apply(y,2,function(x) quantile(x,p=p))
     f/exp(mean(log(f)))
 }
 

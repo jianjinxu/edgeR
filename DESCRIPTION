@@ -1,9 +1,9 @@
 Package: edgeR
-Version: 2.3.32
-Date: 2011/07/09
+Version: 2.3.33
+Date: 2011/07/10
 Title: Empirical analysis of digital gene expression data in R
 Author: Mark Robinson <mrobinson@wehi.edu.au>, Davis McCarthy <dmccarthy@wehi.edu.au>, Gordon Smyth <smyth@wehi.edu.au>
-Maintainer: Mark Robinson <mrobinson@wehi.edu.au>, Davis McCarthy <dmccarthy@wehi.edu.au>, Gordon Smyth <smyth@wehi.edu.au>
+Maintainer: Mark Robinson <mrobinson@wehi.edu.au>, Davis McCarthy <dmccarthy@wehi.edu.au>, Gordon Smyth <smyth@wehi.edu.au>, Yunshun Chen <yuchen@wehi.edu.au>
 Depends: R (>= 2.3.0), methods
 Imports: limma
 Suggests: MASS, statmod, splines
