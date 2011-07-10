@@ -1,4 +1,4 @@
-#  Last modified 15 May 2011
+#  Last modified 10 July 2011
 
 estimateGLMCommonDisp <- function(y, design=NULL, offset=NULL, method="CoxReid", ...) 
 UseMethod("estimateGLMCommonDisp")
@@ -15,6 +15,17 @@ estimateGLMCommonDisp.DGEList <- function(y, design=NULL, offset=NULL, method="C
 estimateGLMCommonDisp.default <- function(y, design=NULL, offset=NULL, method="CoxReid", ...)
 {
 	y <- as.matrix(y)
+	if(is.null(design)) {
+		design <- matrix(1,ncol(y),1)
+		rownames(design) <- colnames(y)
+		colnames(design) <- "Intercept"
+	} else {
+		design <- as.matrix(design)
+	}
+	if(ncol(design) >= ncol(y)) {
+		warning("No residual df: cannot estimate dispersion")
+		return(NA)
+	}
 	method <- match.arg(method, c("CoxReid","Pearson","deviance"))
 	switch(method,
 		CoxReid=dispCoxReid(y, design=design, offset=offset, ...),
