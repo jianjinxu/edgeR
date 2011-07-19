@@ -26,7 +26,8 @@ Possible values are \code{"bin.spline"}, \code{"bin.loess"} (which both result i
 
 \item{offset}{numeric scalar, vector or matrix giving the offset (in addition to the log of the effective library size) that is to be included in the NB GLM for the transcripts. If a scalar, then this value will be used as an offset for all transcripts and libraries. If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each transcript. If a matrix, then each library for each transcript can have a unique offset, if desired. In \code{adjustedProfileLik} the \code{offset} must be a matrix with the same dimension as the table of counts. Default is \code{NULL}; if object is a \code{DGEList} and offset is \code{NULL} then offset will be calculated automatically from code{y$samples}.}
 
-\item{\ldots}{other arguments are passed to lower-level functions.}
+\item{\ldots}{other arguments are passed to lower-level functions.
+See \code{\link{dispBinTrend}}, \code{\link{dispCoxReidPowerTrend}} and \code{\link{dispCoxReidSplineTrend}} for details.}
 }
 
 \value{
@@ -53,12 +54,11 @@ disp <- estimateGLMTrendedDisp(d, design, min.n=10)
 }
 
 \seealso{
-See \code{\link{dispBinTrend}}, \code{\link{dispCoxReidPowerTrend}} and \code{\link{dispCoxReidSplineTrend}} for details on how the calculations are done.
+\code{\link{dispBinTrend}}, \code{\link{dispCoxReidPowerTrend}} and \code{\link{dispCoxReidSplineTrend}} for details on how the calculations are done.
 
-\code{\link{estimateGLMCommonDisp}}, \code{\link{estimateGLMTagwiseDisp}}
+\code{\link{estimateGLMCommonDisp}} for common dispersion and \code{\link{estimateGLMTagwiseDisp}} for (trended) tagwise dispersion in the context of generalized linear models.
 
-\code{\link{estimateTagwiseDisp}}, and \code{\link{estimateCommonDisp}} can be used to estimate a value for the dispersion parameter for each tag/transcript and a common dispersion value, respectively. The estimates are stabilized by squeezing the estimates towards the common value calculated by \code{estimateCommonDisp}. These functions use exact conditional methods, but are restricted to less complicated experimental designs; they can deal with multiple groups, but nothing more complicated.
-
+\code{\link{estimateCommonDisp}} for common dispersion or \code{\link{estimateTagwiseDisp}} for tagwise dispersion in the context of a multiple group experiment (one-way layout).
 }
 
 \keyword{algebra}

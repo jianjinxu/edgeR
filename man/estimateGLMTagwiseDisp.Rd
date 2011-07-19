@@ -9,7 +9,6 @@
 Estimates the dispersion parameter for a DGE dataset for general experimental designs by using Cox-Reid approximate conditional inference for a negative binomial generalized linear model for each transcript (tag) with the unadjusted counts and design matrix provided.
 }
 
-
 \usage{
 \S3method{estimateGLMTagwiseDisp}{DGEList}(y, design, offset=NULL, method="trend", ...)
 \S3method{estimateGLMTagwiseDisp}{default}(y, design, offset=NULL, dispersion, ...)
@@ -27,19 +26,20 @@ Estimates the dispersion parameter for a DGE dataset for general experimental de
 
 \item{dispersion}{vector or scalar giving the dispersion value(s) to be used to set the grip of points for computation of the tagwise dispersion in \code{dispCoxReidInterpolateTagwise}.}
 
-\item{\ldots}{other arguments are passed to lower-level functions.}
+\item{\ldots}{other arguments are passed to lower-level functions. See \code{\link{dispCoxReidInterpolateTagwise}} for details.}
 }
 
 \value{
 \code{estimateGLMTagwiseDisp.DGEList} produces a \code{DGEList} object, which contains the tagwise dispersion parameter estimate for each tag for the negative binomial model that maximizes the Cox-Reid adjusted profile likelihood. The tagwise dispersions are simply added to the \code{DGEList} object provided as the argument to the function.
 
-\code{estimateGLMTagwiseDisp.default} returns a  vector of the tagwise dispersion estimates.
+\code{estimateGLMTagwiseDisp.default} returns a vector of the tagwise dispersion estimates.
 }
 
 \details{
-This generic function is simply a wrapper for \code{dispCoxReidInterpolateTagwise}. To obtain estimates of the tagwise (i.e., genewise) dispersion parameters for negative binomial GLMs we use Cox-Reid approximate conditional inference as implemented in \code{dispCoxReidInterpolateTagwise}. The approach is to maximize the adjusted profile likelihood over the dispersion value, for the tagwise models and use these values as the tagwise dispersion parameters for differential signal testing in downstream analysis.
+This generic function is essentially a wrapper for \code{dispCoxReidInterpolateTagwise}.
+To obtain estimates of the tagwise dispersion parameters for negative binomial GLMs we use Cox-Reid approximate conditional inference as implemented in \code{dispCoxReidInterpolateTagwise}.
+The approach is to maximize the adjusted profile likelihood over the dispersion value, for the tagwise models and use these values as the tagwise dispersion parameters for differential signal testing in downstream analysis.
 }
-
 
 \references{
 Cox, DR, and Reid, N (1987). Parameter orthogonality and approximate conditional inference. \emph{Journal of the Royal Statistical Society Series B} 49, 1-39.
@@ -56,9 +56,9 @@ summary(d$tagwise.dispersion)
 }
 
 \seealso{
-\code{\link{estimateGLMCommonDisp}}, \code{\link{estimateGLMTrendedDisp}}
+\code{\link{estimateGLMCommonDisp}} for common dispersion and \code{\link{estimateGLMTrendedDisp}} for trended dispersion in the context of a generalized linear model.
 
-\code{\link{estimateGLMCommonDisp}}, and \code{\link{estimateGLMTrendedDisp}} can be used to estimate a common value for the dispersion parameter for the whole dataset or a value for each tag/transcript that incorporates a mean-dependent trend on the dispersion, respectively, for a GLM (complicated experimental design). \code{\link{estimateCommonDisp}} and \code{\link{estimateTagwiseDisp}} use conditional maximum likelihood methods to estimate common and tagwise dispersions respectively, but are limited to multiple-group experimental designs (one-way layouts).
+\code{\link{estimateCommonDisp}} for common dispersion or \code{\link{estimateTagwiseDisp}} for tagwise dispersion in the context of a multiple group experiment (one-way layout).
 }
 
 \keyword{algebra}

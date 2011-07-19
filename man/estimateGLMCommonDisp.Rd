@@ -32,7 +32,9 @@ If a matrix, then it should have the same row and column dimensions as \code{y}.
 
 In the \code{DGEList} method, the offset is calculated by default from the library sizes and normalization factors found in \code{y$samples}.}
 
-\item{\ldots}{other arguments are passed to lower-level functions.}
+\item{\ldots}{other arguments are passed to lower-level functions.
+See \code{\link{dispCoxReid}}, \code{\link{dispPearson}} and \code{\link{dispDeviance}}
+for details.}
 }
 
 \value{
@@ -72,7 +74,9 @@ d2$common.disp
 \seealso{
 \code{\link{dispCoxReid}}, \code{\link{dispPearson}}, \code{\link{dispDeviance}}
 
-\code{\link{estimateGLMTrendedDisp}}, \code{\link{estimateGLMTagwiseDisp}}
+\code{\link{estimateGLMTrendedDisp}} for trended dispersion and \code{\link{estimateGLMTagwiseDisp}} for tagwise dispersions in the context of a generalized linear model.
+
+\code{\link{estimateCommonDisp}} for common dispersion or \code{\link{estimateTagwiseDisp}} for tagwise dispersion in the context of a multiple group experiment (one-way layout).
 }
 
 \keyword{models}
