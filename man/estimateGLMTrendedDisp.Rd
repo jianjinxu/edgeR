@@ -11,8 +11,8 @@ Estimates the dispersion parameter for each transcript (tag) with a trend that d
 
 
 \usage{
-\S3method{estimateGLMTrendedDisp}{DGEList}(y, design, offset=NULL, method="bin.loess", ...)
-\S3method{estimateGLMTrendedDisp}{default}(y, design, offset=NULL, method="bin.loess",  ...)
+\S3method{estimateGLMTrendedDisp}{DGEList}(y, design, offset=NULL, method="bin.spline", ...)
+\S3method{estimateGLMTrendedDisp}{default}(y, design, offset=NULL, method="bin.spline",  ...)
 }
 
 \arguments{ 
@@ -22,7 +22,7 @@ Estimates the dispersion parameter for each transcript (tag) with a trend that d
 \item{design}{numeric matrix giving the design matrix for the GLM that is to be fit.}
 
 \item{method}{method (low-level function) used to estimated the trended dispersions.
-Possible values are \code{"bin.spline"}, \code{"bin.loess"} (which both result in a call to \code{dispBinTrend}), \code{"power"} (call to \code{dispCoxReidPowerTrend}), or \code{"spline"} (call to \code{dispCoxReidSplineTrend}).}
+Possible values are \code{"bin.spline"} (default), \code{"bin.loess"} (which both result in a call to \code{dispBinTrend}), \code{"power"} (call to \code{dispCoxReidPowerTrend}), or \code{"spline"} (call to \code{dispCoxReidSplineTrend}).}
 
 \item{offset}{numeric scalar, vector or matrix giving the offset (in addition to the log of the effective library size) that is to be included in the NB GLM for the transcripts. If a scalar, then this value will be used as an offset for all transcripts and libraries. If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each transcript. If a matrix, then each library for each transcript can have a unique offset, if desired. In \code{adjustedProfileLik} the \code{offset} must be a matrix with the same dimension as the table of counts. Default is \code{NULL}; if object is a \code{DGEList} and offset is \code{NULL} then offset will be calculated automatically from code{y$samples}.}
 
@@ -61,4 +61,4 @@ disp <- estimateGLMTrendedDisp(d, design, min.n=10)
 \code{\link{estimateCommonDisp}} for common dispersion or \code{\link{estimateTagwiseDisp}} for tagwise dispersion in the context of a multiple group experiment (one-way layout).
 }
 
-\keyword{algebra}
+\keyword{models}
