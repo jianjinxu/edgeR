@@ -1,9 +1,9 @@
 \name{cpm}
 \alias{cpm}
 
-\title{Calculate Counts per Millioni from DGEList or Matrix Object}
+\title{Calculate Counts per Million from DGEList or Matrix Object}
 
-\description{Returns counts per million from a  DGEList or matrix object by dividing raw counts by library size (which can be normalized) and multiplying by one million.}
+\description{Returns counts per million from a DGEList or matrix object by dividing raw counts by library size (which can be normalized) and multiplying by one million.}
 
 \usage{
 cpm(x, normalized.lib.sizes=FALSE)
@@ -38,4 +38,4 @@ cpm(d)
 \code{\link{DGEList}} for more information about the \code{DGEList} class.
 }
 
-\keyword{file}
+\keyword{algebra}
