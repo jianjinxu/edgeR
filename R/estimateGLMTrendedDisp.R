@@ -1,7 +1,7 @@
-estimateGLMTrendedDisp <- function(y, design, offset=NULL, method="bin.loess", ...) 
+estimateGLMTrendedDisp <- function(y, design, offset=NULL, method="bin.spline", ...) 
 UseMethod("estimateGLMTrendedDisp")
 
-estimateGLMTrendedDisp.DGEList <- function(y, design, offset=NULL, method="bin.loess", ...)
+estimateGLMTrendedDisp.DGEList <- function(y, design, offset=NULL, method="bin.spline", ...)
 {
     if( is.null(offset) )
         offset <- getOffset(y)
@@ -13,7 +13,7 @@ estimateGLMTrendedDisp.DGEList <- function(y, design, offset=NULL, method="bin.l
 	y
 }
 
-estimateGLMTrendedDisp.default <- function(y, design, offset=NULL, method="bin.loess", ...)
+estimateGLMTrendedDisp.default <- function(y, design, offset=NULL, method="bin.spline", ...)
 {
 	y <- as.matrix(y)
 	method <- match.arg(method, c("bin.spline","bin.loess","power","spline"))
