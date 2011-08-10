@@ -80,7 +80,7 @@ p.value <- exactTest.matrix(y[,1:2],y[,3,drop=FALSE],r=1.5)
 }
 
 \seealso{
-\code{\link{equalizeLibSizes}, \code{\link{binomTest}}
+\code{\link{equalizeLibSizes}}, \code{\link{binomTest}}
 }
 
 \keyword{algebra}
