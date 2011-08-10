@@ -2,9 +2,9 @@
 \alias{exactTest}
 \alias{exactTest.matrix}
 
-\title{An Exact Test for Differences between Two Negative Binomial Groups}
+\title{Exact Tests for Differences between Two Groups of Negative-Binomial Counts}
 
-\description{Carry out an exact test for differences between two negative binomial groups, based on conditioning on sums of (quantile-adjusted pseudo-)counts; calculations performed by \code{exactTest.matrix}}
+\description{Compute genewise exact tests for differences in the means between two groups of negative-binomially distributed counts.}
 
 \usage{
 exactTest(object,pair=NULL,dispersion=NULL,common.disp=TRUE)
@@ -13,7 +13,7 @@ exactTest.matrix(y1,y2,r=NULL,dispersion=0,all.zeros=NULL)
 
 \arguments{ 
 
-\item{object}{a \code{DGEList} object, output of \code{estimateCommonDisp}, on which to compute Fisher-like exact statistics for the pair of groups specified.}
+\item{object}{a \code{DGEList} object containing pseudo-counts and group IDs.}
 
 \item{pair}{vector of length two, either numeric or character, providing the pair of groups to be compared; if a character vector, then should be the names of two groups (e.g. two levels of \code{object$samples$group}); if numeric, then groups to be compared are chosen by finding the levels of \code{object$samples$group} corresponding to those numeric values and using those levels as the groups to be compared; if \code{NULL}, then first two levels of \code{object$samples$group} (a factor) are used. Note that the first group listed in the pair is the baseline for the comparison---so if the pair is \code{c("A","B")} then the comparison is \code{B - A}, so genes with positive log-fold change are up-regulated in group B compared with group A (and vice versa for genes with negative log-fold change).}
 
@@ -33,14 +33,22 @@ For \code{exactTest.matrix} equal to \code{1/r} and ignored if \code{r} is suppl
 }
 
 \value{
-\code{exactTest} produces an object of class \code{DGEExact} containing the following elements.
+\code{exactTest.matrix} produces a numeric vector of genewise p-values with length equal to the number of transcripts, taken to be the number of rows of \code{y1}.
+
+\code{exactTest} produces an object of class \code{DGEExact} containing the following components:
 \item{table}{a data frame containing the elements \code{logConc}, the log-average concentration/abundance for each tag in the two groups being compared, \code{logFC}, the log-abundance ratio, i.e. fold change, for each tag in the two groups being compared, \code{p.value}, exact p-value for differential expression using the NB model}
 \item{comparison}{a vector giving the names of the two groups being compared} 
 \item{genes}{a data frame containing information about each transcript; taken from \code{object} and can be \code{NULL}}
-\code{exactTest.matrix} produces a numeric vector of exact p-values with length equal to the number of transcripts, taken to be the number of rows of \code{y1}.
 }
 
 \details{
+This function can be used to test for differential expression between groups when the library sizes are equal.
+In the context of the edgeR package, it is applied after equalizing the library sizes using \code{equalizeLibSizes}, in other words, it is applied to quantile-adjusted pseudo-counts.
+The dispersion may be different for genes, but is assumed equal for all the counts for a given gene.
+
+The exact test uses the likelihood ratio test to generate a test statistics, then computes the exact p-value for this statistic from the conditional distribution of the group means conditional on the grand mean.
+This test can be viewed as a generalization of the well-known exact binomial test, but generalized to overdispersed counts.
+
 For each transcript, conditioning on the total sum of counts within each group and the total sum of counts across all groups allows us to construct an exact test for differences between two group. The conditional distribution for the sum of counts in a group is known (given the values for the mean counts, \code{mus}, and the dispersion parameter, 1/\code{r}), exact p-values can be computed by summing over all sums of counts that have a probability less than the probability under the null hypothesis of the observed sum of counts.
 
 \code{exactTest.matrix} is the function that actually computes the exact p-values.
@@ -56,23 +64,23 @@ Robinson MD and Smyth GK (2008). Small-sample estimation of negative binomial di
 
 \examples{
 # generate raw counts from NB, create list object
-y<-matrix(rnbinom(80,size=1,mu=10),nrow=20)
-d<-DGEList(counts=y,group=rep(1:2,each=2),lib.size=rep(c(1000:1001),2))
-rownames(d$counts)<-paste("tagno",1:nrow(d$counts),sep=".")
+y <- matrix(rnbinom(80,size=1,mu=10),nrow=20)
+d <- DGEList(counts=y,group=rep(1:2,each=2),lib.size=rep(c(1000:1001),2))
+rownames(d$counts) <- paste("tagno",1:nrow(d$counts),sep=".")
 
 # estimate common dispersion and find differences in expression
-d<-estimateCommonDisp(d)
-de<-exactTest(d)
+d <- estimateCommonDisp(d)
+de <- exactTest(d)
+topTags(de)
 
 # example using exactTest.matrix directly
-y<-matrix(rnbinom(20,mu=10,size=1.5),nrow=5)
-group<-factor(c(1,1,2,2))
-y<-splitIntoGroupsPseudo(y,group,pair=c(1,2))
-f<-exactTest.matrix(y$y1,y$y2,r=1.5)
+y <- matrix(rnbinom(15,mu=10,size=1.5),5,3)
+group <- factor(c(1,1,2))
+p.value <- exactTest.matrix(y[,1:2],y[,3,drop=FALSE],r=1.5)
 }
 
 \seealso{
-Computing p-values for differential expression for each transcript between two (only) digital gene expression libraries can also be done using the \code{sage.test} function in the \code{statmod} package.
+\code{\link{equalizeLibSizes}, \code{\link{binomTest}}
 }
 
 \keyword{algebra}
