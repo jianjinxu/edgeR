@@ -1,4 +1,4 @@
-# Last modified 10 Aug 2011.
+# Last modified 23 Sep 2011.
 
 estimateGLMTagwiseDisp <- function(y, design, offset=NULL, ...) 
 UseMethod("estimateGLMTagwiseDisp")
@@ -32,7 +32,7 @@ estimateGLMTagwiseDisp.DGEList <- function(y, design, offset=NULL, method="trend
 	y
 }
 
-estimateGLMTagwiseDisp.default <- function(y, design, offset=NULL, dispersion, method, ...)
+estimateGLMTagwiseDisp.default <- function(y, design, offset=NULL, dispersion, method="trend", ...)
 {
 	y <- as.matrix(y)
 	dispCoxReidInterpolateTagwise(y, design, offset=offset, dispersion, method=method, ...)

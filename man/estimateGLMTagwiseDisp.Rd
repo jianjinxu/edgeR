@@ -11,7 +11,7 @@ Estimates the dispersion parameter for a DGE dataset for general experimental de
 
 \usage{
 \S3method{estimateGLMTagwiseDisp}{DGEList}(y, design, offset=NULL, method="trend", ...)
-\S3method{estimateGLMTagwiseDisp}{default}(y, design, offset=NULL, dispersion, ...)
+\S3method{estimateGLMTagwiseDisp}{default}(y, design, offset=NULL, dispersion, method="trend", ...)
 }
 
 \arguments{ 

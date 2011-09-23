@@ -8,7 +8,7 @@ Estimate tagwise dispersion parameters across multiple negative binomial general
 }
 
 \usage{
-dispCoxReidInterpolateTagwise(y, design, offset=NULL, dispersion, abundance=NULL, min.row.sum=5, prior.n=getPriorN(y, design), span=2/3, grid.npts=11, grid.range=c(-6,6))
+dispCoxReidInterpolateTagwise(y, design, offset=NULL, dispersion, method="trend", abundance=NULL, min.row.sum=5, prior.n=getPriorN(y, design), span=2/3, grid.npts=11, grid.range=c(-6,6))
 }
 
 \arguments{ 
@@ -19,6 +19,8 @@ dispCoxReidInterpolateTagwise(y, design, offset=NULL, dispersion, abundance=NULL
 \item{offset}{numeric scalar, vector or matrix giving the offset (in addition to the log of the effective library size) that is to be included in the NB GLM for the transcripts. If a scalar, then this value will be used as an offset for all transcripts and libraries. If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each transcript. If a matrix, then each library for each transcript can have a unique offset, if desired. In \code{adjustedProfileLik} the \code{offset} must be a matrix with the same dimension as the table of counts.}
 
 \item{dispersion}{numeric scalar or vector giving the dispersion(s) towards which the tagwise dispersion parameters are shrunk.}
+
+\item{method}{method for smoothing, \code{"common"} or \code{"trend"}.}
 
 \item{abundance}{numeric scalar or vector giving the tagwise log-abundance measure for each tag. If null, the abundance is then evaluated by \code{mglmOneGroup}}
 
