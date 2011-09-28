@@ -103,7 +103,7 @@ DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, norm.factors=NULL, grou
 	if(remove.zeros) {
 		if(any(all.zeros)) {
 			x <- x[!all.zeros,]
-			warning("Removing ",sum(all.zeros)," rows that all have zero counts.")
+			warning("Removing ",sum(all.zeros)," rows that have all zero counts.")
 		}
 	}
 	x
