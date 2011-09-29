@@ -4,6 +4,9 @@ binomTest <- function(y1, y2, n1=sum(y1), n2=sum(y2), p=n1/(n1+n2))
 #	Multiple exact binomial tests.
 #	Intended for comparing DGE libraries
 #	in the absence of biological variation.
+#	Rejection region is all values with lower prob than that of
+#	value observed, same as for binom.test() in stats package.
+
 #	Based on function sage.test() in the statmod package.
 #	Gordon Smyth
 #	In statmod package 15 Nov 2003.

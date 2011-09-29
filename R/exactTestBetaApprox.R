@@ -14,7 +14,7 @@ exactTestBetaApprox <- function(y1,y2,dispersion)
 	n2 <- NCOL(y2)
 	if(n1>1) y1 <- rowSums(y1)
 	if(n2>1) y2 <- rowSums(y2)
-	if(length(dispersion==1)) dispersion <- rep(dispersion,ntags)
+	if(length(dispersion)==1) dispersion <- rep(dispersion,ntags)
 
 #	Null fitted values
 	y <- y1+y2
@@ -27,13 +27,13 @@ exactTestBetaApprox <- function(y1,y2,dispersion)
 	alpha2 <- n2/n1*alpha1
 	med <- rep(0,ntags)
 	med[!all.zero] <- qbeta(0.5,alpha1[!all.zero],alpha2[!all.zero])
-	left <- (y1+0.5)<med & !all.zero
+	left <- (y1+0.5)/y<med & !all.zero
 	if(any(left)) {
-		pvals[left] <- 2*pbeta((y1[left]+0.5)/y,alpha1[left],alpha2[left])
+		pvals[left] <- 2*pbeta((y1[left]+0.5)/y[left],alpha1[left],alpha2[left])
 	}
-	right <- (y1-0.5)>med & !all.zero
+	right <- (y1-0.5)/y>med & !all.zero
 	if(any(right)) {
-		pvals[right] <- 2*pbeta((y1[right]-0.5)/y,alpha1[right],alpha2[right],lower.tail=FALSE)
+		pvals[right] <- 2*pbeta((y1[right]-0.5)/y[right],alpha1[right],alpha2[right],lower.tail=FALSE)
 	}
 	names(pvals) <- names(y1)
 	pvals
