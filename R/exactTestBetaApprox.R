@@ -1,4 +1,4 @@
-exactTestBetaApprox <- function(y1,y2,dispersion)
+exactTestBetaApprox <- function(y1,y2,dispersion=0)
 #	Test for differences in means between two negative binomial
 #	or Poisson random variables, or between two groups of variables,
 #	using a beta distribution approximation.

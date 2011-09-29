@@ -1,4 +1,4 @@
-exactTest <- function(object, pair=NULL, dispersion=NULL, common.disp=TRUE, big.count=1000)
+exactTest <- function(object, pair=NULL, dispersion=NULL, common.disp=TRUE, rejection.region="doubletail", big.count=1000)
     ## Calculates exact p-values for the differential expression levels of tags in the two groups being compared.
     ## Written by by Davis McCarthy, September 2009.
     ## Last modified 11 June 2010.
@@ -44,7 +44,6 @@ exactTest <- function(object, pair=NULL, dispersion=NULL, common.disp=TRUE, big.
     mus <- q2q.pair$N*q2q.pair$conc$conc.common
     y<-splitIntoGroupsPseudo(q2q.pair$pseudo,group.pair,pair)
 
-#	exact.pvals<- exactTest.matrix(y$y1,y$y2,mus,r=1/dispersion, all.zeros=obj.pair$all.zeros)
 	exact.pvals <- exactTestDoubleTail(y1=y$y1,y2=y$y2,dispersion=dispersion,big.count=big.count)
 	
     logConc<-(log2(q2q.pair$conc$conc.group[,pair[1]==levs.pair])+log2(q2q.pair$conc$conc.group[,pair[2]==levs.pair]))/2

@@ -30,10 +30,7 @@ fit
 fit <- glmFit(d,design,dispersion=dispersion.true,method="levenberg")
 fit
 
-# example using exactTest.matrix directly
-y <- matrix(rnbinom(20,mu=10,size=1.5),nrow=5)
+y <- matrix(rnbinom(20,mu=10,size=3/2),nrow=5)
 group <- factor(c(1,1,2,2))
 y <- splitIntoGroupsPseudo(y,group,pair=c(1,2))
-mus <- rep(10,5)
-f <- exactTest.matrix(y$y1,y$y2,mus,r=1.5,all.zeros=rep(FALSE,length=nrow(y$y1)))
-f
+exactTestDoubleTail(y$y1,y$y2,dispersion=2/3)

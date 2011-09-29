@@ -1,5 +1,5 @@
 
-R version 2.13.0 Patched (2011-04-25 r55638)
+R Under development (unstable) (2011-09-19 r57030)
 Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: i386-pc-mingw32/i386 (32-bit)
@@ -41,7 +41,7 @@ Comparison of groups:  2 - 1
  3rd Qu.: -6.552   3rd Qu.: 0.5323   3rd Qu.:0.81052  
  Max.   : -5.804   Max.   :41.0452   Max.   :1.00000  
 > topTags(de)
-Comparison of groups: 2-1 
+Comparison of groups:  2-1 
           logConc      logFC    P.Value       FDR
 Tag.17  -6.760425  2.0751158 0.01975954 0.4347099
 Tag.21  -7.091791 -1.7577397 0.06131012 0.6744114
@@ -341,12 +341,9 @@ x1     1      392    1.0174851
 x2     1      436    0.9235409
 
 > 
-> # example using exactTest.matrix directly
-> y <- matrix(rnbinom(20,mu=10,size=1.5),nrow=5)
+> y <- matrix(rnbinom(20,mu=10,size=3/2),nrow=5)
 > group <- factor(c(1,1,2,2))
 > y <- splitIntoGroupsPseudo(y,group,pair=c(1,2))
-> mus <- rep(10,5)
-> f <- exactTest.matrix(y$y1,y$y2,mus,r=1.5,all.zeros=rep(FALSE,length=nrow(y$y1)))
-> f
+> exactTestDoubleTail(y$y1,y$y2,dispersion=2/3)
 [1] 0.7156777 0.9351131 0.9645848 0.6754741 0.1309771
 > 

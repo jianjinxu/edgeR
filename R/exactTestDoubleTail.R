@@ -1,4 +1,4 @@
-exactTestDoubleTail <- function(y1,y2,dispersion,big.count=1000)
+exactTestDoubleTail <- function(y1,y2,dispersion=0,big.count=1000)
 #	Test for differences in means between two groups of
 #	negative binomial or Poisson random variables,
 #	using exact enumeration conditional on total sum.

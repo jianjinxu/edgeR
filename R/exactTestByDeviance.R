@@ -1,4 +1,4 @@
-exactTest.matrix <- function(y1,y2,r=NULL,dispersion=0,all.zeros=NULL) 
+exactTestByDeviance <- function(y1,y2,dispersion=0)
     ## Exact Negative Binomial tests for equality of two groups,
     ## conditioning on total sum.
     ## y1 and y2 are matrices of counts for two given experimental groups
@@ -9,6 +9,8 @@ exactTest.matrix <- function(y1,y2,r=NULL,dispersion=0,all.zeros=NULL)
     ## Mark Robinson, Davis McCarthy, Gordon Smyth.
     ## 17 June 2009.  Last modified 8 August 2011.
 {
+	y1 <- as.matrix(y1)
+	y2 <- as.matrix(y2)
 	ntags <- nrow(y1)
 	if(ntags!=nrow(y2)) stop("Number of rows of y1 not equal to number of rows of y2")
 	if(any(is.na(y1)) || any(is.na(y2))) stop("NAs not allowed")
@@ -18,15 +20,11 @@ exactTest.matrix <- function(y1,y2,r=NULL,dispersion=0,all.zeros=NULL)
 	sum2 <- round(rowSums(y2))
 	N <- sum1+sum2
 	mu <- N/(n1+n2)
-	if(is.null(r)) {
-		r <- 1/dispersion
-	} else {
-		dispersion <- 1/r
-	}
+	r <- 1/dispersion
 	if(all(dispersion==0)) return(binomTest(sum1,sum2,p=n1/(n1+n2)))
 	if(any(dispersion==0)) stop("dispersion must be either all zero or all positive")
 	if(length(r)==1) r <- rep(r,ntags)
-	if(is.null(all.zeros)) all.zeros <- N==0
+	all.zeros <- N==0
 
 	pvals <- rep(1,ntags)
 	if(ntags==0) return(pvals)
@@ -50,12 +48,6 @@ exactTest.matrix <- function(y1,y2,r=NULL,dispersion=0,all.zeros=NULL)
 		p.bot <- dnbinom(N[i],size=(n1+n2)*r[i],mu=(n1+n2)*mu[i])
 		pvals[i] <- sum(p.top[keep]/p.bot)
 	}
-#	alpha1 <- n1*mu/(1+dispersion*mu)
-#	alpha2 <- n2*mu/(1+dispersion*mu)
-#	ratio1 <- (sum1+0.5)/N
-#	ratio2 <- (sum2+0.5)/N
-#	ratio <- pmin(ratio1,ratio2)
-#	papprox <- 2*pbeta(ratio,alpha1,alpha2)
 	pvals
 }
 
@@ -71,6 +63,3 @@ exactTest.matrix <- function(y1,y2,r=NULL,dispersion=0,all.zeros=NULL)
     dev <- 2*rowSums( y*log( y / mu ) - (y + r)*log( (1+y/r) / (1+mu/r) ) )
     dev
 }
-
-
-

@@ -1,14 +1,20 @@
 \name{exactTest}
 \alias{exactTest}
-\alias{exactTest.matrix}
+\alias{exactTestDoubleTail}
+\alias{exactTestBetaApprox}
+\alias{exactTestBySmallP}
+\alias{exactTestByDeviance}
 
 \title{Exact Tests for Differences between Two Groups of Negative-Binomial Counts}
 
 \description{Compute genewise exact tests for differences in the means between two groups of negative-binomially distributed counts.}
 
 \usage{
-exactTest(object,pair=NULL,dispersion=NULL,common.disp=TRUE)
-exactTest.matrix(y1,y2,r=NULL,dispersion=0,all.zeros=NULL)
+exactTest(object, pair=NULL, dispersion=NULL, common.disp=TRUE, rejection.region="doubletail", big.count=1000)
+exactTestDoubleTail(y1, y2, dispersion=0, big.count=1000)
+exactTestBySmallP(y1, y2, dispersion=0)
+exactTestByDeviance(y1, y2, dispersion=0)
+exactTestBetaApprox(y1, y2, dispersion=0)
 }
 
 \arguments{ 
@@ -22,18 +28,18 @@ For \code{exactTest.matrix} equal to \code{1/r} and ignored if \code{r} is suppl
 
 \item{common.disp}{logical, if \code{TRUE}, then testing carried out using common dispersion for each tag/gene, if \code{FALSE} then tag-wise estimates of the dispersion parameter are used; default \code{TRUE}.}
 
+\item{rejection.region}{type of rejection region for two-sided exact test.  Possible values are \code{"doubletail"}, \code{"smallp"} or \code{"deviance"}.}
+
+\item{big.count}{count size above which asymptotic beta approximation will be used (for \code{"doubletail"}).}
+
 \item{y1}{numeric matrix of counts for one of the two given experimental groups to be tested for differences. Libraries are assumed to be equal in size - e.g. adjusted pseudocounts from the output of \code{\link{equalizeLibSizes}}.}
 
 \item{y2}{numeric matrix of counts for one of the two given experimental groups to be tested for differences. Libraries are assumed to be equal in size - e.g. adjusted pseudocounts from the output of \code{\link{equalizeLibSizes}}. Must have the same number of rows as \code{y1}.}
 
-\item{r}{vector of negative binomial \code{size} parameter values (\code{size} = \code{1/phi} where \code{phi} is the dispersion parameter in the NB model); if \code{r} is of length 1, then a common value of the dispersion is used for all transcripts, otherwise, must be a vector with length equal to the number of rows of \code{y1} and \code{y2}.}
-
-\item{all.zeros}{logical vector indicating which tags have zero total counts over all libraries.   The output p-value is set to \code{1} for these tags.  If not provided, is determined from the data.}
-
 }
 
 \value{
-\code{exactTest.matrix} produces a numeric vector of genewise p-values with length equal to the number of transcripts, taken to be the number of rows of \code{y1}.
+\code{exactTestDoubleTail} and friends produce a numeric vector of genewise p-values with length equal to the number of transcripts, taken to be the number of rows of \code{y1}.
 
 \code{exactTest} produces an object of class \code{DGEExact} containing the following components:
 \item{table}{a data frame containing the elements \code{logConc}, the log-average concentration/abundance for each tag in the two groups being compared, \code{logFC}, the log-abundance ratio, i.e. fold change, for each tag in the two groups being compared, \code{p.value}, exact p-value for differential expression using the NB model}
@@ -51,9 +57,9 @@ This test can be viewed as a generalization of the well-known exact binomial tes
 
 For each transcript, conditioning on the total sum of counts within each group and the total sum of counts across all groups allows us to construct an exact test for differences between two group. The conditional distribution for the sum of counts in a group is known (given the values for the mean counts, \code{mus}, and the dispersion parameter, 1/\code{r}), exact p-values can be computed by summing over all sums of counts that have a probability less than the probability under the null hypothesis of the observed sum of counts.
 
-\code{exactTest.matrix} is the function that actually computes the exact p-values.
+The functions \code{exactTestDoubleTail}, \code{exactTestBySmallP} and \code{exactTestByDeviance} are the low-level functions that compute the p-values.
+They correspond to three different ways to define the two-sided rejection region when the two groups have different numbers of samples.
 \code{exactTest} is intended to have a more object-orientated flavor as it produces objects containing all the necessary components for downstream analysis.
-
 }
 
 \references{
@@ -73,10 +79,10 @@ d <- estimateCommonDisp(d)
 de <- exactTest(d)
 topTags(de)
 
-# example using exactTest.matrix directly
-y <- matrix(rnbinom(15,mu=10,size=1.5),5,3)
+# example using lower level exactTest function directly
+y <- matrix(rnbinom(15,mu=10,size=1/0.2),5,3)
 group <- factor(c(1,1,2))
-p.value <- exactTest.matrix(y[,1:2],y[,3,drop=FALSE],r=1.5)
+p.value <- exactTestDoubleTail(y[,1:2],y[,3,drop=FALSE],dispersion=0.2)
 }
 
 \seealso{
