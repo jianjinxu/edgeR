@@ -22,13 +22,13 @@ DGEList(counts = matrix(0, 0, 0), lib.size = NULL, norm.factors = NULL, group = 
 \details{
 If no \code{lib.size} argument is passed to the constructor, the column totals are used.
 
-The optional \code{genes} argument is meant to be an annotation data.frame, with rows matching those in the \code{counts} argument.
+The optional \code{genes} argument supplies a data.frame of annotation for each row or feature.
 }
 \value{a \code{DGEList} object}
 
 \author{Mark Robinson, Davis McCarthy, Gordon Smyth}
 
-\seealso{\code{\link{DGEList}}}
+\seealso{\code{\link[edgeR:DGEList-class]{DGEList-class}}}
 
 \examples{
 y <- matrix(rnbinom(10000,mu=5,size=2),ncol=4)
