@@ -16,6 +16,17 @@ estimateGLMTrendedDisp.DGEList <- function(y, design, offset=NULL, method="bin.s
 estimateGLMTrendedDisp.default <- function(y, design, offset=NULL, method="bin.spline", ...)
 {
 	y <- as.matrix(y)
+	if(is.null(design)) {
+		design <- matrix(1,ncol(y),1)
+		rownames(design) <- colnames(y)
+		colnames(design) <- "Intercept"
+	} else {
+		design <- as.matrix(design)
+	}
+	if(ncol(design) >= ncol(y)) {
+		warning("No residual df: cannot estimate dispersion")
+		return(NA)
+	}
 	method <- match.arg(method, c("bin.spline","bin.loess","power","spline"))
 	switch(method,
 		bin.spline=dispBinTrend(y, design, offset=offset, method.trend="spline", ...),

@@ -42,9 +42,11 @@ binomial dispersion, with applications to SAGE data. \emph{Biostatistics},
 
 \author{Mark Robinson, Davis McCarthy}
 \examples{
-y<-matrix(rnbinom(1000,mu=10,size=2),ncol=4)
-d<-DGEList(counts=y,group=c(1,1,2,2),lib.size=c(1000:1003))
-cmdisp<-estimateCommonDisp(d)
+# True dispersion is 1/5=0.2
+y <- matrix(rnbinom(1000,mu=10,size=5),ncol=4)
+d <- DGEList(counts=y,group=c(1,1,2,2),lib.size=c(1000:1003))
+cmdisp <- estimateCommonDisp(d)
+cmdisp$common.dispersion
 }
 
 \seealso{

@@ -1,4 +1,4 @@
-# Last modified 23 Sep 2011.
+# Last modified 30 Sep 2011.
 
 estimateGLMTagwiseDisp <- function(y, design, offset=NULL, ...) 
 UseMethod("estimateGLMTagwiseDisp")
@@ -35,5 +35,16 @@ estimateGLMTagwiseDisp.DGEList <- function(y, design, offset=NULL, method="trend
 estimateGLMTagwiseDisp.default <- function(y, design, offset=NULL, dispersion, method="trend", ...)
 {
 	y <- as.matrix(y)
+	if(is.null(design)) {
+		design <- matrix(1,ncol(y),1)
+		rownames(design) <- colnames(y)
+		colnames(design) <- "Intercept"
+	} else {
+		design <- as.matrix(design)
+	}
+	if(ncol(design) >= ncol(y)) {
+		warning("No residual df: cannot estimate dispersion")
+		return(NA)
+	}
 	dispCoxReidInterpolateTagwise(y, design, offset=offset, dispersion, method=method, ...)
 }
