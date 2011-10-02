@@ -1,7 +1,7 @@
-exactTest <- function(object, pair=NULL, dispersion=NULL, common.disp=TRUE, rejection.region="doubletail", big.count=1000)
+exactTest <- function(object, pair=NULL, dispersion=NULL, common.disp=TRUE, rejection.region="doubletail", big.count=900)
 #	Calculates exact p-values for the differential expression levels of tags in the two groups being compared.
 #	Davis McCarthy, Gordon Smyth.
-#	Created September 2009. Last modified 29 Sep 2011.
+#	Created September 2009. Last modified 2 Oct 2011.
 {
     if( !is(object,"DGEList") )
         stop("Currently only supports DGEList objects as the object argument.")

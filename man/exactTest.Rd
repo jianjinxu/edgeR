@@ -10,10 +10,10 @@
 \description{Compute genewise exact tests for differences in the means between two groups of negative-binomially distributed counts.}
 
 \usage{
-exactTest(object, pair=NULL, dispersion=NULL, common.disp=TRUE, rejection.region="doubletail", big.count=1000)
-exactTestDoubleTail(y1, y2, dispersion=0, big.count=1000)
-exactTestBySmallP(y1, y2, dispersion=0)
-exactTestByDeviance(y1, y2, dispersion=0)
+exactTest(object, pair=NULL, dispersion=NULL, common.disp=TRUE, rejection.region="doubletail", big.count=900)
+exactTestDoubleTail(y1, y2, dispersion=0, big.count=900)
+exactTestBySmallP(y1, y2, dispersion=0, big.count=900)
+exactTestByDeviance(y1, y2, dispersion=0, big.count=900)
 exactTestBetaApprox(y1, y2, dispersion=0)
 }
 
@@ -29,7 +29,7 @@ For \code{exactTest.matrix} equal to \code{1/r} and ignored if \code{r} is suppl
 
 \item{rejection.region}{type of rejection region for two-sided exact test.  Possible values are \code{"doubletail"}, \code{"smallp"} or \code{"deviance"}.}
 
-\item{big.count}{count size above which asymptotic beta approximation will be used (for \code{"doubletail"}).}
+\item{big.count}{count size above which asymptotic beta approximation will be used.}
 
 \item{y1}{numeric matrix of counts for the first the two experimental groups to be tested for differences.
 Rows correspond to genes or transcripts and columns to libraries.
@@ -68,6 +68,8 @@ This method corresponds to \code{binom.test} when the dispersion is near zero, b
 \code{exactTestDoubleTail} computes two-sided p-values by doubling the smaller tail probability.
 \code{exactTestByDeviance} uses the deviance goodness of fit statistics to define the rejection region, and is therefore equivalent to a conditional likelihood ratio test.
 This has good statistical properties but is relatively slow to compute.
+
+\code{exactTestBetaApprox} implements an asymptotical beta distribution approximation to the conditional count distribution.
 }
 
 \references{

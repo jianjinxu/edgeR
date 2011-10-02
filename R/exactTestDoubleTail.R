@@ -1,8 +1,9 @@
-exactTestDoubleTail <- function(y1,y2,dispersion=0,big.count=1000)
+exactTestDoubleTail <- function(y1,y2,dispersion=0,big.count=900)
 #	Test for differences in means between two groups of
 #	negative binomial or Poisson random variables,
 #	using exact enumeration conditional on total sum.
-#	Left and right rejection regions have equal probability.
+
+#	Smaller tail probability is doubled to get p-value.
 
 #	Gordon Smyth
 #	28 Sep 2019.  Last modified 29 Sep 2011.

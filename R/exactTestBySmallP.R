@@ -1,13 +1,13 @@
-exactTestBySmallP <- function(y1,y2,dispersion=0) 
-## Exact Negative Binomial tests for equality of two groups,
-## conditioning on total sum.
-## y1 and y2 are matrices of counts for two given experimental groups
-## (libraries are assumed to be equal in size - adjusted pseudocounts in the edgeR context)
-## mu is a vector giving the estimated expected value
-## of the count for each tag under the null hypothesis of no difference between the two groups (i.e. common library size * common concentration)
-## r is the size parameter for the NB distribution (r = 1/phi) - can be either the same or different for each tag
-## Mark Robinson, Davis McCarthy, Gordon Smyth.
-## 17 June 2009.  Last modified 29 Sep 2010.
+exactTestBySmallP <- function(y1,y2,dispersion=0,big.count=900) 
+#	Test for differences in means between two groups of
+#	negative binomial or Poisson random variables,
+#	using exact enumeration conditional on total sum.
+
+#	Rejection region is by method of small probability, i.e.,
+#	all values with probability equal or less than that observed.
+
+#	Mark Robinson, Davis McCarthy, Gordon Smyth.
+#	Created 17 June 2009.  Last modified 2 October 2011.
 {
 	y1 <- as.matrix(y1)
 	y2 <- as.matrix(y2)
@@ -16,6 +16,9 @@ exactTestBySmallP <- function(y1,y2,dispersion=0)
 	if(any(is.na(y1)) || any(is.na(y2))) stop("NAs not allowed")
 	n1 <- ncol(y1)
 	n2 <- ncol(y2)
+
+	if(n1==n2) return(exactTestDoubleTail(y1=y1,y2=y2,dispersion=dispersion,big.count=big.count))
+
 	sum1 <- round(rowSums(y1))
 	sum2 <- round(rowSums(y2))
 	N <- sum1+sum2
