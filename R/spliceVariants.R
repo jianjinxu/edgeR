@@ -151,7 +151,7 @@ estimateExonGenewiseDisp <- function(y, geneID, group=NULL)
     ## Need to first estimate a common dispersion
     gene.data <- estimateCommonDisp(gene.data[used,])
     ## Next estimate tagwise dispersion for each gene, with trend. Default prop.used=2/3, grid.length=200
-    gene.data <- estimateTagwiseDisp(gene.data, trend=TRUE)
+    gene.data <- estimateTagwiseDisp(gene.data, trend="movingave")
     ## For those gene which have sufficient (>0) counts, assign estimated dispersion
     genewise.disp[used] <- gene.data$tagwise.dispersion
     ## For those genes with zero counts, assign maximum estimated dispersion value

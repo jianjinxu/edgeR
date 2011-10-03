@@ -8,7 +8,7 @@ Estimates tagwise dispersion values by an empirical Bayes method based on weight
 }
 
 \usage{
-estimateTagwiseDisp(object, prior.n=getPriorN(object), trend=FALSE, prop.used=0.3, tol=1e-06, grid=TRUE, grid.length=200, method="movingave", verbose=TRUE)
+estimateTagwiseDisp(object, prior.n=getPriorN(object), trend="movingave", prop.used=0.3, method="grid", grid.length=200, tol=1e-06, verbose=TRUE)
 }
 
 \arguments{ 
@@ -17,17 +17,21 @@ estimateTagwiseDisp(object, prior.n=getPriorN(object), trend=FALSE, prop.used=0.
 
 \item{prior.n}{numeric scalar, smoothing parameter that indicates the weight to give to the common likelihood compared to the individual tag's likelihood; default \code{getPriorN(object)} gives a value for \code{prior.n} that is equivalent to giving the common likelihood 20 prior degrees of freedom in the estimation of the tag/genewise dispersion.}
 
-\item{trend}{logical, whether or not to let the tagwise dispersion estimates vary with tag/gene abundance (expression level), that is, whether or not to allow a trend with tag abundance in the tagwise dispersion estimates}
+\item{trend}{method for allowing the prior distribution for the dispersion to be abundance-dependent.
+Possible values are \code{"none"}, \code{"movingave"} and \code{"tricube"}.
+\code{"none"} means no trend.
+\code{"movingave"} applies a moving average smoother to the local likelihood values.
+\code{"tricube"} applies tricube weighting to locally smooth the common likelihood.}
 
 \item{prop.used}{optional scalar giving the proportion of all tags/genes to be used for the locally weighted estimation of the tagwise dispersion, allowing the dispersion estimates to vary with abundance (expression level). For each tag/gene the estimate of its dispersion is based on the closest \code{prop.used} of all of the genes to that gene, where 'closeness' is based on similarity in expression level.}
 
-\item{tol}{numeric scalar, if \code{grid=FALSE}, tolerance for Newton-Rhapson iterations}
+\item{method}{method for maximizing the posterior likelihood.
+Possible values are \code{"grid"} for grid search or \code{"optimize"} to call the function of the same name.
+}
 
-\item{grid}{logical, whether to use a grid search (default = \code{TRUE}); if \code{FALSE}, uses \code{optimize}, but this is very slow if there is a large number of tags/genes to be analysed (i.e. more than 5000)}
+\item{grid.length}{for \code{method="grid"}, the number of points at which the likelihood is evaluated for each tag.  Larger values improve the accuracy of the dispersion estimates.}
 
-\item{grid.length}{if \code{grid=TRUE}, the number of points at which the likelihood is evaluated for each tag, so larger values improve the accuracy of the dispersion estimates.}
-
-\item{method}{names the method to use to fit the trend (so only relevant if \code{trend=TRUE}). The default is \code{"movingave"}, which uses a moving average to locally smooth the common likelihood to apply a mean-dependent trend to the dispersions. The other option is \code{"tricube"}, which uses a tricube weighting function to locally smooth the common likelihood. The moving average method is much faster and results are similar.}
+\item{tol}{for \code{method="optimize"}, the tolerance for Newton-Rhapson iterations.}
 
 \item{verbose}{logical, if \code{TRUE} then diagnostic ouput is produced during the estimation process.}
 
@@ -35,6 +39,11 @@ estimateTagwiseDisp(object, prior.n=getPriorN(object), trend=FALSE, prop.used=0.
 
 \details{
 Maximizes the negative binomial weighted likelihood (a weighted version using the common likelihood given weight according the the smoothing parameter prior.n and the individual tag/gene likelihood) for each tag from the pseudocounts provided (i.e. assuming library sizes are equal), to give an estimate of the dispersion parameter for each tag (i.e. tagwise dispersion estimation).
+
+\code{"tricube"} local weighting is similar to that used by \code{lowess}.
+\code{"movingave"} is much faster than \code{"tricube"} and gives similar results.
+
+\code{"optimize"} is very slow if there is a large number of tags/genes to be analysed (i.e., more than 5000).
 }
 
 \value{
