@@ -1,9 +1,9 @@
-dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, method="trend", abundance=NULL, min.row.sum=5, prior.n=getPriorN(y, design), span=2/3, grid.npts=11, grid.range=c(-6,6))
+dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, trend=TRUE, abundance=NULL, min.row.sum=5, prior.n=getPriorN(y, design), span=2/3, grid.npts=11, grid.range=c(-6,6))
 #	Estimate tagwise NB dispersions
 #	using weighted Cox-Reid Adjusted Profile-likelihood
 #	and cubic spline interpolation over a tagwise grid.
 #	Yunshun Chen and Gordon Smyth
-#	Created August 2010. Last modified 23 Sep 2011.
+#	Created August 2010. Last modified 3 Oct 2011.
 {
 #	Check input arguments
 	y <- as.matrix(y)
@@ -19,13 +19,12 @@ dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, me
 	} else {
 		if(ldisp != ntags) stop("length of dispersion doesn't match nrow(y)")
 	}
-	method <- match.arg(method,c("common","trend"))
 	if(is.null(abundance)) abundance <- mglmOneGroup(y,offset=offset)
 
 #	Apply min.row.sum and use input dispersion for small count tags
 	i <- (rowSums(y) >= min.row.sum)
 	if(any(!i)) {
-		if(any(i)) dispersion[i] <- Recall(y=y[i,],design=design,offset=offset[i,],dispersion=dispersion[i],abundance=abundance[i],grid.npts=grid.npts,min.row.sum=0,prior.n=prior.n,span=span,method=method)
+		if(any(i)) dispersion[i] <- Recall(y=y[i,],design=design,offset=offset[i,],dispersion=dispersion[i],abundance=abundance[i],grid.npts=grid.npts,min.row.sum=0,prior.n=prior.n,span=span,trend=trend)
 		return(dispersion)
 	}
 
@@ -36,7 +35,7 @@ dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, me
 		spline.disp <- dispersion * 2^spline.pts[i]
 		apl[,i] <- adjustedProfileLik(spline.disp, y=y, design=design, offset=offset)
 	}
-	if(method=="common") {
+	if(trend==FALSE) {
 		apl.smooth <- matrix(colMeans(apl),ntags,nlibs,byrow=TRUE)
 	} else {
 		o <- order(abundance)

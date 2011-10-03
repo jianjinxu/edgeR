@@ -8,7 +8,7 @@ Estimate tagwise dispersion parameters across multiple negative binomial general
 }
 
 \usage{
-dispCoxReidInterpolateTagwise(y, design, offset=NULL, dispersion, method="trend", abundance=NULL, min.row.sum=5, prior.n=getPriorN(y, design), span=2/3, grid.npts=11, grid.range=c(-6,6))
+dispCoxReidInterpolateTagwise(y, design, offset=NULL, dispersion, trend=TRUE, abundance=NULL, min.row.sum=5, prior.n=getPriorN(y, design), span=2/3, grid.npts=11, grid.range=c(-6,6))
 }
 
 \arguments{ 
@@ -20,7 +20,7 @@ dispCoxReidInterpolateTagwise(y, design, offset=NULL, dispersion, method="trend"
 
 \item{dispersion}{numeric scalar or vector giving the dispersion(s) towards which the tagwise dispersion parameters are shrunk.}
 
-\item{method}{method for smoothing, \code{"common"} or \code{"trend"}.}
+\item{trend}{logical, whether abundance-dispersion trend is used for smoothing.}
 
 \item{abundance}{numeric scalar or vector giving the tagwise log-abundance measure for each tag. If null, the abundance is then evaluated by \code{mglmOneGroup}}
 
