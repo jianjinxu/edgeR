@@ -63,20 +63,25 @@ This has a more object-orientated flavor and produces an object containing all t
 \code{exactTest} equalizes the library sizes using \code{\link{equalizeLibSizes}} before calling one of the low level functions.
 
 The functions \code{exactTestDoubleTail}, \code{exactTestBySmallP} and \code{exactTestByDeviance} correspond to different ways to define the two-sided rejection region when the two groups have different numbers of samples.
-\code{exactTestBySmallP} implements the method of small probabilities proposed by Robinson and Smyth (2008).
+\code{exactTestBySmallP} implements the method of small probabilities as proposed by Robinson and Smyth (2008).
 This method corresponds to \code{binom.test} when the dispersion is near zero, but gives poor results when the dispersion is very large.
 \code{exactTestDoubleTail} computes two-sided p-values by doubling the smaller tail probability.
 \code{exactTestByDeviance} uses the deviance goodness of fit statistics to define the rejection region, and is therefore equivalent to a conditional likelihood ratio test.
 This has good statistical properties but is relatively slow to compute.
+For general remarks on different types of rejection regions for exact tests see Gibbons and Pratt (1975).
 
 \code{exactTestBetaApprox} implements an asymptotical beta distribution approximation to the conditional count distribution.
 }
 
 \references{
-Robinson MD and Smyth GK (2008). Small-sample estimation of negative binomial dispersion, with applications to SAGE data. \emph{Biostatistics}, 9, 321-332
+Robinson MD and Smyth GK (2008). Small-sample estimation of negative binomial dispersion, with applications to SAGE data.
+\emph{Biostatistics}, 9, 321-332
+
+Gibbons, JD and Pratt, JW (1975).  P-values: interpretation and methodology.
+\emph{The American Statistician} 29, 20-25
 }
 
-\author{Mark Robinson, Davis McCarthy}
+\author{Mark Robinson, Davis McCarthy, Gordon Smyth}
 
 \examples{
 # generate raw counts from NB, create list object

@@ -3,7 +3,7 @@
 \alias{estimateGLMTagwiseDisp.DGEList}
 \alias{estimateGLMTagwiseDisp.default}
 
-\title{Estimate Tagwise Dispersions for Negative Binomial GLMs}
+\title{Estimate Empirical Bayes Tagwise Dispersions for Negative Binomial GLMs}
 
 \description{
 Estimates the dispersion parameter for a DGE dataset for general experimental designs by using Cox-Reid approximate conditional inference for a negative binomial generalized linear model for each transcript (tag) with the unadjusted counts and design matrix provided.
