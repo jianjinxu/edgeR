@@ -1,4 +1,3 @@
-
 adjustedProfileLik <- function(dispersion, y, design, offset, adjust=TRUE)
 ## tagwise Cox-Reid adjusted profile likelihoods for the dispersion
 ## dispersion can be scalar or tagwise vector
@@ -74,9 +73,9 @@ adjustedProfileLik <- function(dispersion, y, design, offset, adjust=TRUE)
 		d[,j] <- A[,cum[j+2]] - rowSums(as.matrix(l[,(cum[j]+1):(cum[j]+j-1)]^2 * d[,1:(j-1)]))
 		for(i in (j+1):p){
 			if(j == 1){
-				l[,cum[i]+j] <- A[,cum[i+1]+j]/d[,j]
+				l[,cum[i]+j] <- ifelse(d[,j]>0,A[,cum[i+1]+j]/d[,j],0)
 			} else {
-				l[,cum[i]+j] <- (A[,cum[i+1]+j] - rowSums(as.matrix(l[,(cum[i]+1):(cum[i]+j-1)]*l[,(cum[j]+1):(cum[j]+j-1)]*d[,1:(j-1)])))/d[,j]
+				l[,cum[i]+j] <- ifelse(d[,j]>0,(A[,cum[i+1]+j] - rowSums(as.matrix(l[,(cum[i]+1):(cum[i]+j-1)]*l[,(cum[j]+1):(cum[j]+j-1)]*d[,1:(j-1)])))/d[,j],0)
 			}
 		}
 	}
