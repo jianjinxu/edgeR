@@ -2,7 +2,7 @@ estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="moving
 # Tagwise dispersion using weighted conditional likelihood empirical Bayes.
 
 # Davis McCarthy, Mark Robinson, Gordon Smyth.
-# Created 2009. Last modified 3 Oct 2011.
+# Created 2009. Last modified 14 Oct 2011.
 {
 	if( !is(object,"DGEList") ) stop("object must be a DGEList")
 	if( is.null(object$pseudo.alt) ) {
@@ -13,7 +13,7 @@ estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="moving
 	method <- match.arg(method,c("grid","optimize"))
 	ntags <- nrow(object$counts)
 	group <- object$samples$group <- as.factor(object$samples$group)
-	y <- splitIntoGroups(object)
+	y <- splitIntoGroups(list(counts=object$pseudo.alt,samples=object$samples))
 	delta <- rep(0,ntags)
 	onev<-rep(1,ntags)
 	if(method=="grid") {  # do a grid search, since some likelihoods may be monotone, not amenable to NR
