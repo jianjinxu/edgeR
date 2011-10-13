@@ -15,10 +15,19 @@ de <- exactTest(d)
 summary(de$table)
 topTags(de)
 
+d <- estimateTagwiseDisp(d)
+summary(d$tagwise.dispersion)
+de <- exactTest(d,common.disp=FALSE)
+topTags(de)
+
 # mglmOneWay
 design <- model.matrix(~group,data=d$samples)
 mglmOneWay(d[1:10,],design,dispersion=0.2)
 mglmOneWay(d[1:10,],design,dispersion=0)
+
+fit <- glmFit(d,design,dispersion=d$common.dispersion)
+lrt <- glmLRT(d,fit,coef=2)
+topTags(lrt)
 
 fit <- glmFit(d,design)
 lrt <- glmLRT(d,fit,coef=2)
@@ -32,5 +41,16 @@ fit
 
 y <- matrix(rnbinom(20,mu=10,size=3/2),nrow=5)
 group <- factor(c(1,1,2,2))
-y <- splitIntoGroupsPseudo(y,group,pair=c(1,2))
-exactTestDoubleTail(y$y1,y$y2,dispersion=2/3)
+ys <- splitIntoGroupsPseudo(y,group,pair=c(1,2))
+exactTestDoubleTail(ys$y1,ys$y2,dispersion=2/3)
+
+y <- matrix(rnbinom(5*7,mu=10,size=3/2),nrow=5,ncol=7)
+group <- factor(c(1,1,2,2,3,3,3))
+ys <- splitIntoGroupsPseudo(y,group,pair=c(1,3))
+exactTestDoubleTail(ys$y1,ys$y2,dispersion=2/3)
+
+y[1,3:4] <- 0
+design <- model.matrix(~group)
+fit <- glmFit(y,design,dispersion=2/3)
+summary(fit$coef)
+

@@ -54,6 +54,27 @@ Tag.19  -6.980938 -0.8103825 0.40166354 0.9655885
 Tag.3   -6.694062 -0.7395680 0.42139935 0.9655885
 Tag.8   -7.565709 -0.8107246 0.47117217 0.9655885
 > 
+> d <- estimateTagwiseDisp(d)
+Using grid search to estimate tagwise dispersion. 
+> summary(d$tagwise.dispersion)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+0.08842 0.16820 0.19980 0.20900 0.25840 0.34550 
+> de <- exactTest(d,common.disp=FALSE)
+Comparison of groups:  2 - 1 
+> topTags(de)
+Comparison of groups:  2-1 
+          logConc      logFC    P.Value       FDR
+Tag.17  -6.760423  2.0751136 0.02727984 0.5376340
+Tag.21  -7.091801 -1.7577481 0.04887582 0.5376340
+Tag.6   -7.808390 -1.6811088 0.11946652 0.8760878
+Tag.2  -29.493440 41.0452295 0.17774614 0.9711080
+Tag.16  -6.688418  0.9446956 0.26983236 0.9711080
+Tag.20  -6.448409  0.8637453 0.35078798 0.9711080
+Tag.19  -6.980916 -0.8103594 0.35964889 0.9711080
+Tag.3   -6.694062 -0.7395725 0.41311343 0.9711080
+Tag.12  -5.803715  0.7130711 0.47172036 0.9711080
+Tag.22  -6.507074  0.5816902 0.51122479 0.9711080
+> 
 > # mglmOneWay
 > design <- model.matrix(~group,data=d$samples)
 > mglmOneWay(d[1:10,],design,dispersion=0.2)
@@ -111,7 +132,7 @@ $fitted.values
 [10,] 10.0 10.0 13.0 13.0
 
 > 
-> fit <- glmFit(d,design)
+> fit <- glmFit(d,design,dispersion=d$common.dispersion)
 > lrt <- glmLRT(d,fit,coef=2)
 > topTags(lrt)
 Coefficient:  group2 
@@ -126,6 +147,22 @@ Tag.19 -4.799990 -8.103825e-01 0.9279152 0.33540526 0.8276702
 Tag.12 -3.992555  7.130994e-01 0.9095513 0.34023349 0.8276702
 Tag.3  -4.607548 -7.395680e-01 0.8300307 0.36226364 0.8276702
 Tag.8  -5.205333 -8.107246e-01 0.7830377 0.37621371 0.8276702
+> 
+> fit <- glmFit(d,design)
+> lrt <- glmLRT(d,fit,coef=2)
+> topTags(lrt)
+Coefficient:  group2 
+         logConc         logFC        LR    P.Value       FDR
+Tag.17 -4.446831  2.075114e+00 5.4498908 0.01956955 0.2487389
+Tag.2  -6.910478  1.442695e+08 4.6243667 0.03152090 0.2487389
+Tag.21 -4.740772 -1.757748e+00 4.4987850 0.03391895 0.2487389
+Tag.6  -5.251719 -1.681109e+00 3.0849055 0.07902186 0.4346202
+Tag.16 -4.583285  9.446956e-01 1.4641612 0.22626919 0.8356007
+Tag.19 -4.799995 -8.103594e-01 1.0997115 0.29432942 0.8356007
+Tag.20 -4.425470  8.637453e-01 1.0408879 0.30761505 0.8356007
+Tag.3  -4.607550 -7.395725e-01 0.8589709 0.35402683 0.8356007
+Tag.8  -5.205301 -8.108195e-01 0.6151860 0.43284183 0.8356007
+Tag.12 -3.992562  7.130711e-01 0.6028957 0.43747532 0.8356007
 > 
 > example(glmFit)
 
@@ -343,7 +380,26 @@ x2     1      436    0.9235409
 > 
 > y <- matrix(rnbinom(20,mu=10,size=3/2),nrow=5)
 > group <- factor(c(1,1,2,2))
-> y <- splitIntoGroupsPseudo(y,group,pair=c(1,2))
-> exactTestDoubleTail(y$y1,y$y2,dispersion=2/3)
+> ys <- splitIntoGroupsPseudo(y,group,pair=c(1,2))
+> exactTestDoubleTail(ys$y1,ys$y2,dispersion=2/3)
 [1] 0.7156777 0.9351131 0.9645848 0.6754741 0.1309771
+> 
+> y <- matrix(rnbinom(5*7,mu=10,size=3/2),nrow=5,ncol=7)
+> group <- factor(c(1,1,2,2,3,3,3))
+> ys <- splitIntoGroupsPseudo(y,group,pair=c(1,3))
+> exactTestDoubleTail(ys$y1,ys$y2,dispersion=2/3)
+[1] 0.1001935 0.1933250 0.8021760 0.1277107 0.7563009
+> 
+> y[1,3:4] <- 0
+> design <- model.matrix(~group)
+> fit <- glmFit(y,design,dispersion=2/3)
+> summary(fit$coef)
+  (Intercept)         group2               group3         
+ Min.   :-2.344   Min.   :-1.000e+08   Min.   :-0.606228  
+ 1st Qu.:-2.004   1st Qu.:-6.349e-01   1st Qu.:-0.599737  
+ Median :-1.531   Median :-3.601e-01   Median :-0.334707  
+ Mean   :-1.690   Mean   :-2.000e+07   Mean   :-0.008552  
+ 3rd Qu.:-1.314   3rd Qu.: 1.030e+00   3rd Qu.: 0.461850  
+ Max.   :-1.256   Max.   : 1.204e+00   Max.   : 1.036062  
+> 
 > 
