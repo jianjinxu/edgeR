@@ -1,4 +1,4 @@
-estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="movingave", prop.used=0.3, method="grid", grid.length=200, tol=1e-06, verbose=TRUE)
+estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="movingave", prop.used=0.3, method="grid", grid.length=200, tol=1e-06, verbose=FALSE)
 # Tagwise dispersion using weighted conditional likelihood empirical Bayes.
 
 # Davis McCarthy, Mark Robinson, Gordon Smyth.
@@ -16,7 +16,7 @@ estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="moving
 	y <- splitIntoGroups(list(counts=object$pseudo.alt,samples=object$samples))
 	delta <- rep(0,ntags)
 	if(method=="grid") {  # do a grid search, since some likelihoods may be monotone, not amenable to NR
-		if(verbose) cat("Using grid search to estimate tagwise dispersion. ")
+		if(verbose) message("Using grid search to estimate tagwise dispersion. ")
 		grid.vals<-seq(0.001,0.999,length.out=grid.length)
 		l0 <- 0
 		for(i in 1:length(y)) {
@@ -31,12 +31,12 @@ estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="moving
 		l0a <- l0 + prior.n/ntags*m0
 		delta <- grid.vals[apply(l0a,1,which.max)]
 	} else {	
-		if(verbose) cat("Dispersion being estimated for tags (dot=1000 tags): ")
-		if(trend != "none") warning("optimize method doesn't allow for abundance-dispersion trend")
+		if(trend != "none") stop("optimize method doesn't allow for abundance-dispersion trend")
+		if(verbose) message("Tagwise dispersion optimization begun, may be slow, progress reported every 100 tags")
 		for(tag in seq_len(ntags)) {
 			delta.this <- optimize(weightedCondLogLikDerDelta, interval=c(1e-4,100/(100+1)), tol=tol, maximum=TRUE, y=y, tag=tag, ntags=ntags, prior.n=prior.n, der=0, doSum=FALSE)
 			delta[tag] <- delta.this$maximum
-			if(verbose) if(tag%%1000==0) cat(".")
+			if(verbose) if(tag%%100==0) message("tag ",tag)
 		}
 	}
 	if(verbose) cat("\n")

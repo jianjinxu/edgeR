@@ -8,7 +8,7 @@ Estimates tagwise dispersion values by an empirical Bayes method based on weight
 }
 
 \usage{
-estimateTagwiseDisp(object, prior.n=getPriorN(object), trend="movingave", prop.used=0.3, method="grid", grid.length=200, tol=1e-06, verbose=TRUE)
+estimateTagwiseDisp(object, prior.n=getPriorN(object), trend="movingave", prop.used=0.3, method="grid", grid.length=200, tol=1e-06, verbose=FALSE)
 }
 
 \arguments{ 
