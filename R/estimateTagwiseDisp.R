@@ -15,7 +15,6 @@ estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="moving
 	group <- object$samples$group <- as.factor(object$samples$group)
 	y <- splitIntoGroups(list(counts=object$pseudo.alt,samples=object$samples))
 	delta <- rep(0,ntags)
-	onev<-rep(1,ntags)
 	if(method=="grid") {  # do a grid search, since some likelihoods may be monotone, not amenable to NR
 		if(verbose) cat("Using grid search to estimate tagwise dispersion. ")
 		grid.vals<-seq(0.001,0.999,length.out=grid.length)
@@ -27,9 +26,9 @@ estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="moving
 			# Weights sum to 1, so need to multiply by number of tags to give this the same weight overall as the regular common likelihood
 			"movingave" = ntags*weightedComLikMA(object,l0,prop.used=prop.used),
 			"tricube" = ntags*weightedComLik(object,l0,prop.used=prop.used),
-			"none" = outer(onev,colSums(l0))
+			"none" = matrix(colSums(l0),ntags,grid.length,byrow=TRUE)
 		)
-		l0a<-l0 + prior.n/ntags*m0
+		l0a <- l0 + prior.n/ntags*m0
 		delta <- grid.vals[apply(l0a,1,which.max)]
 	} else {	
 		if(verbose) cat("Dispersion being estimated for tags (dot=1000 tags): ")
@@ -42,6 +41,10 @@ estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="moving
 	}
 	if(verbose) cat("\n")
 	tagwise.dispersion <- delta/(1-delta)
-	new("DGEList",list(samples=object$samples, common.dispersion=object$common.dispersion, prior.n=prior.n, tagwise.dispersion=tagwise.dispersion, counts=object$counts, pseudo.alt=object$pseudo.alt, genes=object$genes, all.zeros=object$all.zeros, conc=object$conc, common.lib.size=object$common.lib.size))
+
+#	Output
+	object$prior.n <- prior.n
+	object$tagwise.dispersion <- tagwise.dispersion
+	object
 }
 

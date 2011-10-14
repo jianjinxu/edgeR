@@ -15,9 +15,22 @@ de <- exactTest(d)
 summary(de$table)
 topTags(de)
 
-d <- estimateTagwiseDisp(d)
+d <- estimateTagwiseDisp(d,trend="none")
+summary(d$tagwise.dispersion)
+de <- exactTest(d,common.disp=TRUE)
+topTags(de)
+
+de <- exactTest(d,common.disp=FALSE)
+topTags(de)
+
+d <- estimateTagwiseDisp(d,trend="movingave")
 summary(d$tagwise.dispersion)
 de <- exactTest(d,common.disp=FALSE)
+topTags(de)
+
+d2 <- estimateTagwiseDisp(d,trend="tricube")
+summary(d2$tagwise.dispersion)
+de <- exactTest(d2,common.disp=FALSE)
 topTags(de)
 
 # mglmOneWay

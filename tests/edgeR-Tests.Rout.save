@@ -54,7 +54,44 @@ Tag.19  -6.980938 -0.8103825 0.40166354 0.9655885
 Tag.3   -6.694062 -0.7395680 0.42139935 0.9655885
 Tag.8   -7.565709 -0.8107246 0.47117217 0.9655885
 > 
-> d <- estimateTagwiseDisp(d)
+> d <- estimateTagwiseDisp(d,trend="none")
+Using grid search to estimate tagwise dispersion. 
+> summary(d$tagwise.dispersion)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.1785  0.1926  0.1998  0.2068  0.2218  0.2684 
+> de <- exactTest(d,common.disp=TRUE)
+Comparison of groups:  2 - 1 
+> topTags(de)
+Comparison of groups:  2-1 
+          logConc      logFC    P.Value       FDR
+Tag.17  -6.760425  2.0751158 0.01975954 0.4347099
+Tag.21  -7.091791 -1.7577397 0.06131012 0.6744114
+Tag.6   -7.808390 -1.6811127 0.12446044 0.8982100
+Tag.2  -29.493440 41.0452294 0.16331090 0.8982100
+Tag.16  -6.688425  0.9447004 0.29050785 0.9655885
+Tag.20  -6.448417  0.8637539 0.31736609 0.9655885
+Tag.12  -5.803735  0.7130994 0.37271028 0.9655885
+Tag.19  -6.980938 -0.8103825 0.40166354 0.9655885
+Tag.3   -6.694062 -0.7395680 0.42139935 0.9655885
+Tag.8   -7.565709 -0.8107246 0.47117217 0.9655885
+> 
+> de <- exactTest(d,common.disp=FALSE)
+Comparison of groups:  2 - 1 
+> topTags(de)
+Comparison of groups:  2-1 
+          logConc      logFC    P.Value       FDR
+Tag.17  -6.760427  2.0751180 0.01371373 0.3017020
+Tag.21  -7.091794 -1.7577424 0.05713669 0.6285036
+Tag.6   -7.808390 -1.6811061 0.11604830 0.8510209
+Tag.2  -29.493440 41.0452294 0.16144754 0.8879614
+Tag.16  -6.688422  0.9446985 0.28190911 0.9675097
+Tag.20  -6.448421  0.8637581 0.30193506 0.9675097
+Tag.12  -5.803734  0.7130981 0.37646823 0.9675097
+Tag.3   -6.694061 -0.7395757 0.40727948 0.9675097
+Tag.19  -6.980942 -0.8103868 0.40993830 0.9675097
+Tag.8   -7.565712 -0.8107597 0.49034973 0.9675097
+> 
+> d <- estimateTagwiseDisp(d,trend="movingave")
 Using grid search to estimate tagwise dispersion. 
 > summary(d$tagwise.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
@@ -74,6 +111,27 @@ Tag.19  -6.980916 -0.8103594 0.35964889 0.9711080
 Tag.3   -6.694062 -0.7395725 0.41311343 0.9711080
 Tag.12  -5.803715  0.7130711 0.47172036 0.9711080
 Tag.22  -6.507074  0.5816902 0.51122479 0.9711080
+> 
+> d2 <- estimateTagwiseDisp(d,trend="tricube")
+Using grid search to estimate tagwise dispersion. 
+> summary(d2$tagwise.dispersion)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+0.08252 0.13980 0.20700 0.19760 0.24470 0.31880 
+> de <- exactTest(d2,common.disp=FALSE)
+Comparison of groups:  2 - 1 
+> topTags(de)
+Comparison of groups:  2-1 
+          logConc      logFC    P.Value       FDR
+Tag.21  -7.091848 -1.7577750 0.01672197 0.2100365
+Tag.17  -6.760425  2.0751160 0.01909422 0.2100365
+Tag.6   -7.808389 -1.6811286 0.14774499 0.8950296
+Tag.2  -29.493440 41.0452294 0.16273266 0.8950296
+Tag.16  -6.688416  0.9446942 0.26371042 0.9527389
+Tag.19  -6.980905 -0.8103488 0.34151546 0.9527389
+Tag.20  -6.448410  0.8637468 0.34492653 0.9527389
+Tag.3   -6.694057 -0.7396111 0.35037837 0.9527389
+Tag.12  -5.803731  0.7130939 0.38975680 0.9527389
+Tag.22  -6.507074  0.5816861 0.51661850 0.9780480
 > 
 > # mglmOneWay
 > design <- model.matrix(~group,data=d$samples)
