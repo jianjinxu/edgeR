@@ -77,10 +77,10 @@ For general remarks on different types of rejection regions for exact tests see 
 
 \references{
 Robinson MD and Smyth GK (2008). Small-sample estimation of negative binomial dispersion, with applications to SAGE data.
-\emph{Biostatistics}, 9, 321-332
+\emph{Biostatistics}, 9, 321-332.
 
 Gibbons, JD and Pratt, JW (1975).  P-values: interpretation and methodology.
-\emph{The American Statistician} 29, 20-25
+\emph{The American Statistician} 29, 20-25.
 }
 
 \author{Mark Robinson, Davis McCarthy, Gordon Smyth}
