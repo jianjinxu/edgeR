@@ -59,7 +59,7 @@ Using grid search to estimate tagwise dispersion.
 > summary(d$tagwise.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
  0.1785  0.1926  0.1998  0.2068  0.2218  0.2684 
-> de <- exactTest(d,common.disp=TRUE)
+> de <- exactTest(d,dispersion="common")
 Comparison of groups:  2 - 1 
 > topTags(de)
 Comparison of groups:  2-1 
@@ -75,7 +75,7 @@ Tag.19  -6.980938 -0.8103825 0.40166354 0.9655885
 Tag.3   -6.694062 -0.7395680 0.42139935 0.9655885
 Tag.8   -7.565709 -0.8107246 0.47117217 0.9655885
 > 
-> de <- exactTest(d,common.disp=FALSE)
+> de <- exactTest(d)
 Comparison of groups:  2 - 1 
 > topTags(de)
 Comparison of groups:  2-1 
@@ -96,7 +96,7 @@ Using grid search to estimate tagwise dispersion.
 > summary(d$tagwise.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 0.08842 0.16820 0.19980 0.20900 0.25840 0.34550 
-> de <- exactTest(d,common.disp=FALSE)
+> de <- exactTest(d)
 Comparison of groups:  2 - 1 
 > topTags(de)
 Comparison of groups:  2-1 
@@ -117,7 +117,7 @@ Using grid search to estimate tagwise dispersion.
 > summary(d2$tagwise.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 0.08252 0.13980 0.20700 0.19760 0.24470 0.31880 
-> de <- exactTest(d2,common.disp=FALSE)
+> de <- exactTest(d2)
 Comparison of groups:  2 - 1 
 > topTags(de)
 Comparison of groups:  2-1 

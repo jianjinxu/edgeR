@@ -38,8 +38,8 @@ rownames(d$counts) <- paste("tag",1:nrow(d$counts),sep=".")
 # estimate common dispersion and find differences in expression
 # here we demonstrate the 'exact' methods, but the use of topTags is
 # the same for a GLM analysis
-d<-estimateCommonDisp(d)
-de<-exactTest(d)
+d <- estimateCommonDisp(d)
+de <- exactTest(d)
 
 # look at top 10
 topTags(de)

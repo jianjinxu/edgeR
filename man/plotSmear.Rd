@@ -50,7 +50,7 @@ d <- estimateCommonDisp(d)
 plotSmear(d)
 
 # find differential expression
-de<-exactTest(d)
+de <- exactTest(d)
 
 # highlighting the top 500 most DE tags
 de.tags <- rownames(topTags(de, n=500)$table)

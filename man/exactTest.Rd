@@ -10,7 +10,7 @@
 \description{Compute genewise exact tests for differences in the means between two groups of negative-binomially distributed counts.}
 
 \usage{
-exactTest(object, pair=NULL, dispersion=NULL, common.disp=TRUE, rejection.region="doubletail", big.count=900)
+exactTest(object, pair=NULL, dispersion="auto", rejection.region="doubletail", big.count=900)
 exactTestDoubleTail(y1, y2, dispersion=0, big.count=900)
 exactTestBySmallP(y1, y2, dispersion=0, big.count=900)
 exactTestByDeviance(y1, y2, dispersion=0, big.count=900)
@@ -22,10 +22,12 @@ exactTestBetaApprox(y1, y2, dispersion=0)
 
 \item{pair}{vector of length two, either numeric or character, providing the pair of groups to be compared; if a character vector, then should be the names of two groups (e.g. two levels of \code{object$samples$group}); if numeric, then groups to be compared are chosen by finding the levels of \code{object$samples$group} corresponding to those numeric values and using those levels as the groups to be compared; if \code{NULL}, then first two levels of \code{object$samples$group} (a factor) are used. Note that the first group listed in the pair is the baseline for the comparison---so if the pair is \code{c("A","B")} then the comparison is \code{B - A}, so genes with positive log-fold change are up-regulated in group B compared with group A (and vice versa for genes with negative log-fold change).}
 
-\item{dispersion}{optional vector either of length 1 or the same length as the number of tags. If not \code{NULL} (default), then the supplied value(s) will be used as the dispersion parameter for calculating p-values for differential expression. If \code{NULL}, then either the common or tagwise dispersion estimates from the \code{DGEList} object will be used, according to the value of \code{common.disp}. If \code{dispersion} is zero, then p-values are equivalent to exact Poisson rather than NB p-values.
-For \code{exactTest.matrix} equal to \code{1/r} and ignored if \code{r} is supplied.}
-
-\item{common.disp}{logical, if \code{TRUE}, then testing carried out using common dispersion for each tag/gene, if \code{FALSE} then tag-wise estimates of the dispersion parameter are used; default \code{TRUE}.}
+\item{dispersion}{
+either a numeric vector of dispersions or a character string indicating that dispersions should be taken from the data object.
+If a numeric vector, then can be either of length one or of length equal to the number of tags.
+Allowable character values are \code{"common"}, \code{"tagwise"} or \code{"auto"}.
+\code{"common"} uses \code{object$common.dispersion}, \code{"tagwise"} uses \code{object$tagwise.dispersion} and \code{"auto"} uses tagwise when available and otherwise common.
+}
 
 \item{rejection.region}{type of rejection region for two-sided exact test.  Possible values are \code{"doubletail"}, \code{"smallp"} or \code{"deviance"}.}
 
@@ -90,8 +92,9 @@ rownames(y) <- paste("Gene",1:nrow(y),sep=".")
 group <- factor(c(1,1,2,2))
 d <- DGEList(counts=y,group=group,lib.size=rep(1000,4))
 
-# estimate common dispersion and find differences in expression
+# estimate dispersions and find differences in expression
 d <- estimateCommonDisp(d)
+d <- estimateTagwiseDisp(d)
 de <- exactTest(d)
 topTags(de)
 
