@@ -52,9 +52,9 @@ topTags(de,sort.by="logFC")
 }
 
 \references{
-Robinson MD, Smyth GK. 'Small-sample estimation of negative binomial dispersion, with applications to SAGE data.' Biostatistics. 2008 Apr;9(2):321-32.
+Robinson MD, Smyth GK (2008). Small-sample estimation of negative binomial dispersion, with applications to SAGE data. \emph{Biostatistics} 9, 321-332.
 
-Robinson MD, Smyth GK. 'Moderated statistical tests for assessing differences in tag abundance.' Bioinformatics. 2007 Nov 1;23(21):2881-7.
+Robinson MD, Smyth GK (2007). Moderated statistical tests for assessing differences in tag abundance. \emph{Bioinformatics} 23, 2881-2887.
 }
 
 \seealso{
