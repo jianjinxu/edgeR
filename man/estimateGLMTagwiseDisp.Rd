@@ -10,7 +10,7 @@ Estimates the dispersion parameter for a DGE dataset for general experimental de
 }
 
 \usage{
-\S3method{estimateGLMTagwiseDisp}{DGEList}(y, design, offset=NULL, trend=TRUE, ...)
+\S3method{estimateGLMTagwiseDisp}{DGEList}(y, design, offset=NULL, trend=!is.null(y$trended.dispersion), ...)
 \S3method{estimateGLMTagwiseDisp}{default}(y, design, offset=NULL, dispersion, trend=TRUE, ...)
 }
 
@@ -20,7 +20,8 @@ Estimates the dispersion parameter for a DGE dataset for general experimental de
 
 \item{design}{numeric matrix giving the design matrix for the GLM that is to be fit.}
 
-\item{trend}{If \code{trend=TURE}, then the function uses the trended dispersion estimates from the \code{DGEList} object (\code{y$trended.dispersion}) to set the grid of points on which the tagwise dispersions are computed. If \code{trend=FALSE}, then the function uses the common dispersion estimate from the \code{DGEList} object, (\code{y$common.dispersion}).}
+\item{trend}{logical, should an abundance trend be applied to the grid of dispersion values over which the tagwise dispersion estimation is done?
+Generally this should be \code{TRUE} if a trended dispersion has been estimated and \code{FALSE} otherwise.}
 
 \item{offset}{numeric scalar, vector or matrix giving the offset (in addition to the log of the effective library size) that is to be included in the NB GLM for the transcripts. If a scalar, then this value will be used as an offset for all transcripts and libraries. If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each transcript. If a matrix, then each library for each transcript can have a unique offset, if desired. Default is \code{NULL}; if object is a \code{DGEList} and offset is \code{NULL} then offset will be calculated automatically from code{y$samples}.}
 

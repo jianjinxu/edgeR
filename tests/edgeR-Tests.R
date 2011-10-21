@@ -46,11 +46,21 @@ fit <- glmFit(d,design)
 lrt <- glmLRT(d,fit,coef=2)
 topTags(lrt)
 
+dglm <- estimateGLMCommonDisp(d,design)
+dglm$common.dispersion
+dglm <- estimateGLMTagwiseDisp(dglm,design)
+summary(dglm$tagwise.dispersion)
+fit <- glmFit(dglm,design)
+lrt <- glmLRT(dglm,fit,coef=2)
+topTags(lrt)
+dglm <- estimateGLMTrendedDisp(dglm,design,min.n=10)
+summary(dglm$trended.dispersion)
+dglm <- estimateGLMTagwiseDisp(dglm,design)
+summary(dglm$tagwise.dispersion)
+
 example(glmFit)
-fit <- glmFit(d,design,dispersion=dispersion.true,method="simple")
-fit
-fit <- glmFit(d,design,dispersion=dispersion.true,method="levenberg")
-fit
+glmFit(d,design,dispersion=dispersion.true,method="simple")
+glmFit(d,design,dispersion=dispersion.true,method="levenberg")
 
 y <- matrix(rnbinom(20,mu=10,size=3/2),nrow=5)
 group <- factor(c(1,1,2,2))

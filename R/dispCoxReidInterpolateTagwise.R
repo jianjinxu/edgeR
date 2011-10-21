@@ -36,7 +36,7 @@ dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, tr
 		apl[,i] <- adjustedProfileLik(spline.disp, y=y, design=design, offset=offset)
 	}
 	if(trend==FALSE) {
-		apl.smooth <- matrix(colMeans(apl),ntags,nlibs,byrow=TRUE)
+		apl.smooth <- matrix(colMeans(apl),ntags,grid.npts,byrow=TRUE)
 	} else {
 		o <- order(abundance)
 		oo <- order(o)

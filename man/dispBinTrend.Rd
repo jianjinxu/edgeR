@@ -50,7 +50,7 @@ This function takes the binned common dispersion and abundance from \code{\link{
 Cox, DR, and Reid, N (1987). Parameter orthogonality and approximate conditional inference. \emph{Journal of the Royal Statistical Society Series B} 49, 1-39.
 }
 
-\author{Gordon Smyth}
+\author{Davis McCarthy and Gordon Smyth}
 \examples{
 ntags <- 1000
 nlibs <- 4

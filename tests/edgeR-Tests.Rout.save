@@ -55,7 +55,6 @@ Tag.3   -6.694062 -0.7395680 0.42139935 0.9655885
 Tag.8   -7.565709 -0.8107246 0.47117217 0.9655885
 > 
 > d <- estimateTagwiseDisp(d,trend="none")
-Using grid search to estimate tagwise dispersion. 
 > summary(d$tagwise.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
  0.1785  0.1926  0.1998  0.2068  0.2218  0.2684 
@@ -92,7 +91,6 @@ Tag.19  -6.980942 -0.8103868 0.40993830 0.9675097
 Tag.8   -7.565712 -0.8107597 0.49034973 0.9675097
 > 
 > d <- estimateTagwiseDisp(d,trend="movingave")
-Using grid search to estimate tagwise dispersion. 
 > summary(d$tagwise.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 0.08842 0.16820 0.19980 0.20900 0.25840 0.34550 
@@ -113,7 +111,6 @@ Tag.12  -5.803715  0.7130711 0.47172036 0.9711080
 Tag.22  -6.507074  0.5816902 0.51122479 0.9711080
 > 
 > d2 <- estimateTagwiseDisp(d,trend="tricube")
-Using grid search to estimate tagwise dispersion. 
 > summary(d2$tagwise.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 0.08252 0.13980 0.20700 0.19760 0.24470 0.31880 
@@ -222,6 +219,45 @@ Tag.3  -4.607550 -7.395725e-01 0.8589709 0.35402683 0.8356007
 Tag.8  -5.205301 -8.108195e-01 0.6151860 0.43284183 0.8356007
 Tag.12 -3.992562  7.130711e-01 0.6028957 0.43747532 0.8356007
 > 
+> dglm <- estimateGLMCommonDisp(d,design)
+> dglm$common.dispersion
+[1] 0.2033282
+> dglm <- estimateGLMTagwiseDisp(dglm,design)
+> summary(dglm$tagwise.dispersion)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.1756  0.1879  0.1998  0.2031  0.2135  0.2578 
+> fit <- glmFit(dglm,design)
+> lrt <- glmLRT(dglm,fit,coef=2)
+> topTags(lrt)
+Coefficient:  group2 
+         logConc         logFC        LR     P.Value       FDR
+Tag.17 -4.446791  2.075118e+00 6.8001118 0.009115216 0.2005348
+Tag.2  -6.910420  1.442695e+08 4.8594096 0.027495744 0.2872068
+Tag.21 -4.740756 -1.757743e+00 4.2537154 0.039164558 0.2872068
+Tag.6  -5.251729 -1.681104e+00 3.1763761 0.074710253 0.4109064
+Tag.16 -4.583290  9.446977e-01 1.4126709 0.234613511 0.8499599
+Tag.20 -4.425460  8.637585e-01 1.2721097 0.259371274 0.8499599
+Tag.19 -4.799990 -8.103837e-01 0.9190392 0.337727380 0.8499599
+Tag.12 -3.992556  7.130986e-01 0.9014515 0.342392806 0.8499599
+Tag.3  -4.607552 -7.395760e-01 0.8817937 0.347710872 0.8499599
+Tag.8  -5.205324 -8.107513e-01 0.7356185 0.391068048 0.8603497
+> dglm <- estimateGLMTrendedDisp(dglm,design,min.n=10)
+Loading required package: splines
+Warning message:
+In binGLMDispersion(y, design, min.n = min.n, offset = offset, method = method.bin,  :
+  With 22 genes and minimum number (min.n) of 10 genes in each bin there are fewer than 8 bins. This number may not be sufficient for reliable estimation of a trend on the dispersions.
+
+> summary(dglm$trended.dispersion)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+0.03517 0.09326 0.14950 0.32280 0.15390 2.11700 
+> dglm <- estimateGLMTagwiseDisp(dglm,design)
+Warning message:
+In movingAverageByCol(apl[o, ], width = 1000) :
+  reducing moving average width to nrow(x)
+> summary(dglm$tagwise.dispersion)
+   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
+ 0.0475  0.1195  0.2201  0.3637  0.2745  2.1170 
+> 
 > example(glmFit)
 
 glmFit> nlibs <- 3
@@ -279,9 +315,8 @@ glmFit> d <- estimateGLMCommonDisp(d, design)
 
 glmFit> d$common.dispersion
 [1] 0.1356192
-> fit <- glmFit(d,design,dispersion=dispersion.true,method="simple")
+> glmFit(d,design,dispersion=dispersion.true,method="simple")
 Loading required package: MASS
-> fit
 An object of class "DGEGLM"
 $coefficients
       (Intercept)           x
@@ -361,9 +396,8 @@ x0     1      390    1.0641817
 x1     1      392    1.0174851
 x2     1      436    0.9235409
 
-> fit <- glmFit(d,design,dispersion=dispersion.true,method="levenberg")
+> glmFit(d,design,dispersion=dispersion.true,method="levenberg")
 Loading required package: statmod
-> fit
 An object of class "DGEGLM"
 $coefficients
       (Intercept)           x

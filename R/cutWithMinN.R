@@ -16,9 +16,9 @@ cutWithMinN <- function(x, intervals=2, min.n=1)
 	}
 	intervals <- as.integer(intervals)
 	min.n <- as.integer(min.n)
-	if(length(x) < intervals*min.n) stop("two few observations: length(x) < intervals*min.n")
+	if(length(x) < intervals*min.n) stop("too few observations: length(x) < intervals*min.n")
 
-	if(length(unique(x)) < intervals*min.n) stop("too few unique values for x")
+#	if(length(unique(x)) < intervals*min.n) stop("too few unique values for x")
 
 	breaks.eqx <- seq(from=min(x),to=max(x),length.out=intervals+1L)
 	breaks.eqx[1] <- breaks.eqx[1]-1

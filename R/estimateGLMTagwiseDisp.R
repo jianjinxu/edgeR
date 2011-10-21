@@ -1,36 +1,24 @@
-# Last modified 3 Oct 2011.
+# Last modified 21 Oct 2011.
 
 estimateGLMTagwiseDisp <- function(y, design, offset=NULL, ...) 
 UseMethod("estimateGLMTagwiseDisp")
 
-estimateGLMTagwiseDisp.DGEList <- function(y, design, offset=NULL, trend=TRUE, ...)
+estimateGLMTagwiseDisp.DGEList <- function(y, design, offset=NULL, trend=!is.null(y$trended.dispersion), ...)
 {
-	if( is.null(offset) )
-		offset <- getOffset(y)
-
-	if(trend==TRUE)  {
-		if( is.null(y$trended.dispersion) & is.null(y$common.dispersion) ) stop("method is trend, but DGEList object has a NULL trended.dispersion slot. Run estimateGLMTrendedDisp on DGEList object before estimateGLMTagwiseDisp to smooth tagwise dispersions towards trended dispersions.\n")
-		if( is.null(y$trended.dispersion) & !is.null(y$common.dispersion) ) {
-			warning("trend is TRUE, but DGEList object has a NULL trended.dispersion slot. Common dispersion value used for this calculation.\n")
-			dispersion <- y$common.dispersion
-			trend <- FALSE
-		} else {
-			dispersion <- y$trended.dispersion
-			abundance <- y$abundance
-		}
+	if(is.null(offset)) offset <- getOffset(y)
+	if(trend)  {
+		dispersion <- y$trended.dispersion
+		if(is.null(dispersion)) stop("No trended.dispersion found in data object. Run estimateGLMTrendedDisp first.")
+		if(is.null(y$abundance)) y$abundance <- mglmOneGroup(y,offset=offset)
 	} else {
-		if( is.null(y$common.dispersion) ) stop("DGEList object has a NULL common.dispersion slot. Run estimateGLMCommonDisp on DGEList object before estimateGLMTagwiseDisp to smooth tagwise dispersions towards a common value.\n")
-		dispersion <- rep(y$common.dispersion, nrow(y))
-		abundance <- mglmOneGroup(y$counts,offset=offset)
+		dispersion <- y$common.dispersion
+		if(is.null(dispersion)) stop("No common.dispersion found in data object. Run estimateGLMCommonDisp first.")
 	}
-	d <- estimateGLMTagwiseDisp(y=y$counts, design=design, offset=offset, dispersion=dispersion, abundance=abundance, trend=trend, ...)
-	y$tagwise.dispersion <- d
-	y$abundance <- abundance
+	y$tagwise.dispersion <- estimateGLMTagwiseDisp(y=y$counts, design=design, offset=offset, dispersion=dispersion, trend=trend, abundance=y$abundance, ...)
 	y
 }
 
 estimateGLMTagwiseDisp.default <- function(y, design, offset=NULL, dispersion, trend="TRUE", ...)
 {
-	y <- as.matrix(y)
 	dispCoxReidInterpolateTagwise(y, design, offset=offset, dispersion, trend=trend, ...)
 }
