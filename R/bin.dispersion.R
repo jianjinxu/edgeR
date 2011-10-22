@@ -59,9 +59,16 @@ binGLMDispersion <- function( y, design, min.n=500, offset=NULL, method="CoxReid
 #    ntagsinbin <- floor(ntags / nbins)
  
     ## Define bins of genes; based on min.n in each bin
-    nbins <- floor(length(unique(abundance))/min.n)
-    if( nbins < 8)
-        warning("With ",nrow(y)," genes and minimum number (min.n) of ",min.n," genes in each bin there are fewer than 8 bins. This number may not be sufficient for reliable estimation of a trend on the dispersions.\n") 
+    nbins <- floor(length(unique(abundance))/min.n)  ## This allows for cutting to be properly determined (no ties on abundance)
+    if( nbins < 2 ) {
+        nbins <- 2
+        warning("With ",nrow(y)," genes and setting the parameter minimum number (min.n) of genes per bin to ",min.n,",  there should technically be fewer than 2 bins. To make estimation of trended dispersions possible we set the number of bins to be 2.\n")
+    }
+    if( nbins < 8) {
+        min.n.new <- floor(length(unique(abundance))/nbins) 
+        warning("With ",nrow(y)," genes and setting the parameter minimum number (min.n) of genes per bin to ",min.n,",  there are only ", nbins, " bins. Using ",nbins," bins here means that the minimum number of genes in each of the ", nbins, " bins is in fact ", min.n.new,". This number of bins and minimum number of genes per bin may not be sufficient for reliable estimation of a trend on the dispersions.\n")
+        min.n <- min.n.new
+    }
     bins <- cutWithMinN(abundance[!all.zero], intervals=nbins, min.n=min.n)
     dispersion <- ave.abundance <- rep(NA,nbins)
    
