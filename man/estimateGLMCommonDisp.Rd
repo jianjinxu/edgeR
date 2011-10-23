@@ -22,7 +22,7 @@ Estimates a common negative binomial dispersion parameter for a DGE dataset with
 Must be of full column rank.
 Defaults to a single column of ones, equivalent to treating the columns as replicate libraries.}
 
-\item{method}{method (low-level function) used to estimated the dispersion.
+\item{method}{method for estimating the dispersion.
 Possible values are \code{"CoxReid"}, \code{"Pearson"} or \code{"deviance"}.}
 
 \item{offset}{numeric scalar, vector or matrix giving the offsets for the log-linear models.
@@ -40,7 +40,7 @@ for details.}
 \value{
 The default method returns a numeric vector of length 1 containing the estimated dispersion.
 
-The method for \code{DGEList} objects adds a component \code{common.dispersion} to \code{y}.
+The \code{DGEList} method returns the same \code{DGEList} \code{y} as input but with \code{common.dispersion} as an added component.
 }
 
 \details{
