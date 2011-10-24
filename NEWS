@@ -1,0 +1,190 @@
+CHANGES IN VERSION 2.3.0
+------------------------
+
+NEW FEATURES
+    
+    o Changes to glmFit so that it automatically detects dispersion 
+      estimates if in data object. It uses tagwise if available, then 
+      trended, then common.
+
+    o Add getPriorN.R to calculate the weight given to the common parameter 
+      likelihood in order to smooth (or stabilize) the dispersion estimates, 
+      and use getPriorN as default for estimateTagwiseDisp and estimateGLMTagwiseDisp
+    
+    o New function cutWithMinN used in binning methods.
+    
+    o glmFit now S3 generic function, and glmFit has new method argument 
+      specifying fitting algorithm.
+    
+    o Added subsetting capability for DGEGLM objects.
+    
+    o plotMDS.dge is retired, instead a DGEList method is now defined for 
+      plotMDS in the limma package. Now it takes distance matrix, and avoid 
+      over calculation.
+    
+    o Add as.data.frame method for TopTags objects.
+    
+    o Added a function cpm to calculate counts per million conveniently. 
+    
+    o Adding args to dispCoxReidInterpolateTagwise to give more access to 
+      tuning parameters.
+    
+    o Add spliceVariants to the package--methods for detecting alternative exon 
+      usage from exon-level count data.
+      
+    o exactTest now uses new methods (exactTestDoubleTail and exactTestBetaApprox). 
+      It is much faster and use less memory. The arguments of exactTest are also
+      changed.
+        
+    o estimateGLMTagwiseDisp now uses trended.dispersion by default if 
+      trended.dispersion is found.
+
+BUG FIXES
+
+    o Bug fixes to plotSmear and dispCoxReidInterpolateTagwise.
+      Fiddling with mglmOneWay() but only changed header and returned code.
+
+    o Bug fix to mglmOneWay, which was confusing parametrizations 
+      when the design matrix included negative values.
+
+    o Changes to offset behaviour in estimateGLMCommonDisp, 
+      estimateGLMTrendedDisp and estimateGLMTagwiseDisp to fix bug. 
+      Changes to several other functions on the way to fixing bugs 
+      when computing dispersions in data sets with genes that have 
+      all zero counts.
+
+    o dispDeviance and dispPearson now give graceful estimates and messages 
+      when the dispersion is outside the specified interval.
+
+    o Fixed the bug that mglmOneWay (and hence glmFit) was producing NA 
+      coefficients when some of the fitted values were exactly zero.
+
+    o Fixed the bug that exactTest was giving incorrect results when some of 
+      the tags had entirely zero counts.
+
+    o Bug fix to mglmSimple which causes error at some stage.
+
+    o Change to glmLRT to ensure character coefficient argument will work.
+    
+    o Change to maPlot so that any really extreme logFCs are brought back 
+      to a more reasonable scale.
+    
+    o Bug fix to adjustedProfLik when there are fitted values exactly at zero 
+      for one or more groups.
+
+    o estimateGLMCommonDisp now returns NA when there are no residual df.
+   
+    o Bug fix to exactTest so that large dispersions do not give wrong
+      p-values.
+        
+    o Changed computation of local common likelihood in dispCoxReidInterpolateTagwise 
+      from using lowess to using movingAverageByCol.
+
+    o Fixed a bug in binGLMDispersion that was causing estimateGLMTrendedDisp
+      to fail on datasets with small numbers of genes. Extra warnings added to
+      explain this behaviour.
+
+
+CHANGES IN VERSION 2.1.0
+------------------------
+
+NEW FEATURES
+
+    o Reflect major new functionality for GLMs.
+
+    o New function dispCoxReidPowerTrend
+
+    o New function goodTuringProportions
+    
+    o New function vectorizedAPL vectorizing calculations of Cox-Reid adjusted 
+      profile likelihood.
+    
+    o New function expandAsMatrix(), replaces asMatrixWeights from limma package.
+    
+    o New functions dispCoxReid and getOffsets.
+
+BUG FIXES
+
+    o Correcting use of offsets in the call to glmFit from glmLRT.
+
+    o Changes to binMeanVar() so that averaging in bins of mean and variance
+      is now done on the square-root scale so that there is less upward bias 
+      in the averages.
+
+    o Bug fixing for adjustedProfileLik being aliased twice.
+    
+    o Bug fixing in estimateGLMTagwiseDisp.DGEList which popped up when using
+      method=common.
+    
+
+CHANGES IN VERSION 1.9.0
+-----------------------
+
+NEW FEATURES
+
+    o New function mglmLS. Now esitmateCRDisp calls mglmLS.
+
+    o New function goodTuring.
+
+BUG FIXES
+
+    o Fixing convergence problems for adjustedProfileLik.
+    
+    o Fixes to estimateCRDisp.R to make convergence more secure.
+    
+    o glmFit no longer converts data to DGEList.
+
+
+CHANGES IN VERSION 1.7.0
+-----------------------
+
+NEW FEATURES
+
+    o Introducing negative binomial GLM methods to allow the analysis of complicated
+      experimental designs. Introducing methods to help assess and account for NB 
+      dispersion that depends on the expression level genes. Add many new functions 
+      (glmNBOneGroup, glmfit, meanvar, decidetestsDGE)
+
+    o topTags will now use logFC as secondary ranking when p-values are identical.
+
+    o Add dim and length methods for DGEList, DGEGLM and DGELRT class objects and friends.
+    
+    o Add norm.factors column to the element of DGEList objects.
+    
+    o Subsetting added for DGEExact objects and option for the number of bins for getting 
+      average means and variances added to plotMeanVar.
+      
+    o readDGE has new argument labels. Also uses row.names of targets frame for labels 
+      if such exist.
+
+BUG FIXES
+
+    o Fix to plotMDS.dge so that it gives the same result regardless of group
+      setting of DGEList
+    
+    o Bug fix to plotMDS.dge so that definition of experimental groups does 
+      not affect the MDS plot
+      
+
+CHANGES IN VERSION 1.5.0
+-----------------------
+
+NEW FEATURES
+
+    o 'dispersion' argument added to exactTest so that a user can specify value(s) for the 
+      dispersion when doing the exact test.
+      
+    o Add plotMDS.dge to the package with documentation.
+
+BUG FIXES
+
+    o Bug fix in estimateSmoothing.
+    
+    
+CHANGES IN VERSION 1.3.0
+-----------------------
+
+NEW FEATURES
+
+    o New functions added: calcNormFactors, estimateCommonDisp, estimateTagwiseDisp, 
+      estimateSmoothing, exactTest, equaliseLibSizes, plotSmear, maplot, plotFC.
