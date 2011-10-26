@@ -3,6 +3,9 @@ CHANGES IN VERSION 2.3.0
 
 NEW FEATURES
     
+    o estimateCRDisp is removed. It is now replaced by estimateGLMCommonDisp,
+      estimateGLMTrendedDisp and estimateGLMTagwiseDisp.
+    
     o Changes to glmFit so that it automatically detects dispersion 
       estimates if in data object. It uses tagwise if available, then 
       trended, then common.
@@ -38,11 +41,19 @@ NEW FEATURES
         
     o estimateGLMTagwiseDisp now uses trended.dispersion by default if 
       trended.dispersion is found.
+      
+    o Change to glmLRT to ensure character coefficient argument will work.
+    
+    o Change to maPlot so that any really extreme logFCs are brought back 
+      to a more reasonable scale.
+      
+    o estimateGLMCommonDisp now returns NA when there are no residual df.
+
+    o Changed computation of local common likelihood in dispCoxReidInterpolateTagwise 
+      from using lowess to using movingAverageByCol.
+
 
 BUG FIXES
-
-    o Bug fixes to plotSmear and dispCoxReidInterpolateTagwise.
-      Fiddling with mglmOneWay() but only changed header and returned code.
 
     o Bug fix to mglmOneWay, which was confusing parametrizations 
       when the design matrix included negative values.
@@ -63,22 +74,12 @@ BUG FIXES
       the tags had entirely zero counts.
 
     o Bug fix to mglmSimple which causes error at some stage.
-
-    o Change to glmLRT to ensure character coefficient argument will work.
-    
-    o Change to maPlot so that any really extreme logFCs are brought back 
-      to a more reasonable scale.
     
     o Bug fix to adjustedProfLik when there are fitted values exactly at zero 
       for one or more groups.
 
-    o estimateGLMCommonDisp now returns NA when there are no residual df.
-   
     o Bug fix to exactTest so that large dispersions do not give wrong
       p-values.
-        
-    o Changed computation of local common likelihood in dispCoxReidInterpolateTagwise 
-      from using lowess to using movingAverageByCol.
 
     o Fixed a bug in binGLMDispersion that was causing estimateGLMTrendedDisp
       to fail on datasets with small numbers of genes. Extra warnings added to
@@ -92,22 +93,14 @@ NEW FEATURES
 
     o Reflect major new functionality for GLMs.
 
-    o New function dispCoxReidPowerTrend
-
-    o New function goodTuringProportions
-    
-    o New function vectorizedAPL vectorizing calculations of Cox-Reid adjusted 
-      profile likelihood.
-    
-    o New function expandAsMatrix(), replaces asMatrixWeights from limma package.
-    
-    o New functions dispCoxReid and getOffsets.
+    o New functions dispCoxReidPowerTrend, goodTuringProportions, adjustedProfLik,
+      expandAsMatrix, dispCoxReid and getOffsets.
 
 BUG FIXES
 
     o Correcting use of offsets in the call to glmFit from glmLRT.
 
-    o Changes to binMeanVar() so that averaging in bins of mean and variance
+    o Changes to binMeanVar so that averaging in bins of mean and variance
       is now done on the square-root scale so that there is less upward bias 
       in the averages.
 
@@ -122,9 +115,7 @@ CHANGES IN VERSION 1.9.0
 
 NEW FEATURES
 
-    o New function mglmLS. Now esitmateCRDisp calls mglmLS.
-
-    o New function goodTuring.
+    o New functions goodTuring and mglmLS. Now esitmateCRDisp calls mglmLS.
 
 BUG FIXES
 
