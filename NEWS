@@ -1,7 +1,22 @@
-CHANGES IN VERSION 2.3.0
+CHANGES IN VERSION 2.4.0
 ------------------------
 
 NEW FEATURES
+      
+    o New function spliceVariants for detecting alternative exon
+      usage from exon-level count data.
+
+    o A choice of rejection regions is now implemented for exactTest,
+		and the default is changed from one based on small probabilities
+		to one based on doubling the smaller of the tail probabilities.
+		This gives better results than the original conditional test
+		when the dispersion is large (greater than 1).  A Beta
+		approximation to the tail probability is also implemented when
+		the counts are large, allowing exactTest() to be much
+		faster and use less memory.
+      
+    o exactTest now uses tagwise.dispersion by default if found in the
+	   object.
     
     o estimateCRDisp is removed. It is now replaced by estimateGLMCommonDisp,
       estimateGLMTrendedDisp and estimateGLMTagwiseDisp.
@@ -10,9 +25,10 @@ NEW FEATURES
       estimates if in data object. It uses tagwise if available, then 
       trended, then common.
 
-    o Add getPriorN.R to calculate the weight given to the common parameter 
-      likelihood in order to smooth (or stabilize) the dispersion estimates, 
-      and use getPriorN as default for estimateTagwiseDisp and estimateGLMTagwiseDisp
+    o Add getPriorN.R to calculate the weight given to the common
+		parameter likelihood in order to smooth (or stabilize) the
+		dispersion estimates, and use getPriorN as default for
+		estimateTagwiseDisp and estimateGLMTagwiseDisp
     
     o New function cutWithMinN used in binning methods.
     
@@ -32,13 +48,6 @@ NEW FEATURES
     o Adding args to dispCoxReidInterpolateTagwise to give more access to 
       tuning parameters.
     
-    o Add spliceVariants to the package--methods for detecting alternative exon 
-      usage from exon-level count data.
-      
-    o exactTest now uses new methods (exactTestDoubleTail and exactTestBetaApprox). 
-      It is much faster and use less memory. The arguments of exactTest are also
-      changed.
-        
     o estimateGLMTagwiseDisp now uses trended.dispersion by default if 
       trended.dispersion is found.
       
@@ -47,46 +56,46 @@ NEW FEATURES
     o Change to maPlot so that any really extreme logFCs are brought back 
       to a more reasonable scale.
       
-    o estimateGLMCommonDisp now returns NA when there are no residual df.
+    o estimateGLMCommonDisp now returns NA when there are no residual
+      df rather than returning dispersion of zero.
 
-    o Changed computation of local common likelihood in dispCoxReidInterpolateTagwise 
-      from using lowess to using movingAverageByCol.
+    o The trend computation of the local common likelihood in
+      dispCoxReidInterpolateTagwise is now based on moving averages
+      rather than lowess.
 
 
 BUG FIXES
 
-    o Bug fix to mglmOneWay, which was confusing parametrizations 
-      when the design matrix included negative values.
+    o Bug fix to mglmOneWay, which was confusing parametrizations when
+		the design matrix included negative values.
 
-    o Changes to offset behaviour in estimateGLMCommonDisp, 
-      estimateGLMTrendedDisp and estimateGLMTagwiseDisp to fix bug. 
-      Changes to several other functions on the way to fixing bugs 
-      when computing dispersions in data sets with genes that have 
-      all zero counts.
+    o Changes to offset behaviour in estimateGLMCommonDisp,
+		estimateGLMTrendedDisp and estimateGLMTagwiseDisp to fix bug.
+		Changes to several other functions on the way to fixing bugs
+		when computing dispersions in data sets with genes that have all
+		zero counts.
 
-    o dispDeviance and dispPearson now give graceful estimates and messages 
-      when the dispersion is outside the specified interval.
+    o dispDeviance and dispPearson now give graceful estimates and
+		messages when the dispersion is outside the specified interval.
 
-    o Fixed the bug that mglmOneWay (and hence glmFit) was producing NA 
-      coefficients when some of the fitted values were exactly zero.
+    o Fixed the bug that mglmOneWay (and hence glmFit) was producing
+		NA coefficients when some of the fitted values were exactly
+		zero.
 
-    o Fixed the bug that exactTest was giving incorrect results when some of 
-      the tags had entirely zero counts.
+    o Fixed the bug that exactTest was giving incorrect results when
+		some of the tags had entirely zero counts.
 
     o Bug fix to mglmSimple which causes error at some stage.
     
-    o Bug fix to adjustedProfLik when there are fitted values exactly at zero 
-      for one or more groups.
+    o Bug fix to adjustedProfLik when there are fitted values exactly
+		at zero for one or more groups.
 
-    o Bug fix to exactTest so that large dispersions do not give wrong
-      p-values.
-
-    o Fixed a bug in binGLMDispersion that was causing estimateGLMTrendedDisp
-      to fail on datasets with small numbers of genes. Extra warnings added to
-      explain this behaviour.
+    o Fixed a bug in binGLMDispersion that was causing
+		estimateGLMTrendedDisp to fail on datasets with small numbers of
+		genes. Extra warnings added to explain this behaviour.
 
 
-CHANGES IN VERSION 2.1.0
+CHANGES IN VERSION 2.2.0
 ------------------------
 
 NEW FEATURES
