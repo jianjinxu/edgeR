@@ -4,37 +4,37 @@ CHANGES IN VERSION 2.4.0
 NEW FEATURES
       
     o New function spliceVariants for detecting alternative exon usage
-		from exon-level count data.
+      from exon-level count data.
 
     o A choice of rejection regions is now implemented for exactTest,
-		and the default is changed from one based on small probabilities
-		to one based on doubling the smaller of the tail probabilities.
-		This gives better results than the original conditional test when
-		the dispersion is large (especially > 1).  A Beta distribution
-		approximation to the tail probability is also implemented when
-		the counts are large, allowing exactTest() to be much faster and
-		use less memory.
+      and the default is changed from one based on small probabilities
+      to one based on doubling the smaller of the tail probabilities.
+      This gives better results than the original conditional test when
+      the dispersion is large (especially > 1).  A Beta distribution
+      approximation to the tail probability is also implemented when
+      the counts are large, allowing exactTest() to be much faster and
+      use less memory.
       
     o exactTest now uses tagwise.dispersion by default if found in the
-		object.
+      object.
     
     o estimateCRDisp is removed. It is now replaced by
-		estimateGLMCommonDisp, estimateGLMTrendedDisp and
-		estimateGLMTagwiseDisp.
+      estimateGLMCommonDisp, estimateGLMTrendedDisp and
+      estimateGLMTagwiseDisp.
     
     o Changes to glmFit so that it automatically detects dispersion
-		estimates if in data object. It uses tagwise if available, then
-		trended, then common.
+      estimates if in data object. It uses tagwise if available, then
+      trended, then common.
 
     o Add getPriorN() to calculate the weight given to the common
-		parameter likelihood in order to smooth (or stabilize) the
-		dispersion estimates. Used as default for estimateTagwiseDisp and
-		estimateGLMTagwiseDisp.
+      parameter likelihood in order to smooth (or stabilize) the
+      dispersion estimates. Used as default for estimateTagwiseDisp and
+      estimateGLMTagwiseDisp.
     
     o New function cutWithMinN used in binning methods.
     
     o glmFit now S3 generic function, and glmFit has new method
-		argument specifying fitting algorithm.
+      argument specifying fitting algorithm.
     
     o DGEGLM objects now subsettable.
     
@@ -71,116 +71,21 @@ NEW FEATURES
 BUG FIXES
 
     o dispDeviance and dispPearson now give graceful estimates and
-		messages when the dispersion is outside the specified interval.
+      messages when the dispersion is outside the specified interval.
 
     o Bug fix to mglmOneWay, which was confusing parametrizations when
-		the design matrix included negative values.
+      the design matrix included negative values.
 
     o mglmOneWay (and hence glmFit) no longer produces NA coefficients
-		when some of the fitted values were exactly zero.
+      when some of the fitted values were exactly zero.
 
     o Changes to offset behaviour in estimateGLMCommonDisp,
-		estimateGLMTrendedDisp and estimateGLMTagwiseDisp to fix bug.
-		Changes to several other functions on the way to fixing bugs
-		when computing dispersions in data sets with genes that have all
-		zero counts.
+      estimateGLMTrendedDisp and estimateGLMTagwiseDisp to fix bug.
+      Changes to several other functions on the way to fixing bugs
+      when computing dispersions in data sets with genes that have all
+      zero counts.
 
     o Bug fix to mglmSimple with matrix offset.
     
     o Bug fix to adjustedProfLik when there are fitted values exactly
-		at zero for one or more groups.
-
-
-CHANGES IN VERSION 2.2.0
-------------------------
-
-NEW FEATURES
-
-    o Reflect major new functionality for GLMs.
-
-    o New functions dispCoxReidPowerTrend, goodTuringProportions, adjustedProfLik,
-      expandAsMatrix, dispCoxReid and getOffsets.
-
-BUG FIXES
-
-    o Correcting use of offsets in the call to glmFit from glmLRT.
-
-    o Changes to binMeanVar so that averaging in bins of mean and variance
-      is now done on the square-root scale so that there is less upward bias 
-      in the averages.
-
-    o Bug fixing for adjustedProfileLik being aliased twice.
-    
-    o Bug fixing in estimateGLMTagwiseDisp.DGEList which popped up when using
-      method=common.
-    
-
-CHANGES IN VERSION 2.0.0
------------------------
-
-NEW FEATURES
-
-    o New functions goodTuring and mglmLS. Now esitmateCRDisp calls mglmLS.
-
-BUG FIXES
-
-    o Fixing convergence problems for adjustedProfileLik.
-    
-    o Fixes to estimateCRDisp.R to make convergence more secure.
-    
-    o glmFit no longer converts data to DGEList.
-
-
-CHANGES IN VERSION 1.8.0
------------------------
-
-NEW FEATURES
-
-    o Introducing negative binomial GLM methods to allow the analysis of complicated
-      experimental designs. Introducing methods to help assess and account for NB 
-      dispersion that depends on the expression level genes. Add many new functions 
-      (glmNBOneGroup, glmfit, meanvar, decidetestsDGE)
-
-    o topTags will now use logFC as secondary ranking when p-values are identical.
-
-    o Add dim and length methods for DGEList, DGEGLM and DGELRT class objects and friends.
-    
-    o Add norm.factors column to the element of DGEList objects.
-    
-    o Subsetting added for DGEExact objects and option for the number of bins for getting 
-      average means and variances added to plotMeanVar.
-      
-    o readDGE has new argument labels. Also uses row.names of targets frame for labels 
-      if such exist.
-
-BUG FIXES
-
-    o Fix to plotMDS.dge so that it gives the same result regardless of group
-      setting of DGEList
-    
-    o Bug fix to plotMDS.dge so that definition of experimental groups does 
-      not affect the MDS plot
-      
-
-CHANGES IN VERSION 1.5.0
------------------------
-
-NEW FEATURES
-
-    o 'dispersion' argument added to exactTest so that a user can specify value(s) for the 
-      dispersion when doing the exact test.
-      
-    o Add plotMDS.dge to the package with documentation.
-
-BUG FIXES
-
-    o Bug fix in estimateSmoothing.
-    
-    
-CHANGES IN VERSION 1.3.0
------------------------
-
-NEW FEATURES
-
-    o New functions added: calcNormFactors, estimateCommonDisp, estimateTagwiseDisp, 
-      estimateSmoothing, exactTest, equaliseLibSizes, plotSmear, maplot, plotFC.
+      at zero for one or more groups.
