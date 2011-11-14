@@ -44,7 +44,7 @@ Defaults to a single column of ones, equivalent to treating the columns as repli
 }
 
 \value{\code{glmFit} produces an object of class \code{DGEGLM} with the following components:
-	\item{coefficients}{matrix of estimated coefficients from the NB model}
+	\item{coefficients}{matrix of estimated coefficients from the NB model, corresponding to log-fold changes on the natural log scale.}
 	\item{df.residual}{vector giving the residual degrees of freedom for each tag. In theory it can be different for different tags (if there are missing values), but in practice these will usually be identical for each tag.}
 	\item{deviance}{vector giving the deviance from the NB model fit for each tag.}
 	\item{design}{design matrix used in the NB model fit for each tag.}
@@ -58,7 +58,7 @@ Defaults to a single column of ones, equivalent to treating the columns as repli
         \item{abundance}{vector of gene/tag abundances (expression level), on the log2 scale, computed from the mean count for each gene/tag after scaling count by normalized library size.}
 
 \code{glmLRT} produces an object of class \code{DGELRT} with the following components:
-              \item{table}{data frame (table) containing the abundance of each tag (log-concentration, \code{logConc}), the log-fold change of expression between conditions/contrasts being tested (\code{logFC}), the likelihood ratio statistic (\code{LR.statistic}) and the p-value from the LR test (\code{p.value}), for each tag in the dataset.}
+              \item{table}{data frame (table) containing the abundance of each tag (log-concentration, \code{logConc}), the log2-fold change of expression between conditions/contrasts being tested (\code{logFC}), the likelihood ratio statistic (\code{LR.statistic}) and the p-value from the LR test (\code{p.value}), for each tag in the dataset.}
               \item{coefficients}{matrix of coefficients for the full model defined by the \code{design} matrix (i.e. for the full model).}
               \item{dispersion.used}{scalar or vector of the dispersion value(s) used in the GLM fits and LR test.}
 The \code{DGELRT} object also contains all the elements of \code{y} except for the table of counts (raw data) and the table of pseudo-counts (if applicable).

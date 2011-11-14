@@ -115,7 +115,7 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 glmLRT <- function(y,glmfit,coef=ncol(glmfit$design),contrast=NULL)
 #	Tagwise likelihood ratio tests for DGEGLM
 #	Gordon Smyth and Davis McCarthy.
-#	Created 1 July 2010. Last modified 24 November 2010.
+#	Created 1 July 2010. Last modified 9 November 2011.
 {
 	if(is(y,"DGEList"))
 		y.mat <- y$counts 
@@ -152,8 +152,7 @@ glmLRT <- function(y,glmfit,coef=ncol(glmfit$design),contrast=NULL)
 		coef.name <- paste(paste(contrast[i],coef.names[i],sep="*"),collapse=" ")
 		qr <- qr(contrast)
 		Q <- qr.Q(qr,complete=TRUE)
-		sign1 <- sign(qr$qr[1,1])
-		Q <- cbind(Q[,-1],Q[,1])
+		Q <- cbind(Q[,-1],Q[,1]*qr$qr[1,1])
 		design <- design %*% Q
 		coef <- nbeta
 	}

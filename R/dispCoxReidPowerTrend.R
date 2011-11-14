@@ -1,7 +1,7 @@
 dispCoxReidPowerTrend <- function(y, design, offset=NULL, subset=10000, method.optim="Nelder-Mead", trace=0)
 #	Estimate trend dispersion=a*mean^b
-#	Gordon Smyth, Davis McCarthy
-#	16 Dec 2010.  Last modified 3 May 2011.
+#	Gordon Smyth, Davis McCarthy, Yunshun Chen
+#	16 Dec 2010.  Last modified 14 Nov 2011.
 {
 	y <- as.matrix(y)
 	nlibs <- ncol(y)
@@ -22,13 +22,13 @@ dispCoxReidPowerTrend <- function(y, design, offset=NULL, subset=10000, method.o
     y.nonzero <- y[!all.zero,]
     
 	fun <- function(par,y,design,offset,abundance) {
-		dispersion <- exp(par[1]+par[2]*abundance)
+		dispersion <- exp(par[1]+par[2]*abundance) + exp(par[3])
 		tryCatch(-sum(adjustedProfileLik(dispersion,y,design,offset)),error=function(e) 1e10)
 	}
 
-	par0 <- c(log(0.1),0)
+	par0 <- c(log(0.1),0,-5)
 	out <- optim(par0,fun,y=y.nonzero[i,],design=design,offset=offset.nonzero[i,],abundance=abundance.nonzero[i],control=list(trace=trace),method=method.optim)
-	out$dispersion <- exp(out$par[1]+out$par[2]*abundance.full)
+	out$dispersion <- exp(out$par[1]+out$par[2]*abundance.full) + exp(out$par[3])
 	out$abundance <- abundance.full
 	out
 }
