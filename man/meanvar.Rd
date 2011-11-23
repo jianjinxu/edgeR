@@ -1,6 +1,5 @@
 \name{meanvar}
 \alias{binMeanVar}
-\alias{pooledVar}
 \alias{plotMeanVar}
 
 \title{Explore the mean-variance relationship for DGE data}
@@ -11,7 +10,6 @@
 \usage{
 plotMeanVar(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, show.binned.common.disp.vars=FALSE, show.ave.raw.vars=TRUE, dispersion.method="qcml", scalar=NULL, NBline=FALSE, nbins=100, log.axes="xy", xlab=NULL, ylab=NULL,  ...) 
 binMeanVar(x, conc=NULL, group, nbins=100, common.dispersion=FALSE, object=NULL)
-pooledVar(y,group)
 }
 
 \arguments{ 
@@ -51,8 +49,6 @@ pooledVar(y,group)
 
 \item{common.dispersion}{logical, whether or not to compute the common dispersion for each bin of tags.}
 
-\item{y}{vector of count data}
-
 }
 
 \value{ \code{plotMeanVar} produces a mean-variance plot for the DGE data using the options described above. \code{plotMeanVar} and \code{binMeanVar} both return a list with the following components:
@@ -63,9 +59,6 @@ pooledVar(y,group)
 	\item{means}{vector giving the mean expression level for each gene}
 	\item{vars}{vector giving the pooled variance for each gene}
 	\item{bins}{list giving the indices of the tags in each bin, ordered from lowest expression bin to highest}
-
-\code{pooledVar} returns a scalar for the pooled variance of the given data vector.
-
 }
 
 \details{

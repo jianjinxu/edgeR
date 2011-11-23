@@ -72,7 +72,7 @@ This method corresponds to \code{binom.test} when the dispersion is near zero, b
 This has good statistical properties but is relatively slow to compute.
 For general remarks on different types of rejection regions for exact tests see Gibbons and Pratt (1975).
 
-\code{exactTestBetaApprox} implements an asymptotical beta distribution approximation to the conditional count distribution.
+\code{exactTestBetaApprox} implements an asymptotic beta distribution approximation to the conditional count distribution.
 }
 
 \references{

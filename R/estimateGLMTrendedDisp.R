@@ -1,7 +1,7 @@
-estimateGLMTrendedDisp <- function(y, design, offset=NULL, method="bin.spline", ...) 
+estimateGLMTrendedDisp <- function(y, design, offset=NULL, method="auto", ...) 
 UseMethod("estimateGLMTrendedDisp")
 
-estimateGLMTrendedDisp.DGEList <- function(y, design, offset=NULL, method="bin.spline", ...)
+estimateGLMTrendedDisp.DGEList <- function(y, design, offset=NULL, method="auto", ...)
 {
     if( is.null(offset) )
         offset <- getOffset(y)
@@ -13,9 +13,10 @@ estimateGLMTrendedDisp.DGEList <- function(y, design, offset=NULL, method="bin.s
 	y
 }
 
-estimateGLMTrendedDisp.default <- function(y, design, offset=NULL, method="bin.spline", ...)
+estimateGLMTrendedDisp.default <- function(y, design, offset=NULL, method="auto", ...)
 {
 	y <- as.matrix(y)
+	ntags <- nrow(y)
 	if(is.null(design)) {
 		design <- matrix(1,ncol(y),1)
 		rownames(design) <- colnames(y)
@@ -27,7 +28,15 @@ estimateGLMTrendedDisp.default <- function(y, design, offset=NULL, method="bin.s
 		warning("No residual df: cannot estimate dispersion")
 		return(NA)
 	}
-	method <- match.arg(method, c("bin.spline","bin.loess","power","spline"))
+	
+	method <- match.arg(method,c("auto","bin.spline","bin.loess","power","spline"))
+	if(method=="auto"){
+		if(ntags < 200) {
+			method <- "power"
+		} else {
+			method <- "bin.spline"
+		}
+	}
 	switch(method,
 		bin.spline=dispBinTrend(y, design, offset=offset, method.trend="spline", ...),
 		bin.loess=dispBinTrend(y, design, offset=offset, method.trend="loess", ...),

@@ -1,7 +1,7 @@
 dispCoxReidSplineTrend <- function(y, design, offset=NULL, df = 5, subset=10000, method.optim="Nelder-Mead", trace=0)
 #	Estimate spline trend dispersion
 #	Gordon Smyth, Yunshun Chen, Davis McCarthy
-#	Created 16 Dec 2010.  Last modified 7 July 2011.
+#	Created 16 Dec 2010.  Last modified 17 November 2011.
 {
 	y <- as.matrix(y)
 	nlibs <- ncol(y)
@@ -12,16 +12,15 @@ dispCoxReidSplineTrend <- function(y, design, offset=NULL, df = 5, subset=10000,
 	method.optim <- match.arg(method.optim, c("Nelder-Mead", "BFGS"))
 
 	all.zero <- rowSums(y)==0
-    if( any(all.zero) )
-        warning("Some rows of count matrix are all zero. These rows are ignored in dispersion calculation.")               
-    abundance.full <- rep(NA, ntags)
+#	if(any(all.zero)) warning("Some rows of count matrix are all zero. These rows are ignored in dispersion calculation.")			   
+	abundance.full <- rep(NA, ntags)
 	abundance.nonzero <- mglmOneGroup(y[!all.zero,],offset=offset[!all.zero,])
-    abundance.full[all.zero] <- min(abundance.nonzero) - 0.5
-    abundance.full[!all.zero] <- abundance.nonzero
+	abundance.full[all.zero] <- min(abundance.nonzero) - 0.5
+	abundance.full[!all.zero] <- abundance.nonzero
 	i <- systematicSubset(subset, abundance.nonzero)
-    offset.nonzero <- offset[!all.zero,]
-    y.nonzero <- y[!all.zero,]
-    
+	offset.nonzero <- offset[!all.zero,]
+	y.nonzero <- y[!all.zero,]
+	
 #	Spline basis
 	require("splines")
 	p1 <- (1:(df-1))/df
@@ -40,11 +39,11 @@ dispCoxReidSplineTrend <- function(y, design, offset=NULL, df = 5, subset=10000,
 	par0 <- rep(0,df+1)
 	par0[1] <- median(abundance.nonzero[i]) + log(0.1)
 	out <- optim(par0,fun,y=y.nonzero[i,],design=design,offset=offset.nonzero[i,],abundance=abundance.nonzero[i],X=X[i,],control=list(trace=trace),method=method.optim)
-    disp <- rep(NA, ntags)
-    disp.nonzero <-  as.vector(exp(X %*% out$par - abundance.nonzero))
-    disp[all.zero] <- disp.nonzero[which.min(abundance.nonzero)]
-    disp[!all.zero] <- disp.nonzero
-    out$dispersion <- disp
+	disp <- rep(NA, ntags)
+	disp.nonzero <-  as.vector(exp(X %*% out$par - abundance.nonzero))
+	disp[all.zero] <- disp.nonzero[which.min(abundance.nonzero)]
+	disp[!all.zero] <- disp.nonzero
+	out$dispersion <- disp
 	out$abundance <- abundance.full
 	out
 }

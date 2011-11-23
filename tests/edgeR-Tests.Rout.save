@@ -1,5 +1,5 @@
 
-R Under development (unstable) (2011-09-19 r57030)
+R version 2.14.0 (2011-10-31)
 Copyright (C) 2011 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: i386-pc-mingw32/i386 (32-bit)
@@ -17,6 +17,7 @@ Type 'demo()' for some demos, 'help()' for on-line help, or
 Type 'q()' to quit R.
 
 > library(edgeR)
+Loading required package: limma
 > 
 > set.seed(0); u <- runif(100)
 > 
@@ -242,28 +243,15 @@ Tag.12 -3.992556  7.130986e-01 0.9014515 0.342392806 0.8499599
 Tag.3  -4.607552 -7.395760e-01 0.8817937 0.347710872 0.8499599
 Tag.8  -5.205324 -8.107513e-01 0.7356185 0.391068048 0.8603497
 > dglm <- estimateGLMTrendedDisp(dglm,design)
-Loading required package: splines
-Warning messages:
-1: In binGLMDispersion(y, design, min.n = min.n, offset = offset, method = method.bin,  :
-  With 22 genes and setting the parameter minimum number (min.n) of genes per bin to 500,  there should technically be fewer than 2 bins. To make estimation of trended dispersions possible we set the number of bins to be 2.
-
-2: In binGLMDispersion(y, design, min.n = min.n, offset = offset, method = method.bin,  :
-  With 22 genes and setting the parameter minimum number (min.n) of genes per bin to 500,  there are only 2 bins. Using 2 bins here means that the minimum number of genes in each of the 2 bins is in fact 10. This number of bins and minimum number of genes per bin may not be sufficient for reliable estimation of a trend on the dispersions.
-
 > summary(dglm$trended.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.03517 0.09326 0.14950 0.32280 0.15390 2.11700 
+0.05079 0.17290 0.18430 0.18090 0.21150 0.26750 
 > dglm <- estimateGLMTrendedDisp(dglm,design,method="power")
-Warning message:
-In dispCoxReidPowerTrend(y, design, offset = offset, ...) :
-  Some rows of count matrix are all zero. These rows are ignored in dispersion calculation.
 > summary(dglm$tagwise.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
  0.1756  0.1879  0.1998  0.2031  0.2135  0.2578 
 > dglm <- estimateGLMTrendedDisp(dglm,design,method="spline")
-Warning message:
-In dispCoxReidSplineTrend(y, design, offset = offset, ...) :
-  Some rows of count matrix are all zero. These rows are ignored in dispersion calculation.
+Loading required package: splines
 > summary(dglm$tagwise.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
  0.1756  0.1879  0.1998  0.2031  0.2135  0.2578 
