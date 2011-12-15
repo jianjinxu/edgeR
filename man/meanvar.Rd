@@ -8,7 +8,7 @@
 
 
 \usage{
-plotMeanVar(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, show.binned.common.disp.vars=FALSE, show.ave.raw.vars=TRUE, dispersion.method="qcml", scalar=NULL, NBline=FALSE, nbins=100, log.axes="xy", xlab=NULL, ylab=NULL,  ...) 
+plotMeanVar(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, show.binned.common.disp.vars=FALSE, show.ave.raw.vars=TRUE, scalar=NULL, NBline=FALSE, nbins=100, log.axes="xy", xlab=NULL, ylab=NULL,  ...) 
 binMeanVar(x, conc=NULL, group, nbins=100, common.dispersion=FALSE, object=NULL)
 }
 
@@ -24,8 +24,6 @@ binMeanVar(x, conc=NULL, group, nbins=100, common.dispersion=FALSE, object=NULL)
 \item{show.binned.common.disp.vars}{logical, whether or not to compute the common dispersion for each bin of tags and show the variances computed from those binned common dispersions and the mean expression level of the respective bin of tags. Default is \code{FALSE}.}
 
 \item{show.ave.raw.vars}{logical, whether or not to show the average of the raw variances for each bin of tags plotted against the average expression level of the tags in the bin. Averages are taken on the square root scale as regular arithmetic means are likely to be upwardly biased for count data, whereas averaging on the square scale gives a better summary of the mean-variance relationship in the data. The default is \code{TRUE}.}
-
-\item{dispersion.method}{character string giving the method that has been used to estimate the common and tagwise dispersion values used to calculate the estimated variances. Default is \code{"qcml"} to indicate that conditional inference methods (e.g. \code{estimateCommonDisp} and \code{estimateTagwiseDisp} were used to compute the dispersions; other option is \code{"coxreid"} indicating that the Cox-Reid method for GLMs was used.}
 
 \item{scalar}{vector (optional) of scaling values to divide counts by. Would expect to have this the same length as the number of columns in the count matrix (i.e. the number of libraries).}
 
@@ -77,8 +75,8 @@ meanvar <- plotMeanVar(d, show.raw.vars=TRUE) # Produce a mean-variance plot wit
 ## If we want to show estimated tagwise variances on the plot, we must first estimate them!
 d <- estimateCommonDisp(d) # Obtain an estimate of the dispersion parameter
 d <- estimateTagwiseDisp(d)  # Obtain tagwise dispersion estimates
-plotMeanVar(d, meanvar=meanvar, show.tagwise.vars=TRUE, NBline=TRUE, dispersion.method="qcml") # Use previously saved object to speed up plotting; set dispersion.method to 'qcml' instead of default 'coxreid'
-## We could also estimate common/tagwise dispersions using the Cox-Reid methods using CRDisp() with an appropriate design matrix
+plotMeanVar(d, meanvar=meanvar, show.tagwise.vars=TRUE, NBline=TRUE) # Use previously saved object to speed up plotting;
+## We could also estimate common/tagwise dispersions using the Cox-Reid methods with an appropriate design matrix
 }
 
 \seealso{
