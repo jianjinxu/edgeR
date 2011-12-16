@@ -1,16 +1,21 @@
-binMeanVar <- function(x, conc=NULL, group, nbins=100, common.dispersion=FALSE, object=NULL) {
+binMeanVar <- function(x, conc=NULL, group, nbins=100, common.dispersion=FALSE, object=NULL)
     ## Function to bin DGE data based on abundance and calculate the mean and pooled variance for each tag, as well as the average mean and variance for each bin. Allows us to investigate the mean-variance relationship in the data.
     ## Expect x to be a matrix of counts or pseudocounts---pseudocounts preferable as this adjusts for library size.
     ## Created by Davis McCarthy
-    x <- as.matrix(x)
-    group <- as.factor(group)
-    ntags <- nrow(x)
-    means <- rowMeans(x)
-    
-                                        #	vars <- apply(x,1,pooledVar,group=group)
-    design <- model.matrix(~group)
-    vars <- lmFit(x,design)$sigma^2
-    
+{
+	x <- as.matrix(x)
+	group <- as.factor(group)
+	ntags <- nrow(x)
+	nlibs <- ncol(x)
+	means <- rowMeans(x)
+
+	if(nlevels(group) > 1) {
+		design <- model.matrix(~group)
+		vars <- lmFit(x,design)$sigma^2
+	} else {
+		vars <- rowSums((x-means)^2)/(nlibs-1)
+	}
+
     bins <- var.bins <- means.bins <- vector("list", nbins)
     o <- order(means)
     ntagsinbin <- floor(ntags / nbins)
