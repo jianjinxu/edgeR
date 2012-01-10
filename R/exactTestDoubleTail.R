@@ -6,7 +6,7 @@ exactTestDoubleTail <- function(y1,y2,dispersion=0,big.count=900)
 #	Smaller tail probability is doubled to get p-value.
 
 #	Gordon Smyth
-#	28 Sep 2019.  Last modified 29 Sep 2011.
+#	28 Sep 2019.  Last modified 10 Jan 2012.
 {
 #	Convert matrices to vectors
 	ntags <- NROW(y1)
@@ -63,5 +63,5 @@ exactTestDoubleTail <- function(y1,y2,dispersion=0,big.count=900)
 		}
 		pvals[right] <- pvals[right]/p.bot[right]
 	}
-	pvals
+	pmin(pvals,1)
 }
