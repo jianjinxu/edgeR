@@ -7,7 +7,7 @@ exactTestBySmallP <- function(y1,y2,dispersion=0,big.count=900)
 #	all values with probability equal or less than that observed.
 
 #	Mark Robinson, Davis McCarthy, Gordon Smyth.
-#	Created 17 June 2009.  Last modified 2 October 2011.
+#	Created 17 June 2009.  Last modified 10 Jan 2012.
 {
 	y1 <- as.matrix(y1)
 	y2 <- as.matrix(y2)
@@ -23,16 +23,16 @@ exactTestBySmallP <- function(y1,y2,dispersion=0,big.count=900)
 	sum2 <- round(rowSums(y2))
 	N <- sum1+sum2
 	mu <- N/(n1+n2)
-	r <- 1/dispersion
 	if(all(dispersion==0)) return(binomTest(sum1,sum2,p=n1/(n1+n2)))
 	if(any(dispersion==0)) stop("dispersion must be either all zero or all positive")
-	if(length(r)==1) r <- rep(r,ntags)
+	if(length(dispersion)==1) dispersion <- rep(dispersion,ntags)
+	r <- 1/dispersion
 	all.zeros <- N==0
 
 	pvals <- rep(1,ntags)
 	if(ntags==0) return(pvals)
 	if(any(all.zeros)) {
-		pvals[!all.zeros] <- Recall(y1=y1[!all.zeros,,drop=FALSE],y2=y2[!all.zeros,,drop=FALSE],r=r[!all.zeros])
+		pvals[!all.zeros] <- Recall(y1=y1[!all.zeros,,drop=FALSE],y2=y2[!all.zeros,,drop=FALSE],dispersion=dispersion[!all.zeros],big.count=big.count)
 		return(pvals)
 	}
 	for (i in 1:ntags) {
@@ -43,5 +43,5 @@ exactTestBySmallP <- function(y1,y2,dispersion=0,big.count=900)
 		p.bot <- dnbinom(N[i],size=(n1+n2)*r[i],mu=(n1+n2)*mu[i])
 		pvals[i] <- sum(p.top[keep]/p.bot)
 	}
-	pvals
+	min(pvals,1)
 }

@@ -8,7 +8,7 @@ Estimates tagwise dispersion values by an empirical Bayes method based on weight
 }
 
 \usage{
-estimateTagwiseDisp(object, prior.n=getPriorN(object), trend="movingave", prop.used=0.3, method="grid", grid.length=200, tol=1e-06, verbose=FALSE)
+estimateTagwiseDisp(object, prior.n=getPriorN(object), trend="movingave", prop.used=0.3, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
 }
 
 \arguments{ 
@@ -26,10 +26,11 @@ Possible values are \code{"none"}, \code{"movingave"} and \code{"tricube"}.
 \item{prop.used}{optional scalar giving the proportion of all tags/genes to be used for the locally weighted estimation of the tagwise dispersion, allowing the dispersion estimates to vary with abundance (expression level). For each tag/gene the estimate of its dispersion is based on the closest \code{prop.used} of all of the genes to that gene, where 'closeness' is based on similarity in expression level.}
 
 \item{method}{method for maximizing the posterior likelihood.
-Possible values are \code{"grid"} for grid search or \code{"optimize"} to call the function of the same name.
+Possible values are \code{"grid"} for interpolation on grid points or \code{"optimize"} to call the function of the same name.
 }
 
-\item{grid.length}{for \code{method="grid"}, the number of points at which the likelihood is evaluated for each tag.  Larger values improve the accuracy of the dispersion estimates.}
+\item{grid.length}{for \code{method="grid"}, the number of points on which the interpolation is applied for each tag.}
+\item{grid.range}{for \code{method="grid"}, the range of the grid points around the trend on a log2 scale.}
 
 \item{tol}{for \code{method="optimize"}, the tolerance for Newton-Rhapson iterations.}
 

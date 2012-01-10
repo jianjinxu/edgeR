@@ -1,7 +1,7 @@
 exactTest <- function(object, pair=NULL, dispersion="auto", rejection.region="doubletail", big.count=900)
 #	Calculates exact p-values for the differential expression levels of tags in the two groups being compared.
 #	Davis McCarthy, Gordon Smyth.
-#	Created September 2009. Last modified 14 Oct 2011.
+#	Created September 2009. Last modified 10 Jan 2012.
 {
 	if(!is(object,"DGEList")) stop("Currently only supports DGEList objects as the object argument.")
 
@@ -47,8 +47,8 @@ exactTest <- function(object, pair=NULL, dispersion="auto", rejection.region="do
 	rejection.region <- match.arg(rejection.region,c("doubletail","deviance","smallp"))
 	exact.pvals <- switch(rejection.region,
 		doubletail=exactTestDoubleTail(y1=y$y1,y2=y$y2,dispersion=dispersion,big.count=big.count),
-		deviance=exactTestDoubleTail(y1=y$y1,y2=y$y2,dispersion=dispersion,big.count=big.count),
-		smallp=exactTestDoubleTail(y1=y$y1,y2=y$y2,dispersion=dispersion,big.count=big.count)
+		deviance=exactTestByDeviance(y1=y$y1,y2=y$y2,dispersion=dispersion,big.count=big.count),
+		smallp=exactTestBySmallP(y1=y$y1,y2=y$y2,dispersion=dispersion,big.count=big.count)
 	)
 	
 	logConc<-(log2(q2q.pair$conc$conc.group[,pair[1]==levs.pair])+log2(q2q.pair$conc$conc.group[,pair[2]==levs.pair]))/2

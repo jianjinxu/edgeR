@@ -1,8 +1,8 @@
-estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="movingave", prop.used=0.3, method="grid", grid.length=200, tol=1e-06, verbose=FALSE)
+estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="movingave", prop.used=0.3, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
 # Tagwise dispersion using weighted conditional likelihood empirical Bayes.
 
-# Davis McCarthy, Mark Robinson, Gordon Smyth.
-# Created 2009. Last modified 14 Oct 2011.
+# Davis McCarthy, Mark Robinson, Yunshun Chen, Gordon Smyth.
+# Created 2009. Last modified 24 Nov 2011.
 {
 	if( !is(object,"DGEList") ) stop("object must be a DGEList")
 	if( is.null(object$pseudo.alt) ) {
@@ -15,9 +15,13 @@ estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="moving
 	group <- object$samples$group <- as.factor(object$samples$group)
 	y <- splitIntoGroups(list(counts=object$pseudo.alt,samples=object$samples))
 	delta <- rep(0,ntags)
-	if(method=="grid") {  # do a grid search, since some likelihoods may be monotone, not amenable to NR
-		if(verbose) message("Using grid search to estimate tagwise dispersion. ")
-		grid.vals<-seq(0.001,0.999,length.out=grid.length)
+
+	if(method=="grid"){  # do spline interpolation
+		if(verbose) message("Using interpolation to estimate tagwise dispersion. ")
+		spline.pts <- seq(from=grid.range[1],to=grid.range[2],length=grid.length)
+		spline.disp <- object$common.dispersion * 2^spline.pts
+		grid.vals <- spline.disp/(1+spline.disp)
+	
 		l0 <- 0
 		for(i in 1:length(y)) {
 			l0 <- condLogLikDerDelta(y[[i]],grid.vals,der=0,doSum=FALSE)+l0
@@ -29,7 +33,9 @@ estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="moving
 			"none" = matrix(colSums(l0),ntags,grid.length,byrow=TRUE)
 		)
 		l0a <- l0 + prior.n/ntags*m0
-		delta <- grid.vals[apply(l0a,1,which.max)]
+		d <- rep(0,ntags)
+		for(j in 1:ntags) d[j] <- maximizeInterpolant(spline.pts, l0a[j,])
+		tagwise.dispersion <- object$common.dispersion * 2^d
 	} else {	
 		if(trend != "none") stop("optimize method doesn't allow for abundance-dispersion trend")
 		if(verbose) message("Tagwise dispersion optimization begun, may be slow, progress reported every 100 tags")
@@ -38,10 +44,10 @@ estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="moving
 			delta[tag] <- delta.this$maximum
 			if(verbose) if(tag%%100==0) message("tag ",tag)
 		}
+		tagwise.dispersion <- delta/(1-delta)
 	}
 	if(verbose) cat("\n")
-	tagwise.dispersion <- delta/(1-delta)
-
+	
 #	Output
 	object$prior.n <- prior.n
 	object$tagwise.dispersion <- tagwise.dispersion

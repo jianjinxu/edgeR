@@ -12,8 +12,8 @@ NEW FEATURES
       This gives better results than the original conditional test when
       the dispersion is large (especially > 1).  A Beta distribution
       approximation to the tail probability is also implemented when
-      the counts are large, allowing exactTest() to be much faster and
-      use less memory.
+      the counts are large, making exactTest() much faster and
+      less memory hungry.
 
     o estimateTagwiseDisp now includes an abundance trend on the
       dispersions by default.

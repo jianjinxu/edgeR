@@ -1,6 +1,9 @@
 calcNormFactors <- function(object, method=c("TMM","RLE","upperquartile"), refColumn=NULL,
                             logratioTrim=.3, sumTrim=0.05, doWeighting=TRUE, Acutoff=-1e10, 
-                            p=0.75) {
+                            p=0.75)
+{
+
+	if(!is(object,"DGEList")) object <- as.matrix(object)
                             
   method <- match.arg(method)
                             
@@ -38,8 +41,6 @@ calcNormFactors <- function(object, method=c("TMM","RLE","upperquartile"), refCo
     object$samples$norm.factors <- f
     return(object)
   }
-
-  
 }
 
 

@@ -4,7 +4,7 @@ assign("[.DGEList",
 function(object, i, j, ...) {
 #  Subsetting for DGEList objects
 #  Davis McCarthy, Gordon Smyth 
-#  24 September 2009.  Last modified 24 Feb 2011.
+#  24 September 2009.  Last modified 14 Dec 2011.
 
 	if(nargs() != 3) stop("Two subscripts required",call.=FALSE)
 	if(missing(i))
@@ -14,6 +14,7 @@ function(object, i, j, ...) {
 			object$counts <- object$counts[,j,drop=FALSE]
 			object$samples <- droplevels(object$samples[j,,drop=FALSE])
 			object$pseudo.alt <- object$pseudo.alt[,j,drop=FALSE]
+			object$offset <- object$offset[,j,drop=FALSE]
 		}
 	else {
 		if(is.character(i)) {
@@ -29,6 +30,7 @@ function(object, i, j, ...) {
 			object$pseudo.alt <- object$pseudo.alt[i,,drop=FALSE]
 			object$genes <- object$genes[i,,drop=FALSE]
 			object$all.zeros <- object$all.zeros[i,drop=FALSE]
+			object$offset <- object$offset[i,,drop=FALSE]
 		} else {
 			object$counts <- object$counts[i,j,drop=FALSE]
 			object$samples <- droplevels(object$samples[j,,drop=FALSE])
@@ -39,6 +41,7 @@ function(object, i, j, ...) {
 			object$infos <- object$infos[i,drop=FALSE]
 			object$genes <- object$genes[i,,drop=FALSE]
 			object$all.zeros <- object$all.zeros[i,drop=FALSE]
+			object$offset <- object$offset[i,,drop=FALSE]
 		}
 	}
 	object

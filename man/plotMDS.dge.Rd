@@ -13,8 +13,8 @@ for the top genes that best distinguish the samples.
   \item{x}{any matrix or \code{DGEList} object.}
   \item{top}{number of top genes used to calculate pairwise distances.}
   \item{labels}{character vector of sample names or labels. If \code{x} has no column names, then defaults the index of the samples.}
-  \item{col}{numeric or character vector of colors for the plotting characters.}
-  \item{cex}{numeric vector of plot symbol expansions.}
+  \item{col}{numeric or character vector of colors for the plotting characters. See \code{\link[graphics]{text}} for possible values.}
+  \item{cex}{numeric vector of plot symbol expansions. See \code{\link[graphics]{text}} for possible values.}
   \item{dim.plot}{which two dimensions should be plotted, numeric vector of length two.}
   \item{ndim}{number of dimensions in which data is to be represented}
   \item{xlab}{title for the x-axis}
@@ -28,7 +28,10 @@ A set of top genes are chosen that have largest biological variation between the
 (those with largest tagwise dispersion treating all libraries as one group).
 Then the distance between each pair of libraries (columns) is the biological coefficient of variation (square root of the common dispersion) between those two libraries alone, using
 the top genes.
-See \code{\link[graphics]{text}} for possible values for \code{col} and \code{cex}.
+
+The number \code{top} of top genes chosen for this exercise should roughly correspond to the number of differentially expressed genes with materially large fold-changes.
+The default setting of 500 genes is widely effective and suitable for routine use, but a smaller value might be chosen for when the samples are distinguished by a specific focused molecular pathway.
+Very large values (greater than 1000) are not usually so effective.
 
 This function can be slow when there are many libraries.
 }
@@ -56,15 +59,11 @@ This is a list containing the following components:
 # Samples are in two groups
 # First 300 genes are differentially expressed in second group
 
-x <- 10*runif(1000)
-counts <- rnbinom(6000, size = 5, mu = x)
-m <- matrix(counts, 1000, 6)
-rownames(m) <- paste("Gene",1:1000)
-m[1:300,4:6] <- m[1:300,4:6] + 10
-m <- DGEList(counts=m)
+y <- matrix(rnbinom(6000, size = 1/2, mu = 10),1000,6)
+rownames(y) <- paste("Gene",1:1000)
+y[1:300,4:6] <- y[1:300,4:6] + 10
 # without labels, indexes of samples are plotted.
-library(limma)
-mds <- plotMDS(m,  col=c(rep("black",3), rep("red",3)) )
+mds <- plotMDS(y,  col=c(rep("black",3), rep("red",3)) )
 # or labels can be provided, here group indicators:
 plotMDS(mds,  col=c(rep("black",3), rep("red",3)), labels= c(rep("Grp1",3), rep("Grp2",3)))
 }

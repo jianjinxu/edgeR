@@ -28,6 +28,9 @@ summary(d$tagwise.dispersion)
 de <- exactTest(d)
 topTags(de)
 
+summary(exactTest(d,rejection="smallp")$table$p.value)
+summary(exactTest(d,rejection="deviance")$table$p.value)
+
 d2 <- estimateTagwiseDisp(d,trend="tricube")
 summary(d2$tagwise.dispersion)
 de <- exactTest(d2)
@@ -77,6 +80,7 @@ y <- matrix(rnbinom(5*7,mu=10,size=3/2),nrow=5,ncol=7)
 group <- factor(c(1,1,2,2,3,3,3))
 ys <- splitIntoGroupsPseudo(y,group,pair=c(1,3))
 exactTestDoubleTail(ys$y1,ys$y2,dispersion=2/3)
+exactTestBetaApprox(ys$y1,ys$y2,dispersion=2/3)
 
 y[1,3:4] <- 0
 design <- model.matrix(~group)
