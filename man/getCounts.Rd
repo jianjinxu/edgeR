@@ -1,33 +1,47 @@
 \name{getCounts}
 \alias{getCounts}
+\alias{getOffset}
+\alias{getDispersion}
 
-\title{Extract Table of Counts from DGEList Object}
-
-\description{Returns the \code{counts} component of a DGEList object}
+\title{Extract Specified Component of a DGEList Object}
 
 \usage{
-getCounts(object) 
+getCounts(y) 
+getOffset(y) 
+getDispersion(y)
 }
+
 \arguments{ 
-
-\item{object}{\code{DGEList} object containing (at least) the elements \code{counts} (table of raw counts), \code{group} (factor indicating group) and \code{lib.size} (numeric vector of library sizes)}
+\item{y}{\code{DGEList} object containing (at least) the elements \code{counts} (table of raw counts), \code{group} (factor indicating group) and \code{lib.size} (numeric vector of library sizes)}
 }
 
-\value{\code{getCounts} returns a matrix of counts (presumably integers) }
+\description{
+\code{getCounts(y)} returns the matrix of read counts \code{y$counts}.
 
-\author{Mark Robinson, Davis McCarthy}
+\code{getOffset(y)} returns offsets for the log-linear predictor account for sequencing depth and possibly other normalization factors.
+Specifically it returns the matrix \code{y$offset} if it is non-null, otherwise it returns the log product of \code{lib.size} and \code{norm.factors} from \code{y$samples}.
+
+\code{getDispersion(y)} returns the most complex dispersion estimates (common, trended or tagwise) found in \code{y}.
+}
+
+\value{\code{getCounts} returns the matrix of counts.
+\code{getOffset} returns a numeric matrix or vector.
+\code{getDispersion} returns a list with components:
+\item{dispersion}{vector of dispersion values}
+\item{type}{character string recording whether the dispersion is \code{"common"}, \code{"trended"} or \code{"tagwise"}.}
+}
+
+\author{Mark Robinson, Davis McCarthy, Gordon Smyth}
 
 \examples{
 # generate raw counts from NB, create list object
-y<-matrix(rnbinom(20,size=1,mu=10),nrow=5)
-d<-DGEList(counts=y,group=rep(1:2,each=2),lib.size=rep(c(1000:1001),2))
-# should be 5x4
-print(dim(getCounts(d)))
+y <- matrix(rnbinom(20,size=5,mu=10),5,4)
+d <- DGEList(counts=y, group=c(1,1,2,2), lib.size=1001:1004)
+getCounts(d)
+getOffset(d)
+d <- estimateCommonDisp(d)
+getDispersion(d)
 }
 
-\seealso{
-\code{\link{DGEList}} for more information about the \code{DGEList} class.
-\code{\link{as.matrix.DGEList}}.
-}
+\seealso{\code{\link[edgeR:DGEList-class]{DGEList-class}}}
 
-\keyword{file}

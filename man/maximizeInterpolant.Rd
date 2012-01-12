@@ -34,8 +34,8 @@ maximizeInterpolant(x, z, maxit=10, eps=1e-7, plot=FALSE)
 
 \author{Gordon Smyth}
 \examples{
-x <- seq(0,1,length=1000)
-y <- rnorm(1000,1,1)
+x <- seq(0,1,length=10)
+y <- rnorm(10,1,1)
 maximizeInterpolant(x,y)
 }
 

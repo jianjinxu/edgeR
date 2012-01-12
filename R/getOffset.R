@@ -1,14 +1,14 @@
-getOffset <- function(object)
-#	Extract offset vector or matrix from data object and optional arguments
+getOffset <- function(y)
+#	Extract offset vector or matrix from data object and optional arguments.
 #	By default, offset is constructed from the lib.size and norm.factors
-#	However offset supplied explicitly takes precedence
-#	Arguments take precedence over corresponding values in object
+#	but offset supplied explicitly takes precedence
+
 #	Gordon Smyth
-#	26 Jan 2011. Last modified 10 May 2011.
+#	26 Jan 2011. Last modified 11 Jan 2012.
 {
-	offset <- object$offset
-	lib.size <- object$samples$lib.size
-	norm.factors <- object$samples$norm.factors
+	offset <- y$offset
+	lib.size <- y$samples$lib.size
+	norm.factors <- y$samples$norm.factors
 	
 	if(!is.null(offset)) {
 		return(offset)

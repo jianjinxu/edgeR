@@ -111,5 +111,3 @@ DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, norm.factors=NULL, grou
 
 as.matrix.DGEList <- function(x,...) as.matrix(x$counts)
 
-getCounts <- function(object) as.matrix(object$counts)
-
