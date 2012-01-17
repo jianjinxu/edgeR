@@ -42,7 +42,7 @@ exactTest <- function(object, pair=NULL, dispersion="auto", rejection.region="do
 
 	q2q.pair <- equalizeLibSizes(obj.pair,disp=dispersion,null.hypothesis=TRUE)
 	mus <- q2q.pair$N*q2q.pair$conc$conc.common
-	y<-splitIntoGroupsPseudo(q2q.pair$pseudo,group.pair,pair)
+	y <- splitIntoGroupsPseudo(q2q.pair$pseudo,group.pair,pair)
 
 	rejection.region <- match.arg(rejection.region,c("doubletail","deviance","smallp"))
 	exact.pvals <- switch(rejection.region,
@@ -55,7 +55,7 @@ exactTest <- function(object, pair=NULL, dispersion="auto", rejection.region="do
 	logFC<-log2(q2q.pair$conc$conc.group[,pair[2]==levs.pair]/q2q.pair$conc$conc.group[,pair[1]==levs.pair])
 	logFC[obj.pair$all.zeros] <- 0
 
-	de.out<-data.frame(logConc=logConc, logFC=logFC, p.value=exact.pvals)
+	de.out <- data.frame(logFC=logFC, logConc=logConc, PValue=exact.pvals)
 	rownames(de.out) <- rownames(obj.pair$counts)
 	new("DGEExact",list(table=de.out, comparison=pair, genes=object$genes))
 }

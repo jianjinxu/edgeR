@@ -3,6 +3,7 @@
 \alias{glmFit.DGEList}
 \alias{glmFit.default}
 \alias{glmLRT}
+\alias{glmQLFTest}
 
 \title{Fit negative binomial generalized linear model for each transcript}
 
@@ -12,6 +13,7 @@
 \usage{
 \method{glmFit}{DGEList}(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, start=NULL, method="auto", ...)
 glmLRT(y, glmfit, coef=ncol(glmfit$design), contrast=NULL)
+glmQLFTest(y, glmfit, coef=ncol(glmfit$design), contrast=NULL, abundance.trend=TRUE)
 }
 
 \arguments{ 
@@ -41,6 +43,8 @@ Defaults to a single column of ones, equivalent to treating the columns as repli
 \item{coef}{scalar or vector indicating the column(s) of \code{design} that are to be dropped when creating the null model for the Likelihood Ratio (LR) Test. Can be numeric or character. If character, the string(s) provided to \code{coef} must match a column of the design matrix in the \code{glmfit} object passed to \code{glmLRT}. The \code{glmLRT} fits the null model and then conducts an LR test of the model fit provided in \code{glmfit} against the null model defined by the choice of \code{coef}. By default, the last column of the design matrix is dropped to form the design matrix for the null model.}
 
 \item{contrast}{contrast vector for which the test is required, of length equal to the number of columns of \code{design}. If specified, then takes precedence over \code{coef}.}
+
+\item{abundance.trend}{logical, whether or not to allow an abundance-dependent trend on the quasi-likelihood dispersion parameter when conducting the quasi-likelihood F test for differential expression. Default is \code{TRUE}.}
 }
 
 \value{\code{glmFit} produces an object of class \code{DGEGLM} with the following components:
@@ -59,6 +63,12 @@ Defaults to a single column of ones, equivalent to treating the columns as repli
 
 \code{glmLRT} produces an object of class \code{DGELRT} with the following components:
               \item{table}{data frame (table) containing the abundance of each tag (log-concentration, \code{logConc}), the log2-fold change of expression between conditions/contrasts being tested (\code{logFC}), the likelihood ratio statistic (\code{LR.statistic}) and the p-value from the LR test (\code{p.value}), for each tag in the dataset.}
+              \item{coefficients}{matrix of coefficients for the full model defined by the \code{design} matrix (i.e. for the full model).}
+              \item{dispersion.used}{scalar or vector of the dispersion value(s) used in the GLM fits and LR test.}
+The \code{DGELRT} object also contains all the elements of \code{y} except for the table of counts (raw data) and the table of pseudo-counts (if applicable).
+
+\code{glmQLFtest} produces an object of class \code{DGELRT} with the following components:
+              \item{table}{data frame (table) containing the abundance of each tag (log-concentration, \code{logConc}), the log2-fold change of expression between conditions/contrasts being tested (\code{logFC}), the quasi-likelihood F statistic (\code{F}) and the p-value from the QL F test (\code{p.value}), for each tag in the dataset.}
               \item{coefficients}{matrix of coefficients for the full model defined by the \code{design} matrix (i.e. for the full model).}
               \item{dispersion.used}{scalar or vector of the dispersion value(s) used in the GLM fits and LR test.}
 The \code{DGELRT} object also contains all the elements of \code{y} except for the table of counts (raw data) and the table of pseudo-counts (if applicable).

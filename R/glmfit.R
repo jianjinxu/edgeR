@@ -164,26 +164,28 @@ glmLRT <- function(y,glmfit,coef=ncol(glmfit$design),contrast=NULL)
 	fit.null <- glmFit(y,design=design0,offset=glmfit$offset,weights=glmfit$weights,dispersion=glmfit$dispersion)
 
 	LR <- fit.null$deviance - glmfit$deviance
-	LRT.pvalue <- pchisq(LR, df=( fit.null$df.residual - glmfit$df.residual ), lower.tail = FALSE, log.p = FALSE)
+	df <- fit.null$df.residual - glmfit$df.residual
+	LRT.pvalue <- pchisq(LR, df=df, lower.tail = FALSE, log.p = FALSE)
 	tab <- data.frame(
-		logConc=glmfit$abundance,
 		logFC=logFC,
-		LR.statistic=LR,
-		p.value=LRT.pvalue
+		logCPM=(glmfit$abundance+log(1e6))/log(2),
+		LR=LR,
+		PValue=LRT.pvalue
 	)
 	rownames(tab) <- rownames(y.mat)
 	if(is(y,"DGEList")) {
 		y$counts <- NULL
 		y$pseudo.alt <- NULL
-		y$table <- tab 
-		y$coefficients.full <- glmfit$coefficients
-		y$coefficients.null <- fit.null$coefficients
-		y$design.full <- glmfit$design
-		y$design.null <- design0
-		y$dispersion.used <- glmfit$dispersion
 	} else {
-		y <- list(table=tab, coefficients.full=glmfit$coefficients, coefficients.null=fit.null$coefficients, design.full=glmfit$design, dispersion.used=glmfit$dispersion)
+		y <- list()
 	}
+	y$table <- tab 
+	y$coefficients.full <- glmfit$coefficients
+	y$coefficients.null <- fit.null$coefficients
+	y$design.full <- glmfit$design
+	y$design.null <- design0
+	y$dispersion.used <- glmfit$dispersion
+	y$df <- df
 	y$comparison <- coef.name
 	new("DGELRT",unclass(y))
 }

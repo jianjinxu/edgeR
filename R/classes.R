@@ -10,10 +10,6 @@ setClass("DGEList",
 representation("list")
 )
 
-setClass("TopTags",
-representation("list")
-)
-
 setClass("DGEGLM",
 representation("list")
 )
@@ -21,25 +17,6 @@ representation("list")
 setClass("DGELRT",
 representation("list")
 )
-
-setMethod("show", "TopTags", function(object) {
-	if(is.null(object$table$LR)) {
-		cat("Comparison of groups: ",paste(rev(object$comparison),collapse="-"),"\n")
-	} else {
-		cat("Coefficient: ",object$comparison,"\n")
-	}
-	#colnames(object$table) <- c("logConc","logFC","PValue","FDR")
-	if(object$adjust.method %in%  c("holm", "hochberg", "hommel", "bonferroni")) colnames(object$table)[ncol(object$table)] <- "FWER"
-	if(object$adjust.method %in%  c("BH", "BY", "fdr")) colnames(object$table)[ncol(object$table)] <- "FDR"
-	if(object$adjust.method=="none") object$table$adj.PValue <- NULL
-	print(object$table)
-})
-
-as.data.frame.TopTags <- function(x,row.names=NULL,optional=FALSE,...)
-{
-	if(!is.null(row.names)) row.names(x$table) <- row.names
-	x$table
-}
 
 setIs("DGEList","LargeDataObject")
 setIs("DGEExact","LargeDataObject")

@@ -28,8 +28,8 @@ summary(d$tagwise.dispersion)
 de <- exactTest(d)
 topTags(de)
 
-summary(exactTest(d,rejection="smallp")$table$p.value)
-summary(exactTest(d,rejection="deviance")$table$p.value)
+summary(exactTest(d,rejection="smallp")$table$PValue)
+summary(exactTest(d,rejection="deviance")$table$PValue)
 
 d2 <- estimateTagwiseDisp(d,trend="tricube")
 summary(d2$tagwise.dispersion)

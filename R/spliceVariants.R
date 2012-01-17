@@ -71,7 +71,7 @@ spliceVariants <- function(y, geneID, dispersion=NULL, group=NULL, estimate.gene
     if(trace)
         cat("Max number exons: ",max(nexons),"\n")
     ## Genes with the same number of exons have the same design matrix, allowing some parallelization of computations
-    splicevars.out <- data.frame(logConc = na.vec, logFC= na.vec, LR.statistic = na.vec, p.value = na.vec)
+    splicevars.out <- data.frame(logFC= na.vec, logConc = na.vec, LR = na.vec, PValue = na.vec)
     rownames(splicevars.out) <- uniqIDs
     abundance <- na.vec
     ## For loop iterates over number of exons for genes, starting at 2 (can't have splice variants if only one exon!)
@@ -83,8 +83,8 @@ spliceVariants <- function(y, geneID, dispersion=NULL, group=NULL, estimate.gene
             gene.counts.mat <- matrix(t(exons[full.index,]), nrow=sum(this.genes), ncol=ncol(exons)*i.exons, byrow=TRUE)
             if(i.exons==1) {
                 abundance[this.genes] <- mglmOneGroup(gene.counts.mat, dispersion[this.genes])
-                splicevars.out$LR.statistic[this.genes] <- 0
-                splicevars.out$p.value[this.genes] <- 1
+                splicevars.out$LR[this.genes] <- 0
+                splicevars.out$PValue[this.genes] <- 1
             }
             else {
                 exon.this <- factor(rep(1:i.exons, each=ncol(exons)))
@@ -98,12 +98,12 @@ spliceVariants <- function(y, geneID, dispersion=NULL, group=NULL, estimate.gene
                 abundance[this.genes] <- fit.this$abundance
                 results.this <- glmLRT(gene.counts.mat, fit.this, coef=coef)
                 if(sum(this.genes)==1) {
-                    splicevars.out$LR.statistic[this.genes] <- results.this$table$LR.statistic[1]
-                    splicevars.out$p.value[this.genes] <- results.this$table$p.value[1]
+                    splicevars.out$LR[this.genes] <- results.this$table$LR[1]
+                    splicevars.out$PValue[this.genes] <- results.this$table$PValue[1]
                 }
                 else {
-                    splicevars.out$LR.statistic[this.genes] <- results.this$table$LR.statistic
-                    splicevars.out$p.value[this.genes] <- results.this$table$p.value
+                    splicevars.out$LR[this.genes] <- results.this$table$LR
+                    splicevars.out$PValue[this.genes] <- results.this$table$PValue
                 }
             }
         }
