@@ -1,12 +1,10 @@
 ### Methods for fitting models and testing significance using quasi-likelihood
 
 glmQLFTest <- function(y, glmfit, coef=ncol(glmfit$design), contrast=NULL, abundance.trend=TRUE)
-    ##    Tagwise quasi-likelihood F-tests for DGEGLM
+    ##    Quasi-likelihood F-tests for DGE glms.
     ##    Davis McCarthy and Gordon Smyth.
-    ##    Created 18 Feb 2011. Last modified 16 Jan 2012.
+    ##    Created 18 Feb 2011. Last modified 19 Jan 2012.
 {
-    y.mat <- as.matrix(y)
-
     ##    Call glmLRT to get most of the results that we need for the QL F-test calculations
     out.lrt <- glmLRT(y, glmfit, coef=coef, contrast=contrast)
 
@@ -17,7 +15,7 @@ glmQLFTest <- function(y, glmfit, coef=ncol(glmfit$design), contrast=NULL, abund
     else
         s2.fit <- squeezeVar(s2, df=glmfit$df.residual)
 
-    ##    Compute the QL F-statistic from the likelihood ratio (LR) statistics, degreees of freedom (df) and QL parameter (sigma-squared)
+    ##    Compute the QL F-statistic from the likelihood ratio (LR) statistics, degrees of freedom (df) and QL parameter (sigma-squared)
     LR <- out.lrt$table$LR
     df <- out.lrt$df
     F <- LR / df / s2.fit$var.post
