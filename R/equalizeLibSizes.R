@@ -35,4 +35,3 @@ equalizeLibSizes <- function(object, disp=0, N=exp(mean(log(object$samples$lib.s
 	pseudo[pseudo<0]<-0
 	return(list(pseudo=pseudo,conc=conc,N=N))
 }
-

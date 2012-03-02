@@ -26,9 +26,7 @@ Specifically it returns the matrix \code{y$offset} if it is non-null, otherwise 
 
 \value{\code{getCounts} returns the matrix of counts.
 \code{getOffset} returns a numeric matrix or vector.
-\code{getDispersion} returns a list with components:
-\item{dispersion}{vector of dispersion values}
-\item{type}{character string recording whether the dispersion is \code{"common"}, \code{"trended"} or \code{"tagwise"}.}
+\code{getDispersion} returns vector of dispersion values.
 }
 
 \author{Mark Robinson, Davis McCarthy, Gordon Smyth}

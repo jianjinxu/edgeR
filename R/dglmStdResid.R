@@ -3,7 +3,7 @@
 dglmStdResid <- function(y, design, dispersion=0, offset=0, nbins=100, make.plot=TRUE, xlab="Mean", ylab="Ave. binned standardized residual", ... ) {
     ## Function to bin DGE data based on fitted values for the abundance and compute and plot the average of the standardized residuals from a Poisson model fit in each bin against the average abundance for each bin. Allows us to investigate the mean-variance relationship in the data and compute a variance function for the negative binomial model.
     ## Davis McCarthy
-    ## Created 9 November 2010. Last modified 9 November  2010.
+    ## Created 9 November 2010. Last modified 1 March  2012.
 	ngenes <- nrow(y)
 	nlibs <- ncol(y)
     if( length(offset)!=nlibs & length(offset)!=1 & length(offset)!=length(y) )
@@ -29,7 +29,7 @@ dglmStdResid <- function(y, design, dispersion=0, offset=0, nbins=100, make.plot
     ave.means <- sapply(means.bins, mean)
     ave.std.resid <- sapply(std.resid.bins, mean)
     out <- list(ave.means=ave.means, ave.std.resid=ave.std.resid, bin.means=means.bins, bin.std.resid=std.resid.bins, means=means, standardized.residuals=std.resid, bins=bins, nbins=nbins, ngenes=ngenes, nlibs=nlibs)
-    out$dispersion.estimate <- getDispersions(out)$dispersion
+    out$dispersion.estimate <- getDispersions(out)
     if(make.plot)
         plot(ave.means, ave.std.resid, pch="x", col="darkgreen", cex=1.5, log="xy", xlab=xlab, ylab=ylab, plot.first=grid(), ...)
     return( invisible( out ) )

@@ -37,7 +37,7 @@ binomTest <- function(y1, y2, n1=sum(y1), n2=sum(y2), p=n1/(n1+n2))
 	size0 <- size[size>0 & !big]
 	if(length(size0)) for (isize in unique(size0)) {
 		i <- (size==isize)
-		d <- dbinom(0:isize,p=p,size=isize)
+		d <- dbinom(0:isize,prob=p,size=isize)
 		o <- order(d)
 		cumsump <- cumsum(d[o])[order(o)]
 		p.value[i] <- cumsump[y1[i]+1]

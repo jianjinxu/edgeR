@@ -5,7 +5,7 @@
 Calculate genewise biological coefficient of variation (BCV) and gene abundance (using counts per million) from a \code{DGEList} object, then plot BCV against abundance.
 }
 \usage{
-plotBCV(object, xlab="Abundance (log2 counts per million)", ylab="Biological coefficient of variation (BCV)", panel.first=grid(), ... )
+plotBCV(object, xlab="Abundance (log2 counts per million)", ylab="Biological coefficient of variation (BCV)", ... )
 }
 \arguments{
   \item{object}{a \code{DGEList} object.}
@@ -22,11 +22,12 @@ This function provides a way to examine the relationship between biological coef
 A plot is created on the current graphics device.
 }
 
-\author{Davis McCarthy}
+\author{Davis McCarthy and Yunshun Chen}
 
 \examples{
 y <- DGEList(matrix(rnbinom(6000, size = 1/2, mu = 10),1000,6))
 y <- estimateCommonDisp(y)
+y <- estimateTrendedDisp(y)
 y <- estimateTagwiseDisp(y)
 plotBCV(y)
 }

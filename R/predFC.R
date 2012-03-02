@@ -4,7 +4,7 @@ UseMethod("predFC")
 predFC.DGEList <- function(y,design,prior.total.count=1,offset=NULL,dispersion=NULL)
 {
 	if(is.null(offset)) offset <- getOffset(y)
-	if(is.null(dispersion)) dispersion <- getDispersion(y)$dispersion
+	if(is.null(dispersion)) dispersion <- getDispersion(y)
 	if(is.null(dispersion)) {
 		dispersion <- 0
 		message("dispersion set to zero")

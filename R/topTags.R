@@ -11,6 +11,33 @@ setMethod("show", "TopTags", function(object) {
 	print(object$table)
 })
 
+assign("[.TopTags",
+function(object, i, j, ...) {
+#  Subsetting for TopTags objects
+#  Gordon Smyth 
+#  9 Feb 2012. Last modified 9 Feb 2012.
+
+	if(nargs() != 3) stop("Two subscripts required",call.=FALSE)
+	if(missing(i))
+		if(missing(j))
+			return(object)
+		else {
+			object$table <- object$table[,j,drop=FALSE]
+		}
+	else {
+		if(is.character(i)) {
+			i <- match(i,rownames(object$counts))
+			i <- i[!is.na(i)]
+		}
+		if(missing(j)) {
+			object$table <- object$table[i,,drop=FALSE]
+		} else {
+			object$table <- object$table[i,j,drop=FALSE]
+		}
+	}
+	object
+})
+
 as.data.frame.TopTags <- function(x,row.names=NULL,optional=FALSE,...)
 {
 	if(!is.null(row.names)) row.names(x$table) <- row.names
@@ -24,7 +51,7 @@ topTags <- function(object,n=10,adjust.method="BH",sort.by="p.value")
 {
 	sort.by <- match.arg(sort.by,c("p.value","logFC"))
 	tabnames <- names(object$table)
-	if( is(object, "DGELRT") & ncol(object$table) > 4 ) {
+	if( is(object, "DGELRT") && ncol(object$table) > 4 ) {
 		if( sort.by=="logFC")
 			warning("Two or more logFC columns in DGELRT object. First logFC column used to rank by logFC.\n")
 		alfc <- abs(object$table[,1])
@@ -33,7 +60,7 @@ topTags <- function(object,n=10,adjust.method="BH",sort.by="p.value")
 	}
 	switch(sort.by,
 		"logFC" = {o <- order(alfc,decreasing=TRUE)},
-		"p.value" = {o <- order(object$table$PValue,1/alfc)}
+		"p.value" = {o <- order(object$table$PValue,-alfc)}
 	)
 	chosen <- o[1:min(nrow(object$table),n)]
 	tab <- object$table[chosen,]

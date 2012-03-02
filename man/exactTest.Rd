@@ -10,7 +10,7 @@
 \description{Compute genewise exact tests for differences in the means between two groups of negative-binomially distributed counts.}
 
 \usage{
-exactTest(object, pair=NULL, dispersion="auto", rejection.region="doubletail", big.count=900)
+exactTest(object, pair=NULL, dispersion="auto", rejection.region="doubletail", big.count=900, prior.count.total=0.5)
 exactTestDoubleTail(y1, y2, dispersion=0, big.count=900)
 exactTestBySmallP(y1, y2, dispersion=0, big.count=900)
 exactTestByDeviance(y1, y2, dispersion=0, big.count=900)
@@ -22,16 +22,16 @@ exactTestBetaApprox(y1, y2, dispersion=0)
 
 \item{pair}{vector of length two, either numeric or character, providing the pair of groups to be compared; if a character vector, then should be the names of two groups (e.g. two levels of \code{object$samples$group}); if numeric, then groups to be compared are chosen by finding the levels of \code{object$samples$group} corresponding to those numeric values and using those levels as the groups to be compared; if \code{NULL}, then first two levels of \code{object$samples$group} (a factor) are used. Note that the first group listed in the pair is the baseline for the comparison---so if the pair is \code{c("A","B")} then the comparison is \code{B - A}, so genes with positive log-fold change are up-regulated in group B compared with group A (and vice versa for genes with negative log-fold change).}
 
-\item{dispersion}{
-either a numeric vector of dispersions or a character string indicating that dispersions should be taken from the data object.
+\item{dispersion}{either a numeric vector of dispersions or a character string indicating that dispersions should be taken from the data object.
 If a numeric vector, then can be either of length one or of length equal to the number of tags.
-Allowable character values are \code{"common"}, \code{"tagwise"} or \code{"auto"}.
-\code{"common"} uses \code{object$common.dispersion}, \code{"tagwise"} uses \code{object$tagwise.dispersion} and \code{"auto"} uses tagwise when available and otherwise common.
-}
+Allowable character values are \code{"common"}, \code{"trended"}, \code{"tagwise"} or \code{"auto"}.
+Default behavior (\code{"auto"} is to use most complex dispersions found in data object.}
 
 \item{rejection.region}{type of rejection region for two-sided exact test.  Possible values are \code{"doubletail"}, \code{"smallp"} or \code{"deviance"}.}
 
 \item{big.count}{count size above which asymptotic beta approximation will be used.}
+
+\item{prior.count.total}{prior count used to shrink log-fold-changes.}
 
 \item{y1}{numeric matrix of counts for the first the two experimental groups to be tested for differences.
 Rows correspond to genes or transcripts and columns to libraries.

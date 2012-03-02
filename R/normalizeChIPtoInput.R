@@ -59,7 +59,7 @@ normalizeChIPtoInput <- function(input,response,dispersion=0.01,niter=6,loss="p"
 	
 	if(diff(scaling.factor.interval)==0) {
 		scaling.factor <- scaling.factor.interval[1]
-		p <- pnbinom(response,mu=scaling.factor*input,size=1/dispersion,lower=FALSE)
+		p <- pnbinom(response,mu=scaling.factor*input,size=1/dispersion,lower.tail=FALSE)
 		d <- dnbinom(response,mu=scaling.factor*input,size=1/dispersion)
 		pmid <- p-d/2
 		enriched <- p.adjust(pmid,method="holm")<0.5
@@ -69,7 +69,7 @@ normalizeChIPtoInput <- function(input,response,dispersion=0.01,niter=6,loss="p"
 #		Iterate over prop.enriched and scaling.factor
 		for (iter in 1:niter) {
 			scaling.factor <- optimize(f,interval=scaling.factor.interval,input=input,response=response,prop.enriched=prop.enriched)$minimum
-			p <- pnbinom(response,mu=scaling.factor*input,size=1/dispersion,lower=FALSE)
+			p <- pnbinom(response,mu=scaling.factor*input,size=1/dispersion,lower.tail=FALSE)
 			d <- dnbinom(response,mu=scaling.factor*input,size=1/dispersion)
 			pmid <- p-d/2
 			enriched <- p.adjust(pmid,method="holm")<0.5
