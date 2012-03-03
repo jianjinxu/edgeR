@@ -35,7 +35,7 @@ exp.inf<-approx.expected.info(d,1/(1 + d$common.dispersion),d$pseudo.alt)
 }
 
 \seealso{
-This function is used in the algorithm for estimating an appropriate amount of smoothing for the dipsersion estimates carried out by \code{\link{estimateSmoothing}}.
+This function is used in the algorithm for estimating an appropriate amount of smoothing for the dispersion estimates carried out by \code{\link{estimateSmoothing}}.
 }
 
 \keyword{file}

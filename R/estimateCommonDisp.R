@@ -1,26 +1,22 @@
 estimateCommonDisp <- function(object,tol=1e-06,rowsum.filter=5)
 # Do two iterations of calculating pseudodata and estimating common dispersion, first one uses Poisson
 # Davis McCarthy, Mark Robinson, Gordon Smyth.
-# Created 2009. Last modified 28 Feb 2012.
+# Created 2009. Last modified 3 March 2012.
 {
 	if(!is(object,"DGEList")) stop("Currently supports DGEList objects")
 	group <- object$samples$group <- as.factor(object$samples$group)
 
-	if( all(table(group)==1) ) {
-		warning("There is no replication, so dispersion cannot be estimated.  Setting common dispersion to 0.")
-		q2q.out <- equalizeLibSizes(object,disp=0,null.hypothesis=FALSE)
-		object$common.dispersion=1e-16
-		object$pseudo.alt=q2q.out$pseudo
-		object$conc=q2q.out$conc
-		object$common.lib.size=q2q.out
+	if( all(tabulate(group)<=1) ) {
+		warning("There is no replication, so dispersion cannot be estimated.")
+		object$common.dispersion <- NA
 		return(object)
 	}
 
 	tags.used <- rowSums(object$counts) > rowsum.filter
 	for(i in seq_len(2)) {
 		if(i==1) disp <- 0 else disp <- common.dispersion$dispersion
-		q2q.out<-equalizeLibSizes(object,disp=disp,null.hypothesis=FALSE)
-		pseudo.obj<-new("DGEList",list(counts=q2q.out$pseudo, samples=object$samples))
+		q2q.out <- equalizeLibSizes(object,disp=disp,null.hypothesis=FALSE)
+		pseudo.obj <- new("DGEList",list(counts=q2q.out$pseudo, samples=object$samples))
 		pseudo.obj <- pseudo.obj[tags.used,]
 		common.dispersion <- .estimateCommonDisp(pseudo.obj, tol=tol)
 	}

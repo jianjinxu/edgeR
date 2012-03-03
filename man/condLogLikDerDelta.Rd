@@ -25,7 +25,7 @@ condLogLikDerDelta(y, delta, grid = TRUE, der = 1, doSum = TRUE)
 \value{ vector or matrix of function/derivative evaluations}
 
 \details{
-This function computes the individual tag conditional log-likelihood for each tag. It is necessary for computing both the common conditional log-likelihood and the weighted conditional log-likelihood, which are used to find the common and tagwise (moderated) estimates of the dipsersion parameter. The delta scale for convenience (delta is bounded between 0 and 1). 
+This function computes the individual tag conditional log-likelihood for each tag. It is necessary for computing both the common conditional log-likelihood and the weighted conditional log-likelihood, which are used to find the common and tagwise (moderated) estimates of the dispersion parameter. The delta scale for convenience (delta is bounded between 0 and 1). 
 }
 
 \author{Mark Robinson, Davis McCarthy}
