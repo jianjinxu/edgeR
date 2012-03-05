@@ -10,7 +10,7 @@
 \description{Compute genewise exact tests for differences in the means between two groups of negative-binomially distributed counts.}
 
 \usage{
-exactTest(object, pair=NULL, dispersion="auto", rejection.region="doubletail", big.count=900, prior.count.total=0.5)
+exactTest(object, pair=1:2, dispersion="auto", rejection.region="doubletail", big.count=900, prior.count.total=0.5)
 exactTestDoubleTail(y1, y2, dispersion=0, big.count=900)
 exactTestBySmallP(y1, y2, dispersion=0, big.count=900)
 exactTestByDeviance(y1, y2, dispersion=0, big.count=900)
