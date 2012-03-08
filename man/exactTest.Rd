@@ -46,9 +46,9 @@ Libraries are assumed to be equal in size - e.g. adjusted pseudocounts from the 
 \code{exactTestDoubleTail} and friends produce a numeric vector of genewise p-values, one for each row of \code{y1} and \code{y2}.
 
 \code{exactTest} produces an object of class \code{DGEExact} containing the following components:
-\item{table}{a data frame containing the elements \code{logConc}, the log-average concentration/abundance for each tag in the two groups being compared, \code{logFC}, the log-abundance ratio, i.e. fold change, for each tag in the two groups being compared, \code{p.value}, exact p-value for differential expression using the NB model}
-\item{comparison}{a vector giving the names of the two groups being compared} 
-\item{genes}{a data frame containing information about each transcript; taken from \code{object} and can be \code{NULL}}
+\item{table}{data frame containing columns for the log2-fold-change, \code{logFC}, the average log2-counts-per-million, \code{logCPM}, and the two-sided p-value \code{PValue}}
+\item{comparison}{character vector giving the names of the two groups being compared} 
+\item{genes}{optional data frame containing annotation for transcript; taken from \code{object}}
 }
 
 \details{
