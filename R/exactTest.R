@@ -85,6 +85,7 @@ exactTest <- function(object, pair=1:2, dispersion="auto", rejection.region="dou
 	)
 
 	de.out <- data.frame(logFC=logFC, logCPM=logCPM, PValue=exact.pvals)
-	rownames(de.out) <- rownames(object$counts)
+	rn <- rownames(object$counts)
+	if(!is.null(rn)) rownames(de.out) <- make.unique(rn)
 	new("DGEExact",list(table=de.out, comparison=pair, genes=object$genes))
 }

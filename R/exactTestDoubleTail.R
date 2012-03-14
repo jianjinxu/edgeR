@@ -4,6 +4,8 @@ exactTestDoubleTail <- function(y1,y2,dispersion=0,big.count=900)
 #	using exact enumeration conditional on total sum.
 
 #	Smaller tail probability is doubled to get p-value.
+#  QUESTION: should we use sign(logFC) to choose which tail to evaluate
+#	instead of trying to find smaller of tail probabilities?
 
 #	Gordon Smyth
 #	28 Sep 2019.  Last modified 10 Jan 2012.

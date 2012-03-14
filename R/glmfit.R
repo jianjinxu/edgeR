@@ -172,7 +172,8 @@ glmLRT <- function(y,glmfit,coef=ncol(glmfit$design),contrast=NULL)
 		LR=LR,
 		PValue=LRT.pvalue
 	)
-	rownames(tab) <- rownames(y.mat)
+	rn <- rownames(y.mat)
+	if(!is.null(rn)) rownames(tab) <- make.unique(rn)
 	if(is(y,"DGEList")) {
 		y$counts <- NULL
 		y$pseudo.alt <- NULL
