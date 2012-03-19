@@ -28,11 +28,11 @@ glmFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 }
 
 glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, start=NULL, method="auto", ...)
-	##	Fit negative binomial generalized linear model for each transcript
-	##  to a series of digital expression libraries
-	##	Davis McCarthy and Gordon Smyth
+#	Fit negative binomial generalized linear model for each transcript
+#	to a series of digital expression libraries
+#	Davis McCarthy and Gordon Smyth
 
-	##	Created 17 August 2010. Last modified 13 May 2011.
+#	Created 17 August 2010. Last modified 13 May 2011.
 {
 #	Check input
 	y <- as.matrix(y)

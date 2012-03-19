@@ -31,7 +31,7 @@ Default behavior (\code{"auto"} is to use most complex dispersions found in data
 
 \item{big.count}{count size above which asymptotic beta approximation will be used.}
 
-\item{prior.count.total}{prior count used to shrink log-fold-changes.}
+\item{prior.count.total}{prior count used to shrink log-fold-changes. Larger values produce more shrinkage.}
 
 \item{y1}{numeric matrix of counts for the first the two experimental groups to be tested for differences.
 Rows correspond to genes or transcripts and columns to libraries.

@@ -16,7 +16,7 @@ smooth.scatter=FALSE, lowess=FALSE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{
- \item{object}{\code{DGEList} or \code{DGELRT} object containing data to produce an MA-plot.}
+ \item{object}{\code{DGEList}, \code{DGEExact} or \code{DGELRT} object containing data to produce an MA-plot.}
   \item{pair}{pair of experimental conditions to plot (if \code{NULL}, the first two conditions are used)}
   \item{de.tags}{rownames for tags identified as being differentially expressed; use \code{exactTest} to identify DE genes}
   \item{xlab}{x-label of plot}

@@ -36,6 +36,6 @@ predFC.default <- function(y,design,prior.total.count=1,offset=log(colSums(y)),d
 #	offset.augmented <- offset+log((total.count+1)/pmax(total.count,0.5))
 
    g <- glmFit(y.augmented,design,offset=offset,dispersion=dispersion)
-   log2(exp(g$coef))
+   g$coefficients / log(2)
 }
 
