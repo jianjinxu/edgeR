@@ -1,7 +1,6 @@
 \name{plotSmear}
 \Rdversion{1.1}
 \alias{plotSmear}
-%- Also NEED an '\alias' for EACH other topic documented here.
 \title{
 Plots log-Fold Change versus log-Concentration (or, M versus A) for Count Data
 }
@@ -9,7 +8,7 @@ Plots log-Fold Change versus log-Concentration (or, M versus A) for Count Data
 Both of these functions plot the log-fold change (i.e. the log of the ratio of expression levels for each tag between two experimential groups) against the log-concentration (i.e. the overall average expression level for each tag across the two groups). To represent counts that were low (e.g. zero in 1 library and non-zero in the other) in one of the two conditions, a 'smear' of points at low A value is presented in \code{plotSmear}.
 }
 \usage{
-plotSmear(object, pair = NULL, de.tags=NULL, xlab = "logConc", ylab =
+plotSmear(object, pair = NULL, de.tags=NULL, xlab = "logCPM", ylab =
 "logFC", pch = 19, cex = 0.2, smearWidth = 0.5, panel.first=grid(),
 smooth.scatter=FALSE, lowess=FALSE, ...)
 
