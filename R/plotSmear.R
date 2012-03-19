@@ -1,6 +1,6 @@
-plotSmear <- function (object, pair=NULL, de.tags=NULL, xlab="logConc", ylab="logFC", pch=19, cex=.2, smearWidth=.5, panel.first=grid(), smooth.scatter=FALSE, lowess=FALSE, ...)
+plotSmear <- function (object, pair=NULL, de.tags=NULL, ylab="logFC", pch=19, cex=.2, smearWidth=.5, panel.first=grid(), smooth.scatter=FALSE, lowess=FALSE, ...)
     ## User-level function for creating an MA-plot for DGE data.
-    ## Created by Mark Robinson. Last modified by Davis McCarthy, 6 Apr 2011.
+    ## Created by Mark Robinson. Last modified by Yunshun Chen, 19 March 2012.
  
 {
     if ( !(class(object) %in% c("DGEList", "DGELRT", "DGEExact")) ) 
@@ -28,13 +28,13 @@ plotSmear <- function (object, pair=NULL, de.tags=NULL, xlab="logConc", ylab="lo
         i <- match(de.tags,rownames(object$counts))
         i <- i[!is.na(i)]
         
-        maPlot( x, y, xlab=xlab, ylab=ylab, pch=pch, cex=cex, smearWidth=smearWidth, de.tags=i, panel.first=panel.first, smooth.scatter=smooth.scatter, lowess=lowess, ...)
+        maPlot( x, y, xlab="logConc", ylab=ylab, pch=pch, cex=cex, smearWidth=smearWidth, de.tags=i, panel.first=panel.first, smooth.scatter=smooth.scatter, lowess=lowess, ...)
     } else {
         if(is.null(object$table$logFC))
             stop("table$logFC slot in DGELRT object is NULL. We cannot produce an MA (smear) plot if more than one coefficient from the GLM is being tested in the likelihood ratio test as this results in more one logFC value per gene---one for each coefficient.\n")
         i <- match(de.tags,rownames(object$table))
         i <- i[!is.na(i)]
-        maPlot( x=NULL, y=NULL, logAbundance=object$table$logConc, logFC=object$table$logFC, xlab=xlab, ylab=ylab, pch=pch, cex=cex, smearWidth=smearWidth, de.tags=i, panel.first=panel.first, smooth.scatter=smooth.scatter, lowess=lowess, ...)
+        maPlot( x=NULL, y=NULL, logAbundance=object$table$logCPM, logFC=object$table$logFC, xlab="logCPM", ylab=ylab, pch=pch, cex=cex, smearWidth=smearWidth, de.tags=i, panel.first=panel.first, smooth.scatter=smooth.scatter, lowess=lowess, ...)
     }
 }
 
