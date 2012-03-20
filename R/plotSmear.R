@@ -5,7 +5,7 @@ plotSmear <- function (object, pair=NULL, de.tags=NULL, xlab="logCPM", ylab="log
 {
 	if ( !(class(object) %in% c("DGEList", "DGELRT", "DGEExact")) ) 
 		stop("Currently only supports DGEList/DGELRT/DGEExact objects as the object argument.")
-	if( is(object, "DGEList") & is.null(object$samples$group) )
+	if( is(object, "DGEList") && is.null(object$samples$group) )
 		stop("Cannot produce a smear plot if no experimental groups are defined. Here, d$samples$groups is NULL.\n")
 	if( is(object, "DGEList") ) {
 		levs.group <- levels(object$samples$group)
