@@ -115,7 +115,7 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 glmLRT <- function(y,glmfit,coef=ncol(glmfit$design),contrast=NULL)
 #	Tagwise likelihood ratio tests for DGEGLM
 #	Gordon Smyth and Davis McCarthy.
-#	Created 1 July 2010. Last modified 9 November 2011.
+#	Created 1 July 2010. Last modified 25 March 2012.
 {
 	if(is(y,"DGEList"))
 		y.mat <- y$counts 
@@ -166,14 +166,18 @@ glmLRT <- function(y,glmfit,coef=ncol(glmfit$design),contrast=NULL)
 	LR <- fit.null$deviance - glmfit$deviance
 	df <- fit.null$df.residual - glmfit$df.residual
 	LRT.pvalue <- pchisq(LR, df=df, lower.tail = FALSE, log.p = FALSE)
+	rn <- rownames(y.mat)
+	if(is.null(rn))
+		rn <- 1:nrow(y.mat)
+	else
+		rn <- make.unique(rn)
 	tab <- data.frame(
 		logFC=logFC,
 		logCPM=(glmfit$abundance+log(1e6))/log(2),
 		LR=LR,
-		PValue=LRT.pvalue
+		PValue=LRT.pvalue,
+		row.names=rn
 	)
-	rn <- rownames(y.mat)
-	if(!is.null(rn)) rownames(tab) <- make.unique(rn)
 	if(is(y,"DGEList")) {
 		y$counts <- NULL
 		y$pseudo.alt <- NULL
