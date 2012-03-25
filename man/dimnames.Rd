@@ -1,6 +1,12 @@
 \name{dimnames}
 \alias{dimnames.DGEList}
 \alias{dimnames<-.DGEList}
+\alias{dimnames.DGEExact}
+\alias{dimnames<-.DGEExact}
+\alias{dimnames.DGELRT}
+\alias{dimnames<-.DGELRT}
+\alias{dimnames.TopTags}
+\alias{dimnames<-.TopTags}
 \title{Retrieve the Dimension Names of a DGEList Object}
 \description{
 Retrieve the dimension names of a digital gene expression data object.
@@ -10,7 +16,7 @@ Retrieve the dimension names of a digital gene expression data object.
 \method{dimnames}{DGEList}(x) <- value
 }
 \arguments{
-  \item{x}{an object of class \code{DGEList}}
+  \item{x}{an object of class \code{DGEList}, \code{DGEExact}, \code{DGELRT} or \code{TopTags}}
   \item{value}{a possible value for \code{dimnames(x)}: see \code{\link{dimnames}}}
 }
 \details{
