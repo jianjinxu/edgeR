@@ -1,4 +1,4 @@
-#  Last modified 10 July 2011
+#  Last modified 26 March 2012
 
 estimateGLMCommonDisp <- function(y, design=NULL, offset=NULL, method="CoxReid", ...) 
 UseMethod("estimateGLMCommonDisp")
@@ -23,7 +23,7 @@ estimateGLMCommonDisp.default <- function(y, design=NULL, offset=NULL, method="C
 		design <- as.matrix(design)
 	}
 	if(ncol(design) >= ncol(y)) {
-		warning("No residual df: cannot estimate dispersion")
+		warning("No residual df: setting dispersion to NA")
 		return(NA)
 	}
 	method <- match.arg(method, c("CoxReid","Pearson","deviance"))
