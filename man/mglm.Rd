@@ -97,6 +97,8 @@ All these functions treat the dispersion parameter of the negative binomial dist
 	\item{dispersion}{scalar or vector of the dispersion values used for the linear model fits}
 	\item{weights}{matrix of final weights for the observations from the linear model fits}
 	\item{fitted.values}{matrix of fitted values}
+	\item{error}{logical vector, did the fit fail?}
+	\item{converged}{local vector, did the fit converge?}
 
 \code{deviances.function} returns a function to calculate the deviance as appropriate for the given values of the dispersion.
 

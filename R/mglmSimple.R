@@ -8,7 +8,7 @@ mglmSimple <- function(y, design, dispersion=0, offset=0, weights=NULL)
 ##	Lower-level function. Takes a matrix of counts (y)
 
 ##	Davis McCarthy and Gordon Smyth
-##	Created 17 August 2010. Last modified 20 Nov 2010.
+##	Created 17 August 2010. Last modified 10 Apr 2012.
 {
 #	Check arguments
 	require(MASS)
@@ -33,6 +33,7 @@ mglmSimple <- function(y, design, dispersion=0, offset=0, weights=NULL)
 	dimnames(fitted.values) <- dimnames(y)
 	df.residual <- rep(0,ngenes)
 	dev <- rep(NA,ngenes)
+	error <- converged <- rep(FALSE,ngenes)
 
 #  If common dispersion, then set glm family here
 	if(length(dispersion)>1) {
@@ -47,6 +48,7 @@ mglmSimple <- function(y, design, dispersion=0, offset=0, weights=NULL)
 	}
 
 #	Fit a glm to each gene sequentially
+
 	for (i in 1:ngenes) {
 		if(!common.family) {
 			if(dispersion[i] > 1e-10)
@@ -62,14 +64,20 @@ mglmSimple <- function(y, design, dispersion=0, offset=0, weights=NULL)
 			X <- design[obs,,drop=FALSE]
 			z <- z[obs]
 			w <- as.vector(weights[i,obs])
-			out <- glm.fit(X,z,w,offset=offset[i,obs],family=f)
-			coefficients[i,] <- out$coefficients
-			fitted.values[i,] <- fitted(out)
-			dev[i] <- out$deviance
-			df.residual[i] <- out$df.residual
+			out <- tryCatch(glm.fit(X,z,w,offset=offset[i,obs],family=f),error=function(e) e)
+			if(class(out)[1]=="simpleError") {
+				error[i] <- TRUE
+			} else {
+				coefficients[i,] <- out$coefficients
+				fitted.values[i,] <- fitted(out)
+				dev[i] <- out$deviance
+				df.residual[i] <- out$df.residual
+				converged[i] <- out$converged
+			}
 		}
 	}
    list(coefficients=coefficients, df.residual=df.residual, deviance=dev, design=design, 
-		offset=offset, dispersion=dispersion, weights=weights, fitted.values=fitted.values)
+		offset=offset, dispersion=dispersion, weights=weights, fitted.values=fitted.values,
+		converged=converged, error=error)
 }
 

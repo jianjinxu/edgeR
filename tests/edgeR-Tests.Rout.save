@@ -1,5 +1,5 @@
 
-R Under development (unstable) (2012-02-22 r58452)
+R version 2.15.0 (2012-03-30)
 Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: i386-pc-mingw32/i386 (32-bit)
@@ -391,6 +391,14 @@ Gene4 4.176401  4.709091  6.066590
 Gene5 2.072117  3.834708  8.108175
 95 more rows ...
 
+$converged
+[1] TRUE TRUE TRUE TRUE TRUE
+95 more elements ...
+
+$error
+[1] FALSE FALSE FALSE FALSE FALSE
+95 more elements ...
+
 $abundance
     Gene1     Gene2     Gene3     Gene4     Gene5 
 -2.340971 -4.213249 -4.957796 -4.454150 -4.519740 
@@ -517,4 +525,4 @@ x2     1      511    0.8445892
 > 
 > proc.time()
    user  system elapsed 
-   3.69    0.06    3.74 
+   3.60    0.01    3.62 
