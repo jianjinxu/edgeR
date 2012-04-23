@@ -10,8 +10,8 @@ Estimates the dispersion parameter for a DGE dataset for general experimental de
 }
 
 \usage{
-\S3method{estimateGLMTagwiseDisp}{DGEList}(y, design, offset=NULL, trend=!is.null(y$trended.dispersion), ...)
-\S3method{estimateGLMTagwiseDisp}{default}(y, design, offset=NULL, dispersion, trend=TRUE, ...)
+\S3method{estimateGLMTagwiseDisp}{DGEList}(y, design=NULL, offset=NULL, trend=!is.null(y$trended.dispersion), ...)
+\S3method{estimateGLMTagwiseDisp}{default}(y, design=NULL, offset=NULL, dispersion, trend=TRUE, ...)
 }
 
 \arguments{ 

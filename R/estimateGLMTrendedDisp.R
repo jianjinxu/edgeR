@@ -1,7 +1,9 @@
-estimateGLMTrendedDisp <- function(y, design, offset=NULL, method="auto", ...) 
+#  Last modified 23 April 2012
+
+estimateGLMTrendedDisp <- function(y, design=NULL, offset=NULL, method="auto", ...) 
 UseMethod("estimateGLMTrendedDisp")
 
-estimateGLMTrendedDisp.DGEList <- function(y, design, offset=NULL, method="auto", ...)
+estimateGLMTrendedDisp.DGEList <- function(y, design=NULL, offset=NULL, method="auto", ...)
 {
     if( is.null(offset) )
         offset <- getOffset(y)
@@ -13,7 +15,7 @@ estimateGLMTrendedDisp.DGEList <- function(y, design, offset=NULL, method="auto"
 	y
 }
 
-estimateGLMTrendedDisp.default <- function(y, design, offset=NULL, method="auto", ...)
+estimateGLMTrendedDisp.default <- function(y, design=NULL, offset=NULL, method="auto", ...)
 {
 	y <- as.matrix(y)
 	ntags <- nrow(y)
@@ -26,7 +28,7 @@ estimateGLMTrendedDisp.default <- function(y, design, offset=NULL, method="auto"
 	}
 	if(ncol(design) >= ncol(y)) {
 		warning("No residual df: cannot estimate dispersion")
-		return(NA)
+		return(NA,ntags)
 	}
 	
 	method <- match.arg(method,c("auto","bin.spline","bin.loess","power","spline"))

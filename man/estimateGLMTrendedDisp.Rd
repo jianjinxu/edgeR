@@ -11,8 +11,8 @@ Estimates the dispersion parameter for each transcript (tag) with a trend that d
 
 
 \usage{
-\S3method{estimateGLMTrendedDisp}{DGEList}(y, design, offset=NULL, method="auto", ...)
-\S3method{estimateGLMTrendedDisp}{default}(y, design, offset=NULL, method="auto",  ...)
+\S3method{estimateGLMTrendedDisp}{DGEList}(y, design=NULL, offset=NULL, method="auto", ...)
+\S3method{estimateGLMTrendedDisp}{default}(y, design=NULL, offset=NULL, method="auto",  ...)
 }
 
 \arguments{ 
@@ -45,7 +45,7 @@ This is a wrapper function for the lower-level functions that actually carry out
 Cox, DR, and Reid, N (1987). Parameter orthogonality and approximate conditional inference. \emph{Journal of the Royal Statistical Society Series B} 49, 1-39.
 }
 
-\author{Gordon Smyth, Davis McCarthy}
+\author{Gordon Smyth, Davis McCarthy, Yunshun Chen}
 \examples{
 y <- matrix(rnbinom(1000,mu=10,size=10),ncol=4)
 d <- DGEList(counts=y,group=c(1,1,2,2),lib.size=c(1000:1003))
