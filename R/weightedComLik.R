@@ -53,27 +53,3 @@ weightedComLikMA <- function(object, l0, prop.used=0.05) {
     weighted.common.lik
 }
 
-
-
-
-.weightedCommonLik <- function(object,l0,prop.used=0.4) {
-## Function for calculating weights to do LOESS-like weighted local calculations of the common dispersion
-## Written by Davis McCarthy, May 2010. Last modified 3 June 2010.
-    ## We order the tags based on their average abundance across all groups
-    ## l0 is a matrix of ntags rows and number of columns given by grid.length
-    o <- order(object$conc$conc.common)
-    o2 <- order(o) ## Ordering to regain original order from ordered object
-    a <- object$conc$conc.common[o] # Ordered abundance
-    l0.ord <- l0[o,]
-    ntags <- nrow(object$counts)
-    weighted.common.lik <- apply(l0.ord,2,.lo.weights,a=a,prop.used=prop.used)
-    weighted.common.lik[o2,]
-}
-
-.lo.weights <- function(y,a,prop.used) {
-## Function to give lowess smooth for weights for the common likelihood
-## Written by Davis McCarthy, May 2010. Last modified 3 June 2010.
-    lowess(a, y, iter=0, f=prop.used)$y
-}
-
-
