@@ -1,31 +1,35 @@
-\title{Plots biological coefficient of variation against abundance (counts per million)}
+\title{Plot Biological Coefficient of Variation}
 \name{plotBCV}
 \alias{plotBCV}
 \description{
-Calculate genewise biological coefficient of variation (BCV) and gene abundance (using counts per million) from a \code{DGEList} object, then plot BCV against abundance.
+Plot genewise biological coefficient of variation (BCV) against gene abundance (in log2 counts per million).
 }
 \usage{
-plotBCV(object, xlab="Abundance (log2 counts per million)", ylab="Biological coefficient of variation (BCV)", ... )
+plotBCV(object, xlab="logCPM", ylab="Biological coefficient of variation", pch=16, cex=0.2, ... )
 }
 \arguments{
   \item{object}{a \code{DGEList} object.}
-  \item{xlab}{title for the x-axis}
-  \item{ylab}{title for the y-axis}
+  \item{xlab}{label for the x-axis.}
+  \item{ylab}{label for the y-axis.}
+  \item{pch}{the plotting symbol. See \code{\link{points}} for more details.}
+  \item{cex}{plot symbol expansion factor. See \code{\link{points}} for more details.} 
   \item{...}{any other arguments are passed to \code{plot}.}
 }
 
 \details{
-This function provides a way to examine the relationship between biological coefficient of variation (BCV) and gene (tag) abundance visually. Under the Negative Binomial model, the square root of dispersion(s), which is provided from the \code{DGEList} object, can be considered as the BCV. The counts per million is calculated using the abundance from the \code{DGEList} object, and it is on log2 scale. 
+The BCV is the square root of the negative binomial dispersion.
+This function displays the common, trended and tagwise BCV estimates.
 }
 
 \value{
 A plot is created on the current graphics device.
 }
 
-\author{Davis McCarthy and Yunshun Chen}
+\author{Davis McCarthy, Yunshun Chen, Gordon Smyth}
 
 \examples{
-y <- DGEList(matrix(rnbinom(6000, size = 1/2, mu = 10),1000,6))
+BCV.true <- 0.1
+y <- DGEList(matrix(rnbinom(6000, size = 1/BCV.true^2, mu = 10),1000,6))
 y <- estimateCommonDisp(y)
 y <- estimateTrendedDisp(y)
 y <- estimateTagwiseDisp(y)
