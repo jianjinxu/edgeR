@@ -46,8 +46,8 @@ assign("dimnames<-.DGEExact",function(x,value)
 	x
 })
 
-dimnames.DGELRT <- function(x) dimnames(x$coefficients)
-assign("dimnames<-.DGELRT",function(x,value)
+dimnames.DGEGLM <- function(x) dimnames(x$coefficients)
+assign("dimnames<-.DGEGLM",function(x,value)
 {
 	dimnames(x$coefficients) <- value
 	if(!is.null(x$samples)) row.names(x$samples) <- value[[2]]
