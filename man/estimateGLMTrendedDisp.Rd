@@ -19,7 +19,7 @@ Estimates the dispersion parameter for each transcript (tag) with a trend that d
 
 \item{y}{an object that contains the raw counts for each library (the measure of expression level); it can either be a matrix of counts, or a \code{DGEList} object with (at least) elements \code{counts} (table of unadjusted counts) and \code{samples} (data frame containing information about experimental group, library size and normalization factor for the library size)}
 
-\item{design}{numeric matrix giving the design matrix for the GLM that is to be fit.}
+\item{design}{numeric design matrix, as for \code{\link{glmFit}}.}
 
 \item{method}{method (low-level function) used to estimated the trended dispersions.
 Possible values are \code{"auto"} (default, switch to \code{"bin.spline"} method if the number of tags is great than 200 and \code{"power"} method otherwise),\code{"bin.spline"}, \code{"bin.loess"} (which both result in a call to \code{dispBinTrend}), \code{"power"} (call to \code{dispCoxReidPowerTrend}), or \code{"spline"} (call to \code{dispCoxReidSplineTrend}).}
@@ -43,6 +43,11 @@ This is a wrapper function for the lower-level functions that actually carry out
 
 \references{
 Cox, DR, and Reid, N (1987). Parameter orthogonality and approximate conditional inference. \emph{Journal of the Royal Statistical Society Series B} 49, 1-39.
+
+McCarthy, DJ, Chen, Y, Smyth, GK (2012). Differential expression analysis of multifactor RNA-Seq experiments with respect to biological variation.
+\emph{Nucleic Acids Research}.
+\url{http://nar.oxfordjournals.org/content/early/2012/02/06/nar.gks042}
+(Published online 28 January 2012)
 }
 
 \author{Gordon Smyth, Davis McCarthy, Yunshun Chen}

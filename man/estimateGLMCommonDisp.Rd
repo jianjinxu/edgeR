@@ -10,31 +10,24 @@ Estimates a common negative binomial dispersion parameter for a DGE dataset with
 }
 
 \usage{
-\S3method{estimateGLMCommonDisp}{DGEList}(y, design=NULL, offset=NULL, method="CoxReid", ...)
-\S3method{estimateGLMCommonDisp}{default}(y, design=NULL, offset=NULL, method="CoxReid", ...)
+\S3method{estimateGLMCommonDisp}{DGEList}(y, design=NULL, offset=NULL, method="CoxReid", verbose=FALSE, ...)
+\S3method{estimateGLMCommonDisp}{default}(y, design=NULL, offset=NULL, method="CoxReid", verbose=FALSE, ...)
 }
 
-\arguments{ 
+\arguments{
+\item{y}{object containing read counts, as for \code{\link{glmFit}}.}
 
-\item{y}{an object that contains the raw counts for each library (the measure of expression level); it can either be a matrix of counts, or a \code{DGEList} object with (at least) elements \code{counts} (table of unadjusted counts) and \code{samples} (data frame containing information about experimental group, library size and normalization factor for the library size)}
+\item{design}{numeric design matrix, as for \code{\link{glmFit}}.}
 
-\item{design}{numeric matrix giving the design matrix for the GLM that is to be fit.
-Must be of full column rank.
-Defaults to a single column of ones, equivalent to treating the columns as replicate libraries.}
+\item{offset}{numeric vector or matrix of offsets for the log-linear models, as for \code{\link{glmFit}}.}
 
 \item{method}{method for estimating the dispersion.
 Possible values are \code{"CoxReid"}, \code{"Pearson"} or \code{"deviance"}.}
 
-\item{offset}{numeric scalar, vector or matrix giving the offsets for the log-linear models.
-If a scalar, then this value will be used as an offset for all transcripts and libraries.
-If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each transcript.
-If a matrix, then it should have the same row and column dimensions as \code{y}.
-
-In the \code{DGEList} method, the offset is calculated by default from the library sizes and normalization factors found in \code{y$samples}.}
+\item{verbose}{logical, if \code{TRUE} estimated dispersion and BCV will be printed to standard output.}
 
 \item{\ldots}{other arguments are passed to lower-level functions.
-See \code{\link{dispCoxReid}}, \code{\link{dispPearson}} and \code{\link{dispDeviance}}
-for details.}
+See \code{\link{dispCoxReid}}, \code{\link{dispPearson}} and \code{\link{dispDeviance}} for details.}
 }
 
 \value{
@@ -50,23 +43,22 @@ See \code{\link{dispCoxReid}} for details of the three methods and a discussion 
 
 
 \references{
-Robinson MD and Smyth GK (2008). Small-sample estimation of negative
-binomial dispersion, with applications to SAGE data.
-\emph{Biostatistics}, 9, 321-332
+McCarthy, DJ, Chen, Y, Smyth, GK (2012). Differential expression analysis of multifactor RNA-Seq experiments with respect to biological variation.
+\emph{Nucleic Acids Research}.
+\url{http://nar.oxfordjournals.org/content/early/2012/02/06/nar.gks042}
+(Published online 28 January 2012)
 }
 
-\author{Gordon Smyth}
+\author{Gordon Smyth, Davis McCarthy, Yunshun Chen}
 \examples{
 #  True dispersion is 1/size=0.1
 y <- matrix(rnbinom(1000,mu=10,size=10),ncol=4)
 d <- DGEList(counts=y,group=c(1,1,2,2))
 design <- model.matrix(~group, data=d$samples)
-d1 <- estimateGLMCommonDisp(d, design)
-d1$common.disp
+d1 <- estimateGLMCommonDisp(d, design, verbose=TRUE)
 
 #  Compare with classic CML estimator:
-d2 <- estimateCommonDisp(d)
-d2$common.disp
+d2 <- estimateCommonDisp(d, verbose=TRUE)
 
 #  See example(glmFit) for a different example
 }

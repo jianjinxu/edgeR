@@ -15,15 +15,12 @@ dispDeviance(y, design, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5, s
 dispPearson(y, design, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5, subset=10000, robust=FALSE, trace=FALSE)
 }
 
-\arguments{ 
+\arguments{
+\item{y}{numeric matrix of counts. A glm is fitted to each row.}
 
-\item{y}{numeric matrix of counts}
+\item{design}{numeric design matrix, as for \code{\link{glmFit}}.}
 
-\item{design}{numeric matrix giving the design matrix for the GLM that is to be fit.
-Must be of full column rank.
-Defaults to a single column of ones, equivalent to treating the columns as replicate libraries.}
-
-\item{offset}{numeric scalar, vector or matrix giving the offset (in addition to the log of the effective library size) that is to be included in the NB GLM for the transcripts. If a scalar, then this value will be used as an offset for all transcripts and libraries. If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each transcript. If a matrix, then each library for each transcript can have a unique offset, if desired. In \code{adjustedProfileLik} the \code{offset} must be a matrix with the same dimension as the table of counts.}
+\item{offset}{numeric vector or matrix of offsets for the log-linear models, as for \code{\link{glmFit}}.}
 
 \item{interval}{numeric vector of length 2 giving allowable values for the dispersion, passed to \code{optimize}.}
 
@@ -51,10 +48,10 @@ This is also known as the \emph{pseudo-likelihood} estimator.
 \code{dispDeviance} sets the average residual deviance statistic to its (asymptotic) expected values.
 This is also known as the \emph{quasi-likelihood} estimator.
 
-Robinson and Smyth (2008) showed that the Pearson (pseudo-likelihood) estimator typically under-estimates the true dispersion.
+Robinson and Smyth (2008) and McCarthy et al (2011) showed that the Pearson (pseudo-likelihood) estimator typically under-estimates the true dispersion.
 It can be seriously biased when the number of libraries (\code{ncol(y)} is small.
 On the other hand, the deviance (quasi-likelihood) estimator typically over-estimates the true dispersion when the number of libraries is small.
-Robinson and Smyth (2008) showed the Cox-Reid estimator to be the least biased of the three options.
+Robinson and Smyth (2008) and McCarthy et al (2011) showed the Cox-Reid estimator to be the least biased of the three options.
 
 \code{dispCoxReid} uses \code{optimize} to maximize the adjusted profile likelihood, while \code{dispDeviance} and \code{dispPearson} use \code{uniroot} to solve the estimating equation.
 The robust options use an order statistic instead the mean statistic, and have the effect that a minority of tags with very large (outlier) dispersions should have limited influence on the estimated value.
@@ -67,6 +64,11 @@ Cox, DR, and Reid, N (1987). Parameter orthogonality and approximate conditional
 Robinson MD and Smyth GK (2008). Small-sample estimation of negative
 binomial dispersion, with applications to SAGE data.
 \emph{Biostatistics}, 9, 321-332
+
+McCarthy, DJ, Chen, Y, Smyth, GK (2012). Differential expression analysis of multifactor RNA-Seq experiments with respect to biological variation.
+\emph{Nucleic Acids Research}.
+\url{http://nar.oxfordjournals.org/content/early/2012/02/06/nar.gks042}
+(Published online 28 January 2012)
 }
 
 \author{Gordon Smyth}

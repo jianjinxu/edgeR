@@ -18,7 +18,7 @@ Estimates the dispersion parameter for a DGE dataset for general experimental de
 
 \item{y}{an object that contains the raw counts for each library (the measure of expression level); it can either be a matrix of counts, or a \code{DGEList} object with (at least) elements \code{counts} (table of unadjusted counts) and \code{samples} (data frame containing information about experimental group, library size and normalization factor for the library size)}
 
-\item{design}{numeric matrix giving the design matrix for the GLM that is to be fit.}
+\item{design}{numeric design matrix, as for \code{\link{glmFit}}.}
 
 \item{trend}{logical, should an abundance trend be applied to the grid of dispersion values over which the tagwise dispersion estimation is done?
 Generally this should be \code{TRUE} if a trended dispersion has been estimated and \code{FALSE} otherwise.}
@@ -44,6 +44,11 @@ The approach is to maximize the adjusted profile likelihood over the dispersion 
 
 \references{
 Cox, DR, and Reid, N (1987). Parameter orthogonality and approximate conditional inference. \emph{Journal of the Royal Statistical Society Series B} 49, 1-39.
+
+McCarthy, DJ, Chen, Y, Smyth, GK (2012). Differential expression analysis of multifactor RNA-Seq experiments with respect to biological variation.
+\emph{Nucleic Acids Research}.
+\url{http://nar.oxfordjournals.org/content/early/2012/02/06/nar.gks042}
+(Published online 28 January 2012)
 }
 
 \author{Gordon Smyth, Davis McCarthy}
