@@ -1,7 +1,7 @@
-predFC <- function(y,design,prior.total.count=1,offset=NULL,dispersion=NULL) 
+predFC <- function(y,design,prior.count.total=0.5,offset=NULL,dispersion=NULL) 
 UseMethod("predFC")
 
-predFC.DGEList <- function(y,design,prior.total.count=1,offset=NULL,dispersion=NULL)
+predFC.DGEList <- function(y,design,prior.count.total=0.5,offset=NULL,dispersion=NULL)
 {
 	if(is.null(offset)) offset <- getOffset(y)
 	if(is.null(dispersion)) dispersion <- getDispersion(y)
@@ -9,12 +9,12 @@ predFC.DGEList <- function(y,design,prior.total.count=1,offset=NULL,dispersion=N
 		dispersion <- 0
 		message("dispersion set to zero")
 	}
-	predFC(y=y$counts,design=design,prior.total.count=prior.total.count,offset=offset,dispersion=dispersion)
+	predFC(y=y$counts,design=design,prior.count.total=prior.count.total,offset=offset,dispersion=dispersion)
 }
 
-predFC.default <- function(y,design,prior.total.count=1,offset=log(colSums(y)),dispersion=0)
+predFC.default <- function(y,design,prior.count.total=0.5,offset=log(colSums(y)),dispersion=0)
 #	Shrink glm estimates by augmenting data counts towards a constant
-#	17 Aug 2011
+#	17 Aug 2011.  Last modified 1 May 2012.
 {
 	y <- as.matrix(y)
 	if(missing(design)) stop("design must be set")
@@ -29,13 +29,13 @@ predFC.default <- function(y,design,prior.total.count=1,offset=log(colSums(y)),d
 	lib.size <- exp(offset)
 	total.lib.size <- rowSums(lib.size)
 	proportion <- lib.size/total.lib.size
-	y.augmented <- y+proportion*prior.total.count
+	y.augmented <- y+proportion*prior.count.total
 
 #	Adjust offsets to keep overall mean similar
 #	total.count <- rowSums(y)
 #	offset.augmented <- offset+log((total.count+1)/pmax(total.count,0.5))
 
-   g <- glmFit(y.augmented,design,offset=offset,dispersion=dispersion)
-   g$coefficients / log(2)
+   g <- glmFit(y.augmented,design,offset=offset,dispersion=dispersion,prior.count.total=0)
+   g$coefficients
 }
 

@@ -8,8 +8,8 @@
 \description{Estimates the predictive log fold changes for a given prior weight using generalised linear models.}
 
 \usage{
-\S3method{predFC}{DGEList}(y, design, prior.total.count=1, offset=NULL, dispersion=NULL)
-\S3method{predFC}{default}(y, design, prior.total.count=1, offset=log(colSums(y)), dispersion=0)
+\S3method{predFC}{DGEList}(y, design, prior.count.total=0.5, offset=NULL, dispersion=NULL)
+\S3method{predFC}{default}(y, design, prior.count.total=0.5, offset=log(colSums(y)), dispersion=0)
 }
 
 \arguments{ 
@@ -17,17 +17,17 @@
 
 \item{design}{the design matrix for the experiment}
 
-\item{prior.total.count}{the total number of counts to be augmented to the data}
+\item{prior.count.total}{the total number of counts to be augmented to the data}
 
-\item{offset}{usually the library sizes}
+\item{offset}{numeric vector or matrix giving the offset in the log-linear model predictor. Usually equal to log library sizes}
 
 \item{dispersion}{the dispersion estimate for the count data}
 
 }
 
-\details{This function estimates the predictive or posterior log2 fold changes for RNASeq or any count-based data. A small count is added to each library in proportion to the library sizes. If there are 2 groups in the experiment, n=2 for each group, the total prior count is 1, and the library sizes are equal, then in effect 0.5 of a count is added to each group, or 0.25 to each library. This prior count is the same for all genes or tags in the data, with the result that genes with low counts will be dampened more severely and genes with a large number of counts in each library will hardly be affected by the addition of a small count to each group. 
+\details{This function estimates the predictive or posterior log-fold-changes for RNASeq or any count-based data. A small count is added to each library in proportion to the library sizes. If there are 2 groups in the experiment, n=2 for each group, the total prior count is 1, and the library sizes are equal, then in effect 0.5 of a count is added to each group, or 0.25 to each library. This prior count is the same for all genes or tags in the data, with the result that genes with low counts will be dampened more severely and genes with a large number of counts in each library will hardly be affected by the addition of a small count to each group. 
 
-In order to get the predictive log2 fold changes, a generalised linear model is fitted to the augmented data, and the coefficients outputted in the form of a matrix. 
+In order to get the predictive log-fold-changes, a generalised linear model is fitted to the augmented data, and the coefficients outputted in the form of a matrix. 
 
 If \code{offset=NULL}, the offset used in the glm will be the log of the library sizes.
 
@@ -35,7 +35,8 @@ If \code{dispersion=NULL}, the dispersion used for the glm will be dependent on 
 
 }
 
-\value{This function outputs the predictive log2 fold changes in the form of a matrix, where each column corresponds to the relevant column of the design matrix.
+\value{
+Numeric matrix of log-fold-changes (natural log).  Each column corresponds to the relevant column of the design matrix.
 }
 
 \author{Belinda Phipson, Gordon Smyth}

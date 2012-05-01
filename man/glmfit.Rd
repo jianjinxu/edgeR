@@ -11,7 +11,7 @@
 
 
 \usage{
-\method{glmFit}{DGEList}(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, start=NULL, method="auto", ...)
+\method{glmFit}{DGEList}(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count.total=0.5, start=NULL, method="auto", ...)
 glmLRT(y, glmfit, coef=ncol(glmfit$design), contrast=NULL)
 glmQLFTest(y, glmfit, coef=ncol(glmfit$design), contrast=NULL, abundance.trend=TRUE)
 }
@@ -32,7 +32,9 @@ Defaults to a single column of ones, equivalent to treating the columns as repli
 
 \item{lib.size}{optional numeric vector providing the (effective) library size for each library (must have length equal to the number of columns, or libraries, in the matrix of counts). If \code{NULL}, then a default is used. If \code{y} is a \code{DGEList} object then the default for \code{lib.size} is the product of the library sizes and the normalization factors (in the \code{samples} slot of the object). If \code{y} is a simple matrix of counts, then the default for \code{lib.size} is the vector of column sums of \code{y}.}
 
-\item{start}{optional numeric matrix of initial estimates for the fitted coefficients}
+\item{prior.count.total}{the total number of counts to be augmented to the data.}
+
+\item{start}{optional numeric matrix of initial estimates for the fitted coefficients.}
 
 \item{method}{which fitting algorithm to use.  Possible values are \code{"auto"}, \code{"linesearch"}, \code{"levenberg"} or \code{"simple"}.}
 

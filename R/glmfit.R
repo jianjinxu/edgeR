@@ -1,9 +1,9 @@
 #  FIT GENERALIZED LINEAR MODELS
 
-glmFit <- function(y, design, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, start=NULL, method="auto")
+glmFit <- function(y, design, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count.total=0.5, start=NULL, method="auto")
 UseMethod("glmFit")
 
-glmFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, start=NULL, method="auto", ...)
+glmFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count.total=0.5, start=NULL, method="auto", ...)
 {
 	if( is.null(dispersion) ) {
 		if( !is.null(y$tagwise.dispersion) )
@@ -27,12 +27,12 @@ glmFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 	new("DGEGLM",fit)
 }
 
-glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, start=NULL, method="auto", ...)
+glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count.total=0.5, start=NULL, method="auto", ...)
 #	Fit negative binomial generalized linear model for each transcript
 #	to a series of digital expression libraries
 #	Davis McCarthy and Gordon Smyth
 
-#	Created 17 August 2010. Last modified 13 May 2011.
+#	Created 17 August 2010. Last modified 1 May 2012.
 {
 #	Check input
 	y <- as.matrix(y)
@@ -93,7 +93,10 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 	)
 
 #	Prepare output
-	fit$coefficients <- as.matrix(fit$coefficients)
+	if(prior.count.total>0)
+		fit$coefficients <- predFC(y,design,offset=offset,dispersion=dispersion,prior.count.total=prior.count.total)
+	else
+		fit$coefficients <- as.matrix(fit$coefficients)
 	colnames(fit$coefficients) <- colnames(design)
 	rownames(fit$coefficients) <- rownames(y)
 	fit$fitted.values <- as.matrix(fit$fitted.values)
