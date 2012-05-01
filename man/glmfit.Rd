@@ -5,10 +5,10 @@
 \alias{glmLRT}
 \alias{glmQLFTest}
 
-\title{Fit negative binomial generalized linear model for each transcript}
+\title{Genewise Negative Binomial Generalized Linear Mdels}
 
-\description{Fit a negative binomial generalized linear model (GLM) for each transcript (tag) with the unadjusted counts provided, a value for the dispersion parameter and, optionally, offsets and weights for different libraries or transcripts.}
-
+\description{Fit a negative binomial generalized linear model (GLM) for each transcript (tag) with the unadjusted counts provided, a value for the dispersion parameter and, optionally, offsets and weights for different libraries or transcripts.
+Conduct statistical tests based on the fitted models.}
 
 \usage{
 \method{glmFit}{DGEList}(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count.total=0.5, start=NULL, method="auto", ...)
@@ -46,7 +46,7 @@ Defaults to the log normalized library sizes.}
 
 \item{contrast}{contrast vector for which the test is required, of length equal to the number of columns of \code{design}. If specified, then takes precedence over \code{coef}.}
 
-\item{abundance.trend}{logical, whether or not to allow an abundance-dependent trend on the quasi-likelihood dispersion parameter when conducting the quasi-likelihood F test for differential expression. Default is \code{TRUE}.}
+\item{abundance.trend}{logical, whether to allow an abundance-dependent trend when estimating the prior values for the quasi-likelihood multiplicative dispersion parameter.}
 }
 
 \value{
