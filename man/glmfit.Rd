@@ -78,7 +78,17 @@ The \code{DGELRT} object also contains all the elements of \code{y} except for t
 }
 
 \details{
-Given a fixed value for the dispersion parameter, a negative binomial model can be fitted to the counts for each tag/transcript in a dataset. The function \code{glmFit} calls the in-built function \code{glm.fit} to fit the NB GLM for each tag. Once we have a fit for a given design matrix, \code{glmLRT} can be run with a given coefficient or contrast specified and evidence for differential expression assessed using a likelihood ratio test. Tags can be ranked in order of evidence for differential expression, based on the p-value computed for each tag.
+\code{glmFit} and \code{glmLRT} implement methods discussed by McCarthy et al (2012).
+
+\code{glmFit} fits genewise negative binomial generalized linear models (glms), all with the same design matrix but possibly different dispersions, offsets and weights.
+When the design matrix defines a one-way layout, or can be re-parametrized to a one-way layout, the glms are fitting very quickly using \code{\link{mglmOneGroup}}.
+Otherwise the default fitting method, implemented in \code{\link{mglmLS}}, is a parallelized line search algorithm described by McCarthy et al (2012).
+Other possible fitting methods are \code{\link{mglmLevenberg}} and \code{\link{mglmSimple}}.
+
+\code{glmLRT} conducts likelihood ratio tests for one or more coefficients in the linear model.
+
+\code{glmQLFTest} conducts quasi-likelihood F-tests for one or more coefficients in the linear model.
+This function calls the limma function \code{\link{squeezeVar}} to conduct empirical Bayes smoothing of the genewise multiplicative dispersions.
 }
 
 \references{
@@ -118,14 +128,13 @@ results <- glmLRT(d, fit, coef=2)
 topTags(results)
 
 # Estimate the dispersion (may be unreliable with so few tags)
-d <- estimateGLMCommonDisp(d, design)
-d$common.dispersion
+d <- estimateGLMCommonDisp(d, design, verbose=TRUE)
 }
 
 \seealso{
-\code{\link{estimateGLMCommonDisp}}, \code{\link{estimateGLMTrendedDisp}} or \code{\link{estimateGLMTagwiseDisp}} for estimating the negative binomial dispersion.
+Low-level computations are done by \code{\link{mglmOneGroup}}, \code{\link{mglmLS}}, \code{\link{mglmLevenberg}} or \code{\link{mglmSimple}}.
 
-\code{\link{topTags}} for displaying results from \code{glmLRT}.
+See \code{\link{topTags}} for displaying results from \code{glmLRT}.
 }
 
 \keyword{models}

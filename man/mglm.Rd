@@ -53,7 +53,7 @@ Number of rows should agree with \code{y} and number of columns should agree wit
 The functions \code{mglmLS}, \code{mglmOneGroup} and \code{mglmSimple} all fit negative binomial generalized linear models, with the same design matrix but possibly different dispersions, offsets and weights, to a series of response vectors.
 \code{mglmLS} and \code{mglmOneGroup} are vectorized in R for fast execution, while \code{mglmSimple} simply makes tagwise calls to \code{glm.fit} in the stats package.
 The functions are all low-level functions in that they operate on atomic objects such as matrices.
-They are used as work-horses by higher-level functions in the edgeR package.
+They are used as work-horses by higher-level functions in the edgeR package, especially by \code{glmFit}.
 
 \code{mglmOneGroup} fits the null model, with intercept term only, to each response vector.
 In other words, it treats the libraries as belonging to one group.
