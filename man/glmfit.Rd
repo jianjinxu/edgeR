@@ -7,7 +7,7 @@
 
 \title{Genewise Negative Binomial Generalized Linear Mdels}
 
-\description{Fit a negative binomial generalized linear model (GLM) for each transcript (tag) with the unadjusted counts provided, a value for the dispersion parameter and, optionally, offsets and weights for different libraries or transcripts.
+\description{Fit a negative binomial generalized log-linear model to the read counts for each gene or transcript.
 Conduct statistical tests based on the fitted models.}
 
 \usage{
@@ -78,7 +78,7 @@ The \code{DGELRT} object also contains all the elements of \code{y} except for t
 }
 
 \details{
-\code{glmFit} and \code{glmLRT} implement methods discussed by McCarthy et al (2012).
+\code{glmFit} and \code{glmLRT} implement methods developed by McCarthy et al (2012).
 
 \code{glmFit} fits genewise negative binomial generalized linear models (glms), all with the same design matrix but possibly different dispersions, offsets and weights.
 When the design matrix defines a one-way layout, or can be re-parametrized to a one-way layout, the glms are fitting very quickly using \code{\link{mglmOneGroup}}.
