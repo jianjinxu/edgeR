@@ -2,6 +2,23 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+
+\section{Version 2.7.8}{\itemize{
+\item
+glmFit now shrinks the estimated fold-changes.
+The default is the same as for exactTest().
+
+\item
+predFC output is now on the natural log scale instead of log2.
+
+\item
+New argument verbose for estimateCommonDisp() and estimateGLMCommonDisp().
+
+\item
+Many updates to the help pages and the User's Guide.
+}
+
+
 \section{Version 2.6.0}{\itemize{
 
 \item
