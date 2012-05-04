@@ -329,10 +329,8 @@ Gene29 -1.0236470 12.91525  2.626186 1.051140e-01 8.688871e-01
 Gene71 -0.8602972 13.68261  2.597055 1.070625e-01 8.688871e-01
 
 glmFit> # Estimate the dispersion (may be unreliable with so few tags)
-glmFit> d <- estimateGLMCommonDisp(d, design)
-
-glmFit> d$common.dispersion
-[1] 0.07570848
+glmFit> d <- estimateGLMCommonDisp(d, design, verbose=TRUE)
+Disp = 0.07571 , BCV = 0.2752 
 > glmFit(d,design,dispersion=dispersion.true,method="simple")
 Loading required package: MASS
 An object of class "DGEGLM"
@@ -525,4 +523,4 @@ x2     1      511    0.8445892
 > 
 > proc.time()
    user  system elapsed 
-   5.66    0.04    5.71 
+   5.78    0.04    5.91 
