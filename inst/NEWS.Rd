@@ -16,7 +16,7 @@ New argument verbose for estimateCommonDisp() and estimateGLMCommonDisp().
 
 \item
 Many updates to the help pages and the User's Guide.
-}
+}}
 
 
 \section{Version 2.6.0}{\itemize{

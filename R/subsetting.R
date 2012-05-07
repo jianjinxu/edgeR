@@ -4,7 +4,7 @@ assign("[.DGEList",
 function(object, i, j, ...) {
 #  Subsetting for DGEList objects
 #  Davis McCarthy, Gordon Smyth 
-#  24 September 2009.  Last modified 14 Dec 2011.
+#  24 September 2009.  Last modified 7 May 2012.
 
 	if(nargs() != 3) stop("Two subscripts required",call.=FALSE)
 	if(missing(i))
@@ -25,6 +25,8 @@ function(object, i, j, ...) {
 			object$counts <- object$counts[i,,drop=FALSE]
 			object$conc$conc.common <- object$conc$conc.common[i,drop=FALSE]
 			object$conc$conc.group <- object$conc$conc.group[i,,drop=FALSE]
+			object$abundance <- object$abundance[i,drop=FALSE]
+			object$trended.dispersion <- object$trended.dispersion[i,drop=FALSE]
 			object$tagwise.dispersion <- object$tagwise.dispersion[i,drop=FALSE]
 			object$infos <- object$infos[i,drop=FALSE]
 			object$pseudo.alt <- object$pseudo.alt[i,,drop=FALSE]
@@ -37,6 +39,7 @@ function(object, i, j, ...) {
 			object$pseudo.alt <- object$pseudo.alt[i,j,drop=FALSE]
 			object$conc$conc.common <- object$conc$conc.common[i,drop=FALSE]
 			object$conc$conc.group <- object$conc$conc.group[i,,drop=FALSE]
+			object$trended.dispersion <- object$trended.dispersion[i,drop=FALSE]
 			object$tagwise.dispersion <- object$tagwise.dispersion[i,drop=FALSE]
 			object$infos <- object$infos[i,drop=FALSE]
 			object$genes <- object$genes[i,,drop=FALSE]
@@ -51,22 +54,23 @@ function(object, i, j, ...) {
 assign("[.DGEGLM",
 function(object, i, j, ...)
 #  Subsetting for DGEGLM objects
-#  Davis McCarthy    
+#  Davis McCarthy	
 #  11 May 2011.  Last modified 11 May 2011.
 {
 	if(!missing(j))
-	    stop("Subsetting columns not allowed for DGEGLM object. Try subsetting elements of DGEGLM object instead.",call.=FALSE)
+		stop("Subsetting columns not allowed for DGEGLM object. Try subsetting elements of DGEGLM object instead.",call.=FALSE)
 	if(!missing(i)) {
-	    object$coefficients <- object$coeffcients[i,,drop=FALSE]
-        object$df.residual <- object$df.residual[i,drop=FALSE]
-        object$deviance <- object$deviance[i,drop=FALSE]
-        object$offset <- object$offset[i,,drop=FALSE]
-	    object$genes <- object$genes[i,,drop=FALSE]
-        if(length(object$dispersion) > 1)
-            object$dispersion <- object$dispersion[i,drop=FALSE]
-        object$weights <- object$weights[i,,drop=FALSE]
-        object$fitted.values <- object$fitted.values[i,,drop=FALSE]
-        object$abundance <- object$abundance[i,drop=FALSE]
+		object$coefficients <- object$coeffcients[i,,drop=FALSE]
+		object$df.residual <- object$df.residual[i,drop=FALSE]
+		object$deviance <- object$deviance[i,drop=FALSE]
+		object$offset <- object$offset[i,,drop=FALSE]
+		object$genes <- object$genes[i,,drop=FALSE]
+		object$trended.dispersion <- object$trended.dispersion[i,drop=FALSE]
+		object$tagwise.dispersion <- object$tagwise.dispersion[i,drop=FALSE]
+		if(length(object$dispersion)>1) object$dispersion <- object$dispersion[i,drop=FALSE]
+		object$weights <- object$weights[i,,drop=FALSE]
+		object$fitted.values <- object$fitted.values[i,,drop=FALSE]
+		object$abundance <- object$abundance[i,drop=FALSE]
 	}
 	object
 })
@@ -75,14 +79,14 @@ function(object, i, j, ...)
 assign("[.DGEExact",
 function(object, i, j, ...)
 #  Subsetting for DGEExact objects
-#  Davis McCarthy    
+#  Davis McCarthy	
 #  6 October 2010.  Last modified 6 Oct 2010.
 {
 	if(!missing(j))
-	    stop("Subsetting columns not allowed for DGEExact object. Try subsetting object$table instead.",call.=FALSE)
+		stop("Subsetting columns not allowed for DGEExact object. Try subsetting object$table instead.",call.=FALSE)
 	if(!missing(i)) {
-	    object$table <- object$table[i,,drop=FALSE]
-	    object$genes <- object$genes[i,,drop=FALSE]
+		object$table <- object$table[i,,drop=FALSE]
+		object$genes <- object$genes[i,,drop=FALSE]
 	}
 	object
 })
@@ -90,21 +94,21 @@ function(object, i, j, ...)
 assign("[.DGELRT",
 function(object, i, j, ...)
 #  Subsetting for DGELRT objects
-#  Davis McCarthy    
+#  Davis McCarthy	
 #  6 April 2011.  Last modified 23 June 2011.
 {
 	if(!missing(j))
-	    stop("Subsetting columns not allowed for DGELRT object. Try subsetting object$table instead.",call.=FALSE)
+		stop("Subsetting columns not allowed for DGELRT object. Try subsetting object$table instead.",call.=FALSE)
 	if(!missing(i)) {
-	    object$table <- object$table[i,,drop=FALSE]
-	    object$genes <- object$genes[i,,drop=FALSE]
-        object$all.zeros <- object$all.zeros[i,drop=FALSE]
-        object$trended.dispersion <- object$trended.dispersion[i,drop=FALSE]
-        object$abundance <- object$abundance[i,drop=FALSE]
-        object$tagwise.dispersion <- object$tagwise.dispersion[i,drop=FALSE]
-        object$coefficients.full <- object$coefficients.full[i,,drop=FALSE]
-        object$coefficients.null <- object$coefficients.null[i,,drop=FALSE]
-        object$dispersion.used <- object$dispersion.used[i,drop=FALSE]
+		object$table <- object$table[i,,drop=FALSE]
+		object$genes <- object$genes[i,,drop=FALSE]
+		object$all.zeros <- object$all.zeros[i,drop=FALSE]
+		object$abundance <- object$abundance[i,drop=FALSE]
+		object$trended.dispersion <- object$trended.dispersion[i,drop=FALSE]
+		object$tagwise.dispersion <- object$tagwise.dispersion[i,drop=FALSE]
+		object$dispersion.used <- object$dispersion.used[i,drop=FALSE]
+		object$coefficients.full <- object$coefficients.full[i,,drop=FALSE]
+		object$coefficients.null <- object$coefficients.null[i,,drop=FALSE]
 	}
 	object
 })
