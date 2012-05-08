@@ -8,7 +8,7 @@ Estimates tagwise dispersion values by an empirical Bayes method based on weight
 }
 
 \usage{
-estimateTagwiseDisp(object, prior.n=getPriorN(object), trend="movingave", prop.used=0.3, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
+estimateTagwiseDisp(object, prior.n=getPriorN(object), trend="loess", span=0.5, prop.used=0.3, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
 }
 
 \arguments{ 
@@ -18,8 +18,9 @@ estimateTagwiseDisp(object, prior.n=getPriorN(object), trend="movingave", prop.u
 \item{prior.n}{numeric scalar, smoothing parameter that indicates the weight to give to the common likelihood compared to the individual tag's likelihood; default \code{getPriorN(object)} gives a value for \code{prior.n} that is equivalent to giving the common likelihood 20 prior degrees of freedom in the estimation of the tag/genewise dispersion.}
 
 \item{trend}{method for allowing the prior distribution for the dispersion to be abundance-dependent.
-Possible values are \code{"none"}, \code{"movingave"} and \code{"tricube"}.
+Possible values are \code{"none"}, \code{"loess"}, \code{"movingave"} and \code{"tricube"}.
 \code{"none"} means no trend.
+\code{"loess"} applies a loess curve with degree 0 to smooth the local likelihood values.
 \code{"movingave"} applies a moving average smoother to the local likelihood values.
 \code{"tricube"} applies tricube weighting to locally smooth the common likelihood.}
 
@@ -41,6 +42,7 @@ Possible values are \code{"grid"} for interpolation on grid points or \code{"opt
 \details{
 Maximizes the negative binomial weighted likelihood (a weighted version using the common likelihood given weight according the the smoothing parameter prior.n and the individual tag/gene likelihood) for each tag from the pseudocounts provided (i.e. assuming library sizes are equal), to give an estimate of the dispersion parameter for each tag (i.e. tagwise dispersion estimation).
 
+\code{"loess"} local weighting is similar to that used by \code{tricube} but much faster.
 \code{"tricube"} local weighting is similar to that used by \code{lowess}.
 \code{"movingave"} is much faster than \code{"tricube"} and gives similar results.
 
@@ -58,7 +60,7 @@ Robinson MD and Smyth GK (2007). Moderated statistical tests for
 assessing differences in tag abundance. \emph{Bioinformatics} 23, 2881-2887
 }
 
-\author{Mark Robinson, Davis McCarthy and Gordon Smyth}
+\author{Mark Robinson, Davis McCarthy, Yunshun Chen and Gordon Smyth}
 \examples{
 y<-matrix(rnbinom(1000,mu=10,size=2),ncol=4)
 d<-DGEList(counts=y,group=c(1,1,2,2),lib.size=c(1000:1003))
