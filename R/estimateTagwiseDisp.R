@@ -9,7 +9,7 @@ estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="loess"
 		message("Running estimateCommonDisp() on DGEList object before proceeding with estimateTagwiseDisp().")
 		object <- estimateCommonDisp(object)
 	}
-	trend <- match.arg(trend,c("none","movingave","tricube"))
+	trend <- match.arg(trend,c("none","loess","movingave","tricube"))
 	method <- match.arg(method,c("grid","optimize"))
 	ntags <- nrow(object$counts)
 	group <- object$samples$group <- as.factor(object$samples$group)
