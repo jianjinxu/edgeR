@@ -8,7 +8,7 @@ Estimates tagwise dispersion values by an empirical Bayes method based on weight
 }
 
 \usage{
-estimateTagwiseDisp(object, prior.n=getPriorN(object), trend="loess", span=0.5, prop.used=0.3, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
+estimateTagwiseDisp(object, prior.n=getPriorN(object), trend="movingave", span=0.5, prop.used=0.3, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
 }
 
 \arguments{ 
@@ -18,13 +18,15 @@ estimateTagwiseDisp(object, prior.n=getPriorN(object), trend="loess", span=0.5, 
 \item{prior.n}{numeric scalar, smoothing parameter that indicates the weight to give to the common likelihood compared to the individual tag's likelihood; default \code{getPriorN(object)} gives a value for \code{prior.n} that is equivalent to giving the common likelihood 20 prior degrees of freedom in the estimation of the tag/genewise dispersion.}
 
 \item{trend}{method for allowing the prior distribution for the dispersion to be abundance-dependent.
-Possible values are \code{"none"}, \code{"loess"}, \code{"movingave"} and \code{"tricube"}.
+Possible values are \code{"none"}, \code{"movingave"}, \code{"tricube"} and \code{"loess"}.
 \code{"none"} means no trend.
 \code{"loess"} applies a loess curve with degree 0 to smooth the local likelihood values.
 \code{"movingave"} applies a moving average smoother to the local likelihood values.
 \code{"tricube"} applies tricube weighting to locally smooth the common likelihood.}
 
-\item{prop.used}{optional scalar giving the proportion of all tags/genes to be used for the locally weighted estimation of the tagwise dispersion, allowing the dispersion estimates to vary with abundance (expression level). For each tag/gene the estimate of its dispersion is based on the closest \code{prop.used} of all of the genes to that gene, where 'closeness' is based on similarity in expression level.}
+\item{span}{width of the smoothing window, in terms of proportion of the data set.  Used for \code{method="loess"}.}
+
+\item{prop.used}{proportion of all tags/genes to be used for the locally weighted estimation of the tagwise dispersion, allowing the dispersion estimates to vary with abundance (expression level). For each tag/gene the estimate of its dispersion is based on the closest \code{prop.used} of all of the genes to that gene, where 'closeness' is based on similarity in expression level.}
 
 \item{method}{method for maximizing the posterior likelihood.
 Possible values are \code{"grid"} for interpolation on grid points or \code{"optimize"} to call the function of the same name.

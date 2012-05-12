@@ -3,36 +3,45 @@
 
 \title{Locally Weighted Mean}
 
-\description{Apply faster tricube smoothing using simple loess with degree 0.}
+\description{Smooth columns of matrix by non-robust loess curves of degree 0.}
 
 \usage{
-locallyWeightedMean(y, x, span=0.5, cell=0.01)
+locallyWeightedMean(y, x, weights=rep(1,nrow(y)), span=0.5, cell=0.01)
 }
 
 \arguments{ 
 
-\item{y}{matrix of the response variable.}
+\item{y}{numeric matrix of response variables.}
 
-\item{x}{vector of the covariate.}
+\item{x}{numeric vector, the covariate.}
 
-\item{span}{The size of the neighbourhood that controls the degree of smoothing. Default is 0.5.}
+\item{weights}{numeric vector of weights.}
 
-\item{cell}{The control of the accuracy of the loess interpolation approximation. Default is 0.01}
+\item{span}{width of the smoothing window, in terms of proportion of the data set.  Larger values produce smoother curves.}
+
+\item{cell}{controls resolution of points used for the loess interpolation approximation, see \code{\link{loess.control}}.}
 }
 
 \value{matrix of fitted response.}
 
 \details{
 Given a matrix of response, \code{locallyWeightedMean} fits a loess curve with degree 0 for each column of the response and the covariate.
+The smoothed column values are tricube-weighted means of the original values.
+
+This function calls \code{stats:::simpleLoess}, the low-level version of \code{loess}.
 }
 
 
 \author{Yunshun Chen}
 
-\examples{
-x <- 1:1000
-y <- matrix(rnorm(10000), nrow=1000, ncol=10)
-l <- locallyWeightedMean(y,x)
+\seealso{
+\code{\link{loess}}
 }
-\keyword{file}
 
+\examples{
+x <- 1:100
+y <- matrix(rnorm(100*3), nrow=100, ncol=3)
+head(y)
+z <- locallyWeightedMean(y,x)
+head(z)
+}

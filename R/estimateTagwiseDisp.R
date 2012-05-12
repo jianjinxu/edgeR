@@ -1,8 +1,8 @@
-estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="loess", span=0.5, prop.used=0.3, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
-# Tagwise dispersion using weighted conditional likelihood empirical Bayes.
+estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="movingave", span=0.5, prop.used=0.3, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
+#  Tagwise dispersion using weighted conditional likelihood empirical Bayes.
 
-# Davis McCarthy, Mark Robinson, Yunshun Chen, Gordon Smyth.
-# Created 2009. Last modified 8 May 2012.
+#  Davis McCarthy, Mark Robinson, Yunshun Chen, Gordon Smyth.
+#  Created 2009. Last modified 8 May 2012.
 {
 	if( !is(object,"DGEList") ) stop("object must be a DGEList")
 	if( is.null(object$pseudo.alt) ) {
@@ -27,10 +27,9 @@ estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="loess"
 			l0 <- condLogLikDerDelta(y[[i]],grid.vals,der=0,doSum=FALSE)+l0
 		}
 		m0 <- switch(trend,
-			# Weights sum to 1, so need to multiply by number of tags to give this the same weight overall as the regular common likelihood
 			"loess" = ntags*locallyWeightedMean(l0, object$conc$conc.common, span=span),
-			"movingave" = ntags*weightedComLikMA(object,l0,prop.used=prop.used),
-			"tricube" = ntags*weightedComLik(object,l0, prop.used = prop.used),
+			"movingave" = ntags*weightedComLikMA(object,l0,prop.used=span),
+			"tricube" = ntags*weightedComLik(object,l0, prop.used=span),
 			"none" = matrix(colSums(l0),ntags,grid.length,byrow=TRUE)
 		)
 		l0a <- l0 + prior.n/ntags*m0
