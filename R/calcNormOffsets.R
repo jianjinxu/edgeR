@@ -1,14 +1,10 @@
 calcNormOffsetsforChIP <- function(input,response,dispersion=0.01,niter=6,loss="p",plot=FALSE,verbose=FALSE,...)
-#	Normalize ChIP-Seq counts to input
-#	and form offset matrix
+#	Normalize ChIP-Seq counts to input and form offset matrix
 #	Gordon Smyth  
-#	14 Dec 2011.  Last modified 16 May 2012.
+#	14 Dec 2011.  Last modified 14 May 2012.
 {
 	input <- as.matrix(input)
-	if(is(response,"DGEList"))
-		y <- response$counts
-	else
-		y <- as.matrix(response)
+	y <- as.matrix(response)
 
 	if(nrow(input) != nrow(y)) stop("nrows of input and response disagree")
 	if(ncol(input)==1 && ncol(y)>1) input <- matrix(input,nrow(input),ncol(response))
