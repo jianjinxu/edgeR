@@ -45,6 +45,9 @@ fit <- glmFit(d,design,dispersion=d$common.dispersion)
 lrt <- glmLRT(d,fit,coef=2)
 topTags(lrt)
 
+fit <- glmFit(d,design,dispersion=d$common.dispersion,prior.count.total=2)
+summary(fit$coef)
+
 fit <- glmFit(d,design)
 lrt <- glmLRT(d,fit,coef=2)
 topTags(lrt)

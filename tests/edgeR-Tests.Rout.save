@@ -206,6 +206,16 @@ Tag.12  0.7081170 14.171529 0.9095513 0.34023349 0.8276702
 Tag.3  -0.7300410 13.284282 0.8300307 0.36226364 0.8276702
 Tag.8  -0.7917906 12.421860 0.7830377 0.37621371 0.8276702
 > 
+> fit <- glmFit(d,design,dispersion=d$common.dispersion,prior.count.total=2)
+> summary(fit$coef)
+  (Intercept)         group2        
+ Min.   :-7.603   Min.   :-1.13681  
+ 1st Qu.:-4.894   1st Qu.:-0.32341  
+ Median :-4.712   Median : 0.15083  
+ Mean   :-4.939   Mean   : 0.07817  
+ 3rd Qu.:-4.523   3rd Qu.: 0.35163  
+ Max.   :-4.106   Max.   : 1.60864  
+> 
 > fit <- glmFit(d,design)
 > lrt <- glmLRT(d,fit,coef=2)
 > topTags(lrt)
@@ -523,4 +533,4 @@ x2     1      511    0.8445892
 > 
 > proc.time()
    user  system elapsed 
-   5.78    0.04    5.91 
+   5.75    0.09    5.86 

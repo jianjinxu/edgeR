@@ -20,7 +20,7 @@ glmFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 		}
 	}
 	if(is.null(offset) && is.null(lib.size)) offset <- getOffset(y)
-	fit <- glmFit(y=y$counts,design=design,dispersion=dispersion,offset=offset,weights=weights,lib.size=lib.size,start=start,method=method,...)
+	fit <- glmFit(y=y$counts,design=design,dispersion=dispersion,offset=offset,weights=weights,lib.size=lib.size,prior.count.total=prior.count.total,start=start,method=method,...)
 	fit$counts <- y$counts
 	fit$samples <- y$samples
 	fit$genes <- y$genes

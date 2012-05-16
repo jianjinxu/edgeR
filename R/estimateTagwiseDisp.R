@@ -1,4 +1,4 @@
-estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="movingave", span=0.5, prop.used=0.3, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
+estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="movingave", span=0.3, prop.used=0.3, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
 #  Tagwise dispersion using weighted conditional likelihood empirical Bayes.
 
 #  Davis McCarthy, Mark Robinson, Yunshun Chen, Gordon Smyth.
@@ -28,7 +28,7 @@ estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="moving
 		}
 		m0 <- switch(trend,
 			"loess" = ntags*locallyWeightedMean(l0, object$conc$conc.common, span=span),
-			"movingave" = ntags*weightedComLikMA(object,l0,prop.used=span),
+			"movingave" = ntags*weightedComLikMA(object,l0,prop.used=prop.used),
 			"tricube" = ntags*weightedComLik(object,l0, prop.used=span),
 			"none" = matrix(colSums(l0),ntags,grid.length,byrow=TRUE)
 		)
