@@ -1,76 +1,47 @@
+%\VignetteIndexEntry{edgeR Vignette}
+%\VignetteKeyword{RNA-Seq}
+%\VignetteKeyword{differential expression}
+%\VignettePackage{edgeR}
 \documentclass[12pt]{article}
-\usepackage{Sweave}
-\usepackage{natbib}
 
-\topmargin 0in
-\headheight 0in
-\headsep 0in
-\oddsidemargin 0.1in
-\evensidemargin 0.1in
-\textwidth 6.1in
-\textheight 8in
-\DeclareGraphicsRule{.tif}{png}{.png}{`convert #1 `dirname #1`/`basename #1 .tif`.png}
-\DefineVerbatimEnvironment{Sinput}{Verbatim}{fontsize=\footnotesize}
-\DefineVerbatimEnvironment{Soutput}{Verbatim}{fontsize=\footnotesize}
-\DefineVerbatimEnvironment{Scode}{Verbatim}{fontsize=\footnotesize}
-\DefineVerbatimEnvironment{Rcode}{Verbatim}{fontsize=\footnotesize}
-\newcommand{\edgeR}{\textsf{edgeR}}
-\newcommand{\limma}{\textsf{limma}}
-\newcommand{\code}[1]{{\small\texttt{#1}}}
-\newcommand{\R}{\textsf{R}}
-\newcommand{\Illumina}{Illumina\texttrademark}
-
+\textwidth=6.2in
+\textheight=8.5in
+\oddsidemargin=0.2in
+\evensidemargin=0.2in
+\headheight=0in
+\headsep=0in
 
 \begin{document}
 
-%\VignetteIndexEntry{edgeR Vignette}
-
-\title{\edgeR: differential expression analysis \\ of digital gene expression data}
+\title{edgeR: differential expression analysis \\ of digital gene expression data}
 \author{Mark Robinson, Davis McCarthy,\\
 Yunshun Chen, Gordon K.\ Smyth}
-% Please increment date when working on this document, so that
-% date shows genuine change date, not merely date of compile.
-\date{9 July 2011}
+\date{28 May 2012}
 \maketitle
 
 
-\edgeR\ \citep{Robinson:2010p249} is a package of the Bioconductor
-software development project.
-\edgeR\ implements statistical methods for assessing differential expression
-from digital gene expression data
-developed by~\citet{Robinson07, Robinson08}.
-The methodology can be
-applied to RNA-Seq, SAGE-Seq or ChIP-Seq data arising from sequencing
-technologies such as \Illumina, 454
-or ABI SOLiD.
+edgeR is a package for the differential expression analysis of digital gene expression data,
+that is, of count data arising from DNA sequencing technologies.
+It is especially designed for differential expression analyses of RNA-Seq or SAGE data,
+or differential marking analyses of ChIP-Seq data.
 
-For a detailed introduction to the package, including a number of fully worked case studies, see the \edgeR\ User's Guide.
+edgeR implements novel statistical methods based on the negative binomial distribution
+as a model for count variability, including empirical Bayes methods, exact tests, and generalized linear models.
+The package is especially suitable for analysing designed experiments with multiple
+experimental factors but possibly small numbers of replicates.
+It has unique abilities to model transcript specific variation even in small samples,
+a capability essential for prioritizing genes or transcripts that have consistent effects across replicates.
 
+The full edgeR User's Guide is available as part of the online documentation.
+To reach the User's Guide, install the edgeR package and load it into an R session by \texttt{library(edgeR)}.
+In R for Windows, the User's Guide will then be available from the drop-down menu called ``Vignettes''.
+In other operating systems, type
+\begin{Schunk}
+\begin{Sinput}
+> library(limma)
+> limmaUsersGuide()
+\end{Sinput}
+\end{Schunk}
+at the R prompt to open the User's Guide in a pdf viewer.
 
-\begin{thebibliography}{3}
-\providecommand{\natexlab}[1]{#1}
-\providecommand{\url}[1]{\texttt{#1}}
-\expandafter\ifx\csname urlstyle\endcsname\relax
-  \providecommand{\doi}[1]{doi: #1}\else
-  \providecommand{\doi}{doi: \begingroup \urlstyle{rm}\Url}\fi
-
-\bibitem[Robinson and Smyth(2007)]{Robinson07}
-MD Robinson and GK Smyth.
-\newblock Moderated statistical tests for assessing differences in tag
-  abundance.
-\newblock \emph{Bioinformatics}, 23\penalty0 (21):\penalty0 2881--2887, 2007.
-
-\bibitem[Robinson and Smyth(2008)]{Robinson08}
-MD Robinson and GK Smyth.
-\newblock Small-sample estimation of negative binomial dispersion, with
-  applications to {SAGE} data.
-\newblock \emph{Biostatistics}, 9\penalty0 (2):\penalty0 321--332, 2008.
-
-\bibitem[Robinson et~al.(2010)Robinson, McCarthy, and Smyth]{Robinson:2010p249}
-MD Robinson, DJ McCarthy, and GK Smyth.
-\newblock {edgeR}: a bioconductor package for differential expression analysis
-  of digital gene expression data.
-\newblock \emph{Bioinformatics}, 26\penalty0 (1):\penalty0 139--40, Jan 2010.
-
-\end{thebibliography}
 \end{document}
