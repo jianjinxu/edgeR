@@ -35,7 +35,7 @@ DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, norm.factors=NULL, grou
 		x$genes <- genes
 	}
 	all.zeros <- rowSums(counts,na.rm=TRUE)==0
-	x$all.zeros <- all.zeros
+#	x$all.zeros <- all.zeros
 	if(remove.zeros) {
 		if(any(all.zeros)) {
 			x <- x[!all.zeros,]

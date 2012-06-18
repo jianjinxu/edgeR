@@ -1,24 +1,21 @@
 \name{equalizeLibSizes}
 \alias{equalizeLibSizes}
 
-\title{Quantile Adjustment to Equalize Library Sizes for a Fixed Value of the Dispersion Parameter}
+\title{Equalize Library Sizes}
 
 \description{A function that uses a NB quantile-to-quantile method to adjust the libraries of counts so that library sizes are equal for a fixed value of the dispersion parameter.}
 
 
 \usage{
-equalizeLibSizes(object, disp=0, N=exp(mean(log(object$samples$lib.size*object$samples$norm.factors))),null.hypothesis=FALSE)
+equalizeLibSizes(object, disp=0, N=exp(mean(log(object$samples$lib.size*object$samples$norm.factors))))
 }
 
-\arguments{ 
-
-\item{object}{\code{DGEList} object containing the raw counts with elements \code{counts} (table of counts), \code{group} (vector indicating group) and \code{lib.size} (vector of library sizes)}
+\arguments{
+\item{object}{\code{\link[edgeR:DGEList-class]{DGEList}} object}
 
 \item{disp}{numeric scalar or vector of \code{dispersion} parameters; if a scalar, then a common dispersion parameter is used for all tags}
 
 \item{N}{numeric scalar, the library size to normalize to; default is the geometric mean of the original library sizes}
-
-\item{null.hypothesis}{logical, whether to calculate the \code{input.mean} and \code{output.mean} under the null hypothesis; default is \code{FALSE}}
 }
 
 \value{A list with elements 
@@ -34,9 +31,15 @@ The function \code{equalizeLibSizes} provides the necessary framework and calcul
 \author{Mark Robinson, Davis McCarthy}
 
 \examples{
-y<-matrix(rnbinom(10000,size=2,mu=10),ncol=4)
-d<-DGEList(counts=y,group=rep(1:2,each=2),lib.size=rep(c(1000,1010),2))
-ps<-estimatePs(d,r=2)
-q2q.out<-equalizeLibSizes(d,disp=0.5,null.hypothesis=FALSE)
+ngenes <- 1000
+nlibs <- 2
+counts <- matrix(0,ngenes,nlibs)
+colnames(counts) <- c("Sample1","Sample2")
+counts[,1] <- rpois(ngenes,lambda=10)
+counts[,2] <- rpois(ngenes,lambda=20)
+summary(counts)
+y <- DGEList(counts=counts)
+out <- equalizeLibSizes(y)
+summary(out$pseudo)
 }
-\keyword{algebra}
+

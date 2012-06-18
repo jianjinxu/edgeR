@@ -16,7 +16,7 @@ estimateCommonDisp <- function(object,tol=1e-06,rowsum.filter=5,verbose=FALSE)
 	pseudo.obj <- object[tags.used,]
 	disp <- 0
 	for(i in 1:2) {
-		q2q.out <- equalizeLibSizes(object,disp=disp,null.hypothesis=FALSE)
+		q2q.out <- equalizeLibSizes(object,disp=disp)
 		pseudo.obj$counts <- q2q.out$pseudo[tags.used,,drop=FALSE]
 		y <- splitIntoGroups(pseudo.obj)
 		delta <- optimize(commonCondLogLikDerDelta, interval=c(1e-4,100/(100+1)), tol=tol, maximum=TRUE, y=y, der=0, doSum=FALSE)

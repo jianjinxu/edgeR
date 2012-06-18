@@ -1,5 +1,4 @@
-equalizeLibSizes <- function(object, disp=0, N=exp(mean(log(object$samples$lib.size*object$samples$norm.factors))), 
-                             null.hypothesis=FALSE)
+equalizeLibSizes <- function(object, disp=0, N=exp(mean(log(object$samples$lib.size*object$samples$norm.factors))))
     ## Davis McCarthy, July 2009. Last modified 12 August 2010.
     ## A function that simply adjusts the counts for library size for a fixed value of the dispersion parameter
 {
@@ -22,14 +21,9 @@ equalizeLibSizes <- function(object, disp=0, N=exp(mean(log(object$samples$lib.s
 	if(length(disp)==1) {
 		disp <- matrix(disp,nrow=nrows,ncol=ncol(object$counts))
 	}
-	if (null.hypothesis) {
-			input.mean<-outer(conc$conc.common,lib.size)
-			output.mean<-outer(conc$conc.common,rep(N,ncols))
-	} else {
-		for(i in 1:length(levs.group)) {
-			input.mean[,group==levs.group[i]]<-outer(conc$conc.group[,i],lib.size[group==levs.group[i]])
-			output.mean[,group==levs.group[i]]<-outer(conc$conc.group[,i],rep(N,sum(group==levs.group[i])))
-		}
+	for(i in 1:length(levs.group)) {
+		input.mean[,group==levs.group[i]]<-outer(conc$conc.group[,i],lib.size[group==levs.group[i]])
+		output.mean[,group==levs.group[i]]<-outer(conc$conc.group[,i],rep(N,sum(group==levs.group[i])))
 	}
 	pseudo <- q2qnbinom(object$counts, input.mean=input.mean, output.mean=output.mean, dispersion=disp)
 	pseudo[pseudo<0]<-0
