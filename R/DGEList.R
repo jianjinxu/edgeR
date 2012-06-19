@@ -1,6 +1,6 @@
 DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, norm.factors=NULL, group=rep.int(1,ncol(counts)), genes=NULL, remove.zeros=FALSE) 
 #	Construct DGEList object from components, with some checking
-#	Last modified 24 March 2012
+#	Last modified 18 June 2012
 {
 	counts <- as.matrix(counts)
 	nlib <- ncol(counts)
