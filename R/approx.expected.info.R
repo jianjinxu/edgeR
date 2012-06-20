@@ -7,7 +7,7 @@ approx.expected.info<-function(object,d,pseudo,robust=FALSE)
 	obs.inf<-rep(0,nrow(object$counts))
 	for(i in 1:length(levs.group)) {
 		if (sum( group==levs.group[i] ) > 1) {
-			obs.inf<-obs.inf+condLogLikDerDelta(pseudo[,group==levs.group[i]],d,der=2,doSum=FALSE)*(-1)
+			obs.inf<-obs.inf+condLogLikDerDelta(pseudo[,group==levs.group[i]],d,der=2)*(-1)
 		}
 	}
 	z<-rowSums(pseudo)

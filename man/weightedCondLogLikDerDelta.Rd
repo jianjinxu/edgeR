@@ -6,10 +6,10 @@
 \description{Weighted conditional log-likelihood parameterized in terms of delta (\code{phi / (phi+1)}) for a given tag/gene - maximized to find the smoothed (moderated) estimate of the dispersion parameter}
 
 \usage{
-weightedCondLogLikDerDelta(y, delta, tag, prior.n=10, ntags=nrow(y[[1]]), der=0, doSum=FALSE)
+weightedCondLogLikDerDelta(y, delta, tag, prior.n=10, ntags=nrow(y[[1]]), der=0)
 }
-\arguments{ 
 
+\arguments{
 \item{y}{list with elements comprising the matrices of count data (or pseudocounts) for the different groups}
 
 \item{delta}{delta (\code{phi / (phi+1)})parameter of negative binomial}
@@ -21,9 +21,6 @@ weightedCondLogLikDerDelta(y, delta, tag, prior.n=10, ntags=nrow(y[[1]]), der=0,
 \item{ntags}{numeric scalar number of tags/genes in the dataset to be analysed}
 
 \item{der}{derivative, either 0 (the function), 1 (first derivative) or 2 (second derivative)}
-
-\item{doSum}{logical, whether to sum over samples or not (default \code{FALSE}}
-
 }
 
 \value{ numeric scalar of function/derivative evaluated for the  given tag/gene and delta}

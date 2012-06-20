@@ -29,21 +29,3 @@ Genes are ordered based on abundance (expression level) and for a given gene, a 
 
 
 \author{Davis McCarthy}
-
-\examples{
-counts<-matrix(rnbinom(20,size=1,mu=10),nrow=5)
-d<-DGEList(counts=counts,group=rep(1:2,each=2),lib.size=rep(c(1000:1001),2))
-d<-estimateCommonDisp(d)
-ntags<-nrow(d$counts)
-y<-splitIntoGroups(new("DGEList",list(counts=d$pseudo.alt,samples=d$samples)))
-grid.vals<-seq(0.001,0.999,length.out=10)
-l0<-0
-for(i in 1:length(y)) {
-  	 l0<-condLogLikDerDelta(y[[i]],grid.vals,der=0,doSum=FALSE)+l0
-}
-m0 <- ntags*weightedComLik(d,l0,prop.used=0.25) # Weights sum to 1, so need to multiply by number of tags to give this the same weight overall as the regular common likelihood
-# Or use the moving-average method
-m1 <- ntags*weightedComLikMA(d,l0,prop.used=0.05)
-}
-\keyword{file}
-

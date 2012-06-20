@@ -11,7 +11,7 @@ estimateSmoothing<-function(object,verbose=TRUE)
 	scores<-0
 	for(i in 1:length(levs.group)) {
 		if ( sum(group==levs.group[i]) > 1) {
-			scores<-scores+condLogLikDerDelta(object$pseudo.alt[,group==levs.group[i]],d,der=1,grid=FALSE, doSum=FALSE)
+			scores<-scores+condLogLikDerDelta(object$pseudo.alt[,group==levs.group[i]],d,der=1)
 		}
 	}
 	exp.inf<-approx.expected.info(object,d,object$pseudo.alt)
