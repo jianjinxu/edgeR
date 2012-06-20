@@ -1,13 +1,13 @@
 equalizeLibSizes <- function(object, disp=0, N=exp(mean(log(object$samples$lib.size*object$samples$norm.factors))))
-    ## Davis McCarthy, July 2009. Last modified 12 August 2010.
-    ## A function that simply adjusts the counts for library size for a fixed value of the dispersion parameter
+#	Normalize counts so that the library sizes can be treated as equal.
+#	Uses a quantile-to-quantile transformation so that new count counts are equivalent deviates on the equalized scale.
+#	Created by Davis McCarthy, July 2009. Last modified 19 June 2012.
 {
 	nrows<-nrow(object$counts)
 	ncols<-ncol(object$counts)
 	lib.size <- object$samples$lib.size * object$samples$norm.factors
 	group<-as.factor(object$samples$group)
 	levs.group<-levels(group)
-	y<-splitIntoGroups(object)
 	if(length(disp)==1 && disp==0) {
 		maxr <- 1e06
 		conc<-estimatePs(object,maxr)
@@ -27,5 +27,5 @@ equalizeLibSizes <- function(object, disp=0, N=exp(mean(log(object$samples$lib.s
 	}
 	pseudo <- q2qnbinom(object$counts, input.mean=input.mean, output.mean=output.mean, dispersion=disp)
 	pseudo[pseudo<0]<-0
-	return(list(pseudo=pseudo,conc=conc,N=N))
+	list(pseudo=pseudo,conc=conc,N=N)
 }
