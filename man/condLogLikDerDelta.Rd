@@ -1,5 +1,4 @@
 \name{condLogLikDerDelta}
-\alias{condLogLikDerDelta}
 
 \title{Conditional Log-Likelihood in Terms of Delta}
 
