@@ -1,7 +1,7 @@
 plotMDS.DGEList <- function (x, top=500, labels=colnames(x), col=NULL, cex=1, dim.plot=c(1, 2), ndim=max(dim.plot), xlab=paste("Dimension",dim.plot[1]), ylab=paste("Dimension",dim.plot[2]), ...)
 #	Multidimensional scaling plot of digital gene expression profiles
 #	Yunshun Chen, Mark Robinson and Gordon Smyth
-#	23 May 2011.  Last modified 7 June 2011.
+#	23 May 2011.  Last modified 20 June 2012.
 {
 	library(edgeR)
 #	Check input
@@ -37,7 +37,7 @@ plotMDS.DGEList <- function (x, top=500, labels=colnames(x), col=NULL, cex=1, di
 			mm <- subdata[,c(i,j)]
 			rs5 <- rowSums(mm) > 5
 			norm <- t( t(mm) / colSums(mm) )*gm(colSums(mm))
-			delta <- optimize(myFun, interval = c(0.0001,.99), tol = 0.000001, maximum = TRUE, y = norm[rs5,], der = 0, doSum = FALSE)
+			delta <- optimize(myFun, interval = c(0.0001,.99), tol = 0.000001, maximum = TRUE, y = norm[rs5,], der = 0)
 			dd[i, j] = sqrt( delta$maximum / (1-delta$maximum) )
 		}
 	}

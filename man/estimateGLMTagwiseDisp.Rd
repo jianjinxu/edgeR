@@ -10,12 +10,11 @@ Estimates the dispersion parameter for a DGE dataset for general experimental de
 }
 
 \usage{
-\S3method{estimateGLMTagwiseDisp}{DGEList}(y, design=NULL, offset=NULL, trend=!is.null(y$trended.dispersion), ...)
-\S3method{estimateGLMTagwiseDisp}{default}(y, design=NULL, offset=NULL, dispersion, trend=TRUE, ...)
+\S3method{estimateGLMTagwiseDisp}{DGEList}(y, design=NULL, offset=NULL, trend=!is.null(y$trended.dispersion), prior.df=20, ...)
+\S3method{estimateGLMTagwiseDisp}{default}(y, design=NULL, offset=NULL, dispersion, trend=TRUE, prior.df=20, ...)
 }
 
-\arguments{ 
-
+\arguments{
 \item{y}{an object that contains the raw counts for each library (the measure of expression level); it can either be a matrix of counts, or a \code{DGEList} object with (at least) elements \code{counts} (table of unadjusted counts) and \code{samples} (data frame containing information about experimental group, library size and normalization factor for the library size)}
 
 \item{design}{numeric design matrix, as for \code{\link{glmFit}}.}
@@ -26,6 +25,8 @@ Generally this should be \code{TRUE} if a trended dispersion has been estimated 
 \item{offset}{numeric scalar, vector or matrix giving the offset (in addition to the log of the effective library size) that is to be included in the NB GLM for the transcripts. If a scalar, then this value will be used as an offset for all transcripts and libraries. If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each transcript. If a matrix, then each library for each transcript can have a unique offset, if desired. Default is \code{NULL}; if object is a \code{DGEList} and offset is \code{NULL} then offset will be calculated automatically from code{y$samples}.}
 
 \item{dispersion}{vector or scalar giving the dispersion value(s) to be used to set the grip of points for computation of the tagwise dispersion in \code{dispCoxReidInterpolateTagwise}.}
+
+\item{prior.df}{degrees of freedom associated with the prior dispersion distribution. Determines the precision assigned to the global dispersion trend when estimating the tagwise dispersions.}
 
 \item{\ldots}{other arguments are passed to lower-level functions. See \code{\link{dispCoxReidInterpolateTagwise}} for details.}
 }

@@ -1,9 +1,9 @@
-# Last modified 23 Apr 2012.
+# Created March 2011. Last modified 21 June 2012.
 
 estimateGLMTagwiseDisp <- function(y, design=NULL, offset=NULL, ...) 
 UseMethod("estimateGLMTagwiseDisp")
 
-estimateGLMTagwiseDisp.DGEList <- function(y, design=NULL, offset=NULL, trend=!is.null(y$trended.dispersion), ...)
+estimateGLMTagwiseDisp.DGEList <- function(y, design=NULL, offset=NULL, trend=!is.null(y$trended.dispersion), prior.df=20, ...)
 {
 	if(is.null(offset)) offset <- getOffset(y)
 	if(trend)  {
@@ -14,11 +14,12 @@ estimateGLMTagwiseDisp.DGEList <- function(y, design=NULL, offset=NULL, trend=!i
 		dispersion <- y$common.dispersion
 		if(is.null(dispersion)) stop("No common.dispersion found in data object. Run estimateGLMCommonDisp first.")
 	}
-	y$tagwise.dispersion <- estimateGLMTagwiseDisp(y=y$counts, design=design, offset=offset, dispersion=dispersion, trend=trend, abundance=y$abundance, ...)
+	y$prior.df <- prior.df
+	y$tagwise.dispersion <- estimateGLMTagwiseDisp(y=y$counts, design=design, offset=offset, dispersion=dispersion, trend=trend, abundance=y$abundance, prior.df=prior.df, ...)
 	y
 }
 
-estimateGLMTagwiseDisp.default <- function(y, design=NULL, offset=NULL, dispersion, trend="TRUE", ...)
+estimateGLMTagwiseDisp.default <- function(y, design=NULL, offset=NULL, dispersion, trend="TRUE", prior.df=20, ...)
 {
 	y <- as.matrix(y)
 	if(is.null(design)) {
@@ -32,5 +33,6 @@ estimateGLMTagwiseDisp.default <- function(y, design=NULL, offset=NULL, dispersi
 		warning("No residual df: setting dispersion to NA")
 		return(NA,nrow(y))
 	}
-	dispCoxReidInterpolateTagwise(y, design, offset=offset, dispersion, trend=trend, ...)
+	prior.n <- getPriorN(y=y,design=design,prior.df=prior.df)
+	dispCoxReidInterpolateTagwise(y, design, offset=offset, dispersion, trend=trend, prior.n=prior.n, ...)
 }
