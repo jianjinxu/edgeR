@@ -1,6 +1,6 @@
 #  FIT GENERALIZED LINEAR MODELS
 
-glmFit <- function(y, design, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count.total=0.5, start=NULL, method="auto")
+glmFit <- function(y, design, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count.total=0.5, start=NULL, method="auto", ...)
 UseMethod("glmFit")
 
 glmFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count.total=0.5, start=NULL, method="auto", ...)
