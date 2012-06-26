@@ -5,10 +5,11 @@ weightedComLik <- function(object,l0,prop.used=0.25) {
     ## Written by Davis McCarthy, May 2010. Last modified 3 June 2010.
     ## We order the tags based on their average abundance across all groups
     ## l0 is a matrix of ntags rows and number of columns given by grid.length
-    if(is.null(object$conc))
-        stop("estimateCommonDisp() must be run before using this function.\n")
-    o <- order(object$conc$conc.common)
-    x <- object$conc$conc.common
+    if(is.null(object$common.dispersion)) stop("estimateCommonDisp() must be run before using this function.")
+    x <- object$logCPM
+#    x <- log2(2^x+0.5)
+    if(is.null(x)) stop("logCPM not found")
+    o <- order(x)
     xord <- x[o]
     ntags <- nrow(object$counts)
     ntags.either.side <- ceiling(prop.used*ntags/2)
@@ -38,13 +39,8 @@ weightedComLik <- function(object,l0,prop.used=0.25) {
 }
 
 weightedComLikMA <- function(object, l0, prop.used=0.05) {
-    ## Function for calculating weights to do LOESS-like weighted local calculations of the common dispersion
-    ## Written by Davis McCarthy, May 2010. Last modified 3 June 2010.
-    ## We order the tags based on their average abundance across all groups
-    ## l0 is a matrix of ntags rows and number of columns given by grid.length
-    if(is.null(object$conc))
-        stop("estimateCommonDisp() must be run before using this function.\n")
-    o <- order(object$conc$conc.common)
+    if(is.null(object$common.dispersion)) stop("estimateCommonDisp() must be run before using this function.")
+    o <- order(object$logCPM)
     ntags <- nrow(object$counts)
     weighted.common.lik <- matrix(0,nrow=ntags,ncol=ncol(l0))
     width <- floor(prop.used*ntags)

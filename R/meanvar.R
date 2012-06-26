@@ -1,4 +1,4 @@
-binMeanVar <- function(x, conc=NULL, group, nbins=100, common.dispersion=FALSE, object=NULL)
+binMeanVar <- function(x, group, nbins=100, common.dispersion=FALSE, object=NULL)
     ## Function to bin DGE data based on abundance and calculate the mean and pooled variance for each tag, as well as the average mean and variance for each bin. Allows us to investigate the mean-variance relationship in the data.
     ## Expect x to be a matrix of counts or pseudocounts---pseudocounts preferable as this adjusts for library size.
     ## Created by Davis McCarthy
@@ -90,10 +90,10 @@ plotMeanVar <- function(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.
         meanvar.in <- NULL
     }
     if( is.null(meanvar) ) {
-        if( !is.null(object$conc$conc.common) )
-            meanvar <- binMeanVar(x, object$conc$conc.common, object$samples$group, nbins=nbins, common.dispersion=com.disp, object=meanvar.in)
+        if( !is.null(object$logCPM) )
+            meanvar <- binMeanVar(x, group=object$samples$group, nbins=nbins, common.dispersion=com.disp, object=meanvar.in)
         else
-            meanvar <- binMeanVar(x, conc=NULL, object$samples$group, nbins=nbins, common.dispersion=com.disp, object=meanvar.in)
+            meanvar <- binMeanVar(x, group=object$samples$group, nbins=nbins, common.dispersion=com.disp, object=meanvar.in)
     }
     if(show.tagwise.vars) {
         if( is.null(object$tagwise.dispersion) )

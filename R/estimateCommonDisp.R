@@ -26,8 +26,13 @@ estimateCommonDisp <- function(object,tol=1e-06,rowsum.filter=5,verbose=FALSE)
 	if(verbose) cat("Disp =",round(disp,5),", BCV =",round(sqrt(disp),4),"\n")
 	object$common.dispersion <- disp
 	object$pseudo.alt <- q2q.out$pseudo
-	object$conc <- q2q.out$conc
 	object$common.lib.size <- q2q.out$N
+
+#	Average logCPM
+	effective.lib.size <- object$samples$lib.size * object$samples$norm.factors
+	abundance <- mglmOneGroup(object$counts,dispersion=disp,offset=log(effective.lib.size))
+	object$logCPM <- log2(exp(abundance+log(1e6))+1)
+#	object$logCPM <- q2q.out$conc$conc.common
 	object
 }
 

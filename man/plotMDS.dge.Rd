@@ -59,9 +59,10 @@ This is a list containing the following components:
 # Samples are in two groups
 # First 300 genes are differentially expressed in second group
 
-y <- matrix(rnbinom(6000, size = 1/2, mu = 10),1000,6)
-rownames(y) <- paste("Gene",1:1000)
-y[1:300,4:6] <- y[1:300,4:6] + 10
+counts <- matrix(rnbinom(6000, size = 1/2, mu = 10),1000,6)
+rownames(counts) <- paste("Gene",1:1000)
+counts[1:300,4:6] <- counts[1:300,4:6] + 10
+y <- DGEList(counts)
 # without labels, indexes of samples are plotted.
 mds <- plotMDS(y,  col=c(rep("black",3), rep("red",3)) )
 # or labels can be provided, here group indicators:

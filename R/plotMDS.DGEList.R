@@ -30,7 +30,7 @@ plotMDS.DGEList <- function (x, top=500, labels=colnames(x), col=NULL, cex=1, di
 	subdata <- x$counts[o,]
 
 	gm <- function(x) exp( mean(log(x)) )
-	myFun <- function(delta, y, ...) colSums(condLogLikDerDelta(y, delta, ...))
+	myFun <- function(delta, y, ...) sum(condLogLikDerDelta(y, delta, ...))
 
 	for (i in 2:(nsamples)) {
 		for (j in 1:(i - 1))  {

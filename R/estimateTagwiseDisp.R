@@ -5,7 +5,7 @@ estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="moving
 #  Created 2009. Last modified 8 May 2012.
 {
 	if( !is(object,"DGEList") ) stop("object must be a DGEList")
-	if( is.null(object$pseudo.alt) ) {
+	if( is.null(object$common.dispersion) ) {
 		message("Running estimateCommonDisp() on DGEList object before proceeding with estimateTagwiseDisp().")
 		object <- estimateCommonDisp(object)
 	}
@@ -26,7 +26,7 @@ estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="moving
 		for(j in 1:grid.length) for(i in 1:length(y)) l0[,j] <- condLogLikDerDelta(y[[i]],grid.vals[j],der=0)+l0[,j]
 
 		m0 <- switch(trend,
-			"loess" = ntags*locallyWeightedMean(l0, object$conc$conc.common, span=span),
+			"loess" = ntags*locallyWeightedMean(l0, object$logCPM, span=span),
 			"movingave" = ntags*weightedComLikMA(object,l0,prop.used=prop.used),
 			"tricube" = ntags*weightedComLik(object,l0, prop.used=span),
 			"none" = matrix(colSums(l0),ntags,grid.length,byrow=TRUE)

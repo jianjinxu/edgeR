@@ -6,15 +6,14 @@ binCMLDispersion <- function(y, nbins=50) {
     ## Oct 2010. Last modified 10 Feb 2011.
     if( !is(y, "DGEList") )
         stop("Function only operates on DGEList objects.\n")
-    if( is.null( y$conc$conc.common ) ) {
+    if( is.null( y$common.dispersion ) ) {
         y <- estimateCommonDisp(y)
         cat("Running estimateCommonDisp() on object to get concentration/abundance.\n")
     }
     ntags <- nrow(y)
-    abundance <- log(y$conc$conc.common)
 
-    disp.bins <- abundance.bins <- rep(NA,nbins)
-    o <- order(abundance)
+    disp.bins <- logCPM.bins <- rep(NA,nbins)
+    o <- order(y$logCPM)
     ntagsinbin <- floor(ntags / nbins)
 
     for(i in 1:nbins) {
@@ -24,9 +23,9 @@ binCMLDispersion <- function(y, nbins=50) {
             bin <- o[ (1 + (i-1)*ntagsinbin):( i*ntagsinbin)]
 
         disp.bins[i] <- estimateCommonDisp(y[bin,])$common.dispersion
-        abundance.bins[i] <- mean(abundance[bin])
+        logCPM.bins[i] <- mean(y$logCPM[bin])
     }
-    list(dispersion=disp.bins, abundance=abundance.bins)
+    list(dispersion.bins=disp.bins, logCPM.bins=logCPM.bins)
 }
 
 

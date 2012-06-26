@@ -10,11 +10,11 @@
 \usage{
 plotMeanVar(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, show.binned.common.disp.vars=FALSE,
             show.ave.raw.vars=TRUE, scalar=NULL, NBline=FALSE, nbins=100, log.axes="xy", xlab=NULL, ylab=NULL,  ...) 
-binMeanVar(x, conc=NULL, group, nbins=100, common.dispersion=FALSE, object=NULL)
+binMeanVar(x, group, nbins=100, common.dispersion=FALSE, object=NULL)
 }
 
 \arguments{ 
-\item{object}{\code{DGEList} object containing the raw data and dispersion value. According the method desired for computing the dispersion, either \code{CRDisp} or \code{estimateCommonDisp} and (possibly) \code{estimateTagwiseDisp} should be run on the \code{DGEList} object before using \code{plotMeanVar}. The argument \code{object} must be supplied in the function \code{binMeanVar} if common dispersion values are to be computed for each bin.}
+\item{object}{\code{DGEList} object containing the raw data and dispersion value. According the method desired for computing the dispersion, either \code{estimateCommonDisp} and (possibly) \code{estimateTagwiseDisp} should be run on the \code{DGEList} object before using \code{plotMeanVar}. The argument \code{object} must be supplied in the function \code{binMeanVar} if common dispersion values are to be computed for each bin.}
 
 \item{meanvar}{list (optional) containing the output from \code{binMeanVar} or the returned value of \code{plotMeanVar}. Providing this object as an argument will save time in computing the tag/gene means and variances when producing a mean-variance plot. }
 
@@ -41,8 +41,6 @@ binMeanVar(x, conc=NULL, group, nbins=100, common.dispersion=FALSE, object=NULL)
 \item{\dots}{further arguments passed on to \code{plot}}
 
 \item{x}{matrix of count data, with rows representing tags/genes and columns representing samples}
-
-\item{conc}{vector (optional) of values for the concentration (i.e. abundance) of each tag}
 
 \item{group}{factor giving the experimental group or condition to which each sample (i.e. column of \code{x} or element of {y}) belongs}
 
