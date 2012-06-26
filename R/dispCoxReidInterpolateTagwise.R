@@ -1,9 +1,9 @@
-dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, trend=TRUE, abundance=NULL, min.row.sum=5, prior.n=getPriorN(y, design), span=2/3, grid.npts=11, grid.range=c(-6,6))
+dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, trend=TRUE, abundance=NULL, min.row.sum=5, prior.df=20, span=2/3, grid.npts=11, grid.range=c(-6,6))
 #	Estimate tagwise NB dispersions
 #	using weighted Cox-Reid Adjusted Profile-likelihood
 #	and cubic spline interpolation over a tagwise grid.
 #	Yunshun Chen and Gordon Smyth
-#	Created August 2010. Last modified 21 Oct 2011.
+#	Created August 2010. Last modified 26 June 2012.
 {
 #	Check input arguments
 	y <- as.matrix(y)
@@ -11,6 +11,8 @@ dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, tr
 	nlibs <- ncol(y)
 	design <- as.matrix(design)
 	if(!is.fullrank(design)) stop("design matrix must be full column rank")
+	ncoefs <- ncol(design)
+	if(ncoefs >= nlibs) stop("no residual degrees of freedom")
 	if(is.null(offset)) offset <- 0
 	offset <- expandAsMatrix(offset,dim(y))
 	ldisp <- length(dispersion)
@@ -24,11 +26,12 @@ dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, tr
 #	Apply min.row.sum and use input dispersion for small count tags
 	i <- (rowSums(y) >= min.row.sum)
 	if(any(!i)) {
-		if(any(i)) dispersion[i] <- Recall(y=y[i,],design=design,offset=offset[i,],dispersion=dispersion[i],abundance=abundance[i],grid.npts=grid.npts,min.row.sum=0,prior.n=prior.n,span=span,trend=trend)
+		if(any(i)) dispersion[i] <- Recall(y=y[i,],design=design,offset=offset[i,],dispersion=dispersion[i],abundance=abundance[i],grid.npts=grid.npts,min.row.sum=0,prior.df=prior.df,span=span,trend=trend)
 		return(dispersion)
 	}
 
 #	Posterior profile likelihood
+	prior.n <- prior.df/(nlibs-ncoefs)
 	spline.pts <- seq(from=grid.range[1],to=grid.range[2],length=grid.npts)
 	apl <- matrix(0, nrow=ntags, ncol=grid.npts)
 	for(i in 1:grid.npts){

@@ -3,10 +3,10 @@
 \alias{estimateGLMTagwiseDisp.DGEList}
 \alias{estimateGLMTagwiseDisp.default}
 
-\title{Estimate Empirical Bayes Tagwise Dispersions for Negative Binomial GLMs}
+\title{Empirical Bayes Tagwise Dispersions for Negative Binomial GLMs}
 
 \description{
-Estimates the dispersion parameter for a DGE dataset for general experimental designs by using Cox-Reid approximate conditional inference for a negative binomial generalized linear model for each transcript (tag) with the unadjusted counts and design matrix provided.
+Compute an empirical Bayes estimate of the negative binomial dispersion parameter for each tag or transcript, with expression levels specified by a log-linear model.
 }
 
 \usage{
@@ -15,20 +15,19 @@ Estimates the dispersion parameter for a DGE dataset for general experimental de
 }
 
 \arguments{
-\item{y}{an object that contains the raw counts for each library (the measure of expression level); it can either be a matrix of counts, or a \code{DGEList} object with (at least) elements \code{counts} (table of unadjusted counts) and \code{samples} (data frame containing information about experimental group, library size and normalization factor for the library size)}
+\item{y}{matrix of counts or a \code{DGEList} object.}
 
 \item{design}{numeric design matrix, as for \code{\link{glmFit}}.}
 
-\item{trend}{logical, should an abundance trend be applied to the grid of dispersion values over which the tagwise dispersion estimation is done?
-Generally this should be \code{TRUE} if a trended dispersion has been estimated and \code{FALSE} otherwise.}
+\item{trend}{logical. Should the prior be the trended dispersion (\code{TRUE}) or the common dispersion (\code{FALSE})?}
 
-\item{offset}{numeric scalar, vector or matrix giving the offset (in addition to the log of the effective library size) that is to be included in the NB GLM for the transcripts. If a scalar, then this value will be used as an offset for all transcripts and libraries. If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each transcript. If a matrix, then each library for each transcript can have a unique offset, if desired. Default is \code{NULL}; if object is a \code{DGEList} and offset is \code{NULL} then offset will be calculated automatically from code{y$samples}.}
+\item{offset}{offset matrix for the log-linear model, as for \code{\link{glmFit}}.  Defaults to the log-effective library sizes.}
 
-\item{dispersion}{vector or scalar giving the dispersion value(s) to be used to set the grip of points for computation of the tagwise dispersion in \code{dispCoxReidInterpolateTagwise}.}
+\item{prior.df}{prior degrees of freedom.}
 
-\item{prior.df}{degrees of freedom associated with the prior dispersion distribution. Determines the precision assigned to the global dispersion trend when estimating the tagwise dispersions.}
+\item{dispersion}{common or trended dispersion estimates, used as an initial estimate for the tagwise estimates.}
 
-\item{\ldots}{other arguments are passed to lower-level functions. See \code{\link{dispCoxReidInterpolateTagwise}} for details.}
+\item{\ldots}{other arguments are passed to \code{\link{dispCoxReidInterpolateTagwise}}.}
 }
 
 \value{
@@ -38,18 +37,24 @@ Generally this should be \code{TRUE} if a trended dispersion has been estimated 
 }
 
 \details{
-This generic function is essentially a wrapper for \code{dispCoxReidInterpolateTagwise}.
-To obtain estimates of the tagwise dispersion parameters for negative binomial GLMs we use Cox-Reid approximate conditional inference as implemented in \code{dispCoxReidInterpolateTagwise}.
-The approach is to maximize the adjusted profile likelihood over the dispersion value, for the tagwise models and use these values as the tagwise dispersion parameters for differential signal testing in downstream analysis.
+This function implements the empirical Bayes estimation strategy proposed by McCarthy et al (2012)
+for the tagwise negative binomial dispersions for read count data when the experiment is specified by a log-linear model.
+The empirical Bayes posterior is implemented as a conditional likelihood with tag-specific weights,
+and the conditional likelihood is computed using Cox-Reid approximate conditional likelihood (Cox and Reid, 1987).
+
+The prior degrees of freedom determines the weight given to the global dispersion trend.
+The larger the prior degrees of freedom, the more the tagwise dispersions are squeezed towards the global trend.
+
+This function calls the lower-level function \code{\link{dispCoxReidInterpolateTagwise}}.
 }
 
 \references{
-Cox, DR, and Reid, N (1987). Parameter orthogonality and approximate conditional inference. \emph{Journal of the Royal Statistical Society Series B} 49, 1-39.
+Cox, DR, and Reid, N (1987). Parameter orthogonality and approximate conditional inference.
+\emph{Journal of the Royal Statistical Society Series B} 49, 1-39.
 
 McCarthy, DJ, Chen, Y, Smyth, GK (2012). Differential expression analysis of multifactor RNA-Seq experiments with respect to biological variation.
-\emph{Nucleic Acids Research}.
-\url{http://nar.oxfordjournals.org/content/early/2012/02/06/nar.gks042}
-(Published online 28 January 2012)
+\emph{Nucleic Acids Research} 40, 4288-4297.
+\url{http://nar.oxfordjournals.org/content/40/10/4288}
 }
 
 \author{Gordon Smyth, Davis McCarthy}

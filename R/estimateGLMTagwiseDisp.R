@@ -1,4 +1,4 @@
-# Created March 2011. Last modified 21 June 2012.
+# Created March 2011. Last modified 26 June 2012.
 
 estimateGLMTagwiseDisp <- function(y, design=NULL, offset=NULL, ...) 
 UseMethod("estimateGLMTagwiseDisp")
@@ -33,6 +33,6 @@ estimateGLMTagwiseDisp.default <- function(y, design=NULL, offset=NULL, dispersi
 		warning("No residual df: setting dispersion to NA")
 		return(NA,nrow(y))
 	}
-	prior.n <- getPriorN(y=y,design=design,prior.df=prior.df)
-	dispCoxReidInterpolateTagwise(y, design, offset=offset, dispersion, trend=trend, prior.n=prior.n, ...)
+#	prior.n <- getPriorN(y=y,design=design,prior.df=prior.df)
+	dispCoxReidInterpolateTagwise(y, design, offset=offset, dispersion, trend=trend, prior.df=prior.df, ...)
 }
