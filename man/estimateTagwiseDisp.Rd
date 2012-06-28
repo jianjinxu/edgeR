@@ -8,7 +8,7 @@ Estimates tagwise dispersion values by an empirical Bayes method based on weight
 }
 
 \usage{
-estimateTagwiseDisp(object, prior.n=getPriorN(object), trend="movingave", span=0.3, prop.used=0.3, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
+estimateTagwiseDisp(object, prior.n=getPriorN(object), trend="movingave", span=0.3, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
 }
 
 \arguments{ 
@@ -17,17 +17,9 @@ estimateTagwiseDisp(object, prior.n=getPriorN(object), trend="movingave", span=0
 
 \item{prior.n}{numeric scalar, smoothing parameter that indicates the weight to give to the common likelihood compared to the individual tag's likelihood; default \code{getPriorN(object)} gives a value for \code{prior.n} that is equivalent to giving the common likelihood 20 prior degrees of freedom in the estimation of the tag/genewise dispersion.}
 
-\item{trend}{method for allowing the prior distribution for the dispersion to be abundance-dependent.
-Possible values are \code{"none"}, \code{"movingave"}, \code{"tricube"} and \code{"loess"}.
-\code{"none"} means no trend.
-\code{"loess"} applies a loess curve with degree 0 to smooth the local likelihood values.
-\code{"movingave"} applies a moving average smoother to the local likelihood values.
-\code{"tricube"} applies tricube weighting to locally smooth the common likelihood.}
+\item{trend}{method for estimating dispersion trend. Possible values are \code{"none"}, \code{"movingave"}, \code{"loess"} and \code{"tricube"}.}
 
-\item{span}{width of the smoothing window, in terms of proportion of the data set.  Used for \code{trend="loess"} and \code{trend="tricube"}.}
-
-\item{prop.used}{proportion of all tags/genes to be used for the locally weighted estimation of the tagwise dispersion, allowing the dispersion estimates to vary with abundance (expression level). For each tag/gene the estimate of its dispersion is based on the closest \code{prop.used} of all of the genes to that gene, where 'closeness' is based on similarity in expression level.
-Used by \code{trend="movingave"}.}
+\item{span}{width of the smoothing window, in terms of proportion of the data set.}
 
 \item{method}{method for maximizing the posterior likelihood.
 Possible values are \code{"grid"} for interpolation on grid points or \code{"optimize"} to call the function of the same name.
@@ -43,13 +35,24 @@ Possible values are \code{"grid"} for interpolation on grid points or \code{"opt
 }
 
 \details{
-Maximizes the negative binomial weighted likelihood (a weighted version using the common likelihood given weight according the the smoothing parameter prior.n and the individual tag/gene likelihood) for each tag from the pseudocounts provided (i.e. assuming library sizes are equal), to give an estimate of the dispersion parameter for each tag (i.e. tagwise dispersion estimation).
+This function implements the empirical Bayes strategy proposed by Robinson and Smyth (2007)
+for estimating the tagwise negative binomial dispersions.
+There may be one or more experimental groups.
+The empirical Bayes posterior is implemented as a conditional likelihood with tag-specific weights.
 
-\code{"loess"} local weighting is similar to that used by \code{tricube} but much faster.
-\code{"tricube"} local weighting is similar to that used by \code{lowess}.
-\code{"movingave"} is much faster than \code{"tricube"} and gives similar results.
+The prior values for the dispersions are determined by a global trend.
+The individual tagwise dispersions are then squeezed towards this trend.
+The prior degrees of freedom determines the weight given to the prior.
+The larger the prior degrees of freedom, the more the tagwise dispersions are squeezed towards the global trend.
+If the number of libraries is large, the prior becomes less important and the tagwise dispersion are determined more by the individual tagwise data.
 
-\code{"optimize"} is very slow if there is a large number of tags/genes to be analysed (i.e., more than 5000).
+If \code{trend="none"}, then the prior dispersion is just a constant, the common dispersion.
+Otherwise, the trend is determined by a moving average (\code{trend="movingave"}) or loess smoother applied to the tagwise conditional log-likelihood.
+\code{method="loess"} applies a loess curve of degree 0 as implemented in \code{\link{loessByCol}} with \code{method="loess"}.
+\code{method="tricube"} is the same but with \code{method="Rcode"}.
+
+\code{method="optimize"} is not recommended for routine use as it is very slow.
+It is included for testing purposes.
 }
 
 \value{
@@ -59,20 +62,20 @@ An object of class \code{DGEList} with the same components as for \code{\link{es
 }
 
 \references{
-Robinson MD and Smyth GK (2007). Moderated statistical tests for
-assessing differences in tag abundance. \emph{Bioinformatics} 23, 2881-2887
+Robinson, MD, and Smyth, GK (2007). Moderated statistical tests for
+assessing differences in tag abundance. \emph{Bioinformatics} 23, 2881-2887.
+\url{http://bioinformatics.oxfordjournals.org/content/23/21/2881}
 }
 
 \author{Mark Robinson, Davis McCarthy, Yunshun Chen and Gordon Smyth}
 \examples{
-y<-matrix(rnbinom(1000,mu=10,size=2),ncol=4)
-d<-DGEList(counts=y,group=c(1,1,2,2),lib.size=c(1000:1003))
-d<-estimateCommonDisp(d)
-tgwdisp<-estimateTagwiseDisp(d, prior.n=10)
+# See exactTest
 }
 
 \seealso{
-\code{\link{estimateCommonDisp}} estimates a common value for the dispersion parameter for all tags/genes - should generally be run before \code{estimateTagwiseDisp}.
+\code{\link{estimateCommonDisp}} is usually run before \code{estimateTagwiseDisp}.
+
+\code{\link{movingAverageByCol}} and \code{\link{loessByCol}} implement the moving average or loess smoothers.
 }
 
 \keyword{algebra}

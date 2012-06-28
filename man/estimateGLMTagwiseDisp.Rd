@@ -37,8 +37,9 @@ Compute an empirical Bayes estimate of the negative binomial dispersion paramete
 }
 
 \details{
-This function implements the empirical Bayes estimation strategy proposed by McCarthy et al (2012)
-for the tagwise negative binomial dispersions for read count data when the experiment is specified by a log-linear model.
+This function implements the empirical Bayes strategy proposed by McCarthy et al (2012)
+for estimating the tagwise negative binomial dispersions.
+The experimental conditions are specified by design matrix allowing for multiple explanatory factors.
 The empirical Bayes posterior is implemented as a conditional likelihood with tag-specific weights,
 and the conditional likelihood is computed using Cox-Reid approximate conditional likelihood (Cox and Reid, 1987).
 

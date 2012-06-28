@@ -93,7 +93,7 @@ group <- factor(c(1,1,2,2))
 d <- DGEList(counts=y,group=group,lib.size=rep(1000,4))
 
 # estimate dispersions and find differences in expression
-d <- estimateCommonDisp(d)
+d <- estimateCommonDisp(d, verbose=TRUE)
 d <- estimateTagwiseDisp(d)
 de <- exactTest(d)
 topTags(de)
