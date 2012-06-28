@@ -2,7 +2,7 @@ estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="moving
 #  Tagwise dispersion using weighted conditional likelihood empirical Bayes.
 
 #  Davis McCarthy, Mark Robinson, Yunshun Chen, Gordon Smyth.
-#  Created 2009. Last modified 8 May 2012.
+#  Created 2009. Last modified 28 June 2012.
 {
 	if( !is(object,"DGEList") ) stop("object must be a DGEList")
 	if( is.null(object$common.dispersion) ) {
@@ -26,12 +26,16 @@ estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="moving
 		for(j in 1:grid.length) for(i in 1:length(y)) l0[,j] <- condLogLikDerDelta(y[[i]],grid.vals[j],der=0)+l0[,j]
 
 		m0 <- switch(trend,
-			"loess" = ntags*loessByCol(l0, object$logCPM, span=span),
-			"movingave" = ntags*weightedComLikMA(object,l0,prop.used=prop.used),
-			"tricube" = ntags*weightedComLik(object,l0, prop.used=span),
-			"none" = matrix(colSums(l0),ntags,grid.length,byrow=TRUE)
+ 			"movingave" = {
+ 				o <- order(object$logCPM)
+ 				oo <- order(o)
+ 				movingAverageByCol(l0[o,], width=floor(span*ntags))[oo,]
+ 			},
+			"tricube" = loessByCol(l0, object$logCPM, span=span, method="loess"),
+#			"tricube" = loessByCol(l0, object$logCPM, span=span, method="Rcode"),
+			"none" = matrix(colMeans(l0),ntags,grid.length,byrow=TRUE)
 		)
-		l0a <- l0 + prior.n/ntags*m0
+		l0a <- l0 + prior.n*m0
 		d <- rep(0,ntags)
 		for(j in 1:ntags) d[j] <- maximizeInterpolant(spline.pts, l0a[j,])
 		tagwise.dispersion <- object$common.dispersion * 2^d
