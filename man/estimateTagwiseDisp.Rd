@@ -11,8 +11,7 @@ Estimates tagwise dispersion values by an empirical Bayes method based on weight
 estimateTagwiseDisp(object, prior.n=getPriorN(object), trend="movingave", span=0.3, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
 }
 
-\arguments{ 
-
+\arguments{
 \item{object}{object of class \code{DGEList} containing (at least) the elements \code{counts} (table of raw counts), \code{group} (factor indicating group), \code{lib.size} (numeric vector of library sizes) and \code{pseudo.alt} (numeric matrix of quantile-adjusted pseudocounts calculated under the alternative hypothesis of a true difference between groups; recommended to use the \code{DGEList} object provided as the output of \code{estimateCommonDisp}}
 
 \item{prior.n}{numeric scalar, smoothing parameter that indicates the weight to give to the common likelihood compared to the individual tag's likelihood; default \code{getPriorN(object)} gives a value for \code{prior.n} that is equivalent to giving the common likelihood 20 prior degrees of freedom in the estimation of the tag/genewise dispersion.}
@@ -37,7 +36,7 @@ Possible values are \code{"grid"} for interpolation on grid points or \code{"opt
 \details{
 This function implements the empirical Bayes strategy proposed by Robinson and Smyth (2007)
 for estimating the tagwise negative binomial dispersions.
-There may be one or more experimental groups.
+The experimental design is assumed to be a oneway layout with one or more experimental groups.
 The empirical Bayes posterior is implemented as a conditional likelihood with tag-specific weights.
 
 The prior values for the dispersions are determined by a global trend.
