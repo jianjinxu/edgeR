@@ -210,7 +210,7 @@ $fitted.values
 
 > 
 > fit <- glmFit(d,design,dispersion=d$common.dispersion)
-> lrt <- glmLRT(d,fit,coef=2)
+> lrt <- glmLRT(fit,coef=2)
 > topTags(lrt)
 Coefficient:  group2 
             logFC    logCPM        LR     PValue       FDR
@@ -236,7 +236,7 @@ Tag.8  -0.7917906 12.421860 0.7830377 0.37621371 0.8276702
  Max.   :-4.106   Max.   : 1.60864  
 > 
 > fit <- glmFit(d,design)
-> lrt <- glmLRT(d,fit,coef=2)
+> lrt <- glmLRT(fit,coef=2)
 > topTags(lrt)
 Coefficient:  group2 
             logFC    logCPM        LR     PValue       FDR
@@ -259,7 +259,7 @@ Tag.8  -0.7917906 12.421860 0.7830377 0.37621371 0.8276702
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
  0.1756  0.1879  0.1998  0.2031  0.2135  0.2578 
 > fit <- glmFit(dglm,design)
-> lrt <- glmLRT(dglm,fit,coef=2)
+> lrt <- glmLRT(fit,coef=2)
 > topTags(lrt)
 Coefficient:  group2 
             logFC    logCPM        LR      PValue       FDR
@@ -341,7 +341,7 @@ glmFit> # Fit the NB GLMs
 glmFit> fit <- glmFit(d, design, dispersion=dispersion.true)
 
 glmFit> # Likelihood ratio tests for trend
-glmFit> results <- glmLRT(d, fit, coef=2)
+glmFit> results <- glmLRT(fit, coef=2)
 
 glmFit> topTags(results)
 Coefficient:  x 
@@ -426,14 +426,6 @@ $error
 [1] FALSE FALSE FALSE FALSE FALSE
 95 more elements ...
 
-$abundance
-    Gene1     Gene2     Gene3     Gene4     Gene5 
--2.340971 -4.213249 -4.957796 -4.454150 -4.519740 
-95 more elements ...
-
-$method
-[1] "simple"
-
 $counts
       x0 x1  x2
 Gene1  4 13 107
@@ -442,6 +434,14 @@ Gene3  0  5   4
 Gene4  5  3   7
 Gene5  2  4   8
 95 more rows ...
+
+$abundance
+    Gene1     Gene2     Gene3     Gene4     Gene5 
+-2.340971 -4.213249 -4.957796 -4.454150 -4.519740 
+95 more elements ...
+
+$method
+[1] "simple"
 
 $samples
    group lib.size norm.factors
@@ -495,6 +495,15 @@ Gene4 4.176397  4.709091  6.066597
 Gene5 2.072114  3.834707  8.108180
 95 more rows ...
 
+$counts
+      x0 x1  x2
+Gene1  4 13 107
+Gene2  4  7   8
+Gene3  0  5   4
+Gene4  5  3   7
+Gene5  2  4   8
+95 more rows ...
+
 $df.residual
 [1] 1 1 1 1 1
 95 more elements ...
@@ -506,15 +515,6 @@ $abundance
 
 $method
 [1] "levenberg"
-
-$counts
-      x0 x1  x2
-Gene1  4 13 107
-Gene2  4  7   8
-Gene3  0  5   4
-Gene4  5  3   7
-Gene5  2  4   8
-95 more rows ...
 
 $samples
    group lib.size norm.factors
@@ -549,7 +549,6 @@ x2     1      511    0.8445892
  3rd Qu.:-1.467   3rd Qu.: 0.1385   3rd Qu.:-0.0002776  
  Max.   :-1.141   Max.   : 0.4228   Max.   : 0.7172727  
 > 
-> 
 > proc.time()
    user  system elapsed 
-   5.74    0.06    5.88 
+   6.47    0.07    6.64 

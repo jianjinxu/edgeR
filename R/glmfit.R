@@ -21,7 +21,6 @@ glmFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 	}
 	if(is.null(offset) && is.null(lib.size)) offset <- getOffset(y)
 	fit <- glmFit(y=y$counts,design=design,dispersion=dispersion,offset=offset,weights=weights,lib.size=lib.size,prior.count.total=prior.count.total,start=start,method=method,...)
-	fit$counts <- y$counts
 	fit$samples <- y$samples
 	fit$genes <- y$genes
 	new("DGEGLM",fit)
@@ -93,6 +92,7 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 	)
 
 #	Prepare output
+	fit$counts <- y
 	if(prior.count.total>0)
 		fit$coefficients <- predFC(y,design,offset=offset,dispersion=dispersion,prior.count.total=prior.count.total)
 	else
@@ -115,17 +115,12 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 }
 
 
-glmLRT <- function(y,glmfit,coef=ncol(glmfit$design),contrast=NULL)
+glmLRT <- function(glmfit,coef=ncol(glmfit$design),contrast=NULL)
 #	Tagwise likelihood ratio tests for DGEGLM
 #	Gordon Smyth and Davis McCarthy.
-#	Created 1 July 2010. Last modified 25 March 2012.
+#	Created 1 July 2010. Last modified 30 June 2012.
 {
-	if(is(y,"DGEList"))
-		y.mat <- y$counts 
-	else
-		y.mat <- as.matrix(y)
-	if(!is(glmfit,"DGEGLM"))
-		stop("The glmfit argument must be a DGEGLM object for the full model. Run glmFit with the design matrix of the full model before LR testing.\n")
+	if(!is(glmfit,"DGEGLM")) stop("The glmfit argument must be a DGEGLM object for the full model. Run glmFit with the design matrix of the full model before LR testing.\n")
 
 #	Full design matrix
 	design <- as.matrix(glmfit$design)
@@ -164,14 +159,14 @@ glmLRT <- function(y,glmfit,coef=ncol(glmfit$design),contrast=NULL)
 	design0 <- design[,-coef,drop=FALSE]
 
 #	Null fit
-	fit.null <- glmFit(y,design=design0,offset=glmfit$offset,weights=glmfit$weights,dispersion=glmfit$dispersion)
+	fit.null <- glmFit(glmfit$counts,design=design0,offset=glmfit$offset,weights=glmfit$weights,dispersion=glmfit$dispersion)
 
 	LR <- fit.null$deviance - glmfit$deviance
-	df <- fit.null$df.residual - glmfit$df.residual
-	LRT.pvalue <- pchisq(LR, df=df, lower.tail = FALSE, log.p = FALSE)
-	rn <- rownames(y.mat)
+	df.test <- fit.null$df.residual - glmfit$df.residual
+	LRT.pvalue <- pchisq(LR, df=df.test, lower.tail = FALSE, log.p = FALSE)
+	rn <- rownames(glmfit)
 	if(is.null(rn))
-		rn <- 1:nrow(y.mat)
+		rn <- 1:nrow(glmfit)
 	else
 		rn <- make.unique(rn)
 	tab <- data.frame(
@@ -181,20 +176,10 @@ glmLRT <- function(y,glmfit,coef=ncol(glmfit$design),contrast=NULL)
 		PValue=LRT.pvalue,
 		row.names=rn
 	)
-	if(is(y,"DGEList")) {
-		y$counts <- NULL
-		y$pseudo.alt <- NULL
-	} else {
-		y <- list()
-	}
-	y$table <- tab 
-	y$coefficients.full <- glmfit$coefficients
-	y$coefficients.null <- fit.null$coefficients
-	y$design.full <- glmfit$design
-	y$design.null <- design0
-	y$dispersion.used <- glmfit$dispersion
-	y$df <- df
-	y$comparison <- coef.name
-	new("DGELRT",unclass(y))
+	glmfit$counts <- NULL
+	glmfit$table <- tab 
+	glmfit$comparison <- coef.name
+	glmfit$df.test <- df.test
+	new("DGELRT",unclass(glmfit))
 }
 

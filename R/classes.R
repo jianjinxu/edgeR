@@ -23,8 +23,9 @@ setIs("DGEExact","LargeDataObject")
 setIs("DGEGLM","LargeDataObject")
 setIs("DGELRT","LargeDataObject")
 
-dim.DGEList <- function(x) if (is.null(x$counts)) c(0, 0) else dim(as.matrix(x$counts))
-dim.DGEExact <- dim.TopTags <- dim.DGEGLM <- dim.DGELRT <- function(x) if (is.null(x$table)) c(0, 0) else dim(as.matrix(x$table))
+dim.DGEList <- function(x) if(is.null(x$counts)) c(0, 0) else dim(as.matrix(x$counts))
+dim.DGEGLM <- function(x) if(is.null(x$coefficients)) c(0, 0) else dim(as.matrix(x$coefficients))
+dim.DGEExact <- dim.TopTags <- dim.DGELRT <- function(x) if(is.null(x$table)) c(0, 0) else dim(as.matrix(x$table))
 
 length.DGEList <- length.DGEExact <- length.TopTags <- length.DGEGLM <- length.DGELRT <- function(x) prod(dim(x))
 

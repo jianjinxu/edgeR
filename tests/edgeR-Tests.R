@@ -47,14 +47,14 @@ mglmOneWay(d[1:10,],design,dispersion=0.2)
 mglmOneWay(d[1:10,],design,dispersion=0)
 
 fit <- glmFit(d,design,dispersion=d$common.dispersion)
-lrt <- glmLRT(d,fit,coef=2)
+lrt <- glmLRT(fit,coef=2)
 topTags(lrt)
 
 fit <- glmFit(d,design,dispersion=d$common.dispersion,prior.count.total=2)
 summary(fit$coef)
 
 fit <- glmFit(d,design)
-lrt <- glmLRT(d,fit,coef=2)
+lrt <- glmLRT(fit,coef=2)
 topTags(lrt)
 
 dglm <- estimateGLMCommonDisp(d,design)
@@ -62,7 +62,7 @@ dglm$common.dispersion
 dglm <- estimateGLMTagwiseDisp(dglm,design)
 summary(dglm$tagwise.dispersion)
 fit <- glmFit(dglm,design)
-lrt <- glmLRT(dglm,fit,coef=2)
+lrt <- glmLRT(fit,coef=2)
 topTags(lrt)
 dglm <- estimateGLMTrendedDisp(dglm,design)
 summary(dglm$trended.dispersion)
@@ -94,4 +94,3 @@ y[1,3:4] <- 0
 design <- model.matrix(~group)
 fit <- glmFit(y,design,dispersion=2/3)
 summary(fit$coef)
-

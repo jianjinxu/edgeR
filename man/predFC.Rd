@@ -36,7 +36,7 @@ If \code{dispersion=NULL}, the dispersion used for the glm will be dependent on 
 }
 
 \value{
-Numeric matrix of log-fold-changes (natural log).  Each column corresponds to the relevant column of the design matrix.
+Numeric matrix of linear model coefficients (natural log).  Each column corresponds to the relevant column of the design matrix.
 }
 
 \author{Belinda Phipson, Gordon Smyth}
@@ -54,8 +54,8 @@ y<-calcNormFactors(y)
 y <- estimateGLMCommonDisp(y,design)
 
 # fit a glm to find differentially expressed genes
-glm<-glmFit(y,design)
-results<-glmLRT(y,glm,coef=2)
+glmfit<-glmFit(y,design)
+results<-glmLRT(glmfit,coef=2)
 
 #estimate the predictive log fold changes
 pfc<-predFC(y,design)
@@ -63,17 +63,10 @@ pfc<-predFC(y,design)
 #plot predFC's vs logFC's
 plot(pfc[,2],results$table$logFC,xlab="Predictive log fold changes",ylab="Raw log fold changes",pch=16,cex=0.8)
 abline(a=0,b=1)
-
 }
 
 \seealso{
-\code{\link{glmFit}}, \code{\link{glmLRT}} for generalised linear model fitting
-
-\code{\link{estimateGLMCommonDisp}}, \code{\link{estimateGLMTrendedDisp}}, \code{\link{estimateGLMTagwiseDisp}} for estimating dispersions in the context of generalised linear models
-
-\code{\link{estimateCommonDisp}}, \code{\link{estimateTagwiseDisp}} for estimating dispersions when the design of the experiment is a simple one-way layout.
-
-\code{\link{calcNormFactors}} for TMM normalisation
+\code{\link{glmFit}}
 }
 
 

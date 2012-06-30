@@ -96,7 +96,7 @@ spliceVariants <- function(y, geneID, dispersion=NULL, group=NULL, estimate.gene
                 ## Fit NB GLMs to these genes
                 fit.this <- glmFit(gene.counts.mat, X.full, dispersion[this.genes], offset=0)
                 abundance[this.genes] <- fit.this$abundance
-                results.this <- glmLRT(gene.counts.mat, fit.this, coef=coef)
+                results.this <- glmLRT(fit.this, coef=coef)
                 if(sum(this.genes)==1) {
                     splicevars.out$LR[this.genes] <- results.this$table$LR[1]
                     splicevars.out$PValue[this.genes] <- results.this$table$PValue[1]

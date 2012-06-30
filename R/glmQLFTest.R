@@ -1,12 +1,12 @@
 ### Methods for fitting models and testing significance using quasi-likelihood
 
-glmQLFTest <- function(y, glmfit, coef=ncol(glmfit$design), contrast=NULL, abundance.trend=TRUE)
-    ##    Quasi-likelihood F-tests for DGE glms.
-    ##    Davis McCarthy and Gordon Smyth.
-    ##    Created 18 Feb 2011. Last modified 19 Jan 2012.
+glmQLFTest <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, abundance.trend=TRUE)
+##    Quasi-likelihood F-tests for DGE glms.
+##    Davis McCarthy and Gordon Smyth.
+##    Created 18 Feb 2011. Last modified 30 June 2012.
 {
     ##    Call glmLRT to get most of the results that we need for the QL F-test calculations
-    out.lrt <- glmLRT(y, glmfit, coef=coef, contrast=contrast)
+    out.lrt <- glmLRT(glmfit, coef=coef, contrast=contrast)
 
     ##    Calculate squeezed sigma-squared values (the quasi-likelihood parameter)
     s2 <- glmfit$deviance / glmfit$df.residual

@@ -102,13 +102,11 @@ function(object, i, j, ...)
 	if(!missing(i)) {
 		object$table <- object$table[i,,drop=FALSE]
 		object$genes <- object$genes[i,,drop=FALSE]
-		object$all.zeros <- object$all.zeros[i,drop=FALSE]
 		object$abundance <- object$abundance[i,drop=FALSE]
 		object$trended.dispersion <- object$trended.dispersion[i,drop=FALSE]
 		object$tagwise.dispersion <- object$tagwise.dispersion[i,drop=FALSE]
-		object$dispersion.used <- object$dispersion.used[i,drop=FALSE]
-		object$coefficients.full <- object$coefficients.full[i,,drop=FALSE]
-		object$coefficients.null <- object$coefficients.null[i,,drop=FALSE]
+		object$dispersion <- object$dispersion[i,drop=FALSE]
+		object$coefficients <- object$coefficients[i,,drop=FALSE]
 	}
 	object
 })
