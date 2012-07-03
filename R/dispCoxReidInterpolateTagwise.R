@@ -4,6 +4,8 @@ dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, tr
 #	and cubic spline interpolation over a tagwise grid.
 #	Yunshun Chen and Gordon Smyth
 #	Created August 2010. Last modified 26 June 2012.
+
+#	Comment 3 July 2012: Absorb into estimateGLMTagwise()?
 {
 #	Check input arguments
 	y <- as.matrix(y)
