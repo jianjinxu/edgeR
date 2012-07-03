@@ -118,9 +118,14 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 glmLRT <- function(glmfit,coef=ncol(glmfit$design),contrast=NULL)
 #	Tagwise likelihood ratio tests for DGEGLM
 #	Gordon Smyth and Davis McCarthy.
-#	Created 1 July 2010. Last modified 30 June 2012.
+#	Created 1 July 2010. Last modified 3 July 2012.
 {
-	if(!is(glmfit,"DGEGLM")) stop("The glmfit argument must be a DGEGLM object for the full model. Run glmFit with the design matrix of the full model before LR testing.\n")
+	if(!is(glmfit,"DGEGLM")) {
+		if(is(glmfit,"DGEList") && is(coef,"DGEGLM")) {
+			stop("First argument is no longer required. Rerun with just the glmfit and contrast arguments.")
+		}
+		stop("glmfit must be an DGEGLM object (usually produced by glmFit).")
+	}
 
 #	Full design matrix
 	design <- as.matrix(glmfit$design)

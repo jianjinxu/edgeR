@@ -1,8 +1,8 @@
-estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="movingave", span=0.3, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
+estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="movingave", span=NULL, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
 #  Tagwise dispersion using weighted conditional likelihood empirical Bayes.
 
 #  Davis McCarthy, Mark Robinson, Yunshun Chen, Gordon Smyth.
-#  Created 2009. Last modified 28 June 2012.
+#  Created 2009. Last modified 3 July 2012.
 {
 	if( !is(object,"DGEList") ) stop("object must be a DGEList")
 	if( is.null(object$common.dispersion) ) {
@@ -25,6 +25,7 @@ estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="moving
 		l0 <- matrix(0,ntags,grid.length)
 		for(j in 1:grid.length) for(i in 1:length(y)) l0[,j] <- condLogLikDerDelta(y[[i]],grid.vals[j],der=0)+l0[,j]
 
+		if(is.null(span)) if(trend=="movingave") span <- 0.3 else span <- 0.6
 		m0 <- switch(trend,
  			"movingave" = {
  				o <- order(object$logCPM)

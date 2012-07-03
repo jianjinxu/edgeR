@@ -10,8 +10,8 @@ Compute an empirical Bayes estimate of the negative binomial dispersion paramete
 }
 
 \usage{
-\S3method{estimateGLMTagwiseDisp}{DGEList}(y, design=NULL, offset=NULL, trend=!is.null(y$trended.dispersion), prior.df=20, ...)
-\S3method{estimateGLMTagwiseDisp}{default}(y, design=NULL, offset=NULL, dispersion, trend=TRUE, prior.df=20, ...)
+\S3method{estimateGLMTagwiseDisp}{DGEList}(y, design=NULL, offset=NULL, dispersion=NULL, trend=!is.null(y$trended.dispersion), prior.df=20, span=NULL, ...)
+\S3method{estimateGLMTagwiseDisp}{default}(y, design=NULL, offset=NULL, dispersion, trend=TRUE, prior.df=20, span=NULL, ...)
 }
 
 \arguments{
@@ -23,9 +23,11 @@ Compute an empirical Bayes estimate of the negative binomial dispersion paramete
 
 \item{offset}{offset matrix for the log-linear model, as for \code{\link{glmFit}}.  Defaults to the log-effective library sizes.}
 
+\item{dispersion}{common or trended dispersion estimates, used as an initial estimate for the tagwise estimates. By default uses values stored in the \code{DGEList} object.}
+
 \item{prior.df}{prior degrees of freedom.}
 
-\item{dispersion}{common or trended dispersion estimates, used as an initial estimate for the tagwise estimates.}
+\item{span}{width of the smoothing window, in terms of proportion of the data set. Default value decreases with the number of tags.}
 
 \item{\ldots}{other arguments are passed to \code{\link{dispCoxReidInterpolateTagwise}}.}
 }

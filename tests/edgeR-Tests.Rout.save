@@ -298,12 +298,9 @@ Warning messages:
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
  0.1756  0.1879  0.1998  0.2031  0.2135  0.2578 
 > dglm <- estimateGLMTagwiseDisp(dglm,design)
-Warning message:
-In movingAverageByCol(apl[o, ], width = 1000) :
-  reducing moving average width to nrow(x)
 > summary(dglm$tagwise.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
- 0.0475  0.1195  0.2201  0.3637  0.2745  2.1170 
+0.05433 0.11180 0.22400 0.36360 0.28150 2.11700 
 > 
 > example(glmFit)
 
@@ -551,4 +548,4 @@ x2     1      511    0.8445892
 > 
 > proc.time()
    user  system elapsed 
-   6.47    0.07    6.64 
+   5.89    0.09    6.00 

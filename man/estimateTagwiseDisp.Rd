@@ -8,7 +8,7 @@ Estimates tagwise dispersion values by an empirical Bayes method based on weight
 }
 
 \usage{
-estimateTagwiseDisp(object, prior.n=getPriorN(object), trend="movingave", span=0.3, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
+estimateTagwiseDisp(object, prior.n=getPriorN(object), trend="movingave", span=NULL, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
 }
 
 \arguments{
@@ -18,7 +18,7 @@ estimateTagwiseDisp(object, prior.n=getPriorN(object), trend="movingave", span=0
 
 \item{trend}{method for estimating dispersion trend. Possible values are \code{"none"}, \code{"movingave"}, \code{"loess"} and \code{"tricube"}.}
 
-\item{span}{width of the smoothing window, in terms of proportion of the data set.}
+\item{span}{width of the smoothing window, as a proportion of the data set.}
 
 \item{method}{method for maximizing the posterior likelihood.
 Possible values are \code{"grid"} for interpolation on grid points or \code{"optimize"} to call the function of the same name.
