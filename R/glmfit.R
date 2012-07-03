@@ -122,7 +122,7 @@ glmLRT <- function(glmfit,coef=ncol(glmfit$design),contrast=NULL)
 {
 	if(!is(glmfit,"DGEGLM")) {
 		if(is(glmfit,"DGEList") && is(coef,"DGEGLM")) {
-			stop("First argument is no longer required. Rerun with just the glmfit and contrast arguments.")
+			stop("First argument is no longer required. Rerun with just the glmfit and coef or contrast arguments.")
 		}
 		stop("glmfit must be an DGEGLM object (usually produced by glmFit).")
 	}
