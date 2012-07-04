@@ -71,7 +71,7 @@ spliceVariants <- function(y, geneID, dispersion=NULL, group=NULL, estimate.gene
     if(trace)
         cat("Max number exons: ",max(nexons),"\n")
     ## Genes with the same number of exons have the same design matrix, allowing some parallelization of computations
-    splicevars.out <- data.frame(logFC= na.vec, logConc = na.vec, LR = na.vec, PValue = na.vec)
+    splicevars.out <- data.frame(logFC= na.vec, logCPM = na.vec, LR = na.vec, PValue = na.vec)
     rownames(splicevars.out) <- uniqIDs
     abundance <- na.vec
     ## For loop iterates over number of exons for genes, starting at 2 (can't have splice variants if only one exon!)
@@ -108,7 +108,7 @@ spliceVariants <- function(y, geneID, dispersion=NULL, group=NULL, estimate.gene
             }
         }
     }
-    splicevars.out$logConc <- abundance
+    splicevars.out$logCPM <- (abundance-log(1e6))/log(2)
     ## Create a list with the exons divided up neatly by geneID (a bit slow using in-built fn)
     ## Not really necessary, so leave out for the time being
     ## exon.list <- split(as.data.frame(exons), rownames(exons))

@@ -148,7 +148,8 @@ glmLRT <- function(glmfit,coef=ncol(glmfit$design),contrast=NULL)
         }
         else
             coef.name <- coef.names[coef]
-        logFC <- glmfit$coefficients[,coef]/log(2)
+        logFC <- glmfit$coefficients[,coef,drop=FALSE]/log(2)
+        if(length(coef)==1) logFC <- as.vector(logFC)
 	} else {
 		logFC <- (glmfit$coefficients %*% contrast)/log(2)
 		i <- contrast!=0

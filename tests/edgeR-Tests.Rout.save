@@ -546,6 +546,31 @@ x2     1      511    0.8445892
  3rd Qu.:-1.467   3rd Qu.: 0.1385   3rd Qu.:-0.0002776  
  Max.   :-1.141   Max.   : 0.4228   Max.   : 0.7172727  
 > 
+> # spliceVariants
+> z = matrix(c(2,0,4,6,4,3,7,1,1,0,1,1,0,3,1,2,0,1,2,1,0,3,1,0), 8, 3)
+> gz = c(1,2,2,2,2,2,2,2)
+> spliceVariants(DGEList(counts = z, group = c(1,2,2)), gz)
+Calculating library sizes from column totals.
+Calculating library sizes from column totals.
+An object of class "DGEExact"
+$table
+  logFC    logCPM       LR     PValue
+1    NA -19.93157  0.00000 1.00000000
+2    NA -18.96633 11.47712 0.07470328
+
+$comparison
+NULL
+
+$genes
+  GeneID
+1      1
+2      2
+
+$dispersion
+           1            2 
+6.434416e-03 1.570902e-06 
+
+> 
 > proc.time()
    user  system elapsed 
-   5.89    0.09    6.00 
+   5.85    0.07    5.94 

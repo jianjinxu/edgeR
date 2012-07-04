@@ -94,3 +94,8 @@ y[1,3:4] <- 0
 design <- model.matrix(~group)
 fit <- glmFit(y,design,dispersion=2/3)
 summary(fit$coef)
+
+# spliceVariants
+z = matrix(c(2,0,4,6,4,3,7,1,1,0,1,1,0,3,1,2,0,1,2,1,0,3,1,0), 8, 3)
+gz = c(1,2,2,2,2,2,2,2)
+spliceVariants(DGEList(counts = z, group = c(1,2,2)), gz)
