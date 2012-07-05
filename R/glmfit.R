@@ -31,7 +31,7 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 #	to a series of digital expression libraries
 #	Davis McCarthy and Gordon Smyth
 
-#	Created 17 August 2010. Last modified 1 May 2012.
+#	Created 17 August 2010. Last modified 5 July 2012.
 {
 #	Check input
 	y <- as.matrix(y)
@@ -41,6 +41,8 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 		colnames(design) <- "Intercept"
 	} else {
 		design <- as.matrix(design)
+		ne <- nonEstimable(design)
+		if(!is.null(ne)) stop(paste("Design matrix not of full rank.  The following coefficients not estimable:\n", paste(ne, collapse = " ")))
 	}
 	if(is.null(dispersion)) {
 		stop("No dispersion values provided.")
