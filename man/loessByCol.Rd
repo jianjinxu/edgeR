@@ -34,6 +34,6 @@ The smoothed column values are tricube-weighted means of the original values.
 \examples{
 y <- matrix(rnorm(100*3), nrow=100, ncol=3)
 head(y)
-z <- loessByCol(y)
-head(z)
+out <- loessByCol(y)
+head(out$fitted.values)
 }
