@@ -1,7 +1,7 @@
 estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="movingave", span=NULL, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
 #  Tagwise dispersion using weighted conditional likelihood empirical Bayes.
 #  Davis McCarthy, Mark Robinson, Yunshun Chen, Gordon Smyth.
-#  Created 2009. Last modified 3 July 2012.
+#  Created 2009. Last modified 6 July 2012.
 
 #  Notes 3 July 2012:
 #  - interpolating derivatives would be better than interpolating loglik values.
@@ -13,6 +13,7 @@ estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="moving
 		object <- estimateCommonDisp(object)
 	}
 	trend <- match.arg(trend,c("none","loess","movingave","tricube"))
+	if(trend=="tricube") trend="loess"
 	method <- match.arg(method,c("grid","optimize"))
 	ntags <- nrow(object$counts)
 	group <- object$samples$group <- as.factor(object$samples$group)
@@ -35,8 +36,7 @@ estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="moving
  				oo <- order(o)
  				movingAverageByCol(l0[o,], width=floor(span*ntags))[oo,]
  			},
-			"loess" = loessByCol(l0, object$logCPM, span=span, method="loess"),
-			"tricube" = loessByCol(l0, object$logCPM, span=span, method="Rcode"),
+			"loess" = loessByCol(l0, object$logCPM, span=span)$fitted.values,
 			"none" = matrix(colMeans(l0),ntags,grid.length,byrow=TRUE)
 		)
 		l0a <- l0 + prior.n*m0

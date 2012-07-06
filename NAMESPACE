@@ -1,3 +1,6 @@
+#  Calling the dynamic library.
+useDynLib(edgeR)
+
 #  All functions exported other than those starting with "."
 exportPattern("^[^\\.]")
 
