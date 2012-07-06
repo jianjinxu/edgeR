@@ -16,7 +16,7 @@ estimateTagwiseDisp(object, prior.n=getPriorN(object), trend="movingave", span=N
 
 \item{prior.n}{numeric scalar, smoothing parameter that indicates the weight to give to the common likelihood compared to the individual tag's likelihood; default \code{getPriorN(object)} gives a value for \code{prior.n} that is equivalent to giving the common likelihood 20 prior degrees of freedom in the estimation of the tag/genewise dispersion.}
 
-\item{trend}{method for estimating dispersion trend. Possible values are \code{"none"}, \code{"movingave"}, \code{"loess"} and \code{"tricube"}.}
+\item{trend}{method for estimating dispersion trend. Possible values are \code{"none"}, \code{"movingave"} and \code{"loess"}.}
 
 \item{span}{width of the smoothing window, as a proportion of the data set.}
 
@@ -47,8 +47,7 @@ If the number of libraries is large, the prior becomes less important and the ta
 
 If \code{trend="none"}, then the prior dispersion is just a constant, the common dispersion.
 Otherwise, the trend is determined by a moving average (\code{trend="movingave"}) or loess smoother applied to the tagwise conditional log-likelihood.
-\code{method="loess"} applies a loess curve of degree 0 as implemented in \code{\link{loessByCol}} with \code{method="loess"}.
-\code{method="tricube"} is the same but with \code{method="Rcode"}.
+\code{method="loess"} applies a loess curve of degree 0 as implemented in \code{\link{loessByCol}}.
 
 \code{method="optimize"} is not recommended for routine use as it is very slow.
 It is included for testing purposes.
