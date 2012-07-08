@@ -96,7 +96,7 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 #	Prepare output
 	fit$counts <- y
 	if(prior.count.total>0)
-		fit$coefficients <- predFC(y,design,offset=offset,dispersion=dispersion,prior.count.total=prior.count.total)
+		fit$coefficients <- predFC(y,design,offset=offset,dispersion=dispersion,prior.count.total=prior.count.total)*log(2)
 	else
 		fit$coefficients <- as.matrix(fit$coefficients)
 	colnames(fit$coefficients) <- colnames(design)
