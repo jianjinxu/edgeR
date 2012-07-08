@@ -3,10 +3,22 @@
 \encoding{UTF-8}
 
 
-\section{Version 2.7.8}{\itemize{
+\section{Version 2.6.5}{\itemize{
+\item
+gof() now optionally produces a qq-plot of the genewise goodness of fit statistics.
+}}
+
+
+\section{Version 2.6.4}{\itemize{
+\item
+New function edgeRUsersGuide().
+}}
+
+
+\section{Version 2.6.2}{\itemize{
 \item
 glmFit now shrinks the estimated fold-changes.
-The default is the same as for exactTest().
+The default is as for exactTest().
 
 \item
 predFC output is now on the natural log scale instead of log2.

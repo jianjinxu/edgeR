@@ -3,15 +3,20 @@ plotMDS.DGEList <- function (x, top=500, labels=colnames(x), col=NULL, cex=1, di
 #	Yunshun Chen, Mark Robinson and Gordon Smyth
 #	23 May 2011.  Last modified 20 June 2012.
 {
-	library(edgeR)
+#	library(edgeR) # don't need this, you've already loading it if you can access the function.
 #	Check input
 	if(is.matrix(x)) x <- DGEList(counts=x)
 	if(!is(x,"DGEList")) stop("x must be a DGEList or a matrix")
 
 #	Remove rows with missing or Inf values
 	ok <- is.finite(x$counts)
-	if(!all(ok)) x <- x[apply(ok,1,all),]
-	if(is.null(labels)) labels<-1:dim(x)[2]
+	if(!all(ok)) {
+            x<-x[(rowSums(!ok)==0),]  # Vectorized method is better. 
+#            x <- x[apply(ok,1,all),]
+        }
+	if(is.null(labels)) {
+            labels<-1:dim(x)[2]
+        }
 
 	nprobes <- nrow(x)
 	nsamples <- ncol(x)
@@ -25,7 +30,7 @@ plotMDS.DGEList <- function (x, top=500, labels=colnames(x), col=NULL, cex=1, di
 	cn <- colnames(x)
 	dd <- matrix(0,nrow=nsamples,ncol=nsamples,dimnames=list(cn,cn))	
 
-	twd <- estimateTagwiseDisp(estimateCommonDisp(x), grid.length = 500)
+	twd <- estimateTagwiseDisp(estimateCommonDisp(x), grid.length = 500) # <- unnecessary with spline interpolation?
 	o <- order(twd$tagwise.dispersion, decreasing = TRUE)[1:min(nprobes,top)]
 	subdata <- x$counts[o,]
 
