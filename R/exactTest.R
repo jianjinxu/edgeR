@@ -1,7 +1,7 @@
 exactTest <- function(object, pair=1:2, dispersion="auto", rejection.region="doubletail", big.count=900, prior.count.total=0.5)
 #	Calculates exact p-values for the differential expression levels of tags in the two groups being compared.
 #	Davis McCarthy, Gordon Smyth.
-#	Created September 2009. Last modified 1 March 2012.
+#	Created September 2009. Last modified 8 July 2012.
 {
 #	Check input
 	if(!is(object,"DGEList")) stop("Currently only supports DGEList objects as the object argument.")
@@ -28,6 +28,7 @@ exactTest <- function(object, pair=1:2, dispersion="auto", rejection.region="dou
 			"auto"=getDispersion(object)
 		)
 		if(is.null(dispersion)) stop("specified dispersion not found in object")
+		if(is.na(dispersion[1])) stop("dispersion is NA")
 	}
 	ldisp <- length(dispersion)
 	ntags <- nrow(object$counts)
