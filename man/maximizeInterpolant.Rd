@@ -23,7 +23,8 @@ maximizeInterpolant(x, z, maxit=10, eps=1e-7, plot=FALSE)
 \item{plot}{logical, whether or not to plot the function on those given points.}
 }
 
-\value{\code{maximizeInterpolant} returns a single value which maximizes the spline interpolation.
+\value{
+\code{maximizeInterpolant} returns a single value which maximizes the spline interpolation.
 }
 
 \details{

@@ -24,7 +24,8 @@ adjustedProfileLik(dispersion, y, design, offset, adjust=TRUE)
 
 }
 
-\value{\code{adjustedProfileLik} produces a vector of Cox-Reid adjusted profile likelihoods for the given counts, dispersion  value, offset and design matrix (i.e. the APL for each gene/tag), which has the same length as the number of rows of the count datamatrix \code{y}.
+\value{
+vector of adjusted profile log-likelihood values, one for each row of \code{y}.
 }
 
 \details{
