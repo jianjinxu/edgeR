@@ -34,6 +34,10 @@ In the \code{edgeR} context, \code{adjustedProfileLik} is a low-level function n
 
 \references{
 Cox, DR, and Reid, N (1987). Parameter orthogonality and approximate conditional inference. \emph{Journal of the Royal Statistical Society Series B} 49, 1-39.
+
+McCarthy, DJ, Chen, Y, Smyth, GK (2012). Differential expression analysis of multifactor RNA-Seq experiments with respect to biological variation.
+\emph{Nucleic Acids Research} 40, 4288-4297.
+\url{http://nar.oxfordjournals.org/content/40/10/4288}
 }
 
 \author{Yunshun Chen, Gordon Smyth}

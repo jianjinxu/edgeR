@@ -1,4 +1,4 @@
-estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="movingave", span=NULL, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
+estimateTagwiseDisp <- function(object, prior.df=20, trend="movingave", span=NULL, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
 #  Tagwise dispersion using weighted conditional likelihood empirical Bayes.
 #  Davis McCarthy, Mark Robinson, Yunshun Chen, Gordon Smyth.
 #  Created 2009. Last modified 6 July 2012.
@@ -19,6 +19,9 @@ estimateTagwiseDisp <- function(object, prior.n=getPriorN(object), trend="moving
 	group <- object$samples$group <- as.factor(object$samples$group)
 	y <- splitIntoGroups(list(counts=object$pseudo.alt,samples=object$samples))
 	delta <- rep(0,ntags)
+	nlibs <- ncol(object$counts)
+	ngroups <- length(unique(group))
+	prior.n <- prior.df/(nlibs-ngroups)
 
 	if(method=="grid"){  # do spline interpolation
 		if(verbose) message("Using interpolation to estimate tagwise dispersion. ")

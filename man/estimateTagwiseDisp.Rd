@@ -8,13 +8,13 @@ Estimates tagwise dispersion values by an empirical Bayes method based on weight
 }
 
 \usage{
-estimateTagwiseDisp(object, prior.n=getPriorN(object), trend="movingave", span=NULL, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
+estimateTagwiseDisp(object, prior.df=20, trend="movingave", span=NULL, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
 }
 
 \arguments{
 \item{object}{object of class \code{DGEList} containing (at least) the elements \code{counts} (table of raw counts), \code{group} (factor indicating group), \code{lib.size} (numeric vector of library sizes) and \code{pseudo.alt} (numeric matrix of quantile-adjusted pseudocounts calculated under the alternative hypothesis of a true difference between groups; recommended to use the \code{DGEList} object provided as the output of \code{estimateCommonDisp}}
 
-\item{prior.n}{numeric scalar, smoothing parameter that indicates the weight to give to the common likelihood compared to the individual tag's likelihood; default \code{getPriorN(object)} gives a value for \code{prior.n} that is equivalent to giving the common likelihood 20 prior degrees of freedom in the estimation of the tag/genewise dispersion.}
+\item{prior.df}{numeric scalar, parameter that indicates the prior degrees of freedom. It is used in calculating \code{prior.n}. If \code{NULL}, \code{prior.n} is then calculated using prior degrees of freedom of 20.}
 
 \item{trend}{method for estimating dispersion trend. Possible values are \code{"none"}, \code{"movingave"} and \code{"loess"}.}
 

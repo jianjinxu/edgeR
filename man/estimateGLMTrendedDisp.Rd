@@ -45,9 +45,8 @@ This is a wrapper function for the lower-level functions that actually carry out
 Cox, DR, and Reid, N (1987). Parameter orthogonality and approximate conditional inference. \emph{Journal of the Royal Statistical Society Series B} 49, 1-39.
 
 McCarthy, DJ, Chen, Y, Smyth, GK (2012). Differential expression analysis of multifactor RNA-Seq experiments with respect to biological variation.
-\emph{Nucleic Acids Research}.
-\url{http://nar.oxfordjournals.org/content/early/2012/02/06/nar.gks042}
-(Published online 28 January 2012)
+\emph{Nucleic Acids Research} 40, 4288-4297.
+\url{http://nar.oxfordjournals.org/content/40/10/4288}
 }
 
 \author{Gordon Smyth, Davis McCarthy, Yunshun Chen}

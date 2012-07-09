@@ -93,9 +93,8 @@ The returned coefficients are affected but not the likelihood ratio tests or p-v
 
 \references{
 McCarthy, DJ, Chen, Y, Smyth, GK (2012). Differential expression analysis of multifactor RNA-Seq experiments with respect to biological variation.
-\emph{Nucleic Acids Research}.
+\emph{Nucleic Acids Research} 40, 4288-4297.
 \url{http://nar.oxfordjournals.org/content/40/10/4288}
-(Published online 28 January 2012)
 }
 
 \author{Davis McCarthy and Gordon Smyth}
