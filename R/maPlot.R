@@ -1,4 +1,4 @@
-maPlot <- function(x,y, logAbundance=NULL, logFC=NULL, normalize=FALSE, smearWidth=1, col=NULL, allCol="black", lowCol="orange", deCol="red", de.tags=NULL, smooth.scatter=FALSE, lowess=FALSE, ...)
+maPlot <- function(x,y, logAbundance=NULL, logFC=NULL, normalize=FALSE, plot.it=TRUE, smearWidth=1, col=NULL, allCol="black", lowCol="orange", deCol="red", de.tags=NULL, smooth.scatter=FALSE, lowess=FALSE, ...)
 #  Low-level function for creating an MA-plot for DGE data.
 #  Created by Mark Robinson. Last modified by Davis McCarthy, 19 November 2010.
 #  Edits by Gordon Smyth 20 March 2011.
@@ -33,24 +33,26 @@ maPlot <- function(x,y, logAbundance=NULL, logFC=NULL, normalize=FALSE, smearWid
 	if( any(v) ) {
 		M[v] <- sign(M[v]) * (max(abs(M[!v])) + 0.5*range)
 	}
-	if( is.null(col) ) {
-	  col <- rep(allCol, length(A))
-	  if( any(w) | any(v) )
-		  col[w | v] <- lowCol
-	}
-	if(smooth.scatter) {
-		smoothScatter(A, M, col=col, ...)
-		grid()
-		if( any(w) | any(v) )
-			points(A[w | v], M[w | v], col=lowCol, ...)
-	}
-	else
-		plot(A,M,col=col,...)
-	points(A[de.tags],M[de.tags],col=deCol,...)
-	if(lowess) {
-		keep <- A > min(A[!(w |v)]) + 1
-		low <- lowess(A[keep],M[keep], f=1/4)
-		lines(low,col="red",lwd=4)
+	if(plot.it) {
+		if( is.null(col) ) {
+	  	col <- rep(allCol, length(A))
+	  	if( any(w) | any(v) )
+		  	col[w | v] <- lowCol
+		}
+		if(smooth.scatter) {
+			smoothScatter(A, M, col=col, ...)
+			grid()
+			if( any(w) | any(v) )
+				points(A[w | v], M[w | v], col=lowCol, ...)
+		}
+		else
+			plot(A,M,col=col,...)
+		points(A[de.tags],M[de.tags],col=deCol,...)
+		if(lowess) {
+			keep <- A > min(A[!(w |v)]) + 1
+			low <- lowess(A[keep],M[keep], f=1/4)
+			lines(low,col="red",lwd=4)
+		}
 	}
 	invisible(list(A=A,M=M,w=w,v=v))
 }
