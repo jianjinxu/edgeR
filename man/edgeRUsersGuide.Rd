@@ -12,7 +12,8 @@ edgeRUsersGuide(view=TRUE)
   \item{view}{logical, should the document be opened using the default PDF document reader?}
 }
 
-\value{Character string giving the file location.}
+\value{Character string giving the file location.
+If \code{view=TRUE}, the PDF document reader is started and the User's Guide is opened, as a side effect.}
 
 \details{
 The function \code{vignette("edgeR")} will find the short edgeR Vignette which describes how to obtain the Limma User's Guide.
@@ -24,7 +25,7 @@ The PDF viewer can be changed using \code{Sys.putenv(R_PDFVIEWER=)}.
 }
 
 \seealso{
-\code{\link{system}}, \code{\link{shell.exec}}
+\code{\link{system}}
 }
 
 \author{Gordon Smyth}
