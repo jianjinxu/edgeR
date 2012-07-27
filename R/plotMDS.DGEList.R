@@ -1,36 +1,29 @@
 plotMDS.DGEList <- function (x, top=500, labels=colnames(x), col=NULL, cex=1, dim.plot=c(1, 2), ndim=max(dim.plot), xlab=paste("Dimension",dim.plot[1]), ylab=paste("Dimension",dim.plot[2]), ...)
 #	Multidimensional scaling plot of digital gene expression profiles
 #	Yunshun Chen, Mark Robinson and Gordon Smyth
-#	23 May 2011.  Last modified 20 June 2012.
+#	23 May 2011.  Last modified 23 July 2012.
 {
-#	library(edgeR) # don't need this, you've already loading it if you can access the function.
-#	Check input
-	if(is.matrix(x)) x <- DGEList(counts=x)
-	if(!is(x,"DGEList")) stop("x must be a DGEList or a matrix")
-
 #	Remove rows with missing or Inf values
 	ok <- is.finite(x$counts)
-	if(!all(ok)) {
-            x<-x[(rowSums(!ok)==0),]  # Vectorized method is better. 
-#            x <- x[apply(ok,1,all),]
-        }
-	if(is.null(labels)) {
-            labels<-1:dim(x)[2]
-        }
-
+	if(!all(ok)) x <- x[rowSums(ok)>0,]
 	nprobes <- nrow(x)
 	nsamples <- ncol(x)
 
+#	Check value for top
+	top <- min(top,nprobes)
+
+#	Check value for labels
 	if(is.null(labels)) labels <- 1:nsamples
-	if(ndim < 2) stop("dim.plot must be at least two")
-	if(nsamples < ndim) stop("Too few samples")
+
+#	Check value for dim.plot
+	if(nsamples < ndim) stop("Dimension to be plotted is greater than number of libraries")
 
 	x$samples$group <- factor(rep.int(1,nsamples))
 
 	cn <- colnames(x)
 	dd <- matrix(0,nrow=nsamples,ncol=nsamples,dimnames=list(cn,cn))	
 
-	twd <- estimateTagwiseDisp(estimateCommonDisp(x), grid.length = 500) # <- unnecessary with spline interpolation?
+	twd <- estimateTagwiseDisp(estimateCommonDisp(x), grid.length = 100) # <- unnecessary with spline interpolation?
 	o <- order(twd$tagwise.dispersion, decreasing = TRUE)[1:min(nprobes,top)]
 	subdata <- x$counts[o,]
 

@@ -1,47 +1,56 @@
-### NB GLM fitting genewise using statmod:::glmnb.fit()
+mglmLevenberg <- function(y, design, dispersion=0, offset=0, coef.start=NULL, start.method="null", tol=1e-06, maxit=200)
+#	Fit genewise negative binomial glms with log-link
+#	using Levenberg damping to ensure secure convergence
 
-mglmLevenberg <- function(y, design, dispersion=0, offset=0, start=NULL)
-#	Fit negative binomial generalized linear model for each transcript
-#	to a series of Seq libraries,
-#	using tagwise calls to statmod:::glmnb.fit().
-#	Lower-level function. Takes a matrix of counts (y).
-
-#	Gordon Smyth and Yunshun Chen
-#	Created 3 March 2011.  Last modified 11 May 2011
+#	R version by Gordon Smyth and Yunshun Chen
+#	C++ version by Aaron Lun
+#	Created 3 March 2011.  Last modified 11 July 2012
 {
 #	Check arguments
-	require(statmod)
 	y <- as.matrix(y)
+	if(any(y<0)) stop("y must be non-negative")
 	nlibs <- ncol(y)
 	ngenes <- nrow(y)
+	if(nlibs==0 || ngenes==0) stop("no data")
+	if(!( all(is.finite(y)) || all(is.finite(design)) )) stop("All values must be finite and non-missing")
 	design <- as.matrix(design)
 	if(length(dispersion)<ngenes) dispersion <- rep(dispersion,length.out=ngenes)
-	offset <- expandAsMatrix(offset,dim(y))
-	if(!is.null(start)) start <- as.matrix(start)
-
-#	Define objects in which to store various results from the glm fits
-	coefficients <- matrix(NA,nrow=ngenes,ncol=ncol(design))
-	fitted.values <- matrix(NA,nrow=ngenes,ncol=nlibs)
-	colnames(coefficients) <- colnames(design)
-	rownames(coefficients) <- rownames(y)
-	dimnames(fitted.values) <- dimnames(y)
-	df.residual <- rep(0,ngenes)
-	dev <- rep(NA,ngenes)
-
-#	Fit a glm to each gene sequentially
-	for (i in 1:ngenes) {
-		z <- as.vector(y[i,])
-		obs <- is.finite(z)
-		if(sum(obs) > 0) {
-			X <- design[obs,,drop=FALSE]
-			z <- z[obs]
-			out <- glmnb.fit(X=X,y=z,dispersion=dispersion[i],offset=offset[i,],start=start[i,]) 
-			coefficients[i,] <- out$coefficients
-			fitted.values[i,] <- fitted(out)
-			dev[i] <- out$deviance
-		}
+	if(is.null(coef.start)) {
+		start.method <- match.arg(start.method, c("null","y"))
+		if(start.method=="null") N <- exp(offset)
+	} else {
+		start <- as.matrix(start)
 	}
-   list(coefficients=coefficients, deviance=dev, design=design, 
-		offset=offset, dispersion=dispersion, fitted.values=fitted.values)
-}
+	offset <- expandAsMatrix(offset,dim(y))
 
+	# Initializing if desired. Note that lm.fit can fit in a vectorised manner, 
+	# where each column of the input matrix is a separate set of observations.
+	if(is.null(coef.start)) {
+		if(start.method=="y") {
+			delta <- min(max(y), 1/6)
+			y1 <- pmax(y, delta)
+			fit <- lm.fit(design, t(log(y1) - offset))
+			beta <- t(fit$coefficients)
+			mu <- exp(t(fit$fitted.values) + offset)
+		} else {
+			N <- expandAsMatrix(N,dim(y))
+			beta.mean <- log(.rowMeans(y/N,ngenes,nlibs))
+			beta <- qr.coef(qr(design), matrix(beta.mean,nrow=nlibs,ncol=ngenes,byrow=TRUE))
+			mu <- exp(t(design %*% beta) + offset)
+			beta <- t(beta)
+		}
+	} else {
+		beta <- coef.start
+		mu <- exp(beta %*% t(design) + offset)
+	}
+
+	# Calling the C++ method.
+	output <- .Call("mglm_levenberg", nlibs, ngenes, design, y, dispersion, offset, beta, mu, tol, maxit, PACKAGE="edgeR")
+
+	# Naming the output and returning it.  
+	names(output) <- c("coefficients", "fitted.values", "deviance", "iter", "failed")
+	colnames(output$coefficients) <- colnames(design)
+	rownames(output$coefficients) <- rownames(y)
+	dimnames(output$fitted.values) <- dimnames(y)
+	output
+}

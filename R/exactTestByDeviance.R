@@ -53,7 +53,7 @@ exactTestByDeviance <- function(y1,y2,dispersion=0,big.count=900)
 		p.bot <- dnbinom(N[i],size=(n1+n2)*r[i],mu=(n1+n2)*mu[i])
 		pvals[i] <- sum(p.top[keep]/p.bot)
 	}
-	min(pvals,1)
+	pmin(pvals,1)
 }
 
 .nbdev <- function(y, r, mu)

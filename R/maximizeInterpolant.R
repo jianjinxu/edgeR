@@ -1,35 +1,26 @@
-maximizeInterpolant <- function(x,z,maxit=10,eps=1e-7,plot=FALSE)
-#	Maximize a function given a table of values
-#	by spline interpolation
-#	Gordon Smyth
-#	26 August 2010. Modified 1 Sept 2010.
-{
-	n <- length(z)
-	imax <- which.max(z)
-	r <- range(x)
-	x0 <- x[imax]
+#############################################################
+# maximizeInterpolant: written by Aaron Lun
+#
+# This function does the same thing as maximizeInterpolant
+# except that compiled C++ code lies at its core. It takes an
+# ordered set of spline points and a likelihood matrix where
+# each row corresponds to a tag and each column corresponds
+# to a spline point. It then calculates the position at 
+# which the maximum interpolated likelihood occurs for each
+# row. It is faster than the original and also calculates
+# exact solutions (avoiding errors in the Newton-Raphson
+# algorithm where narrow peaks are 'jumped' over).
 
-#	If maximum occurs at end point, return that value
-	if(x0==r[1] || x0==r[2]) return(x0)
-
-	f <- splinefun(x,z)
-	if(plot) {
-		xx <- seq(from=r[1],to=r[2],length=100)
-		zz <- f(xx)
-		plot(xx,zz,type="l")
-		points(x,z)
-	}
-	x <- x0
-	for (iter in 1:maxit) {
-		step <- f(x,deriv=1)/f(x,deriv=2)
-		x <- x-step
-		if(x<r[1] || x>r[2]) {
-			warning("Divergence")
-			return(x0)
-		}
-		if(abs(step) < eps) return(x)
-	}
-	warning("max iterations exceeded")
-	x
+maximizeInterpolant <- function( x, y ) {
+    if (is.vector(y)) {
+        y<-rbind(y);
+        warning("Converting vector of likelihoods to matrix format.");
+    }
+    if (length(x)!=ncol(y)) { 
+        stop("Number of columns must equal number of spline points.");
+    } else if (is.unsorted(x) || anyDuplicated(x)) {
+        stop("Spline points must be unique and sorted.");
+    }
+    out<-.Call("maximize_interpolant", x, y, PACKAGE="edgeR");
+    return(out);
 }
-

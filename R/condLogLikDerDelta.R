@@ -1,4 +1,4 @@
-condLogLikDerDelta<-function(y,delta,der=1)
+condLogLikDerDelta<-function(y,delta,der=1L)
 # Written by Mark Robinson, edited by Davis McCarthy, February 2009
 # A function to calculate derivatives of the log-likelihood function
 # r=1/dispersion and delta=1/(1+r)=dispersion/(1+dispersion)
@@ -14,9 +14,9 @@ condLogLikDerDelta<-function(y,delta,der=1)
 
 	r <- (1/delta)-1
 	switch(der+1L,
-		condLogLikDerSize(y,r,der=0),
-		condLogLikDerSize(y,r,der=1)*(-delta^(-2)),
-		condLogLikDerSize(y,r,der=1)*2*(delta^(-3))+condLogLikDerSize(y,r,der=2)*(delta^(-4))
+		condLogLikDerSize(y,r,der=0L),
+		condLogLikDerSize(y,r,der=1L)*(-delta^(-2)),
+		condLogLikDerSize(y,r,der=1L)*2*(delta^(-3))+condLogLikDerSize(y,r,der=2)*(delta^(-4))
 	)
 }
 

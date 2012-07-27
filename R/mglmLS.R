@@ -39,12 +39,12 @@ deviances.function <- function(dispersion)
 ######### Simple Line Search glm (Multiple) ##########
 ######################################################
 
-mglmLS <- function(y,design,dispersion=0,offset=0,start=NULL,tol=1e-5,maxit=50,trace=FALSE)
+mglmLS <- function(y,design,dispersion=0,offset=0,coef.start=NULL,tol=1e-5,maxit=50,trace=FALSE)
 #  Fit the same negative binomial generalized linear model with log link
 #  to multipe response vectors
 #  by approximate Fisher scoring with simple line search
 #  Yunshun Chen and Gordon Smyth
-#  12 November 2010.  Revised 26 Jan 2011.
+#  12 November 2010.  Revised 27 July 2012.
 {
 #	Check input
 	X <- as.matrix(design)
@@ -92,12 +92,12 @@ mglmLS <- function(y,design,dispersion=0,offset=0,start=NULL,tol=1e-5,maxit=50,t
 
 #	Starting values
 	if(any(i))
-	if(is.null(start)) {
+	if(is.null(coef.start)) {
 		z <- log(pmax(y[i,,drop=FALSE],1/6))-offset[i,,drop=FALSE]
 #		beta[i,] <- t(qr.coef(qrX,t(z)))
 		beta[i,] <- z %*% X
 	} else {
-		beta[i,] <- start[i,,drop=FALSE]
+		beta[i,] <- coef.start[i,,drop=FALSE]
 	}
 	mu <- exp(beta %*% t(X) + offset)
 	dimnames(mu) <- dimnames(y)

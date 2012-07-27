@@ -51,8 +51,7 @@ dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, tr
 	apl.smooth <- (apl+prior.n*apl.smooth)/(1+prior.n)
 
 #	Tagwise maximization
-	d <- dispersion
-	for(j in 1:ntags) d[j] <- maximizeInterpolant(spline.pts, apl.smooth[j,])
+	d <- maximizeInterpolant(spline.pts, apl.smooth)
 	dispersion * 2^d
 }
 

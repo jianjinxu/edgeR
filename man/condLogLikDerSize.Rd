@@ -7,15 +7,15 @@
 \description{Derivatives of the negative-binomial log-likelihood with respect to the dispersion parameter for each tag/transcript, conditional on the mean count, for a single group of replicate libraries of the same size.}
 
 \usage{
-condLogLikDerSize(y, r, der=1)
-condLogLikDerDelta(y, delta, der=1)
+condLogLikDerSize(y, r, der=1L)
+condLogLikDerDelta(y, delta, der=1L)
 }
 
 \arguments{ 
 \item{y}{matrix of counts, all counts in each row having the same population mean}
 \item{r}{numeric vector or scalar, size parameter of negative binomial distribution, equal to 1/dispersion}
 \item{delta}{numeric vector or scalar, delta parameter of negative binomial, equal to dispersion/(1+dispersion)}
-\item{der}{order of derivative required, either 0 (the function), 1 (first derivative) or 2 (second derivative)}
+\item{der}{integer specifying derivative required, either 0 (the function), 1 (first derivative) or 2 (second derivative)}
 }
 
 \value{vector of function/derivative evaluations, one for each transcript,with respect to }

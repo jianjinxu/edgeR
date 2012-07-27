@@ -13,7 +13,7 @@ function(object, i, j, ...) {
 		else {
 			object$counts <- object$counts[,j,drop=FALSE]
 			object$samples <- droplevels(object$samples[j,,drop=FALSE])
-			object$pseudo.alt <- object$pseudo.alt[,j,drop=FALSE]
+			object$pseudo.counts <- object$pseudo.counts[,j,drop=FALSE]
 			object$offset <- object$offset[,j,drop=FALSE]
 		}
 	else {
@@ -29,14 +29,14 @@ function(object, i, j, ...) {
 			object$trended.dispersion <- object$trended.dispersion[i,drop=FALSE]
 			object$tagwise.dispersion <- object$tagwise.dispersion[i,drop=FALSE]
 			object$infos <- object$infos[i,drop=FALSE]
-			object$pseudo.alt <- object$pseudo.alt[i,,drop=FALSE]
+			object$pseudo.counts <- object$pseudo.counts[i,,drop=FALSE]
 			object$genes <- object$genes[i,,drop=FALSE]
 			object$all.zeros <- object$all.zeros[i,drop=FALSE]
 			object$offset <- object$offset[i,,drop=FALSE]
 		} else {
 			object$counts <- object$counts[i,j,drop=FALSE]
 			object$samples <- droplevels(object$samples[j,,drop=FALSE])
-			object$pseudo.alt <- object$pseudo.alt[i,j,drop=FALSE]
+			object$pseudo.counts <- object$pseudo.counts[i,j,drop=FALSE]
 			object$conc$conc.common <- object$conc$conc.common[i,drop=FALSE]
 			object$conc$conc.group <- object$conc$conc.group[i,,drop=FALSE]
 			object$trended.dispersion <- object$trended.dispersion[i,drop=FALSE]

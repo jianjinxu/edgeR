@@ -1,45 +1,60 @@
-mglmOneGroup <- function(y,dispersion=0,offset=0,maxit=50,trace=FALSE)
+mglmOneGroup <- function(y,dispersion=0,offset=0,maxit=50,trace=FALSE,tol=1e-6)
 #	Fit null (single-group) negative-binomial glm with log-link to DGE data
-#	18 Aug 2010. Last modified 11 May 2011.
+#  Gordon Smyth
+#	18 Aug 2010. Last modified 25 July 2012.
 {
-	if(any(y<0)) stop("y must be non-negative")
+#	Check input values for y
 	y <- as.matrix(y)
-	if(any(dispersion<0)) stop("dispersion must be non-negative")
+	if(any(y<0)) stop("y must be non-negative")
 	ntags <- nrow(y)
-	nlib <- ncol(y)
-	if(is.null(offset)) offset <- 0
-	offset <- expandAsMatrix(offset,dim(y))
+	nlibs <- ncol(y)
+
+#	Treat all zero rows as special case
+	beta <- rep(-Inf,ntags)
+	names(beta) <- rownames(y)
+
+#	Check input values for dispersion
+	if(any(dispersion<0)) stop("dispersion must be non-negative")
+
+#	Poisson special case
+	N <- exp(offset)
+	if(all(dispersion==0)) {
+		if(is.null(dim(N)))
+			m <- mean(N)
+		else
+			m <- .rowMeans(N,ntags,nlibs)
+		return(log(.rowMeans(y/m,ntags,nlibs)))
+	}
 	dispersion <- rep(dispersion,length=ntags)
 
-	beta <- rep(-Inf,nrow(y))
-	names(beta) <- rownames(y)
-	i <- rowSums(y)>0
-	if(!any(i)) return(beta)
+#	Check input values for offset
+	offset <- expandAsMatrix(offset,dim(y))
+	N <- expandAsMatrix(N,dim(y))
 
-#	Starting values
-	betaold <- log(rowMeans(y[i,,drop=FALSE]/exp(offset[i,,drop=FALSE])))
-	if(nlib==1) {
-		beta[i] <- betaold
-		return(beta)
-	}
-	mu <- exp(betaold+offset[i,,drop=FALSE])
+#	Exact solution for gamma limit
+	beta <- log(.rowMeans(y/N,ntags,nlibs))
+
+#	Single library as special case
+	if(nlibs==1) return(beta)
 
 #	Fisher scoring iteration	
 	iter <- 0
+	i <- is.finite(beta)
 	while(any(i)) {
 		iter <- iter+1
 		if(iter>maxit) {
 			warning("max iterations exceeded")
 			return(beta)
 		}
-		dl <- rowSums((y[i,,drop=FALSE]-mu)/(1+dispersion[i]*mu))
-		info <- rowSums(mu/(1+dispersion[i]*mu))
-		step <- dl/info
-		beta[i] <- betaold+step
-		i[i] <- abs(step)>1e-6
 		if(trace) cat("Iter=",iter,"Still converging=",sum(i),"\n")
 		mu <- exp(beta[i]+offset[i,,drop=FALSE])
-		betaold <- beta[i]
+		var.div.mu <- 1+dispersion[i]*mu
+		m <- nrow(mu)
+		dl <- .rowSums((y[i,,drop=FALSE]-mu)/var.div.mu,m,nlibs)
+		info <- .rowSums(mu/var.div.mu,m,nlibs)
+		step <- dl/info
+		beta[i] <- beta[i]+step
+		i[i] <- abs(step)>tol
 	}
 	beta
 }

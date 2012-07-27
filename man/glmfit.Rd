@@ -11,7 +11,8 @@
 Conduct statistical tests based on the fitted models.}
 
 \usage{
-\method{glmFit}{DGEList}(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count.total=0.5, start=NULL, method="auto", ...)
+\method{glmFit}{DGEList}(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL,
+       prior.count.total=0.5, start=NULL, method="auto", ...)
 glmLRT(glmfit, coef=ncol(glmfit$design), contrast=NULL)
 glmQLFTest(glmfit, coef=ncol(glmfit$design), contrast=NULL, abundance.trend=TRUE)
 }

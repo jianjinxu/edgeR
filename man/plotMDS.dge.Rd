@@ -48,7 +48,7 @@ This is a list containing the following components:
 \item{y}{y-cordinates of plotted points}
 }
 
-\author{Yunshun Chen and Gordon Smyth}
+\author{Yunshun Chen, Mark Robinson and Gordon Smyth}
 
 \seealso{
 \code{\link{cmdscale}}, \code{\link{as.dist}}, \code{\link[limma]{plotMDS}}
@@ -57,16 +57,18 @@ This is a list containing the following components:
 \examples{
 # Simulate DGE data for 1000 genes(tags) and 6 samples.
 # Samples are in two groups
-# First 300 genes are differentially expressed in second group
+# First 200 genes are differentially expressed in second group
 
 counts <- matrix(rnbinom(6000, size = 1/2, mu = 10),1000,6)
 rownames(counts) <- paste("Gene",1:1000)
-counts[1:300,4:6] <- counts[1:300,4:6] + 10
+counts[1:200,4:6] <- counts[1:200,4:6] + 10
 y <- DGEList(counts)
+
 # without labels, indexes of samples are plotted.
-mds <- plotMDS(y,  col=c(rep("black",3), rep("red",3)) )
+mds <- plotMDS(y, top=200, col=c(rep("black",3), rep("red",3)) )
+
 # or labels can be provided, here group indicators:
-plotMDS(mds,  col=c(rep("black",3), rep("red",3)), labels= c(rep("Grp1",3), rep("Grp2",3)))
+plotMDS(mds, top=200, col=c(rep("black",3), rep("red",3)), labels= c(rep("Grp1",3), rep("Grp2",3)))
 }
 
 \keyword{hplot}

@@ -3,6 +3,17 @@
 \encoding{UTF-8}
 
 
+\section{Version 2.99.3}{\itemize{
+\item
+C++ version of mglmLevenberg() is now the default glm fitting algorithm.
+
+\item
+Vectorized C++ version of maximizeInterpolant.
+
+\item
+The argument y, previously the first argument of glmLRT, is no longer required.
+}}
+
 \section{Version 2.6.5}{\itemize{
 \item
 gof() now optionally produces a qq-plot of the genewise goodness of fit statistics.

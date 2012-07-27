@@ -1,5 +1,5 @@
 
-R version 2.15.0 (2012-03-30)
+R version 2.15.1 (2012-06-22) -- "Roasted Marshmallows"
 Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
 Platform: i386-pc-mingw32/i386 (32-bit)
@@ -292,7 +292,7 @@ Warning messages:
   With 22 genes and setting the parameter minimum number (min.n) of genes per bin to 500,  there should technically be fewer than 2 bins. To make estimation of trended dispersions possible we set the number of bins to be 2.
 
 2: In binGLMDispersion(y, design, min.n = min.n, offset = offset, method = method.bin,  :
-  With 22 genes and setting the parameter minimum number (min.n) of genes per bin to 500,  there are only 2 bins. Using 2 bins here means that the minimum number of genes in each of the 2 bins is in fact 10. This number of bins and minimum number of genes per bin may not be sufficient for reliable estimation of a trend on the dispersions.
+  With 22 genes and setting the parameter minimum number (min.n) of genes per bin to 500,  there are only 2 bins. Using 2 bins here means that the minimum number of genes in each of the 2 bins is in fact 9. This number of bins and minimum number of genes per bin may not be sufficient for reliable estimation of a trend on the dispersions.
 
 > summary(dglm$tagwise.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
@@ -343,30 +343,30 @@ glmFit> results <- glmLRT(fit, coef=2)
 glmFit> topTags(results)
 Coefficient:  x 
             logFC   logCPM        LR       PValue          FDR
-Gene1   2.4897065 16.55426 34.704021 3.838380e-09 3.838380e-07
-Gene25 -3.1722163 11.59510  7.428649 6.419352e-03 3.209676e-01
-Gene10  1.6151500 13.30811  6.153048 1.311858e-02 4.372861e-01
-Gene22 -1.3726514 13.04876  4.684651 3.043325e-02 7.608313e-01
-Gene81 -1.3379144 13.06097  3.965916 4.643025e-02 8.688871e-01
-Gene5   0.9660092 13.41096  2.819059 9.315101e-02 8.688871e-01
-Gene37 -0.9816816 13.29612  2.789767 9.486804e-02 8.688871e-01
-Gene34  0.9047568 13.40661  2.649492 1.035830e-01 8.688871e-01
-Gene29 -1.0236470 12.91525  2.626186 1.051140e-01 8.688871e-01
-Gene71 -0.8602972 13.68261  2.597055 1.070625e-01 8.688871e-01
+Gene1   2.4897072 16.55426 34.704021 3.838380e-09 3.838380e-07
+Gene25 -3.1757234 11.59510  7.613875 5.792087e-03 2.896043e-01
+Gene10  1.6151089 13.30811  6.153048 1.311858e-02 4.372860e-01
+Gene22 -1.3726442 13.04876  4.684651 3.043324e-02 7.608311e-01
+Gene81 -1.3378911 13.06097  3.965916 4.643024e-02 8.688871e-01
+Gene5   0.9660082 13.41096  2.819059 9.315101e-02 8.688871e-01
+Gene37 -0.9816817 13.29612  2.789767 9.486804e-02 8.688871e-01
+Gene34  0.9047574 13.40661  2.649492 1.035830e-01 8.688871e-01
+Gene29 -1.0236542 12.91525  2.626186 1.051140e-01 8.688871e-01
+Gene71 -0.8602976 13.68261  2.597055 1.070625e-01 8.688871e-01
 
 glmFit> # Estimate the dispersion (may be unreliable with so few tags)
 glmFit> d <- estimateGLMCommonDisp(d, design, verbose=TRUE)
-Disp = 0.07571 , BCV = 0.2752 
+Disp = 0.07572 , BCV = 0.2752 
 > glmFit(d,design,dispersion=dispersion.true,method="simple")
 Loading required package: MASS
 An object of class "DGEGLM"
 $coefficients
       (Intercept)         x
-Gene1   -4.917586 1.7257330
-Gene2   -4.553099 0.3321615
-Gene3   -5.815420 0.7508669
-Gene4   -4.629637 0.1960679
-Gene5   -5.295320 0.6695865
+Gene1   -4.917586 1.7257335
+Gene2   -4.553098 0.3321590
+Gene3   -5.815405 0.7508520
+Gene4   -4.629637 0.1960687
+Gene5   -5.295321 0.6695858
 95 more rows ...
 
 $df.residual
@@ -433,8 +433,7 @@ Gene5  2  4   8
 95 more rows ...
 
 $abundance
-    Gene1     Gene2     Gene3     Gene4     Gene5 
--2.340971 -4.213249 -4.957796 -4.454150 -4.519740 
+[1] -2.340971 -4.213249 -4.957796 -4.454150 -4.519740
 95 more elements ...
 
 $method
@@ -447,19 +446,52 @@ x1     1      384    1.0683263
 x2     1      511    0.8445892
 
 > glmFit(d,design,dispersion=dispersion.true,method="levenberg")
-Loading required package: statmod
 An object of class "DGEGLM"
 $coefficients
       (Intercept)         x
-Gene1   -4.917586 1.7257330
-Gene2   -4.553099 0.3321615
-Gene3   -5.815420 0.7508669
-Gene4   -4.629637 0.1960679
-Gene5   -5.295320 0.6695865
+Gene1   -4.917586 1.7257335
+Gene2   -4.553098 0.3321590
+Gene3   -5.815405 0.7508520
+Gene4   -4.629637 0.1960687
+Gene5   -5.295321 0.6695858
+95 more rows ...
+
+$fitted.values
+            x0        x1        x2
+Gene1 3.128160 16.522885 99.713871
+Gene2 4.522526  5.858801  8.671800
+Gene3 1.169729  2.402414  5.637457
+Gene4 4.176410  4.709091  6.066577
+Gene5 2.072117  3.834708  8.108172
 95 more rows ...
 
 $deviance
-[1] 0.53374778 0.20168294 4.18933184 0.69542655 0.00796757
+[1] 0.53374778 0.20168294 4.18933146 0.69542655 0.00796757
+95 more elements ...
+
+$iter
+[1] 6 4 5 4 4
+95 more elements ...
+
+$failed
+[1] FALSE FALSE FALSE FALSE FALSE
+95 more elements ...
+
+$counts
+      x0 x1  x2
+Gene1  4 13 107
+Gene2  4  7   8
+Gene3  0  5   4
+Gene4  5  3   7
+Gene5  2  4   8
+95 more rows ...
+
+$df.residual
+[1] 1 1 1 1 1
+95 more elements ...
+
+$abundance
+[1] -2.340971 -4.213249 -4.957796 -4.454150 -4.519740
 95 more elements ...
 
 $design
@@ -480,35 +512,7 @@ $offset
 95 more rows ...
 
 $dispersion
-[1] 0.1 0.1 0.1 0.1 0.1
-95 more elements ...
-
-$fitted.values
-            x0        x1        x2
-Gene1 3.128147 16.522846 99.713802
-Gene2 4.522480  5.858800  8.671883
-Gene3 1.169671  2.402414  5.637736
-Gene4 4.176397  4.709091  6.066597
-Gene5 2.072114  3.834707  8.108180
-95 more rows ...
-
-$counts
-      x0 x1  x2
-Gene1  4 13 107
-Gene2  4  7   8
-Gene3  0  5   4
-Gene4  5  3   7
-Gene5  2  4   8
-95 more rows ...
-
-$df.residual
-[1] 1 1 1 1 1
-95 more elements ...
-
-$abundance
-    Gene1     Gene2     Gene3     Gene4     Gene5 
--2.340971 -4.213249 -4.957796 -4.454150 -4.519740 
-95 more elements ...
+[1] 0.1
 
 $method
 [1] "levenberg"
@@ -556,7 +560,7 @@ An object of class "DGEExact"
 $table
   logFC    logCPM       LR     PValue
 1    NA -19.93157  0.00000 1.00000000
-2    NA -18.96633 11.47712 0.07470328
+2    NA -18.96633 11.47712 0.07470318
 
 $comparison
 NULL
@@ -573,4 +577,4 @@ $dispersion
 > 
 > proc.time()
    user  system elapsed 
-   5.80    0.03    5.83 
+   5.31    0.04    5.36 

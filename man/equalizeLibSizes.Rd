@@ -1,34 +1,46 @@
 \name{equalizeLibSizes}
 \alias{equalizeLibSizes}
 
-\title{Equalize Library Sizes}
+\title{Equalize Library Sizes by Quantile-to-Quantile Normalization}
 
-\description{A function that uses a NB quantile-to-quantile method to adjust the libraries of counts so that library sizes are equal for a fixed value of the dispersion parameter.}
-
+\description{Adjusts counts so that the effective library sizes are equal, preserving fold-changes between groups and preserving biological variability within each group.}
 
 \usage{
-equalizeLibSizes(object, disp=0, N=exp(mean(log(object$samples$lib.size*object$samples$norm.factors))))
+equalizeLibSizes(object, dispersion=0, common.lib.size)
 }
 
 \arguments{
 \item{object}{\code{\link[edgeR:DGEList-class]{DGEList}} object}
 
-\item{disp}{numeric scalar or vector of \code{dispersion} parameters; if a scalar, then a common dispersion parameter is used for all tags}
+\item{dispersion}{numeric scalar or vector of \code{dispersion} parameters; if a scalar, then a common dispersion parameter is used for all tags}
 
-\item{N}{numeric scalar, the library size to normalize to; default is the geometric mean of the original library sizes}
+\item{common.lib.size}{numeric scalar, the library size to normalize to; default is the geometric mean of the original effective library sizes}
 }
 
-\value{A list with elements 
-	\item{pseudo}{numeric matrix of pseudocounts, i.e. adjusted counts for equalized libraries}
-	\item{conc}{list with elements \code{conc.common} (vector giving overall proportion/concentration for each tag), and \code{conc.group} (matrix with columns giving estimates of tag/gene concentrations (proportion of total RNA for that group that that particular tag/gene contributes) for different groups); output from \code{estimatePs}}
-	\item{N}{normalized library size}
+\value{A list with components
+	\item{pseudo.counts}{numeric matrix of normalized pseudo-counts}
+	\item{common.lib.size}{normalized library size}
 }
 
 \details{
-The function \code{equalizeLibSizes} provides the necessary framework and calculations to call \code{q2qnbinom}, for given value(s) of the dispersion parameter. The function \code{q2qnbinom} actually generates the pseudocounts, the counts that have been adjusted for normalized library sizes. These pseudocounts are required to estimate the dispersion parameter, as the methods used by \code{\link{estimateCommonDisp}} and \code{\link{estimateTagwiseDisp}} rely on the assumption of equal library sizes. This function calls \code{estimatePs} to estimate the expression proportion for each tag, which is needed to calculate the \code{input.mean} and \code{output.mean} for each tag, which are passed to \code{q2qnbinom} along with the unadjusted counts and the fixed value(s) for the dispersion parameter. 
+Thus function implements the quantile-quantile normalization method of Robinson and Smyth (2008).
+It computes normalized counts, or pseudo-counts, used by \code{exactTest} and \code{estimateCommonDisp}.
+
+Note that the output common library size is a theoretical quantity.
+The column sums of the normalized counts, while to be exactly equal, nor are they intended to be.
+However, the expected counts for each tag are equal under the null hypothesis of no differential expression.
 }
 
-\author{Mark Robinson, Davis McCarthy}
+\author{Mark Robinson, Davis McCarthy, Gordon Smyth}
+
+\references{
+Robinson MD and Smyth GK (2008). Small-sample estimation of negative binomial dispersion, with applications to SAGE data.
+\emph{Biostatistics}, 9, 321-332.
+}
+
+\seealso{
+\code{\link{q2qnbinom}}
+}
 
 \examples{
 ngenes <- 1000
@@ -40,6 +52,6 @@ counts[,2] <- rpois(ngenes,lambda=20)
 summary(counts)
 y <- DGEList(counts=counts)
 out <- equalizeLibSizes(y)
-summary(out$pseudo)
+summary(out$pseudo.counts)
 }
 

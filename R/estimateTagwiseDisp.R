@@ -17,7 +17,7 @@ estimateTagwiseDisp <- function(object, prior.df=20, trend="movingave", span=NUL
 	method <- match.arg(method,c("grid","optimize"))
 	ntags <- nrow(object$counts)
 	group <- object$samples$group <- as.factor(object$samples$group)
-	y <- splitIntoGroups(list(counts=object$pseudo.alt,samples=object$samples))
+	y <- splitIntoGroups(list(counts=object$pseudo.counts,samples=object$samples))
 	delta <- rep(0,ntags)
 	nlibs <- ncol(object$counts)
 	ngroups <- length(unique(group))
@@ -43,8 +43,7 @@ estimateTagwiseDisp <- function(object, prior.df=20, trend="movingave", span=NUL
 			"none" = matrix(colMeans(l0),ntags,grid.length,byrow=TRUE)
 		)
 		l0a <- l0 + prior.n*m0
-		d <- rep(0,ntags)
-		for(j in 1:ntags) d[j] <- maximizeInterpolant(spline.pts, l0a[j,])
+		d <- maximizeInterpolant(spline.pts, l0a)
 		tagwise.dispersion <- object$common.dispersion * 2^d
 	} else {	
 		if(trend != "none") stop("optimize method doesn't allow for abundance-dispersion trend")

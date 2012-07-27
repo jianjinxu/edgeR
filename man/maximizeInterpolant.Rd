@@ -8,40 +8,36 @@ Maximize a function given a table of values by spline interpolation.
 }
 
 \usage{
-maximizeInterpolant(x, z, maxit=10, eps=1e-7, plot=FALSE)
+maximizeInterpolant(x, y)
 }
 
-\arguments{ 
+\arguments{
 \item{x}{numeric vector of the inputs of the function.}
 
-\item{z}{numeric vector of the values of the function at the inputs given by \code{x}.}
-
-\item{maxit}{numeric scalar giving the maximum number of iterations for the Newton-Raphson algorithm.}
-
-\item{eps}{numeric scalar giving the convergence tolerance.}
-
-\item{plot}{logical, whether or not to plot the function on those given points.}
+\item{y}{numeric matrix of function values at the values of \code{x}.
+Columns correspond to \code{x} values and each row corresponds to a different function to be maximized.}
 }
 
 \value{
-\code{maximizeInterpolant} returns a single value which maximizes the spline interpolation.
+numeric vector of input values at which the function maximums occur.
 }
 
 \details{
-\code{maximizeInterpolant} calls the function \code{splinefun} to fit cubic spline interpolation given a set of points.
-
-\code{maximizeInterpolant} uses Newton-Raphson algorithm in finding the maximum of the function performing the interpolation.
+Calculates the cubic spline interpolant for each row the method of Forsythe et al (1977) using the function \code{fmm_spline} from \code{splines.c} in the \code{stats} package).
+Then calculates the derivatives of the spline segments adjacant to the input with the maximum function value.
+This allows identification of the maximum of the interpolating spline.
 }
 
-\author{Gordon Smyth}
+\author{Aaron Lun, improving on earlier code by Gordon Smyth}
 \examples{
 x <- seq(0,1,length=10)
 y <- rnorm(10,1,1)
 maximizeInterpolant(x,y)
 }
 
-\seealso{
-\code{\link{splinefun}}
+\references{
+Forsythe, G. E., Malcolm, M. A. and Moler, C. B. (1977).
+\emph{Computer Methods for Mathematical Computations}, Prentice-Hall.
 }
 
 \keyword{interpolation}
