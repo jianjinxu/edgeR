@@ -3,7 +3,10 @@
 \encoding{UTF-8}
 
 
-\section{Version 2.99.3}{\itemize{
+\section{Version 2.99.4}{\itemize{
+\item
+New chapter on experimental designs in User's Guide.
+
 \item
 C++ version of mglmLevenberg() is now the default glm fitting algorithm.
 
