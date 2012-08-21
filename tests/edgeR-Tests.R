@@ -67,18 +67,38 @@ topTags(lrt)
 dglm <- estimateGLMTrendedDisp(dglm,design)
 summary(dglm$trended.dispersion)
 dglm <- estimateGLMTrendedDisp(dglm,design,method="power")
-summary(dglm$tagwise.dispersion)
+summary(dglm$trended.dispersion)
 dglm <- estimateGLMTrendedDisp(dglm,design,method="spline")
-summary(dglm$tagwise.dispersion)
+summary(dglm$trended.dispersion)
 dglm <- estimateGLMTrendedDisp(dglm,design,method="bin.spline")
-summary(dglm$tagwise.dispersion)
+summary(dglm$trended.dispersion)
 dglm <- estimateGLMTagwiseDisp(dglm,design)
 summary(dglm$tagwise.dispersion)
 
-example(glmFit)
+# Continuous trend
+nlibs <- 3
+ntags <- 1000
+dispersion.true <- 0.1
+# Make first transcript respond to covariate x
+x <- 0:2
+design <- model.matrix(~x)
+beta.true <- cbind(Beta1=2,Beta2=c(2,rep(0,ntags-1)))
+mu.true <- 2^(beta.true %*% t(design))
+# Generate count data
+y <- rnbinom(ntags*nlibs,mu=mu.true,size=1/dispersion.true)
+y <- matrix(y,ntags,nlibs)
+colnames(y) <- c("x0","x1","x2")
+rownames(y) <- paste("Gene",1:ntags,sep="")
+d <- DGEList(y)
+d <- calcNormFactors(d)
+fit <- glmFit(d, design, dispersion=dispersion.true)
+results <- glmLRT(fit, coef=2)
+topTags(results)
+d <- estimateGLMCommonDisp(d, design, verbose=TRUE)
 glmFit(d,design,dispersion=dispersion.true,method="simple")
 glmFit(d,design,dispersion=dispersion.true,method="levenberg")
 
+# Exact tests
 y <- matrix(rnbinom(20,mu=10,size=3/2),nrow=5)
 group <- factor(c(1,1,2,2))
 ys <- splitIntoGroupsPseudo(y,group,pair=c(1,2))

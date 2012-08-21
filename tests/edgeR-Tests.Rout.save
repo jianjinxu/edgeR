@@ -1,8 +1,8 @@
 
-R version 2.15.1 (2012-06-22) -- "Roasted Marshmallows"
+R Under development (unstable) (2012-08-14 r60264) -- "Unsuffered Consequences"
 Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
-Platform: i386-pc-mingw32/i386 (32-bit)
+Platform: i386-w64-mingw32/i386 (32-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -278,104 +278,76 @@ Tag.8  -0.7918166 12.421874 0.7356185 0.391068048 0.8603497
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 0.05079 0.17290 0.18430 0.18090 0.21150 0.26750 
 > dglm <- estimateGLMTrendedDisp(dglm,design,method="power")
-> summary(dglm$tagwise.dispersion)
+> summary(dglm$trended.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
- 0.1756  0.1879  0.1998  0.2031  0.2135  0.2578 
+0.05079 0.17290 0.18430 0.18090 0.21150 0.26750 
 > dglm <- estimateGLMTrendedDisp(dglm,design,method="spline")
 Loading required package: splines
-> summary(dglm$tagwise.dispersion)
+> summary(dglm$trended.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
- 0.1756  0.1879  0.1998  0.2031  0.2135  0.2578 
+ 0.0000  0.1104  0.1647  0.1839  0.2361  0.4765 
 > dglm <- estimateGLMTrendedDisp(dglm,design,method="bin.spline")
-Warning messages:
-1: In binGLMDispersion(y, design, min.n = min.n, offset = offset, method = method.bin,  :
-  With 22 genes and setting the parameter minimum number (min.n) of genes per bin to 500,  there should technically be fewer than 2 bins. To make estimation of trended dispersions possible we set the number of bins to be 2.
-
-2: In binGLMDispersion(y, design, min.n = min.n, offset = offset, method = method.bin,  :
-  With 22 genes and setting the parameter minimum number (min.n) of genes per bin to 500,  there are only 2 bins. Using 2 bins here means that the minimum number of genes in each of the 2 bins is in fact 9. This number of bins and minimum number of genes per bin may not be sufficient for reliable estimation of a trend on the dispersions.
-
-> summary(dglm$tagwise.dispersion)
+> summary(dglm$trended.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
- 0.1756  0.1879  0.1998  0.2031  0.2135  0.2578 
+ 0.1997  0.1997  0.1997  0.1997  0.1997  0.1997 
 > dglm <- estimateGLMTagwiseDisp(dglm,design)
 > summary(dglm$tagwise.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.05433 0.11180 0.22400 0.36360 0.28150 2.11700 
+ 0.1385  0.1792  0.1964  0.1935  0.2026  0.2709 
 > 
-> example(glmFit)
-
-glmFit> nlibs <- 3
-
-glmFit> ntags <- 100
-
-glmFit> dispersion.true <- 0.1
-
-glmFit> # Make first transcript respond to covariate x
-glmFit> x <- 0:2
-
-glmFit> design <- model.matrix(~x)
-
-glmFit> beta.true <- cbind(Beta1=2,Beta2=c(2,rep(0,ntags-1)))
-
-glmFit> mu.true <- 2^(beta.true %*% t(design))
-
-glmFit> # Generate count data
-glmFit> y <- rnbinom(ntags*nlibs,mu=mu.true,size=1/dispersion.true)
-
-glmFit> y <- matrix(y,ntags,nlibs)
-
-glmFit> colnames(y) <- c("x0","x1","x2")
-
-glmFit> rownames(y) <- paste("Gene",1:ntags,sep="")
-
-glmFit> d <- DGEList(y)
+> # Continuous trend
+> nlibs <- 3
+> ntags <- 1000
+> dispersion.true <- 0.1
+> # Make first transcript respond to covariate x
+> x <- 0:2
+> design <- model.matrix(~x)
+> beta.true <- cbind(Beta1=2,Beta2=c(2,rep(0,ntags-1)))
+> mu.true <- 2^(beta.true %*% t(design))
+> # Generate count data
+> y <- rnbinom(ntags*nlibs,mu=mu.true,size=1/dispersion.true)
+> y <- matrix(y,ntags,nlibs)
+> colnames(y) <- c("x0","x1","x2")
+> rownames(y) <- paste("Gene",1:ntags,sep="")
+> d <- DGEList(y)
 Calculating library sizes from column totals.
-
-glmFit> # Normalize
-glmFit> d <- calcNormFactors(d)
-
-glmFit> # Fit the NB GLMs
-glmFit> fit <- glmFit(d, design, dispersion=dispersion.true)
-
-glmFit> # Likelihood ratio tests for trend
-glmFit> results <- glmLRT(fit, coef=2)
-
-glmFit> topTags(results)
+> d <- calcNormFactors(d)
+> fit <- glmFit(d, design, dispersion=dispersion.true)
+> results <- glmLRT(fit, coef=2)
+> topTags(results)
 Coefficient:  x 
-            logFC   logCPM        LR       PValue          FDR
-Gene1   2.4897072 16.55426 34.704021 3.838380e-09 3.838380e-07
-Gene25 -3.1757234 11.59510  7.613875 5.792087e-03 2.896043e-01
-Gene10  1.6151089 13.30811  6.153048 1.311858e-02 4.372860e-01
-Gene22 -1.3726442 13.04876  4.684651 3.043324e-02 7.608311e-01
-Gene81 -1.3378911 13.06097  3.965916 4.643024e-02 8.688871e-01
-Gene5   0.9660082 13.41096  2.819059 9.315101e-02 8.688871e-01
-Gene37 -0.9816817 13.29612  2.789767 9.486804e-02 8.688871e-01
-Gene34  0.9047574 13.40661  2.649492 1.035830e-01 8.688871e-01
-Gene29 -1.0236542 12.91525  2.626186 1.051140e-01 8.688871e-01
-Gene71 -0.8602976 13.68261  2.597055 1.070625e-01 8.688871e-01
-
-glmFit> # Estimate the dispersion (may be unreliable with so few tags)
-glmFit> d <- estimateGLMCommonDisp(d, design, verbose=TRUE)
-Disp = 0.07572 , BCV = 0.2752 
+            logFC    logCPM        LR       PValue          FDR
+Gene1    2.907024 13.504893 38.738513 4.845535e-10 4.845535e-07
+Gene61   2.855317  9.538397 10.738307 1.049403e-03 5.247014e-01
+Gene62  -2.123902  9.948325  8.818704 2.981584e-03 8.334758e-01
+Gene134 -1.949073  9.951684  8.125889 4.363759e-03 8.334758e-01
+Gene740 -1.610046 10.537269  8.013408 4.643226e-03 8.334758e-01
+Gene354  2.022698  9.825384  7.826308 5.149116e-03 8.334758e-01
+Gene5    1.856816  9.828828  7.214238 7.232750e-03 8.334758e-01
+Gene746 -1.798331  9.946830  6.846262 8.882691e-03 8.334758e-01
+Gene110  1.623148 10.174945  6.737984 9.438120e-03 8.334758e-01
+Gene383  1.637140 10.270222  6.687530 9.708962e-03 8.334758e-01
+> d <- estimateGLMCommonDisp(d, design, verbose=TRUE)
+Disp = 0.10253 , BCV = 0.3202 
 > glmFit(d,design,dispersion=dispersion.true,method="simple")
 Loading required package: MASS
 An object of class "DGEGLM"
 $coefficients
-      (Intercept)         x
-Gene1   -4.917586 1.7257335
-Gene2   -4.553098 0.3321590
-Gene3   -5.815405 0.7508520
-Gene4   -4.629637 0.1960687
-Gene5   -5.295321 0.6695858
-95 more rows ...
+      (Intercept)          x
+Gene1   -7.391663  2.0149958
+Gene2   -7.318401 -0.7611895
+Gene3   -6.831619 -0.1399478
+Gene4   -7.480173  0.5172002
+Gene5   -8.747710  1.2870467
+995 more rows ...
 
 $df.residual
 [1] 1 1 1 1 1
-95 more elements ...
+995 more elements ...
 
 $deviance
-[1] 0.53374778 0.20168294 4.18933184 0.69542655 0.00796757
-95 more elements ...
+[1] 6.38037582 1.46644949 1.38532340 0.01593969 1.03894514
+995 more elements ...
 
 $design
   (Intercept) x
@@ -387,12 +359,12 @@ attr(,"assign")
 
 $offset
          [,1]     [,2]     [,3]
-[1,] 6.099264 6.016736 6.067465
-[2,] 6.099264 6.016736 6.067465
-[3,] 6.099264 6.016736 6.067465
-[4,] 6.099264 6.016736 6.067465
-[5,] 6.099264 6.016736 6.067465
-95 more rows ...
+[1,] 8.295172 8.338525 8.284484
+[2,] 8.295172 8.338525 8.284484
+[3,] 8.295172 8.338525 8.284484
+[4,] 8.295172 8.338525 8.284484
+[5,] 8.295172 8.338525 8.284484
+995 more rows ...
 
 $dispersion
 [1] 0.1
@@ -404,95 +376,95 @@ $weights
 [3,]    1    1    1
 [4,]    1    1    1
 [5,]    1    1    1
-95 more rows ...
+995 more rows ...
 
 $fitted.values
-            x0        x1        x2
-Gene1 3.128139 16.522832 99.713904
-Gene2 4.522520  5.858801  8.671811
-Gene3 1.169705  2.402414  5.637571
-Gene4 4.176401  4.709091  6.066590
-Gene5 2.072117  3.834708  8.108175
-95 more rows ...
+             x0        x1          x2
+Gene1 2.3569790 18.954451 138.2830865
+Gene2 2.5138459  1.089294   0.4282075
+Gene3 4.1580678  3.750528   3.0689914
+Gene4 2.1012458  3.769592   6.1349943
+Gene5 0.5080376  2.136398   8.1502479
+995 more rows ...
 
 $converged
 [1] TRUE TRUE TRUE TRUE TRUE
-95 more elements ...
+995 more elements ...
 
 $error
 [1] FALSE FALSE FALSE FALSE FALSE
-95 more elements ...
+995 more elements ...
 
 $counts
       x0 x1  x2
-Gene1  4 13 107
-Gene2  4  7   8
-Gene3  0  5   4
-Gene4  5  3   7
-Gene5  2  4   8
-95 more rows ...
+Gene1  0 30 110
+Gene2  2  2   0
+Gene3  3  6   2
+Gene4  2  4   6
+Gene5  1  1   9
+995 more rows ...
 
 $abundance
-[1] -2.340971 -4.213249 -4.957796 -4.454150 -4.519740
-95 more elements ...
+[1] -4.454632 -8.019858 -7.009813 -6.919378 -7.002686
+995 more elements ...
 
 $method
 [1] "simple"
 
 $samples
    group lib.size norm.factors
-x0     1      402    1.1082828
-x1     1      384    1.0683263
-x2     1      511    0.8445892
+x0     1     4001    1.0008730
+x1     1     4176    1.0014172
+x2     1     3971    0.9977138
 
 > glmFit(d,design,dispersion=dispersion.true,method="levenberg")
 An object of class "DGEGLM"
 $coefficients
-      (Intercept)         x
-Gene1   -4.917586 1.7257335
-Gene2   -4.553098 0.3321590
-Gene3   -5.815405 0.7508520
-Gene4   -4.629637 0.1960687
-Gene5   -5.295321 0.6695858
-95 more rows ...
+      (Intercept)          x
+Gene1   -7.391663  2.0149958
+Gene2   -7.318401 -0.7611895
+Gene3   -6.831619 -0.1399478
+Gene4   -7.480173  0.5172002
+Gene5   -8.747710  1.2870467
+995 more rows ...
 
 $fitted.values
-            x0        x1        x2
-Gene1 3.128160 16.522885 99.713871
-Gene2 4.522526  5.858801  8.671800
-Gene3 1.169729  2.402414  5.637457
-Gene4 4.176410  4.709091  6.066577
-Gene5 2.072117  3.834708  8.108172
-95 more rows ...
+             x0        x1          x2
+Gene1 2.3570471 18.954454 138.2791326
+Gene2 2.5138172  1.089292   0.4282107
+Gene3 4.1580452  3.750528   3.0690081
+Gene4 2.1012460  3.769592   6.1349937
+Gene5 0.5080377  2.136398   8.1502486
+995 more rows ...
 
 $deviance
-[1] 0.53374778 0.20168294 4.18933146 0.69542655 0.00796757
-95 more elements ...
+[1] 6.38037545 1.46644913 1.38532340 0.01593969 1.03894513
+995 more elements ...
 
 $iter
-[1] 6 4 5 4 4
-95 more elements ...
+[1] 8 4 4 4 6
+995 more elements ...
 
 $failed
 [1] FALSE FALSE FALSE FALSE FALSE
-95 more elements ...
+995 more elements ...
 
 $counts
       x0 x1  x2
-Gene1  4 13 107
-Gene2  4  7   8
-Gene3  0  5   4
-Gene4  5  3   7
-Gene5  2  4   8
-95 more rows ...
+Gene1  0 30 110
+Gene2  2  2   0
+Gene3  3  6   2
+Gene4  2  4   6
+Gene5  1  1   9
+995 more rows ...
 
 $df.residual
 [1] 1 1 1 1 1
-95 more elements ...
+995 more elements ...
 
 $abundance
-[1] -2.340971 -4.213249 -4.957796 -4.454150 -4.519740
-95 more elements ...
+[1] -4.454632 -8.019858 -7.009813 -6.919378 -7.002686
+995 more elements ...
 
 $design
   (Intercept) x
@@ -504,12 +476,12 @@ attr(,"assign")
 
 $offset
          [,1]     [,2]     [,3]
-[1,] 6.099264 6.016736 6.067465
-[2,] 6.099264 6.016736 6.067465
-[3,] 6.099264 6.016736 6.067465
-[4,] 6.099264 6.016736 6.067465
-[5,] 6.099264 6.016736 6.067465
-95 more rows ...
+[1,] 8.295172 8.338525 8.284484
+[2,] 8.295172 8.338525 8.284484
+[3,] 8.295172 8.338525 8.284484
+[4,] 8.295172 8.338525 8.284484
+[5,] 8.295172 8.338525 8.284484
+995 more rows ...
 
 $dispersion
 [1] 0.1
@@ -519,36 +491,37 @@ $method
 
 $samples
    group lib.size norm.factors
-x0     1      402    1.1082828
-x1     1      384    1.0683263
-x2     1      511    0.8445892
+x0     1     4001    1.0008730
+x1     1     4176    1.0014172
+x2     1     3971    0.9977138
 
 > 
+> # Exact tests
 > y <- matrix(rnbinom(20,mu=10,size=3/2),nrow=5)
 > group <- factor(c(1,1,2,2))
 > ys <- splitIntoGroupsPseudo(y,group,pair=c(1,2))
 > exactTestDoubleTail(ys$y1,ys$y2,dispersion=2/3)
-[1] 0.4189923 0.4429949 0.7353656 0.5497263 0.8017048
+[1] 0.1334396 0.6343568 0.7280015 0.7124912 0.3919258
 > 
 > y <- matrix(rnbinom(5*7,mu=10,size=3/2),nrow=5,ncol=7)
 > group <- factor(c(1,1,2,2,3,3,3))
 > ys <- splitIntoGroupsPseudo(y,group,pair=c(1,3))
 > exactTestDoubleTail(ys$y1,ys$y2,dispersion=2/3)
-[1] 0.5546390 0.3424727 0.7399625 0.4927107 0.3657264
+[1] 1.0000000 0.4486382 1.0000000 0.9390317 0.4591241
 > exactTestBetaApprox(ys$y1,ys$y2,dispersion=2/3)
-[1] 0.5571358 0.3423395 0.7370448 0.4924267 0.3656123
+[1] 1.0000000 0.4492969 1.0000000 0.9421695 0.4589194
 > 
 > y[1,3:4] <- 0
 > design <- model.matrix(~group)
 > fit <- glmFit(y,design,dispersion=2/3)
 > summary(fit$coef)
-  (Intercept)         group2            group3          
- Min.   :-2.085   Min.   :-4.1379   Min.   :-0.3686361  
- 1st Qu.:-2.085   1st Qu.:-0.6382   1st Qu.:-0.1543458  
- Median :-1.557   Median : 0.1089   Median :-0.0034261  
- Mean   :-1.667   Mean   :-0.8212   Mean   : 0.0381174  
- 3rd Qu.:-1.467   3rd Qu.: 0.1385   3rd Qu.:-0.0002776  
- Max.   :-1.141   Max.   : 0.4228   Max.   : 0.7172727  
+  (Intercept)         group2            group3        
+ Min.   :-1.815   Min.   :-5.0171   Min.   :-0.64646  
+ 1st Qu.:-1.809   1st Qu.:-1.1565   1st Qu.:-0.13919  
+ Median :-1.709   Median : 0.1994   Median :-0.10441  
+ Mean   :-1.623   Mean   :-0.9523   Mean   :-0.04217  
+ 3rd Qu.:-1.427   3rd Qu.: 0.3755   3rd Qu.:-0.04305  
+ Max.   :-1.354   Max.   : 0.8374   Max.   : 0.72227  
 > 
 > # spliceVariants
 > z = matrix(c(2,0,4,6,4,3,7,1,1,0,1,1,0,3,1,2,0,1,2,1,0,3,1,0), 8, 3)
@@ -577,4 +550,4 @@ $dispersion
 > 
 > proc.time()
    user  system elapsed 
-   5.31    0.04    5.36 
+   5.92    0.04    6.02 

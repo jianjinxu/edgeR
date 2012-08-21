@@ -78,27 +78,35 @@ When the design matrix defines a one-way layout, or can be re-parametrized to a 
 Otherwise the default fitting method, implemented in \code{\link{mglmLS}}, is a parallelized line search algorithm described by McCarthy et al (2012).
 Other possible fitting methods are \code{\link{mglmLevenberg}} and \code{\link{mglmSimple}}.
 
+Positive \code{prior.count.total} cause the returned coefficients to be shrunk in such a way that fold-changes between the treatment conditions are decreased.
+In particular, infinite fold-changes are avoided.
+Larger values cause more shrinkage.
+The returned coefficients are affected but not the likelihood ratio tests or p-values.
+
 \code{glmLRT} conducts likelihood ratio tests for one or more coefficients in the linear model.
 If \code{coef} is used, the null hypothesis is that all the coefficients indicated by \code{coef} are equal to zero.
 If \code{contrast} is non-null, then the null hypothesis is that the specified contrast of the coefficients is equal to zero.
 For example, a contrast of \code{c(0,1,-1)}, assuming there are three coefficients, would test the hypothesis that the second and third coefficients are equal.
 
-\code{glmQLFTest} conducts quasi-likelihood F-tests for one or more coefficients in the linear model.
+\code{glmQLFTest} implements the quasi-likelihood method of Lund et al (2012).
+It behaves the same as \code{glmLRT} except that it replaces likelihood ratio tests with
+quasi-likelihood F-tests for coefficients in the linear model.
 This function calls the limma function \code{\link{squeezeVar}} to conduct empirical Bayes smoothing of the genewise multiplicative dispersions.
-
-Positive \code{prior.count.total} cause the returned coefficients to be shrunk in such a way that fold-changes between the treatment conditions are decreased.
-In particular, infinite fold-changes are avoided.
-Larger values cause more shrinkage.
-The returned coefficients are affected but not the likelihood ratio tests or p-values.
+Note that the \code{QuasiSeq} package provides a alternative implementation of Lund et al (2012),
+with slightly different glm, trend and FDR methods.
 }
 
 \references{
 McCarthy, DJ, Chen, Y, Smyth, GK (2012). Differential expression analysis of multifactor RNA-Seq experiments with respect to biological variation.
 \emph{Nucleic Acids Research} 40, 4288-4297.
 \url{http://nar.oxfordjournals.org/content/40/10/4288}
+
+Lund, SP, Nettleton, D, McCarthy, DJ, Smyth, GK (2012). Detecting differential expression in RNA-sequence data using quasi-likelihood with shrunken dispersion estimates.
+\emph{Statistical Applications in Genetics and Molecular Biology}. (Accepted 31 July 2012)
 }
 
 \author{Davis McCarthy and Gordon Smyth}
+
 \examples{
 nlibs <- 3
 ntags <- 100
@@ -134,7 +142,9 @@ d <- estimateGLMCommonDisp(d, design, verbose=TRUE)
 \seealso{
 Low-level computations are done by \code{\link{mglmOneGroup}}, \code{\link{mglmLS}}, \code{\link{mglmLevenberg}} or \code{\link{mglmSimple}}.
 
-See \code{\link{topTags}} for displaying results from \code{glmLRT}.
+\code{\link{topTags}} displays results from \code{glmLRT} or \code{glmQLFTest}.
+
+The \code{QuasiSeq} package gives an alternative implementation of \code{glmQLFTest} based on the same statistical ideas.
 }
 
 \keyword{models}

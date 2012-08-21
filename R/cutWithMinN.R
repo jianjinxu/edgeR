@@ -2,7 +2,7 @@ cutWithMinN <- function(x, intervals=2, min.n=1)
 #	Cut numeric x into intervals, as equally spaced as possible subject
 #	to including a minimum number of values in each interval
 #	Gordon Smyth
-#	7 May 2011.  Last modified 29 Nov 2011.
+#	7 May 2011.  Last modified 3 Aug 2012.
 {
 #	Check input
 	x <- as.numeric(x)
@@ -18,6 +18,8 @@ cutWithMinN <- function(x, intervals=2, min.n=1)
 	min.n <- as.integer(min.n)
 	nx <- length(x)
 	if(nx < intervals*min.n) stop("too few observations: length(x) < intervals*min.n")
+
+	if(intervals==1) return(list(group=rep(1,nx),breaks=NA))
 
 #	Add jittering to ensure all x are unique
 #	x <- x+(1e-10)*(1:nx)/nx

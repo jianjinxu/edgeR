@@ -60,12 +60,23 @@ SEXP lowess_by_col(SEXP x, SEXP y, SEXP n_cols, SEXP s) {
 
         // Checking out the ideal place for the frame to be.
         while (frame_end < total-1 && cur_p+span-1>frame_end) {
-            /* We only ever try moving the frame forward. This is because the initial position
-             * of the frame is optimal relative to the last x-value. Moving it backward will make 
-             * it suboptimal relative to the last x-value. As the current x-value is larger than 
-             * the last x-value, the backed-up frame will be even more suboptimal relative to the 
-             * current x-value. Thus, we only go forwards (or not at all). See the 'norm_core.cpp' 
-             * comments for a more detailed argument, as the algorithm is nearly identical.
+            /* Every time we advance, we twiddle with the ends of the frame to see if we can't get 
+             * a better fit. The frame will always advance in the forward direction. This is because the 
+             * current frame is optimal with respect to the previous tag. If the previous maximal distance 
+             * was at the back, shifting the frame backward will increase the back distance with respect to 
+             * the current tag (and thus increase the maximal distance).
+             *
+             * If the previous maximal distance was at the front, shifting the frame backward may 
+             * decrease the front distance with respect to the current tag. However, we note that 
+             * because of optimality, having a previous maximal distance at the front must mean
+             * that a back-shifted frame will result in an even larger previous maximal distance at 
+             * the back (otherwise the optimal frame would be located further back to start with). In 
+             * short, shifting the frame backwards will flip the maximal distance to that of the back
+             * distance which is even larger than the non-shifted forward distance.
+             *
+             * Thus, the frame can only go forwards. Note that below, the frame is defined by 
+             * the 'end' position which notes the end point of the current frame. The start
+             * point is inherently defined by revolving around the minimum point.
              */
             back_dist=cur_point-x_ptr[frame_end-span+2];
             front_dist=x_ptr[frame_end+1]-cur_point;
@@ -77,7 +88,7 @@ SEXP lowess_by_col(SEXP x, SEXP y, SEXP n_cols, SEXP s) {
              * to the algorithm (rather than being blocked off by inequalities introduced by
              * double imprecision).
              */
-            const double diff=next_max-max_dist;
+            const double diff=(next_max-max_dist)/max_dist;
             if (diff > low_value) { 
                 break; 
             } else if (diff < 0) {
@@ -85,6 +96,14 @@ SEXP lowess_by_col(SEXP x, SEXP y, SEXP n_cols, SEXP s) {
             }
             ++frame_end;
         }
+
+		/* If there aren't any columns, there isn't much point doing all the hoopla; so
+		 * we'll just return the maximum distance in the 'weights' column and break.
+		 */
+		if (ncols==0) { 
+			w_ptr[cur_p]=max_dist;
+			continue; 
+		}
 
         /* Now that we've located our optimal window, we can calculate the weighted average
          * across the points in the window (weighted according to distance from the current point).
