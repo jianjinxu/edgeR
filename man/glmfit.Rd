@@ -26,16 +26,15 @@ Defaults to a single column of ones, equivalent to treating the columns as repli
 
 \item{dispersion}{numeric scalar or vector providing the value for the dispersion parameter that is used in fitting the GLM for each transcript. Can be a common value for all tags, or a vector of values can provide a unique dispersion value for each tag. If \code{NULL} will be extracted from \code{y}, with order of precedence: tagwise dispersion, trended dispersions, common dispersion.}
 
-\item{offset}{numeric scalar, vector or matrix giving the offset that is to be included in the NB GLM for the transcripts. Only one of \code{offset} and \code{lib.size} should be supplied---if both are supplied then \code{offset} will be used and \code{lib.size} will be ignored. If a scalar, then this value will be used as an offset for all transcripts and libraries. If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each transcript. If a matrix, then each library for each transcript can have a unique offset, if desired.
-Defaults to the log normalized library sizes.}
+\item{offset}{numeric matrix of same size as \code{y} giving offsets for the log-linear models.  Can be a scalor or a vector of length \code{ncol{y}}, in which case it is expanded out to a matrix.}
 
 \item{weights}{optional numeric matrix giving prior weights for the observations (for each library and transcript) to be used in the GLM calculations.  Not supported by methods \code{"linesearch"} or \code{"levenberg"}.}
 
-\item{lib.size}{optional numeric vector providing the (effective) library size for each library (must have length equal to the number of columns, or libraries, in the matrix of counts). If \code{NULL}, then a default is used. If \code{y} is a \code{DGEList} object then the default for \code{lib.size} is the product of the library sizes and the normalization factors (in the \code{samples} slot of the object). If \code{y} is a simple matrix of counts, then the default for \code{lib.size} is the vector of column sums of \code{y}.}
+\item{lib.size}{numeric vector of length \code{ncol(y)} giving library sizes. Only used if \code{offset=NULL}, in which case \code{offset} is set to \code{log(lib.size}). Defaults to \code{colSums(y)}.}
 
 \item{prior.count.total}{the total number of prior counts to be added to each row of data to shrink the estimated log-fold-changes towards zero.}
 
-\item{start}{optional numeric matrix of initial estimates for the fitted coefficients.}
+\item{start}{optional numeric matrix of initial estimates for the linear model coefficients.}
 
 \item{method}{which fitting algorithm to use.  Possible values are \code{"auto"}, \code{"linesearch"}, \code{"levenberg"} or \code{"simple"}.}
 

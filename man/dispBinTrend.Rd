@@ -8,28 +8,29 @@ Estimate a dispersion parameter for each of many negative binomial generalized l
 }
 
 \usage{
-dispBinTrend(y, design, offset=NULL, df = 5, span=2/3, min.n=500, method.bin="CoxReid", method.trend="spline", trace=0, ...)
+dispBinTrend(y, design=NULL, offset=NULL, df = 5, span=2/3, min.n=400, method.bin="CoxReid", method.trend="spline", trace=0, abundance=NULL, ...)
 }
 
-\arguments{ 
-
+\arguments{
 \item{y}{numeric matrix of counts}
 
 \item{design}{numeric matrix giving the design matrix for the GLM that is to be fit.}
 
 \item{offset}{numeric scalar, vector or matrix giving the offset (in addition to the log of the effective library size) that is to be included in the NB GLM for the transcripts. If a scalar, then this value will be used as an offset for all transcripts and libraries. If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each transcript. If a matrix, then each library for each transcript can have a unique offset, if desired. In \code{adjustedProfileLik} the \code{offset} must be a matrix with the same dimension as the table of counts.}
 
-\item{df}{scalar, the degrees of freedom for the natural cubic splines fit, used to determine the placement of the knots (number of knots is \code{df - 1}. Default is \code{5}.}
+\item{df}{scalar integer, the degrees of freedom for the natural cubic splines fit, used to determine the placement of the knots (number of knots is \code{df - 1}.}
 
-\item{span}{scalar, passed to \code{loess} to determine the amount of smoothing for the loess fit. Default is \code{2/3}.}
+\item{span}{scalar between 0 and 1, passed to \code{loess} to determine the amount of smoothing for the loess fit.}
 
-\item{min.n}{scalar, minimim number of genes in each of the bins into which genes are sorted to form the basis for interpolating the dispersions. Setting a minimum value ensures that there will be sufficient genes in each bin to allow reliable estimation of the common dispersion for each bin.}
+\item{min.n}{scalar integer, minimim number of genes in each of the bins.}
 
 \item{method.bin}{character, passed to \code{binGLMDispersion}, to specify the method used to compute the common dispersion within each bin of genes. Default is \code{"CoxReid"}, other options are \code{"Pearson"} and \code{"deviance"}.}
 
 \item{method.trend}{character, specifies method to produce a smooth fit through the binned common dispersions in order to interpolate the trended dispersions. Default is \code{"spline"} to use natural cubic splines, other option is \code{"loess"} to use a loess fit.}
 
 \item{trace}{logical, should iteration information be output?}
+
+\item{abundance}{numeric vector giving abundance of each gene}
 
 \item{\ldots}{option arguments to be passed to lower-level function \code{binGLMDispersion}.}
 }

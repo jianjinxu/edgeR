@@ -15,7 +15,7 @@ exactTest <- function(object, pair=1:2, dispersion="auto", rejection.region="dou
 		pair <- levs.group[pair]
 	else
 		pair <- as.character(pair)	
-	if(!all(pair %in% levs.group)) stop("At least one element of given pair is not a group.\n Groups are: ", paste(levs.group, collapse=" "), "\n")
+	if(!all(pair %in% levs.group)) stop("At least one element of given pair is not a group.\n Groups are: ", paste(levs.group, collapse=" "))
 
 #	Get dispersion vector
 	if(is.null(dispersion)) dispersion <- "auto"

@@ -1,84 +1,40 @@
 adjustedProfileLik <- function(dispersion, y, design, offset, adjust=TRUE)
-## tagwise Cox-Reid adjusted profile likelihoods for the dispersion
-## dispersion can be scalar or tagwise vector
-## y is matrix: rows are genes/tags/transcripts, columns are samples/libraries
-## offset is matrix of the same dimensions as y
-## Yunshun Chen, Gordon Smyth
-## Created June 2010. Last modified 27 June 2011.
+# tagwise Cox-Reid adjusted profile likelihoods for the dispersion
+# dispersion can be scalar or tagwise vector
+# y is matrix: rows are genes/tags/transcripts, columns are samples/libraries
+# offset is matrix of the same dimensions as y
+# Yunshun Chen, Gordon Smyth, Aaron Lun
+# Created June 2010. Last modified 21 Aug 2012.
 {
 	if(any(dim(y)!=dim(offset))) offset <- expandAsMatrix(offset,dim(y))
 	ntags <- nrow(y)
 	nlibs <- ncol(y)
 	if(length(dispersion)==1) dispersion <- rep(dispersion,ntags)
 
-#	Fit tagwise linear models
-#	ls <- mglmLS(y, design, dispersion, offset = offset)
+#	Fit tagwise linear models. This is actually the most time-consuming
+#	operation that I can see for this function.
 	fit <- glmFit(y,design=design,dispersion=dispersion,offset=offset)
 
-#	Compute log-likelihood
+#	Compute log-likelihood.
 	mu <- fit$fitted
 	if(dispersion[1] == 0){
 		loglik <- rowSums(dpois(y,lambda=mu,log = TRUE))
 	} else {
 		loglik <- rowSums(dnbinom(y,size=1/dispersion,mu=mu,log = TRUE))
 	}
-	if(!adjust) return(loglik)
-	
-#	Cox-Reid adjustment
-	if(ncol(design)==1){
+	if (!adjust) {
+		return(loglik)
+	}
+		
+#	Calculating the Cox-Reid adjustment.
+	if(ncol(design)==1) {
 		D <- sum(mu/(1+mu*dispersion))
 		cr <- 0.5*log(abs(D))
 	} else {
-		A <- .vectorizedXWX(design, mu, dispersion)
-		D <- .vectorizedLDL(A)
-		D <- pmax(D,1e-10)
-		cr <- 0.5*rowSums(log(abs(D)))
+		W <- mu/(1+dispersion*mu)
+		cr<-.Call("cr_adjustment", W, design, nrow(design), PACKAGE="edgeR")
 	}
-	
-	loglik - cr
+ 
+	return(loglik - cr)
 }
 
-
-.vectorizedXWX <- function(design, fitted, dispersion)
-#	XWX in packed form, tagwise in rows of matrix
-{
-	ntags <- nrow(fitted)
-	nlibs <- ncol(fitted)
-	ncoef <- ncol(design)
-	W <- fitted/(1+dispersion*fitted)
-	A <- matrix(0,ntags,ncoef*(ncoef+1)/2)
-	colstart <- 0
-	for (i in 1:ncoef) {
-		WX <- t(design[,i] * t(W))
-		colstart <- colstart
-		A[,colstart+(1:i)] <- WX %*% design[,1:i]
-		colstart <- colstart+i
-	}
-	A
-}
-
-.vectorizedLDL <- function(A)
-## LDL decomposition of XWX in packed form
-## Each row of A represents a XWX matrix
-## Only the elements of D are returned in corresponding rows
-{
-	p <- floor(sqrt(2*ncol(A)))
-	cum <- c(0,0,cumsum(1:p))
-	if(cum[p+2] != ncol(A))
-		stop("Dimension doesn't match!")
-	index.l <- (1:cum[p+2])[-cum]
-	d <- matrix(0, nrow(A), p)
-	l <- matrix(0, nrow(A), cum[p+1])
-	for(j in 1:(p-1)){		
-		d[,j] <- A[,cum[j+2]] - rowSums(as.matrix(l[,(cum[j]+1):(cum[j]+j-1)]^2 * d[,1:(j-1)]))
-		for(i in (j+1):p){
-			if(j == 1){
-				l[,cum[i]+j] <- ifelse(d[,j]>0,A[,cum[i+1]+j]/d[,j],0)
-			} else {
-				l[,cum[i]+j] <- ifelse(d[,j]>0,(A[,cum[i+1]+j] - rowSums(as.matrix(l[,(cum[i]+1):(cum[i]+j-1)]*l[,(cum[j]+1):(cum[j]+j-1)]*d[,1:(j-1)])))/d[,j],0)
-			}
-		}
-	}
-	d[,p] <- A[,cum[p+2]] - rowSums(as.matrix(l[,(cum[p]+1):(cum[p]+p-1)]^2 * d[,1:(p-1)]))
-	return(d)
-}

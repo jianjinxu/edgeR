@@ -10,11 +10,10 @@ Estimates the common dispersion parameter for each of a number of bins of data f
 
 \usage{
 binCMLDispersion(y, nbins=50)
-binGLMDispersion(y, design, min.n=500, offset=NULL,  method="CoxReid", ...)
+binGLMDispersion(y, design, offset=NULL, min.n=100, method="CoxReid", abundance=NULL, ...)
 }
 
-\arguments{ 
-
+\arguments{
 \item{y}{an object that contains the raw counts for each library (the measure of expression level); it can either be a matrix of counts, or a \code{DGEList} object with (at least) elements \code{counts} (table of unadjusted counts) and \code{samples} (data frame containing information about experimental group, library size and normalization factor for the library size)}
 
 \item{nbins}{scalar, the number of bins for which to compute common dispersions. Default is \code{50} bins.}
@@ -27,6 +26,8 @@ binGLMDispersion(y, design, min.n=500, offset=NULL,  method="CoxReid", ...)
 
 \item{method}{method  used to estimated the dispersion. Argument passed to \code{\link{estimateGLMCommonDisp}}, which calls the functions to do the computations. Possible values are \code{"CoxReid"}, \code{"Pearson"} or \code{"deviance"}.}
 
+\item{abundance}{numeric vector giving abundance of each gene}
+
 \item{\ldots}{other arguments are passed to lower-level functions.}
 }
 
@@ -38,8 +39,10 @@ Returns a list with two components:
 
 \details{
 To obtain estimates of the common dispersion parameters conditional maximum likelihood (\code{\link{estimateCommonDisp}}) is used for \code{binCMLDispersion} and one of Cox-Reid approximate conditional inference (\code{\link{dispCoxReid}}), the deviance (\code{\link{dispDeviance}}) or Pearson (\code{\link{dispPearson}}) estimates are used for \code{binGLMDispersion}. Genes are assigned to bins using the \code{\link{cutWithMinN}} function to obtain bins spread over the abundance range of the genes while ensuring that each bin has a minimum number of genes, thus permitting reliable estimation of the common dispersion for each bin.
-}
 
+If there are fewer than \code{min.n} rows of \code{y}, then one bin is used.
+The number of bins is limited to 1000.
+}
 
 \references{
 Cox, DR, and Reid, N (1987). Parameter orthogonality and approximate conditional inference. \emph{Journal of the Royal Statistical Society Series B} 49, 1-39.

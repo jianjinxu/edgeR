@@ -1,5 +1,6 @@
 \name{loessByCol}
 \alias{loessByCol}
+\alias{locfitByCol}
 
 \title{Locally Weighted Mean By Column}
 
@@ -7,25 +8,34 @@
 
 \usage{
 loessByCol(y, x=NULL, span=0.5)
+locfitByCol(y, x=NULL, weights=1, span=0.5, degree=0)
 }
 
-\arguments{ 
+\arguments{
+\item{y}{numeric matrix of response variables.}
 
-\item{y}{numeric matrix of response variables. Each row corresponds to an entry in the covariate vector.}
-
-\item{x}{numeric covariate vector, defaults to equally spaced.}
+\item{x}{numeric covariate vector of length \code{nrow(y)}, defaults to equally spaced.}
 
 \item{span}{width of the smoothing window, in terms of proportion of the data set. Larger values produce smoother curves.}
+
+\item{weights}{relative weights of each observation, one for each covariate value.}
+
+\item{degree}{degree of local polynomial fit}
 }
 
-\value{numeric matrix with smoothed columns.}
+\value{A list containing a numeric matrix with smoothed columns and a vector of leverages for each covariate value.
+
+\code{locfitByCol} returns a numeric matrix.
+}
 
 \details{
-Given a matrix of response, \code{loessByCol} fits a loess curve with degree 0 to each column of the response matrix.
+Fits a loess curve with degree 0 to each column of the response matrix, using the same covariate vector for each column.
 The smoothed column values are tricube-weighted means of the original values.
+
+\code{locfitByCol} uses the \code{locfit.raw} function of the \code{locfit} package.
 }
 
-\author{Aaron Lun, replacing earlier R code by Davis McCarthy}
+\author{Aaron Lun for \code{loessByCol}, replacing earlier R code by Davis McCarthy. Gordon Smyth for \code{locfitByCol}.}
 
 \seealso{
 \code{\link{loess}}

@@ -1,7 +1,7 @@
 estimateCommonDisp <- function(object,tol=1e-06,rowsum.filter=5,verbose=FALSE)
-# Do two iterations of calculating pseudodata and estimating common dispersion, first one uses Poisson
+# Do two iterations of calculating pseudodata and estimating common dispersion
 # Davis McCarthy, Mark Robinson, Gordon Smyth.
-# Created 2009. Last modified 26 July 2012.
+# Created 2009. Last modified 2 Aug 2012.
 {
 	if(!is(object,"DGEList")) stop("Currently supports DGEList objects")
 	group <- object$samples$group <- as.factor(object$samples$group)
@@ -14,7 +14,9 @@ estimateCommonDisp <- function(object,tol=1e-06,rowsum.filter=5,verbose=FALSE)
 
 	tags.used <- rowSums(object$counts) > rowsum.filter
 	pseudo.obj <- object[tags.used,]
-	disp <- 0
+
+#	Start from small dispersion
+	disp <- 0.01
 	for(i in 1:2) {
 		out <- equalizeLibSizes(object,dispersion=disp)
 		pseudo.obj$counts <- out$pseudo.counts[tags.used,,drop=FALSE]

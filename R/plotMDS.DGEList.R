@@ -40,7 +40,11 @@ plotMDS.DGEList <- function (x, top=500, labels=colnames(x), col=NULL, cex=1, di
 		}
 	}
 
+#	Securing against negative eigenvalues with non-Euclidian distance matrices.
 	a1 <- cmdscale(as.dist(dd), k = ndim)
+	ndiff<-ndim-ncol(a1)
+	if (ndiff > 0) a1<-cbind(a1, matrix(runif(ndiff*nsamples, -1e-6, 1e-6), ncol=ndiff, nrow=nsamples))
+
 	mds <- new("MDS",list(dim.plot=dim.plot,distance.matrix=dd,cmdscale.out=a1,top=top))
 	mds$x <- a1[,dim.plot[1]]
 	mds$y <- a1[,dim.plot[2]]
