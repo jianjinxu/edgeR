@@ -1,5 +1,4 @@
 \name{plotSmear}
-\Rdversion{1.1}
 \alias{plotSmear}
 \title{
 Plots log-Fold Change versus log-Concentration (or, M versus A) for Count Data
@@ -24,7 +23,7 @@ smooth.scatter=FALSE, lowess=FALSE, ...)
   \item{cex}{character expansion factor, numerical value giving the amount by which plotting text and symbols should be magnified relative to the default; default \code{cex=0.2} to make the plotted points smaller}
   \item{smearWidth}{width of the smear}
   \item{panel.first}{an expression to be evaluated after the plot axes are set up but before any plotting takes place; the default \code{grid()} draws a background grid to aid interpretation of the plot}
-  \item{smooth.scatter}{logical, whether to produce a 'smooth scatter' plot using the KernSmooth::smoothScatter function or just a regular scatter plot; default is \code{FALSE}, i.e. produce a regular scatter plot}
+  \item{smooth.scatter}{logical, whether to produce a 'smooth scatter' plot using the \code{KernSmooth::smoothScatter} function or just a regular scatter plot; default is \code{FALSE}, i.e. produce a regular scatter plot}
   \item{lowess}{logical, indicating whether or not to add a lowess curve to the MA-plot to give an indication of any trend in teh log-fold change with log-concentration}
   \item{\dots}{further arguments passed on to \code{plot}}
 }
@@ -56,4 +55,3 @@ de.tags <- rownames(topTags(de, n=500)$table)
 plotSmear(d, de.tags=de.tags)
 
 }
-\keyword{file}
