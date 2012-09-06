@@ -1,4 +1,45 @@
-goodTuring <- function(x,plot=FALSE)
+goodTuring <- function(x, conf=1.96)
+#	Simple Good-Turing algorithm for frequency estimation
+#	as described by Gale and Sampson (1995)
+
+#  Sampson's C code translated to C++ and optimized by Aaron Lun
+#	Has been tested against Sampson's C code from
+#	http://www.grsampson.net/RGoodTur.html
+#	and gives identical results.
+
+#	Gordon Smyth and Aaron Lun
+#	9 Nov 2010.  Last modified 6 Sep 2012.
+{
+#	Raw frequencies
+	if(max(x) < 10*length(x)) {
+		n <- tabulate(x+1L)
+		n0 <- n[1]
+		n <- n[-1]
+		max.x <- length(n)
+		r <- seq.int(from=1L,to=max.x)
+		r <- r[n>0]
+		n <- n[n>0]
+	} else {
+		n <- table(x)
+		r <- as.integer(names(n))
+		if(r[1]==0) {
+			n0 <- n[1]
+			n <- n[-1]
+			r <- r[-1]
+		} else {
+			n0 <- 0
+		}
+	}
+
+#	SGT algorithm
+	out <- .Call("simple_good_turing", r, n, conf, PACKAGE="edgeR")
+	names(out) <- c("P0","proportion")
+
+	out$n0 <- n0
+	out
+}
+
+goodTuringPlot <- function(x)
 #	Simple Good-Turing algorithm for frequency estimation
 #	as described by Gale and Sampson (1995)
 
@@ -24,36 +65,9 @@ goodTuring <- function(x,plot=FALSE)
 	z <- n.pos/q
 	design <- cbind(1,log(r.pos))
 	fit <- lm.fit(x=design,y=log(z))
-	if(plot) {
-		plot(log(r.pos),log(z),xlab="log count",ylab="log frequency")
-		abline(fit)
-	}
-
-#	Smoothed counts and ratios
-	r.long <- c(r,max.x+1L)
-	n.long.smooth <- exp(fit$coef[1]+fit$coef[2]*log(r.long))
-	ratio.smooth <- n.long.smooth[r+1L]/n.long.smooth[r]
-
-#	Empirical ratios
-	n.long <- c(n,n[max.x])
-	ratio <- n.long[r+1L]/n
-
-#	Posterior expectations
-	r.post.smooth <- (r+1L)*ratio.smooth
-	r.post <- (r+1L)*ratio
-
-#	Combine empirical and smoothed expectations
-	se <- (r+1)*sqrt(ratio/n*(1+ratio))
-	z.stat <- (r.post-r.post.smooth)/se
-	first.r.equivalent <- which(abs(z.stat)<1.96)[1]
-	if(first.r.equivalent>1) r.post.smooth[1:(first.r.equivalent-1)] <- r.post[1:(first.r.equivalent-1)]
-	r.pos.post <- r.post.smooth[n>0]
-
-#	Estimated frequencies
-	N <- sum(n.pos*r.pos)
-	P0 <- n[1]/N
-	N.post <- sum(n.pos*r.pos.post)
-	list(count=r.pos,proportion=(1-P0)*r.pos.post/N.post,P0=P0,n0=n0)
+	plot(log(r.pos),log(z),xlab="log count",ylab="log frequency")
+	abline(fit)
+	invisible(list(r=r.pos,n=n.pos))
 }
 
 goodTuringProportions <- function(counts)

@@ -14,6 +14,7 @@ plotMDS.DGEList <- function (x, top=500, labels=colnames(x), col=NULL, cex=1, di
 
 #	Check value for labels
 	if(is.null(labels)) labels <- 1:nsamples
+	labels <- as.character(labels)
 
 #	Check value for dim.plot
 	if(nsamples < ndim) stop("Dimension to be plotted is greater than number of libraries")
