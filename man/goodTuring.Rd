@@ -22,9 +22,10 @@ goodTuringProportions(counts)}
 \value{
 \code{goodTuring} returns a list with components
 	\item{count}{observed frequencies, i.e., the unique positive values of \code{x}}
+	\item{n}{frequencies of frequencies}
+	\item{n0}{frequency of zero, i.e., number of zeros found in \code{x}}
 	\item{proportion}{estimated proportion of each species given its count}
 	\item{P0}{estimated combined proportion of all undetected species}
-	\item{n0}{number of zeros found in \code{x}}
 \code{goodTuringProportions} returns a matrix of proportions of the same size
 as \code{counts}.
 }

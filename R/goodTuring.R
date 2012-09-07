@@ -11,7 +11,8 @@ goodTuring <- function(x, conf=1.96)
 #	9 Nov 2010.  Last modified 6 Sep 2012.
 {
 #	Raw frequencies
-	if(max(x) < 10*length(x)) {
+	x <- as.integer(x)
+	if(max(x) < length(x)) {
 		n <- tabulate(x+1L)
 		n0 <- n[1]
 		n <- n[-1]
@@ -20,8 +21,9 @@ goodTuring <- function(x, conf=1.96)
 		r <- r[n>0]
 		n <- n[n>0]
 	} else {
-		n <- table(x)
-		r <- as.integer(names(n))
+		r <- sort(unique(x))
+		z <- match(x,r)
+		n <- tabulate(z)
 		if(r[1]==0) {
 			n0 <- n[1]
 			n <- n[-1]
@@ -35,6 +37,8 @@ goodTuring <- function(x, conf=1.96)
 	out <- .Call("simple_good_turing", r, n, conf, PACKAGE="edgeR")
 	names(out) <- c("P0","proportion")
 
+	out$count <- r
+	out$n <- n
 	out$n0 <- n0
 	out
 }
