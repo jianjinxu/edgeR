@@ -3,6 +3,12 @@
 \encoding{UTF-8}
 
 
+
+\section{Version 2.99.8}{\itemize{
+\item
+New section on additive experimental designs in User's Guide.
+}}
+
 \section{Version 2.99.4}{\itemize{
 \item
 New chapter on experimental designs in User's Guide.
