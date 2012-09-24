@@ -8,8 +8,9 @@
 
 
 \usage{
-plotMeanVar(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE, show.binned.common.disp.vars=FALSE,
-            show.ave.raw.vars=TRUE, scalar=NULL, NBline=FALSE, nbins=100, log.axes="xy", xlab=NULL, ylab=NULL,  ...) 
+plotMeanVar(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE,
+     show.binned.common.disp.vars=FALSE, show.ave.raw.vars=TRUE, scalar=NULL,
+     NBline=FALSE, nbins=100, log.axes="xy", xlab=NULL, ylab=NULL,  ...) 
 binMeanVar(x, group, nbins=100, common.dispersion=FALSE, object=NULL)
 }
 

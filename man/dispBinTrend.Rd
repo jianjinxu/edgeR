@@ -8,7 +8,8 @@ Estimate a dispersion parameter for each of many negative binomial generalized l
 }
 
 \usage{
-dispBinTrend(y, design=NULL, offset=NULL, df = 5, span=2/3, min.n=400, method.bin="CoxReid", method.trend="spline", trace=0, abundance=NULL, ...)
+dispBinTrend(y, design=NULL, offset=NULL, df = 5, span=2/3, min.n=400, method.bin="CoxReid",
+          method.trend="spline", trace=0, abundance=NULL, ...)
 }
 
 \arguments{

@@ -9,7 +9,8 @@ DGEList Constructor
 Creates a \code{DGEList} object from a table of counts (rows=features, columns=samples), group indicator for each column, library size (optional) and a table of feature annotation (optional).
 }
 \usage{
-DGEList(counts = matrix(0, 0, 0), lib.size = NULL, norm.factors = NULL, group = rep.int(1,ncol(counts)), genes = NULL, remove.zeros = FALSE)
+DGEList(counts = matrix(0, 0, 0), lib.size = NULL, norm.factors = NULL,
+     group = rep.int(1,ncol(counts)), genes = NULL, remove.zeros = FALSE)
 }
 \arguments{
   \item{counts}{numeric matrix containing the read counts.}

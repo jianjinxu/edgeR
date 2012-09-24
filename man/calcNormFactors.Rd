@@ -5,7 +5,8 @@
 Calculate normalization factors to scale the raw library sizes.
 }
 \usage{
-calcNormFactors(object, method=c("TMM","RLE","upperquartile"), refColumn = NULL, logratioTrim = .3, sumTrim = 0.05, doWeighting=TRUE, Acutoff=-1e10, p=0.75)
+calcNormFactors(object, method=c("TMM","RLE","upperquartile"), refColumn = NULL,
+      logratioTrim = .3, sumTrim = 0.05, doWeighting=TRUE, Acutoff=-1e10, p=0.75)
 }
 \arguments{
   \item{object}{either a \code{matrix} of raw (read) counts or a \code{DGEList} object}

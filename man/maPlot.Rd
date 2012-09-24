@@ -9,7 +9,9 @@ Plots Log-Fold Change versus Log-Concentration (or, M versus A) for Count Data
 To represent counts that were low (e.g. zero in 1 library and non-zero in the other) in one of the two conditions, a 'smear' of points at low A value is presented.
 }
 \usage{
-maPlot(x, y, logAbundance=NULL, logFC=NULL, normalize=FALSE, plot.it=TRUE, smearWidth = 1, col = NULL, allCol = "black", lowCol = "orange", deCol="red", de.tags=NULL, smooth.scatter=FALSE, lowess=FALSE, ...)
+maPlot(x, y, logAbundance=NULL, logFC=NULL, normalize=FALSE, plot.it=TRUE,
+     smearWidth=1, col=NULL, allCol="black", lowCol="orange", deCol="red",
+     de.tags=NULL, smooth.scatter=FALSE, lowess=FALSE, ...)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

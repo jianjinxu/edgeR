@@ -19,7 +19,8 @@ mglmLS(y, design, dispersion=0, offset=0, coef.start=NULL, tol=1e-5, maxit=50, t
 mglmOneGroup(y, dispersion=0, offset=0, maxit=50, trace=FALSE, tol=1e-6)
 mglmOneWay(y, design=NULL, dispersion=0, offset=0, maxit=50, trace=FALSE)
 mglmSimple(y, design, dispersion=0, offset=0, weights=NULL)
-mglmLevenberg(y, design, dispersion=0, offset=0, coef.start=NULL, start.method="null", tol=1e-06, maxit=200)
+mglmLevenberg(y, design, dispersion=0, offset=0, coef.start=NULL, start.method="null",
+          tol=1e-06, maxit=200)
 deviances.function(dispersion)
 designAsFactor(design)
 }

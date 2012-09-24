@@ -10,8 +10,10 @@ Compute an empirical Bayes estimate of the negative binomial dispersion paramete
 }
 
 \usage{
-\S3method{estimateGLMTagwiseDisp}{DGEList}(y, design=NULL, offset=NULL, dispersion=NULL, trend=!is.null(y$trended.dispersion), prior.df=20, span=NULL, ...)
-\S3method{estimateGLMTagwiseDisp}{default}(y, design=NULL, offset=NULL, dispersion, trend=TRUE, prior.df=20, span=NULL, ...)
+\S3method{estimateGLMTagwiseDisp}{DGEList}(y, design=NULL, offset=NULL, dispersion=NULL,
+          trend=!is.null(y$trended.dispersion), prior.df=20, span=NULL, ...)
+\S3method{estimateGLMTagwiseDisp}{default}(y, design=NULL, offset=NULL, dispersion, trend=TRUE,
+          prior.df=20, span=NULL, ...)
 }
 
 \arguments{
