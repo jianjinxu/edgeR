@@ -8,7 +8,7 @@ goodTuring <- function(x, conf=1.96)
 #	and gives identical results.
 
 #	Gordon Smyth and Aaron Lun
-#	9 Nov 2010.  Last modified 6 Sep 2012.
+#	9 Nov 2010.  Last modified 7 Sep 2012.
 {
 #	Raw frequencies
 	x <- as.integer(x)

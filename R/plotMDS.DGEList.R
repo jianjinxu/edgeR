@@ -9,9 +9,6 @@ plotMDS.DGEList <- function (x, top=500, labels=colnames(x), col=NULL, cex=1, di
 	nprobes <- nrow(x)
 	nsamples <- ncol(x)
 
-#	Check value for top
-	top <- min(top,nprobes)
-
 #	Check value for labels
 	if(is.null(labels)) labels <- 1:nsamples
 	labels <- as.character(labels)
@@ -24,18 +21,25 @@ plotMDS.DGEList <- function (x, top=500, labels=colnames(x), col=NULL, cex=1, di
 	cn <- colnames(x)
 	dd <- matrix(0,nrow=nsamples,ncol=nsamples,dimnames=list(cn,cn))	
 
-	twd <- estimateTagwiseDisp(estimateCommonDisp(x), grid.length = 100) # <- unnecessary with spline interpolation?
-	o <- order(twd$tagwise.dispersion, decreasing = TRUE)[1:min(nprobes,top)]
-	subdata <- x$counts[o,]
+#	Check value for top
+	if (top < nprobes) { 
+		twd <- estimateTagwiseDisp(estimateCommonDisp(x), grid.length = 100) 
+		o <- order(twd$tagwise.dispersion, decreasing = TRUE)[1:top]
+		subdata <- x$counts[o,,drop=FALSE]
+	} else {
+		subdata<-x$counts
+	}
 
-	gm <- function(x) exp( mean(log(x)) )
+#	gm <- function(x) exp(mean(log(x)))
 	myFun <- function(delta, y, ...) sum(condLogLikDerDelta(y, delta, ...))
 
 	for (i in 2:(nsamples)) {
 		for (j in 1:(i - 1))  {
 			mm <- subdata[,c(i,j)]
 			rs5 <- rowSums(mm) > 5
-			norm <- t( t(mm) / colSums(mm) )*gm(colSums(mm))
+#			norm <- t(t(mm)/colSums(mm)) * gm(colSums(mm))
+			lib<-x$samples$lib.size[c(i, j)]
+			norm <- t(t(mm)/lib) * exp(mean(log(lib)))
 			delta <- optimize(myFun, interval = c(0.0001,.99), tol = 0.000001, maximum = TRUE, y = norm[rs5,], der = 0)
 			dd[i, j] = sqrt( delta$maximum / (1-delta$maximum) )
 		}

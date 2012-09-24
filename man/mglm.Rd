@@ -56,12 +56,11 @@ The functions \code{mglmLS}, \code{mglmOneGroup} and \code{mglmSimple} all fit n
 The functions are all low-level functions in that they operate on atomic objects such as matrices.
 They are used as work-horses by higher-level functions in the edgeR package, especially by \code{glmFit}.
 
-\code{mglmOneGroup} and \code{mglmOneGroup2} fit the null model, with intercept term only, to each response vector.
+\code{mglmOneGroup} fit the null model, with intercept term only, to each response vector.
 In other words, it treats the libraries as belonging to one group.
 It implements Fisher scoring with a score-statistic stopping criterion for each tag.
 Excellent starting values are available for the null model, so this function seldom has any problems with convergence.
 It is used by other edgeR functions to compute the overall abundance for each tag.
-\code{mglmOneGroup2} is substantially faster as it calls a compiled C++ library to perform the loop operations.
 
 \code{mglmLS} fits an arbitrary log-linear model to each response vector.
 It implements a vectorized approximate scoring algorithm with a likelihood derivative stopping criterion for each tag.
@@ -78,7 +77,6 @@ and is implemented in C++.
 All these functions treat the dispersion parameter of the negative binomial distribution as a known input.
 
 \code{deviances.function} simply chooses the appropriate deviance function to use given a scalar or vector of dispersion parameters. If the dispersion values are zero, then the Poisson deviance function is returned; if the dispersion values are positive, then the negative binomial deviance function is returned.
-
 }
 
 \value{
@@ -134,5 +132,3 @@ head(fit$coefficients)
 \seealso{
 \code{\link{glmFit}}, for more object-orientated GLM modelling for DGE data.
 }
-
-\keyword{algebra}

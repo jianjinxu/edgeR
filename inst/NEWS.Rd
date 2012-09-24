@@ -4,6 +4,14 @@
 
 
 
+\section{Version 2.99.9}{\itemize{
+\item
+glmQLFTest() now ensures that no p-value is smaller than what would be obtained by treating the likelihood ratio test statistic as chisquare.
+
+\item
+User's Guide refreshed.
+}}
+
 \section{Version 2.99.8}{\itemize{
 \item
 New section on additive experimental designs in User's Guide.

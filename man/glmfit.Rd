@@ -8,7 +8,7 @@
 \title{Genewise Negative Binomial Generalized Linear Mdels}
 
 \description{Fit a negative binomial generalized log-linear model to the read counts for each gene or transcript.
-Conduct statistical tests based on the fitted models.}
+Conduct genewise statistical tests for a given coefficient or coefficient contrast.}
 
 \usage{
 \method{glmFit}{DGEList}(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL,
@@ -40,7 +40,7 @@ Defaults to a single column of ones, equivalent to treating the columns as repli
 
 \item{...}{other arguments are passed to lower-level functions, for example to \code{mglmLS}.}
 
-\item{glmfit}{a \code{DGEGLM} object, usually as output from \code{glmFit}.}
+\item{glmfit}{a \code{DGEGLM} object, usually output from \code{glmFit}.}
 
 \item{coef}{integer or character vector indicating which coefficients of the linear model are to be tested equal to zero.  Values must be columns or column names of \code{design}. Defaults to the last coefficient.  Ignored if \code{contrast} is specified.}
 

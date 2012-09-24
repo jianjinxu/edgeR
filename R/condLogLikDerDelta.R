@@ -1,8 +1,8 @@
-condLogLikDerDelta<-function(y,delta,der=1L)
-# Written by Mark Robinson, edited by Davis McCarthy, February 2009
-# A function to calculate derivatives of the log-likelihood function
+condLogLikDerDelta <- function(y,delta,der=1L)
+# Derivatives of log-likelihood function wrt to delta
 # r=1/dispersion and delta=1/(1+r)=dispersion/(1+dispersion)
 # der is order of derivative required (0th deriv is the function)
+# Written by Mark Robinson, edited by Davis McCarthy, February 2009
 {
 #	Vector interpreted as matrix of one row, i.e., one gene
 	if (is.vector(y)) {
