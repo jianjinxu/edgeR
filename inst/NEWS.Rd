@@ -15,6 +15,15 @@ User's Guide refreshed.
 \section{Version 2.99.8}{\itemize{
 \item
 New section on additive experimental designs in User's Guide.
+
+\item
+New function locfitByCol() for smoothing columns of matrix by non-robust loess curves.
+
+\item
+New C++ code for adjustedProfileLik().
+
+\item
+New function goodTuringPlot() for plotting log-probability versus log-frequency.
 }}
 
 \section{Version 2.99.4}{\itemize{
@@ -29,9 +38,15 @@ Vectorized C++ version of maximizeInterpolant.
 
 \item
 The argument y, previously the first argument of glmLRT, is no longer required.
+
+\item
+Added plot.it argument to maPlot().
 }}
 
 \section{Version 2.6.5}{\itemize{
+\item
+estimateTagwiseDisp() now has prior.df argument instead of prior.n.
+
 \item
 gof() now optionally produces a qq-plot of the genewise goodness of fit statistics.
 }}
@@ -56,6 +71,30 @@ New argument verbose for estimateCommonDisp() and estimateGLMCommonDisp().
 
 \item
 Many updates to the help pages and the User's Guide.
+
+\item
+The span used by estimateGLMTagwiseDisp() is now chosen by default as a decreasing function of the number of tags in the dataset.
+
+\item
+New value "loess" for trend argument of estimateTagwiseDisp. The "tricube" method is also updated.
+
+\item
+Removing functions weightedComLik() and weightedComLikMA().
+
+\item
+estimateGLMTagwiseDisp() and dispCoxReidInterpolateTagwise() now use prior.df instead of prior.n.
+
+\item
+Removing functions estimateSmoothing() and approx.expected.info() as no longer recommended.
+
+\item
+Argument null.hypothesis removed from equalizeLibSizes().
+
+\item
+DGEList now longer outputs all.zeros component.
+
+\item
+New function loessByCol().
 }}
 
 
