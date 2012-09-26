@@ -19,8 +19,6 @@ predFC.default <- function(y,design=NULL,prior.count.total=0.5,offset=log(colSum
 	y <- as.matrix(y)
 	ngenes <- nrow(y)
 	nsamples <- ncol(y)
-	pfc <- rep(0,ngenes)
-	names(pfc) <- rownames(y)
 	offset <- expandAsMatrix(offset,dim(y))
 #	dispersion <- rep(dispersion,ngenes)
 
