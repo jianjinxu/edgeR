@@ -3,98 +3,80 @@
 \encoding{UTF-8}
 
 
-
-\section{Version 2.99.9}{\itemize{
-\item
-glmQLFTest() now ensures that no p-value is smaller than what would be obtained by treating the likelihood ratio test statistic as chisquare.
+\section{Version 3.0.0}{\itemize{
 
 \item
-User's Guide refreshed.
-}}
-
-\section{Version 2.99.8}{\itemize{
-\item
-New section on additive experimental designs in User's Guide.
+New chapter in the User's Guide covering a number of common types of experimental designs, including multiple groups, multiple factors and additive models. 
+Many other updates to the User's Guide and to the help pages.
 
 \item
-New function locfitByCol() for smoothing columns of matrix by non-robust loess curves.
+New function edgeRUsersGuide() to open the User's Guide in a pdf viewer.
 
 \item
-New C++ code for adjustedProfileLik().
-
-\item
-New function goodTuringPlot() for plotting log-probability versus log-frequency.
-}}
-
-\section{Version 2.99.4}{\itemize{
-\item
-New chapter on experimental designs in User's Guide.
-
-\item
-C++ version of mglmLevenberg() is now the default glm fitting algorithm.
-
-\item
-Vectorized C++ version of maximizeInterpolant.
-
-\item
-The argument y, previously the first argument of glmLRT, is no longer required.
-
-\item
-Added plot.it argument to maPlot().
-}}
-
-\section{Version 2.6.5}{\itemize{
-\item
-estimateTagwiseDisp() now has prior.df argument instead of prior.n.
-
-\item
-gof() now optionally produces a qq-plot of the genewise goodness of fit statistics.
-}}
-
-
-\section{Version 2.6.4}{\itemize{
-\item
-New function edgeRUsersGuide().
-}}
-
-
-\section{Version 2.6.2}{\itemize{
-\item
-glmFit now shrinks the estimated fold-changes.
-The default is as for exactTest().
-
-\item
-predFC output is now on the natural log scale instead of log2.
+Many functions have made faster by rewriting the core computations in C++.
+This includes adjustedProfileLik(), mglmLevenberg(), maximizeInterpolant() and goodTuring().
 
 \item
 New argument verbose for estimateCommonDisp() and estimateGLMCommonDisp().
 
 \item
-Many updates to the help pages and the User's Guide.
+The trended dispersion methods based on binning and interpolation have been rewritten to give more stable results when the number of genes is not large.
+
+\item
+The amount by which the tagwise dispersion estimates are squeezed towards the global value is now specified in estimateTagwiseDisp(), estimateGLMTagwiseDisp() and dispCoxReidInterpolateTagwise() by specifying the prior degrees of freedom prior.df instead of the prior number of samples prior.n.
+
+\item
+The weighted likelihood empirical Bayes code has been simplified or developed in a number of ways.
+The old functions weightedComLik() and weightedComLikMA() are now removed as no longer required.
+
+\item
+The functions estimateSmoothing() and approx.expected.info() have been removed as no longer recommended.
 
 \item
 The span used by estimateGLMTagwiseDisp() is now chosen by default as a decreasing function of the number of tags in the dataset.
 
 \item
-New value "loess" for trend argument of estimateTagwiseDisp. The "tricube" method is also updated.
+New method "loess" for the trend argument of estimateTagwiseDisp, with "tricube" now treated as a synonym.
 
 \item
-Removing functions weightedComLik() and weightedComLikMA().
+New functions loessByCol() and locfitByCol() for smoothing columns of matrix by non-robust loess curves.
+These functions are used in the weighted likelihood empirical Bayes procedures to compute local common likelihood.
 
 \item
-estimateGLMTagwiseDisp() and dispCoxReidInterpolateTagwise() now use prior.df instead of prior.n.
+glmFit now shrinks the estimated fold-changes towards zero.
+The default shrinkage is as for exactTest().
 
 \item
-Removing functions estimateSmoothing() and approx.expected.info() as no longer recommended.
+predFC output is now on the natural log scale instead of log2.
+
+\item
+mglmLevenberg() is now the default glm fitting algorithm, avoiding the occasional errors that occurred previously with mglmLS().
+
+\item
+The arguments of glmLRT() and glmQLFTest() have been simplified so that the argument y, previously the first argument of glmLRT, is no longer required.
+
+\item
+glmQLFTest() now ensures that no p-value is smaller than what would be obtained by treating the likelihood ratio test statistic as chisquare.
+
+\item
+glmQLFTest() now treats tags with all zero counts in replicate arrays as having zero residual df.
+
+\item
+gof() now optionally produces a qq-plot of the genewise goodness of fit statistics.
 
 \item
 Argument null.hypothesis removed from equalizeLibSizes().
 
 \item
-DGEList now longer outputs all.zeros component.
+DGEList now longer outputs a component called all.zeros.
 
 \item
-New function loessByCol().
+goodTuring() now longer produces a plot.
+Instead there is a new function goodTuringPlot() for plotting log-probability versus log-frequency.
+goodTuring() has a new argument 'conf' giving the confidence factor for the linear regression approximation.
+
+\item
+Added plot.it argument to maPlot().
 }}
 
 
