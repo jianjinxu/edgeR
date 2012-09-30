@@ -60,13 +60,16 @@ Defaults to a single column of ones, equivalent to treating the columns as repli
 	\item{fitted.values}{matrix of fitted values from glm fits, same number of rows and columns as \code{y}.}
 	\item{deviance}{numeric vector of deviances, one for each tag.}
 
-\code{glmLRT} and \code{glmQFTest} produce objects of class \code{DGELRT} contain the same components as \code{glmfit} plus the following:
-	\item{table}{data frame with same rows as \code{y} and columns containing the following:
-	log2-fold change of expression between conditions being tested (\code{logFC}),
-	average log2-counts per million (\code{logCPM}),
-	likelihood ratio statistics (\code{LR}) for \code{glmLRT} or F-statistics (\code{F}) for \code{glmQFTest},
-	p-values (\code{PValue}).}
-	\item{comparison}{character vector of names of for the coefficients or the contrast tested.}
+\code{glmLRT} and \code{glmQFTest} produce objects of class \code{DGELRT} with the same components as for \code{glmfit} plus the following:
+	\item{table}{data frame with the same rows as \code{y} containing the log2-fold changes, test statistics and p-values, ready to be displayed by \code{topTags.}.}
+	\item{comparison}{character string describing the coefficient or the contrast being tested.}
+
+The data frame \code{table} contains the following columns:
+	\item{logFC}{log2-fold change of expression between conditions being tested.}
+	\item{logCPM}{average log2-counts per million, the average taken over all libraries in \code{y}.}
+	\item{LR}{likelihood ratio statistics (only for \code{glmLRT}).}
+	\item{F}{F-statistics (only for \code{glmQFTest}).}
+	\item{PValue}{p-values.}
 }
 
 \details{
