@@ -2,7 +2,7 @@
 
 binCMLDispersion <- function(y, nbins=50)
 #	Estimate common dispersion in bins based on abundance
-#	Created Oct 2010. Last modified 2 Aug 2012.
+#	Created Oct 2010. Last modified 1 Oct 2012.
 {
 	if(!is(y,"DGEList")) stop("y must be DGEList object.")
 	ntags <- nrow(y)
@@ -10,8 +10,8 @@ binCMLDispersion <- function(y, nbins=50)
 
 	logCPM <- y$logCPM
 	if(is.null(logCPM)) {
-		logCPM <- mglmOneGroup(y$counts,offset=getOffset(y),dispersion=0.1)
-		logCPM <- log2(exp(logCPM+log(1e6))+0.5)
+		abundance <- mglmOneGroup(y$counts,offset=getOffset(y),dispersion=0.05)
+		logCPM <- log1p(exp(abundance+log(1e6)))/log(2)
 	}
 	bins <- cutWithMinN(logCPM,intervals=nbins,min.n=floor(ntags/nbins))
 
@@ -23,7 +23,6 @@ binCMLDispersion <- function(y, nbins=50)
 	}
 	list(dispersion.bins=disp.bins, logCPM.bins=logCPM.bins)
 }
-
 
 binGLMDispersion <- function(y, design, offset=NULL, min.n=100, method="CoxReid", abundance=NULL, ... )
 #	Estimate common dispersion in bins based on abundance.
@@ -39,8 +38,8 @@ binGLMDispersion <- function(y, design, offset=NULL, min.n=100, method="CoxReid"
 		if(is.null(offset)) offset <- log(lib.size)
 	}
 	if(is.null(abundance)) {
-		abundance <- mglmOneGroup(y,offset=offset,dispersion=0.01)
-		abundance <- log2(exp(abundance+log(1e6))+0.5)
+		abundance <- mglmOneGroup(y,offset=offset,dispersion=0.05)
+		abundance <- log1p(exp(abundance+log(1e6)))/log(2)
 	}
 	offset <- expandAsMatrix(offset,dim(y))
 	method <- match.arg(method, c("CoxReid", "Pearson", "deviance"))

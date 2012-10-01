@@ -9,7 +9,7 @@ estimateGLMTagwiseDisp.DGEList <- function(y, design=NULL, offset=NULL, dispersi
 	if(is.null(dispersion)) if(trend) {
 		dispersion <- y$trended.dispersion
 		if(is.null(dispersion)) stop("No trended.dispersion found in data object. Run estimateGLMTrendedDisp first.")
-		if(is.null(y$abundance)) y$abundance <- mglmOneGroup(y,offset=offset)
+		if(is.null(y$abundance)) y$abundance <- mglmOneGroup(y,offset=offset,dispersion=0.05)
 	} else {
 		dispersion <- y$common.dispersion
 		if(is.null(dispersion)) stop("No common.dispersion found in data object. Run estimateGLMCommonDisp first.")

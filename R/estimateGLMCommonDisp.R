@@ -1,4 +1,4 @@
-#  Last modified 1 May 2012
+#  Last modified 1 Oct 2012
 
 estimateGLMCommonDisp <- function(y, design=NULL, offset=NULL, method="CoxReid", verbose=FALSE, ...) 
 UseMethod("estimateGLMCommonDisp")
@@ -7,6 +7,8 @@ estimateGLMCommonDisp.DGEList <- function(y, design=NULL, offset=NULL, method="C
 {
     if( is.null(offset) )
         offset <- getOffset(y)
+	y$abundance <- mglmOneGroup(y$counts,offset=getOffset(y),dispersion=0.05)
+	y$logCPM <- log1p(exp(y$abundance+log(1e6)))/log(2)
 	d <- estimateGLMCommonDisp(y=y$counts, design=design, offset=offset, method=method, verbose=verbose, ...)
 	y$common.dispersion <- d
 	y

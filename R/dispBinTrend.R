@@ -2,7 +2,7 @@ dispBinTrend <- function(y, design=NULL, offset=NULL, df=5, span=2/3, min.n=400,
 #	Estimate common dispersion in bins based on abundance,
 #	then fit a curve through the dispersions
 #	Davis McCarthy, Gordon Smyth
-#	Created 10 Feb 2011.  Last modified 20 Aug 2012.
+#	Created 10 Feb 2011.  Last modified 1 Oct 2012.
 {
 #	Check y
 	y <- as.matrix(y)
@@ -25,8 +25,8 @@ dispBinTrend <- function(y, design=NULL, offset=NULL, df=5, span=2/3, min.n=400,
 	method.trend <- match.arg(method.trend, c("spline", "loess"))
 
 	if(is.null(abundance)) {
-		abundance <- mglmOneGroup(y,offset=offset,dispersion=0.02)
-		abundance <- log2(exp(abundance+log(1e6))+0.5)
+		abundance <- mglmOneGroup(y,offset=offset,dispersion=0.05)
+		abundance <- log1p(exp(abundance+log(1e6)))/log(2)
 	}
 	
 	bindisp <- binGLMDispersion(y, design, min.n=min.n, offset=offset, method=method.bin, abundance=abundance, ...) 

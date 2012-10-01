@@ -3,7 +3,7 @@ dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, tr
 #	using weighted Cox-Reid Adjusted Profile-likelihood
 #	and cubic spline interpolation over a tagwise grid.
 #	Yunshun Chen and Gordon Smyth
-#	Created August 2010. Last modified 26 June 2012.
+#	Created August 2010. Last modified 1 Oct 2012.
 
 #	Comment 3 July 2012: Absorb into estimateGLMTagwise()?
 {
@@ -23,7 +23,7 @@ dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, tr
 	} else {
 		if(ldisp != ntags) stop("length of dispersion doesn't match nrow(y)")
 	}
-	if(is.null(abundance)) abundance <- mglmOneGroup(y,offset=offset)
+	if(is.null(abundance)) abundance <- mglmOneGroup(y,offset=offset,dispersion=0.05)
 
 #	Apply min.row.sum and use input dispersion for small count tags
 	i <- (rowSums(y) >= min.row.sum)

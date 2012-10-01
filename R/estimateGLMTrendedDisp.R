@@ -1,4 +1,4 @@
-#  Last modified 23 April 2012
+#  Last modified 30 Oct 2012
 
 estimateGLMTrendedDisp <- function(y, design=NULL, offset=NULL, method="auto", ...) 
 UseMethod("estimateGLMTrendedDisp")
@@ -9,7 +9,6 @@ estimateGLMTrendedDisp.DGEList <- function(y, design=NULL, offset=NULL, method="
         offset <- getOffset(y)
 	d <- estimateGLMTrendedDisp(y=y$counts, design=design, offset=offset, method=method, ...)
 	y$trended.dispersion <- d$dispersion
-	y$abundance <- d$abundance
 	if( !is.null(d$bin.dispersion) ) y$bin.dispersion <- d$bin.dispersion
 	if( !is.null(d$bin.abundance) ) y$bin.abundance <- d$bin.abundance
 	y

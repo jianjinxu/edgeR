@@ -32,7 +32,7 @@ estimateCommonDisp <- function(object,tol=1e-06,rowsum.filter=5,verbose=FALSE)
 #	Average logCPM
 	effective.lib.size <- object$samples$lib.size * object$samples$norm.factors
 	abundance <- mglmOneGroup(object$counts,dispersion=disp,offset=log(effective.lib.size))
-	object$logCPM <- log2(exp(abundance+log(1e6))+1)
+	object$logCPM <- log1p(exp(abundance+log(1e6)))/log(2)
 	object$pseudo.lib.size <- out$common.lib.size
 	object
 }
