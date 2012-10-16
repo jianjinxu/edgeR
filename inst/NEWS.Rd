@@ -68,10 +68,10 @@ gof() now optionally produces a qq-plot of the genewise goodness of fit statisti
 Argument null.hypothesis removed from equalizeLibSizes().
 
 \item
-DGEList now longer outputs a component called all.zeros.
+DGEList no longer outputs a component called all.zeros.
 
 \item
-goodTuring() now longer produces a plot.
+goodTuring() no longer produces a plot.
 Instead there is a new function goodTuringPlot() for plotting log-probability versus log-frequency.
 goodTuring() has a new argument 'conf' giving the confidence factor for the linear regression approximation.
 
