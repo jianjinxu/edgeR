@@ -14,11 +14,10 @@
 \begin{document}
 
 \title{edgeR: differential expression analysis \\ of digital gene expression data}
-\author{Mark Robinson, Davis McCarthy,\\
-Yunshun Chen, Gordon K.\ Smyth}
-\date{28 May 2012}
+\author{Mark Robinson, Davis McCarthy, Yunshun Chen,
+Aaron Lun, Gordon K.\ Smyth}
+\date{18 October 2012}
 \maketitle
-
 
 edgeR is a package for the differential expression analysis of digital gene expression data,
 that is, of count data arising from DNA sequencing technologies.
@@ -38,8 +37,8 @@ In R for Windows, the User's Guide will then be available from the drop-down men
 In other operating systems, type
 \begin{Schunk}
 \begin{Sinput}
-> library(limma)
-> limmaUsersGuide()
+> library(edgeR)
+> edgeRUsersGuide()
 \end{Sinput}
 \end{Schunk}
 at the R prompt to open the User's Guide in a pdf viewer.
