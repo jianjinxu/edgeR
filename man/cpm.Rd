@@ -1,41 +1,51 @@
 \name{cpm}
 \alias{cpm}
+\alias{cpm.DGEList}
+\alias{cpm.default}
+\alias{rpkm}
 
-\title{Calculate Counts per Million from DGEList or Matrix Object}
+\title{Counts per Million or Reads per Kilobase per Million}
 
-\description{Returns counts per million from a DGEList or matrix object by dividing raw counts by library size (which can be normalized) and multiplying by one million.}
+\description{Computes counts per million (CPM) or reads per kilobase per million (RPKM) values.}
 
 \usage{
-cpm(x, normalized.lib.sizes=FALSE)
+\method{cpm}{DGEList}(x, normalized.lib.sizes=TRUE, log=FALSE, prior.count=0.25, ...)
+\method{cpm}{default}(x, lib.size=NULL, log=FALSE, prior.count=0.25, ...)
+rpkm(x, gene.length, normalized.lib.sizes=TRUE, log=FALSE, prior.count=0.25)
 }
 \arguments{ 
-
-\item{x}{either a matrix of counts or a \code{DGEList} object with (at least) elements \code{counts} (table of unadjusted counts) and \code{samples} (data frame containing information about experimental group, library size and normalization factor for the library size)}
-
-\item{normalized.lib.sizes}{logical, should the library sizes (total sum of counts for each library) be normalized using the \code{norm.factors} component of the \code{DGEList} object? Ignored (with a warning) if \code{x} is a count matrix.}
-
+\item{x}{matrix of counts or a \code{DGEList} object}
+\item{normalized.lib.sizes}{logical, use normalized library sizes?}
+\item{lib.size}{library size, defaults to \code{colSums(x)}.}
+\item{log}{logical, if \code{TRUE} then \code{log2} values are returned.}
+\item{prior.count}{average count to be added to each observation to avoid taking log of zero. Used only if \code{log=TRUE}.}
+\item{gene.length}{vector of length \code{nrow(x)} giving gene length in bases.}
+\item{\ldots}{other arguments are not currently used}
 }
 
-\value{\code{getPriorN} returns a numeric scalar }
+\value{numeric matrix of CPM or RPKM values.}
 
 \details{
-A convenience function to compute the counts per million for plotting and comparing libraries on a convenient scale. Essentially just does the calculation \code{1e06*t(t(x)/lib.size)} to produce counts per million, where \code{x} is a matrix of counts and the \code{lib.size} can be the total sum of counts in each library or a normalized version of this using TMM normalization or equivalent method.
+CPM or RPKM values are useful descriptive measures for the expression level of a gene or transcript.
+By default, the normalized library sizes are used in the computation for \code{DGEList} objects but simple column sums for matrices.
+
+If log-values are computed, then a small count, given by \code{prior.count} but scaled to be proportional to the library size, is added to \code{x} to avoid taking the log of zero.
+}
+
+\note{
+\code{aveLogCPM(x)}, \code{rowMeans(cpm(x,log=TRUE))} and \code{log2(rowMeans(cpm(x))} all give slightly different results.
 }
 
 \author{Davis McCarthy, Gordon Smyth}
 
 \examples{
-# generate raw counts from NB, create list object
-y<-matrix(rnbinom(20,size=1,mu=10),nrow=5)
+y <- matrix(rnbinom(20,size=1,mu=10),5,4)
 cpm(y)
-d<-DGEList(counts=y,group=rep(1:2,each=2),lib.size=rep(c(1000:1001),2))
-# When applied to a DGEList object, x$samples$lib.size is used
+d <- DGEList(counts=y, lib.size=1001:1004)
 cpm(d)
-# As x$samples$lib.size here is very different from colSums(y), cpm(y) and cpm(d) give very different results for the counts per million
+cpm(d,log=TRUE)
 }
 
 \seealso{
-\code{\link{DGEList}} for more information about the \code{DGEList} class.
+\code{\link{aveLogCPM}}
 }
-
-\keyword{algebra}
