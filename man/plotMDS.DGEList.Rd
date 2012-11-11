@@ -11,7 +11,7 @@ for the top genes that best distinguish the samples.
      ndim=max(dim.plot), xlab=paste("Dimension",dim.plot[1]), ylab=paste("Dimension",dim.plot[2]), ...)
 }
 \arguments{
-  \item{x}{any matrix or \code{DGEList} object.}
+  \item{x}{numeric matrix or \code{DGEList} object.}
   \item{top}{number of top genes used to calculate pairwise distances.}
   \item{labels}{character vector of sample names or labels. If \code{x} has no column names, then defaults the index of the samples.}
   \item{col}{numeric or character vector of colors for the plotting characters. See \code{\link[graphics]{text}} for possible values.}
@@ -29,6 +29,9 @@ A set of top genes are chosen that have largest biological variation between the
 (those with largest tagwise dispersion treating all libraries as one group).
 Then the distance between each pair of libraries (columns) is the biological coefficient of variation (square root of the common dispersion) between those two libraries alone, using
 the top genes.
+
+If \code{x} is a \code{DGEList}, then the library sizes and normalization factors found in the object are used.
+If \code{x} is a matrix, then library sizes are computed from the column sums, but no other normalization is done.
 
 The number \code{top} of top genes chosen for this exercise should roughly correspond to the number of differentially expressed genes with materially large fold-changes.
 The default setting of 500 genes is widely effective and suitable for routine use, but a smaller value might be chosen for when the samples are distinguished by a specific focused molecular pathway.
@@ -52,7 +55,7 @@ This is a list containing the following components:
 \author{Yunshun Chen, Mark Robinson and Gordon Smyth}
 
 \seealso{
-\code{\link{cmdscale}}, \code{\link{as.dist}}, \code{\link[limma]{plotMDS}}
+\code{\link[limma]{plotMDS}}, \code{\link{cmdscale}}, \code{\link{as.dist}}
 }
 
 \examples{
@@ -60,16 +63,21 @@ This is a list containing the following components:
 # Samples are in two groups
 # First 200 genes are differentially expressed in second group
 
-counts <- matrix(rnbinom(6000, size = 1/2, mu = 10),1000,6)
-rownames(counts) <- paste("Gene",1:1000)
-counts[1:200,4:6] <- counts[1:200,4:6] + 10
-y <- DGEList(counts)
+ngenes <- 1000
+nlib <- 6
+counts <- matrix(rnbinom(ngenes*nlib, size=1/10, mu=20),ngenes,nlib)
+rownames(counts) <- paste("Gene",1:ngenes)
+group <- gl(2,3,labels=c("Grp1","Grp2"))
+counts[1:200,group=="Grp2"] <- counts[1:200,group=="Grp2"] + 10
+y <- DGEList(counts,group=group)
+y <- calcNormFactors(y)
 
 # without labels, indexes of samples are plotted.
-mds <- plotMDS(y, top=200, col=c(rep("black",3), rep("red",3)) )
+col <- as.numeric(group)
+mds <- plotMDS(y, top=200, col=col)
 
 # or labels can be provided, here group indicators:
-plotMDS(mds, top=200, col=c(rep("black",3), rep("red",3)), labels= c(rep("Grp1",3), rep("Grp2",3)))
+plotMDS(mds, col=col, labels=group)
 }
 
 \keyword{hplot}
