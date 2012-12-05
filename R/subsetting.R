@@ -55,12 +55,12 @@ assign("[.DGEGLM",
 function(object, i, j, ...)
 #  Subsetting for DGEGLM objects
 #  Davis McCarthy	
-#  11 May 2011.  Last modified 11 May 2011.
+#  11 May 2011.  Last modified 5 Dec 2012.
 {
 	if(!missing(j))
 		stop("Subsetting columns not allowed for DGEGLM object. Try subsetting elements of DGEGLM object instead.",call.=FALSE)
 	if(!missing(i)) {
-		object$coefficients <- object$coeffcients[i,,drop=FALSE]
+		object$coefficients <- object$coefficients[i,,drop=FALSE]
 		object$df.residual <- object$df.residual[i,drop=FALSE]
 		object$deviance <- object$deviance[i,drop=FALSE]
 		object$offset <- object$offset[i,,drop=FALSE]
