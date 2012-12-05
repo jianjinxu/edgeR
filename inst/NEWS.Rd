@@ -3,13 +3,16 @@
 \encoding{UTF-8}
 
 
-\section{Version 3.0.5}{\itemize{
+\section{Version 3.1.3}{\itemize{
+\item
+New function aveLogCPM.
+
 \item
 Bug fix to subsetting for DGEGLM objects.
 }}
 
 
-\section{Version 3.0.4}{\itemize{
+\section{Version 3.1.2}{\itemize{
 \item
 Adding prior.count.total=0 to the calls to glmFit() in several functions, to avoid unnecessary calculations of predicted fold-changes.
 (The change saves nearly half of computation time for glm dispersion estimation.)
@@ -18,19 +21,18 @@ Adding prior.count.total=0 to the calls to glmFit() in several functions, to avo
 In glmFit(), the maximum number of iterations in the call to mglmLevenberg() is reduced to 250.
 Previously the number of iterations was so large that the Levenberg damping parameter could become exactly zero due to floating point underflow,
 making an infinite loop possible in rare pathological cases.
-}}
 
-\section{Version 3.0.3}{\itemize{
 \item
 Bug fix to plotMDS.DGEList to make consistent use of norm.factors.
-}}
 
-\section{Version 3.0.2}{\itemize{
 \item
 Include a code example in Section 2.9 (item 2) of the User's Guide about how to pre-specify the dispersion value.
 }}
 
-\section{Version 3.0.1}{\itemize{
+\section{Version 3.1.1}{\itemize{
+\item
+New function rpkm.
+
 \item
 New section on between and with subject designs in User's Guide.
 Correct a number of typos in Section 3.4 of the User's Guide.
