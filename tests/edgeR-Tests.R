@@ -15,7 +15,7 @@ de <- exactTest(d)
 summary(de$table)
 topTags(de)
 
-d2 <- estimateTagwiseDisp(d,trend="none")
+d2 <- estimateTagwiseDisp(d,trend="none",prior.df=20)
 summary(d2$tagwise.dispersion)
 de <- exactTest(d2,dispersion="common")
 topTags(de)
@@ -23,7 +23,7 @@ topTags(de)
 de <- exactTest(d2)
 topTags(de)
 
-d2 <- estimateTagwiseDisp(d,trend="movingave",span=0.4)
+d2 <- estimateTagwiseDisp(d,trend="movingave",span=0.4,prior.df=20)
 summary(d2$tagwise.dispersion)
 de <- exactTest(d2)
 topTags(de)
@@ -31,12 +31,12 @@ topTags(de)
 summary(exactTest(d2,rejection="smallp")$table$PValue)
 summary(exactTest(d2,rejection="deviance")$table$PValue)
 
-d2 <- estimateTagwiseDisp(d,trend="loess",span=0.8)
+d2 <- estimateTagwiseDisp(d,trend="loess",span=0.8,prior.df=20)
 summary(d2$tagwise.dispersion)
 de <- exactTest(d2)
 topTags(de)
 
-d2 <- estimateTagwiseDisp(d,trend="tricube",span=0.8)
+d2 <- estimateTagwiseDisp(d,trend="tricube",span=0.8,prior.df=20)
 summary(d2$tagwise.dispersion)
 de <- exactTest(d2)
 topTags(de)
@@ -46,22 +46,22 @@ design <- model.matrix(~group,data=d$samples)
 mglmOneWay(d[1:10,],design,dispersion=0.2)
 mglmOneWay(d[1:10,],design,dispersion=0)
 
-fit <- glmFit(d,design,dispersion=d$common.dispersion)
+fit <- glmFit(d,design,dispersion=d$common.dispersion,prior.count=0.5/4)
 lrt <- glmLRT(fit,coef=2)
 topTags(lrt)
 
-fit <- glmFit(d,design,dispersion=d$common.dispersion,prior.count.total=2)
+fit <- glmFit(d,design,dispersion=d$common.dispersion,prior.count=0.5)
 summary(fit$coef)
 
-fit <- glmFit(d,design)
+fit <- glmFit(d,design,prior.count=0.5/4)
 lrt <- glmLRT(fit,coef=2)
 topTags(lrt)
 
 dglm <- estimateGLMCommonDisp(d,design)
 dglm$common.dispersion
-dglm <- estimateGLMTagwiseDisp(dglm,design)
+dglm <- estimateGLMTagwiseDisp(dglm,design,prior.df=20)
 summary(dglm$tagwise.dispersion)
-fit <- glmFit(dglm,design)
+fit <- glmFit(dglm,design,prior.count=0.5/4)
 lrt <- glmLRT(fit,coef=2)
 topTags(lrt)
 dglm <- estimateGLMTrendedDisp(dglm,design)
@@ -72,7 +72,7 @@ dglm <- estimateGLMTrendedDisp(dglm,design,method="spline")
 summary(dglm$trended.dispersion)
 dglm <- estimateGLMTrendedDisp(dglm,design,method="bin.spline")
 summary(dglm$trended.dispersion)
-dglm <- estimateGLMTagwiseDisp(dglm,design)
+dglm <- estimateGLMTagwiseDisp(dglm,design,prior.df=20)
 summary(dglm$tagwise.dispersion)
 
 # Continuous trend
@@ -91,20 +91,20 @@ colnames(y) <- c("x0","x1","x2")
 rownames(y) <- paste("Gene",1:ntags,sep="")
 d <- DGEList(y)
 d <- calcNormFactors(d)
-fit <- glmFit(d, design, dispersion=dispersion.true)
+fit <- glmFit(d, design, dispersion=dispersion.true, prior.count=0.5/3)
 results <- glmLRT(fit, coef=2)
 topTags(results)
 d <- estimateGLMCommonDisp(d, design, verbose=TRUE)
-glmFit(d,design,dispersion=dispersion.true,method="simple")
-glmFit(d,design,dispersion=dispersion.true,method="levenberg")
+glmFit(d,design,dispersion=dispersion.true,method="simple", prior.count=0.5/3)
+glmFit(d,design,dispersion=dispersion.true,method="levenberg", prior.count=0.5/3)
 
 # Exact tests
-y <- matrix(rnbinom(20,mu=10,size=3/2),nrow=5)
+y <- matrix(rnbinom(20,mu=10,size=3/2),5,4)
 group <- factor(c(1,1,2,2))
 ys <- splitIntoGroupsPseudo(y,group,pair=c(1,2))
 exactTestDoubleTail(ys$y1,ys$y2,dispersion=2/3)
 
-y <- matrix(rnbinom(5*7,mu=10,size=3/2),nrow=5,ncol=7)
+y <- matrix(rnbinom(5*7,mu=10,size=3/2),5,7)
 group <- factor(c(1,1,2,2,3,3,3))
 ys <- splitIntoGroupsPseudo(y,group,pair=c(1,3))
 exactTestDoubleTail(ys$y1,ys$y2,dispersion=2/3)
@@ -112,10 +112,26 @@ exactTestBetaApprox(ys$y1,ys$y2,dispersion=2/3)
 
 y[1,3:4] <- 0
 design <- model.matrix(~group)
-fit <- glmFit(y,design,dispersion=2/3)
+fit <- glmFit(y,design,dispersion=2/3,prior.count=0.5/7)
 summary(fit$coef)
+
+lrt <- glmLRT(fit,contrast=cbind(c(0,1,0),c(0,0,1)))
+topTags(lrt)
+design <- model.matrix(~0+group)
+fit <- glmFit(y,design,dispersion=2/3,prior.count=0.5/7)
+lrt <- glmLRT(fit,contrast=cbind(c(-1,1,0),c(0,-1,1),c(-1,0,1)))
+topTags(lrt)
 
 # spliceVariants
 z = matrix(c(2,0,4,6,4,3,7,1,1,0,1,1,0,3,1,2,0,1,2,1,0,3,1,0), 8, 3)
 gz = c(1,2,2,2,2,2,2,2)
 spliceVariants(DGEList(counts = z, group = c(1,2,2)), gz)
+
+# simple Good-Turing algorithm runs.
+test1<-1:9
+freq1<-c(2018046, 449721, 188933, 105668, 68379, 48190, 35709, 37710, 22280)
+goodTuring(rep(test1, freq1))
+test2<-c(312, 14491, 16401, 65124, 129797, 323321, 366051, 368599, 405261, 604962)
+goodTuring(test2)
+
+

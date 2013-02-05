@@ -23,8 +23,11 @@ loessByCol <- function(y, x=NULL, span=0.5)
 	   return(fitted)
 	}
 
-	# Passing to the compiled code.
-	fitted<-.Call("lowess_by_col", x, y, ncol(y), nspan, PACKAGE="edgeR")
+	# Passing to the compiled code. Note type checking, otherwise the code will complain.
+	if (!is.double(y)) storage.mode(y)<-"double"
+	if (!is.double(x)) x<-as.double(x)
+	fitted<-.Call("R_loess_by_col", x, y, ncol(y), nspan, PACKAGE="edgeR")
+	if (is.character(fitted)) { stop(fitted) }
    
 	# Unsorting them to recover the original order.	
 	fitted[[1]][x.order,]<-fitted[[1]]

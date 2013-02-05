@@ -10,8 +10,8 @@ Estimates a common negative binomial dispersion parameter for a DGE dataset with
 }
 
 \usage{
-\S3method{estimateGLMCommonDisp}{DGEList}(y, design=NULL, offset=NULL, method="CoxReid", verbose=FALSE, ...)
-\S3method{estimateGLMCommonDisp}{default}(y, design=NULL, offset=NULL, method="CoxReid", verbose=FALSE, ...)
+\S3method{estimateGLMCommonDisp}{DGEList}(y, design=NULL, offset=NULL, method="CoxReid", subset=10000, AveLogCPM=NULL, verbose=FALSE, ...)
+\S3method{estimateGLMCommonDisp}{default}(y, design=NULL, offset=NULL, method="CoxReid", subset=10000, AveLogCPM=NULL, verbose=FALSE, ...)
 }
 
 \arguments{
@@ -23,6 +23,10 @@ Estimates a common negative binomial dispersion parameter for a DGE dataset with
 
 \item{method}{method for estimating the dispersion.
 Possible values are \code{"CoxReid"}, \code{"Pearson"} or \code{"deviance"}.}
+
+\item{subset}{maximum number of rows of \code{y} to use in the calculation.  Rows used are chosen evenly spaced by AveLogCPM using \code{\link{systematicSubset}}.}
+
+\item{AveLogCPM}{numeric vector giving average log2 counts per million for each gene}
 
 \item{verbose}{logical, if \code{TRUE} estimated dispersion and BCV will be printed to standard output.}
 

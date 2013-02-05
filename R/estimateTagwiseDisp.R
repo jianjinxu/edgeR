@@ -1,7 +1,7 @@
-estimateTagwiseDisp <- function(object, prior.df=20, trend="movingave", span=NULL, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
+estimateTagwiseDisp <- function(object, prior.df=10, trend="movingave", span=NULL, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
 #  Tagwise dispersion using weighted conditional likelihood empirical Bayes.
 #  Davis McCarthy, Mark Robinson, Yunshun Chen, Gordon Smyth.
-#  Created 2009. Last modified 6 July 2012.
+#  Created 2009. Last modified 2 Oct 2012.
 
 #  Notes 3 July 2012:
 #  - interpolating derivatives would be better than interpolating loglik values.
@@ -32,14 +32,14 @@ estimateTagwiseDisp <- function(object, prior.df=20, trend="movingave", span=NUL
 		l0 <- matrix(0,ntags,grid.length)
 		for(j in 1:grid.length) for(i in 1:length(y)) l0[,j] <- condLogLikDerDelta(y[[i]],grid.vals[j],der=0)+l0[,j]
 
-		if(is.null(span)) if(trend=="movingave") span <- 0.3 else span <- 0.6
+		if(is.null(span)) if(trend=="movingave") span <- 0.3 else span <- 0.5
 		m0 <- switch(trend,
  			"movingave" = {
- 				o <- order(object$logCPM)
+ 				o <- order(object$AveLogCPM)
  				oo <- order(o)
  				movingAverageByCol(l0[o,], width=floor(span*ntags))[oo,]
  			},
-			"loess" = loessByCol(l0, object$logCPM, span=span)$fitted.values,
+			"loess" = loessByCol(l0, object$AveLogCPM, span=span)$fitted.values,
 			"none" = matrix(colMeans(l0),ntags,grid.length,byrow=TRUE)
 		)
 		l0a <- l0 + prior.n*m0

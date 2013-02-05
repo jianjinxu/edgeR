@@ -3,9 +3,41 @@
 \encoding{UTF-8}
 
 
+\section{Version 3.1.4}{\itemize{
+\item
+The gene set test functions roast(), mroast() and camera(), which are
+now generic, have methods defined for DGEList data objects.
+This facilitates gene set testing and pathway analysis of expression
+profiles within edgeR.
+
+\item
+New functions estimateDisp() and WLEB() to automate the estimation
+of common, trended and tagwise dispersions, for either glms or for
+classic edgeR.
+
+\item
+glmLRT now permits contrast arg to be a matrix with multiple columns, making its behavior analogous to the coef argument.
+
+\item
+The argument prior.count.total has been changed to prior.count
+throughout the package, and now refers to the average prior.count
+per observation rather than the total prior count across a transcript.
+
+\item
+Bug fix to subsetting for DGEGLM objects.
+
+\item
+Bug fix to plotMDS.DGEList to make consistent use of norm.factors.
+
+\item
+Functions binCMLDispersion() bin.dispersion() removed.
+}}
+
+
 \section{Version 3.1.3}{\itemize{
 \item
 New function aveLogCPM.
+This is now used by all functions in the package to set AveLogCPM, which is now the standard measure of abundance.
 
 \item
 Bug fix to subsetting for DGEGLM objects.
@@ -13,6 +45,9 @@ Bug fix to subsetting for DGEGLM objects.
 
 
 \section{Version 3.1.2}{\itemize{
+\item
+Include a code example in Section 2.9 (item 2) of the User's Guide about how to pre-specify the dispersion value.
+
 \item
 Adding prior.count.total=0 to the calls to glmFit() in several functions, to avoid unnecessary calculations of predicted fold-changes.
 (The change saves nearly half of computation time for glm dispersion estimation.)
@@ -24,14 +59,12 @@ making an infinite loop possible in rare pathological cases.
 
 \item
 Bug fix to plotMDS.DGEList to make consistent use of norm.factors.
-
-\item
-Include a code example in Section 2.9 (item 2) of the User's Guide about how to pre-specify the dispersion value.
 }}
+
 
 \section{Version 3.1.1}{\itemize{
 \item
-New function rpkm.
+New function rpkm().
 
 \item
 New section on between and with subject designs in User's Guide.
@@ -45,7 +78,8 @@ Bug fix to plotBCV() when logCPM is not found in data object.
 \section{Version 3.0.0}{\itemize{
 
 \item
-New chapter in the User's Guide covering a number of common types of experimental designs, including multiple groups, multiple factors and additive models. 
+New chapter in the User's Guide covering a number of common types of experimental designs, including multiple groups, multiple factors and additive models.
+New sections in the User's Guide on clustering and on making tables of read counts.
 Many other updates to the User's Guide and to the help pages.
 
 \item

@@ -1,26 +1,39 @@
-glmQLFTest <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, abundance.trend=TRUE)
-##	Quasi-likelihood F-tests for DGE glms.
-##	Davis McCarthy and Gordon Smyth.
-##	Created 18 Feb 2011. Last modified 26 Sep 2012.
+glmQLFTest <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, abundance.trend=TRUE, winsor.tail.p=c(0.05,0.1))
+#	Quasi-likelihood F-tests for DGE glms.
+#	Davis McCarthy and Gordon Smyth.
+#	Created 18 Feb 2011. Last modified 8 Dec 2012.
 {
+#	Check glmfit
+	disptype <- attr(glmfit$dispersion,"type")
+	if(!is.null(disptype)) if(disptype=="tagwise") stop("glmfit should be computed using trended dispersions, not tagwise")
+
 #	Call glmLRT to get most of the results that we need for the QL F-test calculations
 	out <- glmLRT(glmfit, coef=coef, contrast=contrast)
 
-#	Calculate squeezed residual variances (the quasi-likelihood over-dispersion parameter)
+#	Residual deviances
 	df.residual <- glmfit$df.residual
+
+#	Adjust df.residual for fitted values at zero
+	zerofit <- (glmfit$fitted.values < 1e-14)
+	Q <- qr.Q(qr(glmfit$design))
+	h <- rowSums(Q^2)
+	dffromzeros <- zerofit %*% (1-h)
+	df.residual <- drop(round(df.residual-dffromzeros))
+
+#	Empirical Bayes squeezing of the quasi-likelihood variance factors
 	s2 <- glmfit$deviance / df.residual
-	df.residual[s2 < 1e-14] <- 0
+	s2[df.residual==0] <- 0
 	s2 <- pmax(s2,0)
 	if( abundance.trend )
-		s2.fit <- squeezeVar(s2, df=df.residual, covariate=glmfit$abundance)
+		s2.fit <- squeezeVar(s2, df=df.residual,covariate=glmfit$abundance,winsor.tail.p=winsor.tail.p)
 	else
-		s2.fit <- squeezeVar(s2, df=df.residual)
+		s2.fit <- squeezeVar(s2, df=df.residual,winsor.tail.p=winsor.tail.p)
 
 #	Compute the QL F-statistic
 	F <- out$table$LR / out$df.test / s2.fit$var.post
 	df.total <- s2.fit$df.prior+df.residual
 	max.df.residual <- ncol(glmfit$counts)-ncol(glmfit$design)
-	df.total <- min(df.total, length(s2)*max.df.residual)
+	df.total <- pmin(df.total, length(s2)*max.df.residual)
 	
 #	Compute p-values from the QL F-statistic
 	F.pvalue <- pf(F, df1=out$df.test, df2=df.total, lower.tail=FALSE, log.p=FALSE)
@@ -36,6 +49,7 @@ glmQLFTest <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, abundanc
 	out$table$F <- F
 	out$table$PValue <- F.pvalue
 
+	out$df.residual.corrected <- df.residual
 	out$s2.fit <- s2.fit
 	out$df.prior <- s2.fit$df.prior
 	out$df.total <- df.total

@@ -1,7 +1,7 @@
-mglmOneGroup <- function(y,dispersion=0,offset=0,maxit=50,trace=FALSE,tol=1e-6)
+mglmOneGroup <- function(y,dispersion=0,offset=0,maxit=50,tol=1e-10)
 #	Fit null (single-group) negative-binomial glm with log-link to DGE data
-#  Gordon Smyth
-#	18 Aug 2010. Last modified 25 July 2012.
+#  Aaron Lun and Gordon Smyth
+#	18 Aug 2010. Last modified 19 October 2012.
 {
 #	Check input values for y
 	y <- as.matrix(y)
@@ -9,14 +9,11 @@ mglmOneGroup <- function(y,dispersion=0,offset=0,maxit=50,trace=FALSE,tol=1e-6)
 	ntags <- nrow(y)
 	nlibs <- ncol(y)
 
-#	Treat all zero rows as special case
-	beta <- rep(-Inf,ntags)
-	names(beta) <- rownames(y)
-
 #	Check input values for dispersion
 	if(any(dispersion<0)) stop("dispersion must be non-negative")
 
-#	Poisson special case
+
+#	All-Poisson special case
 	N <- exp(offset)
 	if(all(dispersion==0)) {
 		if(is.null(dim(N)))
@@ -25,36 +22,21 @@ mglmOneGroup <- function(y,dispersion=0,offset=0,maxit=50,trace=FALSE,tol=1e-6)
 			m <- .rowMeans(N,ntags,nlibs)
 		return(log(.rowMeans(y/m,ntags,nlibs)))
 	}
+
+#	Expanding the offset and dispersion values.
 	dispersion <- rep(dispersion,length=ntags)
-
-#	Check input values for offset
 	offset <- expandAsMatrix(offset,dim(y))
-	N <- expandAsMatrix(N,dim(y))
 
-#	Exact solution for gamma limit
-	beta <- log(.rowMeans(y/N,ntags,nlibs))
+#	Checking type for entry into C++ code.
+	if (!is.double(dispersion)) storage.mode(dispersion)<-"double"
+	if (!is.double(offset)) storage.mode(offset)<-"double"
+	stopifnot(is.numeric(y));
 
-#	Single library as special case
-	if(nlibs==1) return(beta)
+#	Fisher scoring iteration. Matrices are transposed due to column major storage - thus, each column
+#	of the transposed matrix maps to a row of the original for easy access.
+	output<-.Call("R_one_group", ntags, nlibs, t(y), dispersion, t(offset), maxit, tol, PACKAGE="edgeR")
+	if (is.character(output) ) { stop(output) }
+	if (any(!output[[2]])) warning(paste("max iteractions exceeded for", sum(!output[[2]]), "tags", sep=" "))
 
-#	Fisher scoring iteration	
-	iter <- 0
-	i <- is.finite(beta)
-	while(any(i)) {
-		iter <- iter+1
-		if(iter>maxit) {
-			warning("max iterations exceeded")
-			return(beta)
-		}
-		if(trace) cat("Iter=",iter,"Still converging=",sum(i),"\n")
-		mu <- exp(beta[i]+offset[i,,drop=FALSE])
-		var.div.mu <- 1+dispersion[i]*mu
-		m <- nrow(mu)
-		dl <- .rowSums((y[i,,drop=FALSE]-mu)/var.div.mu,m,nlibs)
-		info <- .rowSums(mu/var.div.mu,m,nlibs)
-		step <- dl/info
-		beta[i] <- beta[i]+step
-		i[i] <- abs(step)>tol
-	}
-	beta
+	output[[1]]
 }

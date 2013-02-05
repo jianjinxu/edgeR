@@ -1,7 +1,7 @@
-predFC <- function(y,design=NULL,prior.count.total=0.5,offset=NULL,dispersion=NULL) 
+predFC <- function(y,design=NULL,prior.count=0.125,offset=NULL,dispersion=NULL) 
 UseMethod("predFC")
 
-predFC.DGEList <- function(y,design=NULL,prior.count.total=0.5,offset=NULL,dispersion=NULL)
+predFC.DGEList <- function(y,design=NULL,prior.count=0.125,offset=NULL,dispersion=NULL)
 {
 	if(is.null(offset)) offset <- getOffset(y)
 	if(is.null(dispersion)) dispersion <- getDispersion(y)
@@ -9,37 +9,47 @@ predFC.DGEList <- function(y,design=NULL,prior.count.total=0.5,offset=NULL,dispe
 		dispersion <- 0
 		message("dispersion set to zero")
 	}
-	predFC(y=y$counts,design=design,prior.count.total=prior.count.total,offset=offset,dispersion=dispersion)
+	predFC.default(y=y$counts,design=design,prior.count=prior.count,offset=offset,dispersion=dispersion)
 }
 
-predFC.default <- function(y,design=NULL,prior.count.total=0.5,offset=log(colSums(y)),dispersion=0)
-#	Shrink glm estimates by augmenting data counts towards a constant
-#	17 Aug 2011.  Last modified 8 July 2012.
+predFC.default <- function(y,design=NULL,prior.count=0.125,offset=NULL,dispersion=0)
+#	Shrink log-fold-changes towards zero by augmenting data counts
+#	Gordon Smyth and Belinda Phipson
+#	17 Aug 2011.  Last modified 4 Nov 2012.
 {
+#	Check y
 	y <- as.matrix(y)
 	ngenes <- nrow(y)
 	nsamples <- ncol(y)
-	offset <- expandAsMatrix(offset,dim(y))
-#	dispersion <- rep(dispersion,ngenes)
 
-#	Add one to rowsum, in proportion to library sizes
-	lib.size <- exp(offset)
-	total.lib.size <- rowSums(lib.size)
-	proportion <- lib.size/total.lib.size
-	y.augmented <- y+proportion*prior.count.total
+#	Check design
+	if(is.null(design))
+		return(cpm(y,prior.count=prior.count,log=TRUE))
+	else
+		design <- as.matrix(design)
 
-#	Adjust offsets to keep overall mean similar
-#	total.count <- rowSums(y)
-#	offset.augmented <- offset+log((total.count+1)/pmax(total.count,0.5))
+#	Check prior.count
+	if(prior.count<0) stop("prior.count should be non-negative")
 
-	if(is.null(design)) # Return matrix of log2CPM
-	{
-		lib.size <- lib.size+proportion*prior.count.total
-		return(log2(y.augmented/lib.size)+log2(1e6))
-	}
+#	Check offset
+	if(is.null(offset)) {
+		lib.size <- colSums(y)
+		offset <- log(lib.size)
+	} else
+		lib.size <- exp(offset)
+
+#	Add prior counts in proportion to library sizes
+	if(is.null(dim(lib.size)))
+		ave.lib.size <- mean(lib.size)
+	else
+		ave.lib.size <- rowMeans(lib.size)
+	prior.count <- prior.count * lib.size/ave.lib.size
+	lib.size <- lib.size+2*prior.count
+	if(is.null(dim(prior.count))) prior.count <- matrix(prior.count,ngenes,nsamples,byrow=TRUE)
+	y <- y+prior.count
 
 #	Return matrix of coefficients on log2 scale
-   g <- glmFit(y.augmented,design,offset=offset,dispersion=dispersion,prior.count.total=0)
+   g <- glmFit(y,design,offset=log(lib.size),dispersion=dispersion,prior.count=0)
    g$coefficients/log(2)
 }
 

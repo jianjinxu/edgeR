@@ -1,24 +1,40 @@
-plotBCV <- function(object, xlab="logCPM", ylab="Biological coefficient of variation", pch=16, cex=0.2, ...)
-#	Plot of biological coefficient of variation against abundance (log CPM)
+plotBCV <- function(y, xlab="Average log CPM", ylab="Biological coefficient of variation", pch=16, cex=0.2, col.common="red", col.trend="blue", col.tagwise="black", ...)
+#	Plot biological coefficient of variation against average log CPM
 #	Davis McCarthy, Yunshun Chen, Gordon Smyth.
-#	Created 18 January 2012.  Last modified 2 Nov 2012.
+#	Created 18 January 2012.  Last modified 30 Sep 2012.
 {
-	if(!is(object,"DGEList")) stop("object must be a DGEList object.")
-	if(is.null(object$tagwise.dispersion)) stop("Tagwise dispersion estimates not found. Run either estimateTagwiseDisp() or estimateGLMTrendedDisp() then estimateGLMTagwiseDisp() before trying to plot BCV estimates.")
-#	if(is.null(object$abundance)) object$abundance <- mglmOneGroup(object$counts, offset=getOffset(object), dispersion=object$tagwise.dispersion)
-	logCPM <- object$logCPM
-	if(is.null(logCPM)) {
-		abundance <- mglmOneGroup(object$counts,offset=getOffset(object),dispersion=0.05)
-		logCPM <- log1p(exp(abundance+log(1e6)))/log(2)
+#	Check y
+	if(!is(y,"DGEList")) stop("y must be a DGEList.")
+
+#	Compute AveLogCPM if not found in y
+	A <- y$AveLogCPM
+	if(is.null(A)) A <- aveLogCPM(y$counts,offset=getOffset(y))
+
+#	Points to determine y axis limits
+	disp <- getDispersion(y)
+	if(is.null(disp)) stop("No dispersions to plot")
+	if(attr(disp,"type")=="common") disp <- rep(disp,length=length(A))
+
+#	Make plot
+	plot(A, sqrt(disp), xlab=xlab, ylab=ylab, type="n", ...)
+	labels <- cols <- NULL
+	if(!is.null(y$tagwise.dispersion)) {
+		points(A, sqrt(y$tagwise.dispersion), pch=pch, cex=cex, col=col.tagwise)
+		labels <- c(labels,"Tagwise")
+		cols <- c(cols,col.tagwise)
 	}
-	plot(logCPM, sqrt(object$tagwise.dispersion), ylab=ylab, xlab=xlab, pch=pch, cex=cex, ...)
-	if(!is.null(object$common.dispersion)) abline(h=sqrt(object$common.dispersion), col="red", lwd=2)	
-	if(!is.null(object$trended.dispersion)) {
-		o <- order(logCPM)
-		lines(logCPM[o], sqrt(object$trended.dispersion)[o], col="blue", lwd=2)
-		legend("topright",legend=c("Trend","Common"),lwd=2,col=c("blue","red"))
-	} else {
-		legend("topright",legend="Common",lwd=2,col="red")
+	if(!is.null(y$common.dispersion)) {
+		abline(h=sqrt(y$common.dispersion), col=col.common, lwd=2)
+		labels <- c(labels,"Common")
+		cols <- c(cols,col.common)
 	}
+	if(!is.null(y$trended.dispersion)) {
+		o <- order(A)
+		lines(A[o], sqrt(y$trended.dispersion)[o], col=col.trend, lwd=2)
+		labels <- c(labels,"Trend")
+		cols <- c(cols,col.trend)
+	}
+	legend("topright",legend=labels,lwd=2,col=cols)
+
 	invisible()
 }

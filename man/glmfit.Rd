@@ -12,9 +12,9 @@ Conduct genewise statistical tests for a given coefficient or coefficient contra
 
 \usage{
 \method{glmFit}{DGEList}(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL,
-       prior.count.total=0.5, start=NULL, method="auto", ...)
-glmLRT(glmfit, coef=ncol(glmfit$design), contrast=NULL)
-glmQLFTest(glmfit, coef=ncol(glmfit$design), contrast=NULL, abundance.trend=TRUE)
+       prior.count=0.125, start=NULL, method="auto", ...)
+glmLRT(glmfit, coef=ncol(glmfit$design), contrast=NULL, test="chisq")
+glmQLFTest(glmfit, coef=ncol(glmfit$design), contrast=NULL, abundance.trend=TRUE, winsor.tail.p=c(0.05,0.1))
 }
 
 \arguments{
@@ -32,7 +32,7 @@ Defaults to a single column of ones, equivalent to treating the columns as repli
 
 \item{lib.size}{numeric vector of length \code{ncol(y)} giving library sizes. Only used if \code{offset=NULL}, in which case \code{offset} is set to \code{log(lib.size}). Defaults to \code{colSums(y)}.}
 
-\item{prior.count.total}{the total number of prior counts to be added to each row of data to shrink the estimated log-fold-changes towards zero.}
+\item{prior.count}{average prior count to be added to observation to shrink the estimated log-fold-changes towards zero.}
 
 \item{start}{optional numeric matrix of initial estimates for the linear model coefficients.}
 
@@ -44,9 +44,13 @@ Defaults to a single column of ones, equivalent to treating the columns as repli
 
 \item{coef}{integer or character vector indicating which coefficients of the linear model are to be tested equal to zero.  Values must be columns or column names of \code{design}. Defaults to the last coefficient.  Ignored if \code{contrast} is specified.}
 
-\item{contrast}{numeric vector specifying a contrast of the linear model coefficients to be tested equal to zero. Must be of length equal to the number of columns of \code{design}. If specified, then takes precedence over \code{coef}.}
+\item{contrast}{numeric vector or matrix specifying one or more contrasts of the linear model coefficients to be tested equal to zero. Number of rows must equal to the number of columns of \code{design}. If specified, then takes precedence over \code{coef}.}
+
+\item{test}{which test (distribution) to use in calculating the p-values. Possible values are \code{"F"} or \code{"chisq"}.}
 
 \item{abundance.trend}{logical, whether to allow an abundance-dependent trend when estimating the prior values for the quasi-likelihood multiplicative dispersion parameter.}
+
+\item{winsor.tail.p}{numeric vector of length 2 giving proportion to trim (Winsorize) from lower and upper tail of the distribution of genewise deviances when estimating the hyperparameters. Positive values produce robust empirical Bayes ignoring outlier small or large deviances.} 
 }
 
 \value{
@@ -80,7 +84,7 @@ When the design matrix defines a one-way layout, or can be re-parametrized to a 
 Otherwise the default fitting method, implemented in \code{\link{mglmLS}}, is a parallelized line search algorithm described by McCarthy et al (2012).
 Other possible fitting methods are \code{\link{mglmLevenberg}} and \code{\link{mglmSimple}}.
 
-Positive \code{prior.count.total} cause the returned coefficients to be shrunk in such a way that fold-changes between the treatment conditions are decreased.
+Positive \code{prior.count} cause the returned coefficients to be shrunk in such a way that fold-changes between the treatment conditions are decreased.
 In particular, infinite fold-changes are avoided.
 Larger values cause more shrinkage.
 The returned coefficients are affected but not the likelihood ratio tests or p-values.

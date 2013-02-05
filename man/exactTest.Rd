@@ -11,7 +11,7 @@
 
 \usage{
 exactTest(object, pair=1:2, dispersion="auto", rejection.region="doubletail",
-          big.count=900, prior.count.total=0.5)
+          big.count=900, prior.count=0.125)
 exactTestDoubleTail(y1, y2, dispersion=0, big.count=900)
 exactTestBySmallP(y1, y2, dispersion=0, big.count=900)
 exactTestByDeviance(y1, y2, dispersion=0, big.count=900)
@@ -32,7 +32,7 @@ Default behavior (\code{"auto"} is to use most complex dispersions found in data
 
 \item{big.count}{count size above which asymptotic beta approximation will be used.}
 
-\item{prior.count.total}{prior count used to shrink log-fold-changes. Larger values produce more shrinkage.}
+\item{prior.count}{average prior count used to shrink log-fold-changes. Larger values produce more shrinkage.}
 
 \item{y1}{numeric matrix of counts for the first the two experimental groups to be tested for differences.
 Rows correspond to genes or transcripts and columns to libraries.
@@ -99,7 +99,7 @@ d <- estimateTagwiseDisp(d)
 de <- exactTest(d)
 topTags(de)
 
-# same example using low level exactTest function directly
+# same example using low-level exactTest function directly
 p.value <- exactTestDoubleTail(y[,1:2],y[,3:4],dispersion=0.2)
 }
 

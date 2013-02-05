@@ -9,8 +9,10 @@ Estimate trended dispersion parameters across multiple negative binomial general
 }
 
 \usage{
-dispCoxReidSplineTrend(y, design, offset=NULL, df = 5, subset=10000, method.optim="Nelder-Mead", trace=0)
-dispCoxReidPowerTrend(y, design, offset=NULL, subset=10000, method.optim="Nelder-Mead", trace=0)
+dispCoxReidSplineTrend(y, design, offset=NULL, df = 5, subset=10000, AveLogCPM=NULL,
+                       method.optim="Nelder-Mead", trace=0)
+dispCoxReidPowerTrend(y, design, offset=NULL, subset=10000, AveLogCPM=NULL,
+                       method.optim="Nelder-Mead", trace=0)
 }
 
 \arguments{ 
@@ -23,7 +25,9 @@ dispCoxReidPowerTrend(y, design, offset=NULL, subset=10000, method.optim="Nelder
 
 \item{df}{integer giving the degrees of freedom of the spline function, see \code{ns} in the splines package.}
 
-\item{subset}{integer, number of rows to use in the calculation.  Rows used are chosen evenly spaced by abundance using \code{\link{cutWithMinN}}.}
+\item{subset}{integer, number of rows to use in the calculation.  Rows used are chosen evenly spaced by AveLogCPM using \code{\link{cutWithMinN}}.}
+
+\item{AveLogCPM}{numeric vector giving average log2 counts per million for each gene}
 
 \item{method.optim}{the method to be used in \code{optim}. See \code{\link{optim}} for more detail.}
 
@@ -54,7 +58,7 @@ design <- matrix(1,4,1)
 y <- matrix((rnbinom(400,mu=100,size=5)),100,4)
 d1 <- dispCoxReidSplineTrend(y, design, df=3)
 d2 <- dispCoxReidPowerTrend(y, design)
-with(d2,plot(abundance,sqrt(dispersion)))
+with(d2,plot(AveLogCPM,sqrt(dispersion)))
 }
 
 \seealso{

@@ -16,8 +16,8 @@ Fit the same log-link negative binomial or Poisson generalized linear model (GLM
 
 \usage{
 mglmLS(y, design, dispersion=0, offset=0, coef.start=NULL, tol=1e-5, maxit=50, trace=FALSE)
-mglmOneGroup(y, dispersion=0, offset=0, maxit=50, trace=FALSE, tol=1e-6)
-mglmOneWay(y, design=NULL, dispersion=0, offset=0, maxit=50, trace=FALSE)
+mglmOneGroup(y, dispersion=0, offset=0, maxit=50, tol=1e-10)
+mglmOneWay(y, design=NULL, dispersion=0, offset=0, maxit=50)
 mglmSimple(y, design, dispersion=0, offset=0, weights=NULL)
 mglmLevenberg(y, design, dispersion=0, offset=0, coef.start=NULL, start.method="null",
           tol=1e-06, maxit=200)
@@ -112,15 +112,19 @@ McCarthy, DJ, Chen, Y, Smyth, GK (2012). Differential expression analysis of mul
 \url{http://nar.oxfordjournals.org/content/40/10/4288}
 }
 
-\author{Davis McCarthy, Yunshun Chen, Gordon Smyth, Aaron Lun}
+\author{Yunshun Chen, Davis McCarthy, Aaron Lun, Gordon Smyth.  C++ code by Aaron Lun.}
 
 \examples{
 y <- matrix(rnbinom(1000,mu=10,size=2),ncol=4)
 lib.size <- colSums(y)
 dispersion <- 0.1
 
-logAveCPM <- mglmOneGroup(y, dispersion=dispersion, offset=log(lib.size))
-summary(logAveCPM)
+abundance <- mglmOneGroup(y, dispersion=dispersion, offset=log(lib.size))
+AveLogCPM <- log1p(exp(1e6*abundance))/log(2)
+summary(AveLogCPM)
+
+## Same as above:
+AveLogCPM <- aveLogCPM(y, dispersion, offset=log(lib.size))
 
 ## Fit the NB GLM to the counts with a given design matrix
 f1 <- factor(c(1,1,2,2))

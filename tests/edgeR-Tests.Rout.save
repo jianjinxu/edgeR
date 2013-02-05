@@ -1,12 +1,14 @@
 
-R Under development (unstable) (2012-08-14 r60264) -- "Unsuffered Consequences"
+R version 2.15.0 (2012-03-30)
 Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
-Platform: i386-w64-mingw32/i386 (32-bit)
+Platform: x86_64-unknown-linux-gnu (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
 Type 'license()' or 'licence()' for distribution details.
+
+  Natural language support but running in an English locale
 
 R is a collaborative project with many contributors.
 Type 'contributors()' for more information and
@@ -33,28 +35,28 @@ Loading required package: limma
 [1] 0.210292
 > de <- exactTest(d)
 > summary(de$table)
-     logFC             logCPM         PValue       
- Min.   :-1.7266   Min.   :-Inf   Min.   :0.01976  
- 1st Qu.:-0.4859   1st Qu.:  13   1st Qu.:0.33120  
- Median : 0.2254   Median :  13   Median :0.56514  
- Mean   : 0.1878   Mean   :-Inf   Mean   :0.54504  
- 3rd Qu.: 0.5261   3rd Qu.:  13   3rd Qu.:0.81052  
- Max.   : 4.0861   Max.   :  14   Max.   :1.00000  
+     logFC             logCPM          PValue       
+ Min.   :-1.7266   Min.   : 0.00   Min.   :0.01976  
+ 1st Qu.:-0.4855   1st Qu.:12.88   1st Qu.:0.33120  
+ Median : 0.2253   Median :13.07   Median :0.56514  
+ Mean   : 0.1877   Mean   :12.43   Mean   :0.54504  
+ 3rd Qu.: 0.5258   3rd Qu.:13.48   3rd Qu.:0.81052  
+ Max.   : 4.0861   Max.   :14.17   Max.   :1.00000  
 > topTags(de)
 Comparison of groups:  2-1 
             logFC    logCPM     PValue       FDR
-Tag.17  2.0451046 13.516173 0.01975954 0.4347099
-Tag.21 -1.7266116 13.092119 0.06131012 0.6744114
-Tag.6  -1.6328379 12.354950 0.12446044 0.8982100
-Tag.2   4.0861091  9.961932 0.16331090 0.8982100
-Tag.16  0.9324546 13.319268 0.29050785 0.9655885
-Tag.20  0.8544140 13.546974 0.31736609 0.9655885
-Tag.12  0.7083448 14.171529 0.37271028 0.9655885
-Tag.19 -0.7975130 13.006647 0.40166354 0.9655885
-Tag.3  -0.7303145 13.284282 0.42139935 0.9655885
-Tag.8  -0.7913052 12.421860 0.47117217 0.9655885
+Tag.17  2.0450964 13.516296 0.01975954 0.4347099
+Tag.21 -1.7265870 13.092284 0.06131012 0.6744114
+Tag.6  -1.6329986 12.355225 0.12446044 0.8982100
+Tag.2   4.0861092  9.963378 0.16331090 0.8982100
+Tag.16  0.9324996 13.319409 0.29050785 0.9655885
+Tag.20  0.8543138 13.547095 0.31736609 0.9655885
+Tag.12  0.7081170 14.171607 0.37271028 0.9655885
+Tag.19 -0.7976602 13.006822 0.40166354 0.9655885
+Tag.3  -0.7300410 13.284426 0.42139935 0.9655885
+Tag.8  -0.7917906 12.422123 0.47117217 0.9655885
 > 
-> d2 <- estimateTagwiseDisp(d,trend="none")
+> d2 <- estimateTagwiseDisp(d,trend="none",prior.df=20)
 > summary(d2$tagwise.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
  0.1757  0.1896  0.1989  0.2063  0.2185  0.2677 
@@ -62,33 +64,33 @@ Tag.8  -0.7913052 12.421860 0.47117217 0.9655885
 > topTags(de)
 Comparison of groups:  2-1 
             logFC    logCPM     PValue       FDR
-Tag.17  2.0451046 13.516173 0.01975954 0.4347099
-Tag.21 -1.7266116 13.092119 0.06131012 0.6744114
-Tag.6  -1.6328379 12.354950 0.12446044 0.8982100
-Tag.2   4.0861091  9.961932 0.16331090 0.8982100
-Tag.16  0.9324546 13.319268 0.29050785 0.9655885
-Tag.20  0.8544140 13.546974 0.31736609 0.9655885
-Tag.12  0.7083448 14.171529 0.37271028 0.9655885
-Tag.19 -0.7975130 13.006647 0.40166354 0.9655885
-Tag.3  -0.7303145 13.284282 0.42139935 0.9655885
-Tag.8  -0.7913052 12.421860 0.47117217 0.9655885
+Tag.17  2.0450964 13.516296 0.01975954 0.4347099
+Tag.21 -1.7265870 13.092284 0.06131012 0.6744114
+Tag.6  -1.6329986 12.355225 0.12446044 0.8982100
+Tag.2   4.0861092  9.963378 0.16331090 0.8982100
+Tag.16  0.9324996 13.319409 0.29050785 0.9655885
+Tag.20  0.8543138 13.547095 0.31736609 0.9655885
+Tag.12  0.7081170 14.171607 0.37271028 0.9655885
+Tag.19 -0.7976602 13.006822 0.40166354 0.9655885
+Tag.3  -0.7300410 13.284426 0.42139935 0.9655885
+Tag.8  -0.7917906 12.422123 0.47117217 0.9655885
 > 
 > de <- exactTest(d2)
 > topTags(de)
 Comparison of groups:  2-1 
-            logFC    logCPM     PValue       FDR
-Tag.17  2.0451046 13.516205 0.01327001 0.2919403
-Tag.21 -1.7266116 13.092106 0.05683886 0.6252275
-Tag.6  -1.6328379 12.354928 0.11460208 0.8404152
-Tag.2   4.0861091  9.961944 0.16126207 0.8869414
-Tag.16  0.9324546 13.319276 0.28103256 0.9669238
-Tag.20  0.8544140 13.546978 0.30234789 0.9669238
-Tag.12  0.7083448 14.171528 0.37917895 0.9669238
-Tag.19 -0.7975130 13.006648 0.40762735 0.9669238
-Tag.3  -0.7303145 13.284277 0.40856822 0.9669238
-Tag.8  -0.7913052 12.421877 0.49005179 0.9669238
+            logFC   logCPM     PValue       FDR
+Tag.17  2.0450987 13.51633 0.01327001 0.2919403
+Tag.21 -1.7265897 13.09227 0.05683886 0.6252275
+Tag.6  -1.6329910 12.35520 0.11460208 0.8404152
+Tag.2   4.0861092  9.96339 0.16126207 0.8869414
+Tag.16  0.9324975 13.31942 0.28103256 0.9669238
+Tag.20  0.8543178 13.54710 0.30234789 0.9669238
+Tag.12  0.7081149 14.17161 0.37917895 0.9669238
+Tag.19 -0.7976633 13.00682 0.40762735 0.9669238
+Tag.3  -0.7300478 13.28442 0.40856822 0.9669238
+Tag.8  -0.7918243 12.42214 0.49005179 0.9669238
 > 
-> d2 <- estimateTagwiseDisp(d,trend="movingave",span=0.4)
+> d2 <- estimateTagwiseDisp(d,trend="movingave",span=0.4,prior.df=20)
 > summary(d2$tagwise.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
  0.1005  0.1629  0.2064  0.2077  0.2585  0.3164 
@@ -96,16 +98,16 @@ Tag.8  -0.7913052 12.421877 0.49005179 0.9669238
 > topTags(de)
 Comparison of groups:  2-1 
             logFC    logCPM     PValue       FDR
-Tag.17  2.0451046 13.516156 0.02427872 0.5341319
-Tag.21 -1.7266116 13.092092 0.05234833 0.5758316
-Tag.6  -1.6328379 12.354958 0.12846308 0.8954397
-Tag.2   4.0861091  9.961935 0.16280722 0.8954397
-Tag.16  0.9324546 13.319314 0.24308201 0.9711975
-Tag.20  0.8544140 13.546965 0.35534649 0.9711975
-Tag.19 -0.7975130 13.006644 0.38873717 0.9711975
-Tag.3  -0.7303145 13.284274 0.40001438 0.9711975
-Tag.12  0.7083448 14.171522 0.43530228 0.9711975
-Tag.8  -0.7913052 12.421884 0.49782701 0.9711975
+Tag.17  2.0450951 13.516280 0.02427872 0.5341319
+Tag.21 -1.7265927 13.092257 0.05234833 0.5758316
+Tag.6  -1.6330014 12.355234 0.12846308 0.8954397
+Tag.2   4.0861092  9.963381 0.16280722 0.8954397
+Tag.16  0.9324887 13.319455 0.24308201 0.9711975
+Tag.20  0.8543044 13.547085 0.35534649 0.9711975
+Tag.19 -0.7976535 13.006820 0.38873717 0.9711975
+Tag.3  -0.7300525 13.284419 0.40001438 0.9711975
+Tag.12  0.7080985 14.171601 0.43530228 0.9711975
+Tag.8  -0.7918376 12.422147 0.49782701 0.9711975
 > 
 > summary(exactTest(d2,rejection="smallp")$table$PValue)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
@@ -114,43 +116,43 @@ Tag.8  -0.7913052 12.421884 0.49782701 0.9711975
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
 0.02428 0.36370 0.55660 0.54320 0.78890 1.00000 
 > 
-> d2 <- estimateTagwiseDisp(d,trend="loess",span=0.8)
+> d2 <- estimateTagwiseDisp(d,trend="loess",span=0.8,prior.df=20)
 > summary(d2$tagwise.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.04967 0.13790 0.17730 0.17810 0.21530 0.28170 
+ 0.0497  0.1379  0.1773  0.1781  0.2153  0.2818 
 > de <- exactTest(d2)
 > topTags(de)
 Comparison of groups:  2-1 
             logFC    logCPM     PValue       FDR
-Tag.17  2.0451046 13.516189 0.01611381 0.3545038
-Tag.21 -1.7266116 13.092024 0.03529622 0.3882584
-Tag.6  -1.6328379 12.354911 0.10793983 0.7915588
-Tag.2   4.0861091  9.961962 0.15807182 0.8693950
-Tag.16  0.9324546 13.319292 0.26410642 0.9665692
-Tag.20  0.8544140 13.546974 0.31598009 0.9665692
-Tag.19 -0.7975130 13.006639 0.35808050 0.9665692
-Tag.3  -0.7303145 13.284271 0.39000238 0.9665692
-Tag.12  0.7083448 14.171524 0.41373066 0.9665692
-Tag.8  -0.7913052 12.421874 0.48661951 0.9665692
+Tag.17  2.0450976 13.516312 0.01612661 0.3547854
+Tag.21 -1.7266050 13.092189 0.03528798 0.3881678
+Tag.6  -1.6329855 12.355187 0.10794538 0.7915995
+Tag.2   4.0861092  9.963408 0.15807339 0.8694036
+Tag.16  0.9324936 13.319433 0.26410717 0.9665672
+Tag.20  0.8543142 13.547095 0.31597759 0.9665672
+Tag.19 -0.7976368 13.006814 0.35809529 0.9665672
+Tag.3  -0.7300583 13.284415 0.38998198 0.9665672
+Tag.12  0.7081045 14.171603 0.41372888 0.9665672
+Tag.8  -0.7918184 12.422137 0.48662256 0.9665672
 > 
-> d2 <- estimateTagwiseDisp(d,trend="tricube",span=0.8)
+> d2 <- estimateTagwiseDisp(d,trend="tricube",span=0.8,prior.df=20)
 > summary(d2$tagwise.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.04967 0.13790 0.17730 0.17810 0.21530 0.28170 
+ 0.0497  0.1379  0.1773  0.1781  0.2153  0.2818 
 > de <- exactTest(d2)
 > topTags(de)
 Comparison of groups:  2-1 
             logFC    logCPM     PValue       FDR
-Tag.17  2.0451046 13.516189 0.01611381 0.3545038
-Tag.21 -1.7266116 13.092024 0.03529622 0.3882584
-Tag.6  -1.6328379 12.354911 0.10793983 0.7915588
-Tag.2   4.0861091  9.961962 0.15807182 0.8693950
-Tag.16  0.9324546 13.319292 0.26410642 0.9665692
-Tag.20  0.8544140 13.546974 0.31598009 0.9665692
-Tag.19 -0.7975130 13.006639 0.35808050 0.9665692
-Tag.3  -0.7303145 13.284271 0.39000238 0.9665692
-Tag.12  0.7083448 14.171524 0.41373066 0.9665692
-Tag.8  -0.7913052 12.421874 0.48661951 0.9665692
+Tag.17  2.0450976 13.516312 0.01612661 0.3547854
+Tag.21 -1.7266050 13.092189 0.03528798 0.3881678
+Tag.6  -1.6329855 12.355187 0.10794538 0.7915995
+Tag.2   4.0861092  9.963408 0.15807339 0.8694036
+Tag.16  0.9324936 13.319433 0.26410717 0.9665672
+Tag.20  0.8543142 13.547095 0.31597759 0.9665672
+Tag.19 -0.7976368 13.006814 0.35809529 0.9665672
+Tag.3  -0.7300583 13.284415 0.38998198 0.9665672
+Tag.12  0.7081045 14.171603 0.41372888 0.9665672
+Tag.8  -0.7918184 12.422137 0.48662256 0.9665672
 > 
 > # mglmOneWay
 > design <- model.matrix(~group,data=d$samples)
@@ -209,7 +211,7 @@ $fitted.values
 [10,] 10.0 10.0 13.0 13.0
 
 > 
-> fit <- glmFit(d,design,dispersion=d$common.dispersion)
+> fit <- glmFit(d,design,dispersion=d$common.dispersion,prior.count=0.5/4)
 > lrt <- glmLRT(fit,coef=2)
 > topTags(lrt)
 Coefficient:  group2 
@@ -225,17 +227,17 @@ Tag.12  0.7081170 14.171529 0.9095513 0.34023349 0.8276702
 Tag.3  -0.7300410 13.284282 0.8300307 0.36226364 0.8276702
 Tag.8  -0.7917906 12.421860 0.7830377 0.37621371 0.8276702
 > 
-> fit <- glmFit(d,design,dispersion=d$common.dispersion,prior.count.total=2)
+> fit <- glmFit(d,design,dispersion=d$common.dispersion,prior.count=0.5)
 > summary(fit$coef)
   (Intercept)         group2        
- Min.   :-7.603   Min.   :-1.13681  
- 1st Qu.:-4.894   1st Qu.:-0.32341  
- Median :-4.712   Median : 0.15083  
- Mean   :-4.939   Mean   : 0.07817  
- 3rd Qu.:-4.523   3rd Qu.: 0.35163  
- Max.   :-4.106   Max.   : 1.60864  
+ Min.   :-7.604   Min.   :-1.13681  
+ 1st Qu.:-4.895   1st Qu.:-0.32341  
+ Median :-4.713   Median : 0.15083  
+ Mean   :-4.940   Mean   : 0.07817  
+ 3rd Qu.:-4.524   3rd Qu.: 0.35163  
+ Max.   :-4.107   Max.   : 1.60864  
 > 
-> fit <- glmFit(d,design)
+> fit <- glmFit(d,design,prior.count=0.5/4)
 > lrt <- glmLRT(fit,coef=2)
 > topTags(lrt)
 Coefficient:  group2 
@@ -254,11 +256,11 @@ Tag.8  -0.7917906 12.421860 0.7830377 0.37621371 0.8276702
 > dglm <- estimateGLMCommonDisp(d,design)
 > dglm$common.dispersion
 [1] 0.2033282
-> dglm <- estimateGLMTagwiseDisp(dglm,design)
+> dglm <- estimateGLMTagwiseDisp(dglm,design,prior.df=20)
 > summary(dglm$tagwise.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
  0.1756  0.1879  0.1998  0.2031  0.2135  0.2578 
-> fit <- glmFit(dglm,design)
+> fit <- glmFit(dglm,design,prior.count=0.5/4)
 > lrt <- glmLRT(fit,coef=2)
 > topTags(lrt)
 Coefficient:  group2 
@@ -275,22 +277,22 @@ Tag.3  -0.7300488 13.284277 0.8817937 0.347710872 0.8499599
 Tag.8  -0.7918166 12.421874 0.7356185 0.391068048 0.8603497
 > dglm <- estimateGLMTrendedDisp(dglm,design)
 > summary(dglm$trended.dispersion)
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.05079 0.17290 0.18430 0.18090 0.21150 0.26750 
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+0.004274 0.173100 0.184500 0.179000 0.211700 0.267600 
 > dglm <- estimateGLMTrendedDisp(dglm,design,method="power")
 > summary(dglm$trended.dispersion)
-   Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.05079 0.17290 0.18430 0.18090 0.21150 0.26750 
+    Min.  1st Qu.   Median     Mean  3rd Qu.     Max. 
+0.004274 0.173100 0.184500 0.179000 0.211700 0.267600 
 > dglm <- estimateGLMTrendedDisp(dglm,design,method="spline")
 Loading required package: splines
 > summary(dglm$trended.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
- 0.0000  0.1104  0.1647  0.1839  0.2361  0.4765 
+ 0.0000  0.1112  0.1650  0.1836  0.2361  0.4628 
 > dglm <- estimateGLMTrendedDisp(dglm,design,method="bin.spline")
 > summary(dglm$trended.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
  0.1997  0.1997  0.1997  0.1997  0.1997  0.1997 
-> dglm <- estimateGLMTagwiseDisp(dglm,design)
+> dglm <- estimateGLMTagwiseDisp(dglm,design,prior.df=20)
 > summary(dglm$tagwise.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
  0.1385  0.1792  0.1964  0.1935  0.2026  0.2709 
@@ -312,7 +314,7 @@ Loading required package: splines
 > d <- DGEList(y)
 Calculating library sizes from column totals.
 > d <- calcNormFactors(d)
-> fit <- glmFit(d, design, dispersion=dispersion.true)
+> fit <- glmFit(d, design, dispersion=dispersion.true, prior.count=0.5/3)
 > results <- glmLRT(fit, coef=2)
 > topTags(results)
 Coefficient:  x 
@@ -321,24 +323,24 @@ Gene1    2.907024 13.504893 38.738513 4.845535e-10 4.845535e-07
 Gene61   2.855317  9.538397 10.738307 1.049403e-03 5.247014e-01
 Gene62  -2.123902  9.948325  8.818704 2.981584e-03 8.334758e-01
 Gene134 -1.949073  9.951684  8.125889 4.363759e-03 8.334758e-01
-Gene740 -1.610046 10.537269  8.013408 4.643226e-03 8.334758e-01
+Gene740 -1.610046 10.537269  8.013408 4.643227e-03 8.334758e-01
 Gene354  2.022698  9.825384  7.826308 5.149116e-03 8.334758e-01
 Gene5    1.856816  9.828828  7.214238 7.232750e-03 8.334758e-01
-Gene746 -1.798331  9.946830  6.846262 8.882691e-03 8.334758e-01
+Gene746 -1.798331  9.946830  6.846262 8.882690e-03 8.334758e-01
 Gene110  1.623148 10.174945  6.737984 9.438120e-03 8.334758e-01
 Gene383  1.637140 10.270222  6.687530 9.708962e-03 8.334758e-01
 > d <- estimateGLMCommonDisp(d, design, verbose=TRUE)
 Disp = 0.10253 , BCV = 0.3202 
-> glmFit(d,design,dispersion=dispersion.true,method="simple")
+> glmFit(d,design,dispersion=dispersion.true,method="simple", prior.count=0.5/3)
 Loading required package: MASS
 An object of class "DGEGLM"
 $coefficients
       (Intercept)          x
-Gene1   -7.391663  2.0149958
-Gene2   -7.318401 -0.7611895
-Gene3   -6.831619 -0.1399478
-Gene4   -7.480173  0.5172002
-Gene5   -8.747710  1.2870467
+Gene1   -7.391745  2.0149958
+Gene2   -7.318483 -0.7611895
+Gene3   -6.831702 -0.1399478
+Gene4   -7.480255  0.5172002
+Gene5   -8.747793  1.2870467
 995 more rows ...
 
 $df.residual
@@ -417,15 +419,15 @@ x0     1     4001    1.0008730
 x1     1     4176    1.0014172
 x2     1     3971    0.9977138
 
-> glmFit(d,design,dispersion=dispersion.true,method="levenberg")
+> glmFit(d,design,dispersion=dispersion.true,method="levenberg", prior.count=0.5/3)
 An object of class "DGEGLM"
 $coefficients
       (Intercept)          x
-Gene1   -7.391663  2.0149958
-Gene2   -7.318401 -0.7611895
-Gene3   -6.831619 -0.1399478
-Gene4   -7.480173  0.5172002
-Gene5   -8.747710  1.2870467
+Gene1   -7.391745  2.0149958
+Gene2   -7.318483 -0.7611895
+Gene3   -6.831702 -0.1399478
+Gene4   -7.480255  0.5172002
+Gene5   -8.747793  1.2870467
 995 more rows ...
 
 $fitted.values
@@ -438,7 +440,7 @@ Gene5 0.5080377  2.136398   8.1502486
 995 more rows ...
 
 $deviance
-[1] 6.38037545 1.46644913 1.38532340 0.01593969 1.03894513
+[1] 6.38037543 1.46644912 1.38532340 0.01593969 1.03894514
 995 more elements ...
 
 $iter
@@ -497,13 +499,13 @@ x2     1     3971    0.9977138
 
 > 
 > # Exact tests
-> y <- matrix(rnbinom(20,mu=10,size=3/2),nrow=5)
+> y <- matrix(rnbinom(20,mu=10,size=3/2),5,4)
 > group <- factor(c(1,1,2,2))
 > ys <- splitIntoGroupsPseudo(y,group,pair=c(1,2))
 > exactTestDoubleTail(ys$y1,ys$y2,dispersion=2/3)
 [1] 0.1334396 0.6343568 0.7280015 0.7124912 0.3919258
 > 
-> y <- matrix(rnbinom(5*7,mu=10,size=3/2),nrow=5,ncol=7)
+> y <- matrix(rnbinom(5*7,mu=10,size=3/2),5,7)
 > group <- factor(c(1,1,2,2,3,3,3))
 > ys <- splitIntoGroupsPseudo(y,group,pair=c(1,3))
 > exactTestDoubleTail(ys$y1,ys$y2,dispersion=2/3)
@@ -513,15 +515,36 @@ x2     1     3971    0.9977138
 > 
 > y[1,3:4] <- 0
 > design <- model.matrix(~group)
-> fit <- glmFit(y,design,dispersion=2/3)
+> fit <- glmFit(y,design,dispersion=2/3,prior.count=0.5/7)
 > summary(fit$coef)
   (Intercept)         group2            group3        
- Min.   :-1.815   Min.   :-5.0171   Min.   :-0.64646  
- 1st Qu.:-1.809   1st Qu.:-1.1565   1st Qu.:-0.13919  
- Median :-1.709   Median : 0.1994   Median :-0.10441  
- Mean   :-1.623   Mean   :-0.9523   Mean   :-0.04217  
- 3rd Qu.:-1.427   3rd Qu.: 0.3755   3rd Qu.:-0.04305  
- Max.   :-1.354   Max.   : 0.8374   Max.   : 0.72227  
+ Min.   :-1.817   Min.   :-5.0171   Min.   :-0.64646  
+ 1st Qu.:-1.812   1st Qu.:-1.1565   1st Qu.:-0.13919  
+ Median :-1.712   Median : 0.1994   Median :-0.10441  
+ Mean   :-1.625   Mean   :-0.9523   Mean   :-0.04217  
+ 3rd Qu.:-1.429   3rd Qu.: 0.3755   3rd Qu.:-0.04305  
+ Max.   :-1.356   Max.   : 0.8374   Max.   : 0.72227  
+> 
+> lrt <- glmLRT(fit,contrast=cbind(c(0,1,0),c(0,0,1)))
+> topTags(lrt)
+Coefficient:  LR test of 2 contrasts 
+     logFC.1    logFC.2   logCPM         LR      PValue        FDR
+1 -7.2381060 -0.0621100 16.94518 10.7712179 0.004582049 0.02291025
+5 -1.6684268 -0.9326507 17.12616  1.7309951 0.420842114 0.90967967
+2  1.2080938  1.0420198 18.18532  1.0496688 0.591653346 0.90967967
+4  0.5416704 -0.1506381 17.41886  0.3958596 0.820427427 0.90967967
+3  0.2876249 -0.2008143 17.97875  0.1893255 0.909679671 0.90967967
+> design <- model.matrix(~0+group)
+> fit <- glmFit(y,design,dispersion=2/3,prior.count=0.5/7)
+> lrt <- glmLRT(fit,contrast=cbind(c(-1,1,0),c(0,-1,1),c(-1,0,1)))
+> topTags(lrt)
+Coefficient:  LR test of 2 contrasts 
+     logFC.1    logFC.2   logCPM         LR      PValue        FDR
+1 -7.2381060  7.1759960 16.94518 10.7712179 0.004582049 0.02291025
+5 -1.6684268  0.7357761 17.12616  1.7309951 0.420842114 0.90967967
+2  1.2080938 -0.1660740 18.18532  1.0496688 0.591653346 0.90967967
+4  0.5416704 -0.6923084 17.41886  0.3958596 0.820427427 0.90967967
+3  0.2876249 -0.4884392 17.97875  0.1893255 0.909679671 0.90967967
 > 
 > # spliceVariants
 > z = matrix(c(2,0,4,6,4,3,7,1,1,0,1,1,0,3,1,2,0,1,2,1,0,3,1,0), 8, 3)
@@ -548,6 +571,47 @@ $dispersion
 6.434416e-03 1.570902e-06 
 
 > 
+> # simple Good-Turing algorithm runs.
+> test1<-1:9
+> freq1<-c(2018046, 449721, 188933, 105668, 68379, 48190, 35709, 37710, 22280)
+> goodTuring(rep(test1, freq1))
+$P0
+[1] 0.3814719
+
+$proportion
+[1] 8.035111e-08 2.272143e-07 4.060582e-07 5.773690e-07 7.516705e-07
+[6] 9.276808e-07 1.104759e-06 1.282549e-06 1.460837e-06
+
+$count
+[1] 1 2 3 4 5 6 7 8 9
+
+$n
+[1] 2018046  449721  188933  105668   68379   48190   35709   37710   22280
+
+$n0
+[1] 0
+
+> test2<-c(312, 14491, 16401, 65124, 129797, 323321, 366051, 368599, 405261, 604962)
+> goodTuring(test2)
+$P0
+[1] 0
+
+$proportion
+ [1] 0.0001362656 0.0063162959 0.0071487846 0.0283850925 0.0565733349
+ [6] 0.1409223124 0.1595465235 0.1606570896 0.1766365144 0.2636777866
+
+$count
+ [1]    312  14491  16401  65124 129797 323321 366051 368599 405261 604962
+
+$n
+ [1] 1 1 1 1 1 1 1 1 1 1
+
+$n0
+[1] 0
+
+> 
+> 
+> 
 > proc.time()
    user  system elapsed 
-   5.92    0.04    6.02 
+  3.128   0.035   3.167 

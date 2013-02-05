@@ -8,8 +8,8 @@ Estimate tagwise dispersion parameters across multiple negative binomial general
 }
 
 \usage{
-dispCoxReidInterpolateTagwise(y, design, offset=NULL, dispersion, trend=TRUE, abundance=NULL,
-          min.row.sum=5, prior.df=20, span=0.3, grid.npts=11, grid.range=c(-6,6))
+dispCoxReidInterpolateTagwise(y, design, offset=NULL, dispersion, trend=TRUE, AveLogCPM=NULL,
+          min.row.sum=5, prior.df=10, span=0.3, grid.npts=11, grid.range=c(-6,6))
 }
 
 \arguments{ 
@@ -23,7 +23,7 @@ dispCoxReidInterpolateTagwise(y, design, offset=NULL, dispersion, trend=TRUE, ab
 
 \item{trend}{logical, whether abundance-dispersion trend is used for smoothing.}
 
-\item{abundance}{numeric scalar or vector giving the tagwise log-abundance measure for each tag. If null, the abundance is then evaluated by \code{mglmOneGroup}}
+\item{AveLogCPM}{numeric vector giving average log2 counts per million for each tag.}
 
 \item{min.row.sum}{numeric scalar giving a value for the filtering out of low abundance tags. Only tags with total sum of counts above this value are used. Low abundance tags can adversely affect the estimation of the common dispersion, so this argument allows the user to select an appropriate filter threshold for the tag abundance.}
 
@@ -42,7 +42,7 @@ dispCoxReidInterpolateTagwise(y, design, offset=NULL, dispersion, trend=TRUE, ab
 \details{
 In the \code{edgeR} context, \code{dispCoxReidInterpolateTagwise} is a low-level function called by \code{estimateGLMTagwiseDisp}.
 
-\code{dispCoxReidInterpolateTagwise} calls the function \code{maximizeInterpolant} to fit  cubic spline interpolation over a tagwise grid. 
+\code{dispCoxReidInterpolateTagwise} calls the function \code{maximizeInterpolant} to fit cubic spline interpolation over a tagwise grid. 
 }
 
 

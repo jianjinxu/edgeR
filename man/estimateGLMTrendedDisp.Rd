@@ -6,28 +6,28 @@
 \title{Estimate Trended Dispersion for Negative Binomial GLMs}
 
 \description{
-Estimates the dispersion parameter for each transcript (tag) with a trend that depends on the overall level of expression for the transcript for a DGE dataset for general experimental designs by using Cox-Reid approximate conditional inference for a negative binomial generalized linear model for each transcript (tag) with the unadjusted counts and design matrix provided.
+Estimates the abundance-dispersion trend by Cox-Reid approximate profile likelihood.
 }
 
 
 \usage{
-\S3method{estimateGLMTrendedDisp}{DGEList}(y, design=NULL, offset=NULL, method="auto", ...)
-\S3method{estimateGLMTrendedDisp}{default}(y, design=NULL, offset=NULL, method="auto",  ...)
+\S3method{estimateGLMTrendedDisp}{DGEList}(y, design=NULL, offset=NULL, AveLogCPM=NULL, method="auto", ...)
+\S3method{estimateGLMTrendedDisp}{default}(y, design=NULL, offset=NULL, AveLogCPM=NULL, method="auto",  ...)
 }
 
 \arguments{ 
-
-\item{y}{an object that contains the raw counts for each library (the measure of expression level); it can either be a matrix of counts, or a \code{DGEList} object with (at least) elements \code{counts} (table of unadjusted counts) and \code{samples} (data frame containing information about experimental group, library size and normalization factor for the library size)}
+\item{y}{a matrix of counts or a \code{DGEList} object.)}
 
 \item{design}{numeric design matrix, as for \code{\link{glmFit}}.}
 
 \item{method}{method (low-level function) used to estimated the trended dispersions.
 Possible values are \code{"auto"} (default, switch to \code{"bin.spline"} method if the number of tags is great than 200 and \code{"power"} method otherwise),\code{"bin.spline"}, \code{"bin.loess"} (which both result in a call to \code{dispBinTrend}), \code{"power"} (call to \code{dispCoxReidPowerTrend}), or \code{"spline"} (call to \code{dispCoxReidSplineTrend}).}
 
-\item{offset}{numeric scalar, vector or matrix giving the offset (in addition to the log of the effective library size) that is to be included in the NB GLM for the transcripts. If a scalar, then this value will be used as an offset for all transcripts and libraries. If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each transcript. If a matrix, then each library for each transcript can have a unique offset, if desired. In \code{adjustedProfileLik} the \code{offset} must be a matrix with the same dimension as the table of counts. Default is \code{NULL}; if object is a \code{DGEList} and offset is \code{NULL} then offset will be calculated automatically from code{y$samples}.}
+\item{offset}{numeric scalar, vector or matrix giving the linear model offsets, as for \code{\link{glmFit}}.}
 
-\item{\ldots}{other arguments are passed to lower-level functions.
-See \code{\link{dispBinTrend}}, \code{\link{dispCoxReidPowerTrend}} and \code{\link{dispCoxReidSplineTrend}} for details.}
+\item{AveLogCPM}{numeric vector giving average log2 counts per million for each gene.}
+
+\item{\ldots}{other arguments are passed to lower-level functions \code{\link{dispBinTrend}}, \code{\link{dispCoxReidPowerTrend}} or \code{\link{dispCoxReidSplineTrend}}.}
 }
 
 \value{
@@ -37,7 +37,9 @@ When the input object is a numeric matrix, the output of one of the lower-level 
 }
 
 \details{
-This is a wrapper function for the lower-level functions that actually carry out the dispersion estimation calculations. Provide a convenient, object-oriented interface for users.
+Estimates the dispersion parameter for each transcript (tag) with a trend that depends on the overall level of expression for the transcript for a DGE dataset for general experimental designs by using Cox-Reid approximate conditional inference for a negative binomial generalized linear model for each transcript (tag) with the unadjusted counts and design matrix provided.
+
+The function provides an object-orientated interface to lower-level functions.
 }
 
 
@@ -51,18 +53,15 @@ McCarthy, DJ, Chen, Y, Smyth, GK (2012). Differential expression analysis of mul
 
 \author{Gordon Smyth, Davis McCarthy, Yunshun Chen}
 \examples{
-y <- matrix(rnbinom(1000,mu=10,size=10),ncol=4)
+ntags <- 250
+nlibs <- 4
+y <- matrix(rnbinom(ntags*nlibs,mu=10,size=10),ntags,nlibs)
 d <- DGEList(counts=y,group=c(1,1,2,2),lib.size=c(1000:1003))
-design <- model.matrix(~group, data=d$samples) # Define the design matrix for the full model
-disp <- estimateGLMTrendedDisp(d, design, min.n=10)
+design <- model.matrix(~group, data=d$samples)
+disp <- estimateGLMTrendedDisp(d, design, min.n=25, df=3)
+plotBCV(disp)
 }
 
 \seealso{
 \code{\link{dispBinTrend}}, \code{\link{dispCoxReidPowerTrend}} and \code{\link{dispCoxReidSplineTrend}} for details on how the calculations are done.
-
-\code{\link{estimateGLMCommonDisp}} for common dispersion and \code{\link{estimateGLMTagwiseDisp}} for (trended) tagwise dispersion in the context of generalized linear models.
-
-\code{\link{estimateCommonDisp}} for common dispersion or \code{\link{estimateTagwiseDisp}} for tagwise dispersion in the context of a multiple group experiment (one-way layout).
 }
-
-\keyword{models}

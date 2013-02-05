@@ -8,14 +8,14 @@ Estimates tagwise dispersion values by an empirical Bayes method based on weight
 }
 
 \usage{
-estimateTagwiseDisp(object, prior.df=20, trend="movingave", span=NULL, method="grid",
+estimateTagwiseDisp(object, prior.df=10, trend="movingave", span=NULL, method="grid",
           grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
 }
 
 \arguments{
 \item{object}{object of class \code{DGEList} containing (at least) the elements \code{counts} (table of raw counts), \code{group} (factor indicating group), \code{lib.size} (numeric vector of library sizes) and \code{pseudo.alt} (numeric matrix of quantile-adjusted pseudocounts calculated under the alternative hypothesis of a true difference between groups; recommended to use the \code{DGEList} object provided as the output of \code{estimateCommonDisp}}
 
-\item{prior.df}{numeric scalar, parameter that indicates the prior degrees of freedom. It is used in calculating \code{prior.n}. If \code{NULL}, \code{prior.n} is then calculated using prior degrees of freedom of 20.}
+\item{prior.df}{prior degrees of freedom.}
 
 \item{trend}{method for estimating dispersion trend. Possible values are \code{"none"}, \code{"movingave"} and \code{"loess"}.}
 

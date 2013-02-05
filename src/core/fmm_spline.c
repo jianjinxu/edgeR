@@ -23,7 +23,8 @@
  * R's core installation. I have removed all functions except for
  * fmm_spline. I have commented out the error call for the instance where
  * less than 2 points are supplied, as that is unnecessary for my code 
- * (and fails to compile without a definition of EDOM). Otherwise
+ * (and fails to compile without a definition of EDOM). I've also const'ifed
+ * the 'x' and 'y' pointers to protect them from modification. Otherwise
  * the function and comments have not been modified.
  */
 
@@ -52,7 +53,7 @@
  *	third derivatives of these cubics at the end-points.
  */
 
-void fmm_spline(int n, double *x, double *y, double *b, double *c, double *d)
+void fmm_spline(int n, const double *x, const double *y, double *b, double *c, double *d)
 {
     int nm1, i;
     double t;

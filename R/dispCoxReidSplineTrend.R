@@ -1,7 +1,7 @@
-dispCoxReidSplineTrend <- function(y, design, offset=NULL, df = 5, subset=10000, method.optim="Nelder-Mead", trace=0)
+dispCoxReidSplineTrend <- function(y, design, offset=NULL, df = 5, subset=10000, AveLogCPM=NULL, method.optim="Nelder-Mead", trace=0)
 #	Estimate spline trend dispersion
 #	Gordon Smyth, Yunshun Chen, Davis McCarthy
-#	Created 16 Dec 2010.  Last modified 17 November 2011.
+#	Created 16 Dec 2010.  Last modified 3 Oct 2012.
 {
 	y <- as.matrix(y)
 	nlibs <- ncol(y)
@@ -9,14 +9,13 @@ dispCoxReidSplineTrend <- function(y, design, offset=NULL, df = 5, subset=10000,
 	lib.size <- colSums(y)
 	if(is.null(offset)) offset <- 0
 	offset <- expandAsMatrix(offset,dim(y))
+	if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y,offset=offset)
 	method.optim <- match.arg(method.optim, c("Nelder-Mead", "BFGS"))
 
 	all.zero <- rowSums(y)==0
 #	if(any(all.zero)) warning("Some rows of count matrix are all zero. These rows are ignored in dispersion calculation.")			   
-	abundance.full <- rep(NA, ntags)
-	abundance.nonzero <- mglmOneGroup(y[!all.zero,],offset=offset[!all.zero,])
-	abundance.full[all.zero] <- min(abundance.nonzero) - 0.5
-	abundance.full[!all.zero] <- abundance.nonzero
+	abundance.full <- AveLogCPM
+	abundance.nonzero <- AveLogCPM[!all.zero]
 	i <- systematicSubset(subset, abundance.nonzero)
 	offset.nonzero <- offset[!all.zero,]
 	y.nonzero <- y[!all.zero,]
@@ -44,6 +43,6 @@ dispCoxReidSplineTrend <- function(y, design, offset=NULL, df = 5, subset=10000,
 	disp[all.zero] <- disp.nonzero[which.min(abundance.nonzero)]
 	disp[!all.zero] <- disp.nonzero
 	out$dispersion <- disp
-	out$abundance <- abundance.full
+	out$AveLogCPM <- AveLogCPM
 	out
 }

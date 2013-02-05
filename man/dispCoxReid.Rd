@@ -10,11 +10,12 @@ Estimate a common dispersion parameter across multiple negative binomial general
 }
 
 \usage{
-dispCoxReid(y, design, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5, subset=10000)
-dispDeviance(y, design, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5, subset=10000,
-             robust=FALSE, trace=FALSE)
-dispPearson(y, design, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5, subset=10000,
-             robust=FALSE, trace=FALSE)
+dispCoxReid(y, design=NULL, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5,
+            subset=10000, AveLogCPM=NULL)
+dispDeviance(y, design=NULL, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5,
+            subset=10000, AveLogCPM=NULL, robust=FALSE, trace=FALSE)
+dispPearson(y, design=NULL, offset=NULL, min.row.sum=5, subset=10000,
+            AveLogCPM=NULL, tol=1e-6, trace=FALSE, initial.dispersion=0.1)
 }
 
 \arguments{
@@ -30,11 +31,15 @@ dispPearson(y, design, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5, su
 
 \item{min.row.sum}{integer. Only rows with at least this number of counts are used.}
 
-\item{subset}{integer, number of rows to use in the calculation.  Rows used are chosen evenly spaced by abundance.}
+\item{subset}{integer, number of rows to use in the calculation.  Rows used are chosen evenly spaced by AveLogCPM.}
+
+\item{AveLogCPM}{numeric vector giving average log2 counts per million.}
 
 \item{trace}{logical, should iteration information be output?}
 
 \item{robust}{logical, should a robust estimator be used?}
+
+\item{initial.dispersion}{starting value for the dispersion}
 }
 
 \value{
@@ -55,8 +60,10 @@ It can be seriously biased when the number of libraries (\code{ncol(y)} is small
 On the other hand, the deviance (quasi-likelihood) estimator typically over-estimates the true dispersion when the number of libraries is small.
 Robinson and Smyth (2008) and McCarthy et al (2011) showed the Cox-Reid estimator to be the least biased of the three options.
 
-\code{dispCoxReid} uses \code{optimize} to maximize the adjusted profile likelihood, while \code{dispDeviance} and \code{dispPearson} use \code{uniroot} to solve the estimating equation.
+\code{dispCoxReid} uses \code{optimize} to maximize the adjusted profile likelihood.
+\code{dispDeviance} uses \code{uniroot} to solve the estimating equation.
 The robust options use an order statistic instead the mean statistic, and have the effect that a minority of tags with very large (outlier) dispersions should have limited influence on the estimated value.
+\code{dispPearson} uses a globally convergent Newton iteration.
 }
 
 \references{
@@ -80,12 +87,10 @@ nlibs <- 4
 y <- matrix(rnbinom(ntags*nlibs,mu=10,size=10),nrow=ntags,ncol=nlibs)
 group <- factor(c(1,1,2,2))
 lib.size <- rowSums(y)
-design <- model.matrix(~group) # Define the design matrix for the full model
+design <- model.matrix(~group)
 disp <- dispCoxReid(y, design, offset=log(lib.size), subset=100)
 }
 
 \seealso{
 \code{\link{estimateGLMCommonDisp}}, \code{\link{optimize}}, \code{\link{uniroot}}
 }
-
-\keyword{models}

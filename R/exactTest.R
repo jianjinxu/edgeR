@@ -1,4 +1,4 @@
-exactTest <- function(object, pair=1:2, dispersion="auto", rejection.region="doubletail", big.count=900, prior.count.total=0.5)
+exactTest <- function(object, pair=1:2, dispersion="auto", rejection.region="doubletail", big.count=900, prior.count=0.125)
 #	Calculates exact p-values for the differential expression levels of tags in the two groups being compared.
 #	Davis McCarthy, Gordon Smyth.
 #	Created September 2009. Last modified 8 July 2012.
@@ -51,21 +51,21 @@ exactTest <- function(object, pair=1:2, dispersion="auto", rejection.region="dou
 
 #	Average abundance
 	abundance <- mglmOneGroup(y,dispersion=dispersion,offset=offset)
-	logCPM <- (abundance+log(1e6))/log(2)
+	AveLogCPM <- log1p(exp(abundance+log(1e6)))/log(2)
 
 #	logFC
-	prior.count <- lib.size
-	prior.count <- prior.count.total*prior.count/sum(prior.count)
+	prior.count <- prior.count*lib.size/mean(lib.size)
+	offset.aug <- log(lib.size+2*prior.count)
 	j1 <- group==pair[1]
 	n1 <- sum(j1)
 	if(n1==0) stop("No libraries for",pair[1])
 	y1 <- y[,j1,drop=FALSE]
-	abundance1 <- mglmOneGroup(y1+matrix(prior.count[j1],ntags,n1,byrow=TRUE),offset=offset[j1])
+	abundance1 <- mglmOneGroup(y1+matrix(prior.count[j1],ntags,n1,byrow=TRUE),offset=offset.aug[j1],dispersion=dispersion)
 	j2 <- group==pair[2]
 	n2 <- sum(j2)
 	if(n1==0) stop("No libraries for",pair[2])
 	y2 <- y[,j2,drop=FALSE]
-	abundance2 <- mglmOneGroup(y2+matrix(prior.count[j2],ntags,n2,byrow=TRUE),offset=offset[j2])
+	abundance2 <- mglmOneGroup(y2+matrix(prior.count[j2],ntags,n2,byrow=TRUE),offset=offset.aug[j2],dispersion=dispersion)
 	logFC <- (abundance2-abundance1)/log(2)
 
 #	Equalize library sizes
@@ -85,7 +85,7 @@ exactTest <- function(object, pair=1:2, dispersion="auto", rejection.region="dou
 		smallp=exactTestBySmallP(y1,y2,dispersion=dispersion,big.count=big.count)
 	)
 
-	de.out <- data.frame(logFC=logFC, logCPM=logCPM, PValue=exact.pvals)
+	de.out <- data.frame(logFC=logFC, logCPM=AveLogCPM, PValue=exact.pvals)
 	rn <- rownames(object$counts)
 	if(!is.null(rn)) rownames(de.out) <- make.unique(rn)
 	new("DGEExact",list(table=de.out, comparison=pair, genes=object$genes))

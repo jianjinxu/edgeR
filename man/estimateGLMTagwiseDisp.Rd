@@ -10,10 +10,10 @@ Compute an empirical Bayes estimate of the negative binomial dispersion paramete
 }
 
 \usage{
-\S3method{estimateGLMTagwiseDisp}{DGEList}(y, design=NULL, offset=NULL, dispersion=NULL,
-          trend=!is.null(y$trended.dispersion), prior.df=20, span=NULL, ...)
-\S3method{estimateGLMTagwiseDisp}{default}(y, design=NULL, offset=NULL, dispersion, trend=TRUE,
-          prior.df=20, span=NULL, ...)
+\S3method{estimateGLMTagwiseDisp}{DGEList}(y, design=NULL, offset=NULL, dispersion=NULL, prior.df=10,
+          trend=!is.null(y$trended.dispersion), span=NULL, AveLogCPM=NULL, ...)
+\S3method{estimateGLMTagwiseDisp}{default}(y, design=NULL, offset=NULL, dispersion, prior.df=10,
+          trend=TRUE, span=NULL, AveLogCPM=NULL, ...)
 }
 
 \arguments{
@@ -30,6 +30,8 @@ Compute an empirical Bayes estimate of the negative binomial dispersion paramete
 \item{prior.df}{prior degrees of freedom.}
 
 \item{span}{width of the smoothing window, in terms of proportion of the data set. Default value decreases with the number of tags.}
+
+\item{AveLogCPM}{numeric vector giving average log2 counts per million for each gene}
 
 \item{\ldots}{other arguments are passed to \code{\link{dispCoxReidInterpolateTagwise}}.}
 }

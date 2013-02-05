@@ -14,10 +14,11 @@
 \begin{document}
 
 \title{edgeR: differential expression analysis \\ of digital gene expression data}
-\author{Mark Robinson, Davis McCarthy, Yunshun Chen,
+\author{Mark Robinson, Davis McCarthy, Yunshun Chen,\\
 Aaron Lun, Gordon K.\ Smyth}
 \date{18 October 2012}
 \maketitle
+
 
 edgeR is a package for the differential expression analysis of digital gene expression data,
 that is, of count data arising from DNA sequencing technologies.

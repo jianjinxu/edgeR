@@ -1,4 +1,4 @@
-plotSmear <- function (object, pair=NULL, de.tags=NULL, xlab="logCPM", ylab="logFC", pch=19, cex=.2, smearWidth=.5, panel.first=grid(), smooth.scatter=FALSE, lowess=FALSE, ...)
+plotSmear <- function (object, pair=NULL, de.tags=NULL, xlab="Average logCPM", ylab="logFC", pch=19, cex=.2, smearWidth=.5, panel.first=grid(), smooth.scatter=FALSE, lowess=FALSE, ...)
 # User-level function for creating an MA-plot for DGE data.
 # Created by Mark Robinson. Last modified by Yunshun Chen, 19 March 2012.
  

@@ -1,2 +1,14 @@
-PKG_LIBS+=$(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+CHECK=#-Wall -pedantic
+PKG_LIBS=$(LAPACK_LIBS) $(BLAS_LIBS) $(FLIBS)
+PKG_CPPFLAGS=-I./core -I. $(CHECK)
+PKG_CFLAGS=$(CHECK)
+CPP_SOURCES=R_exact_test_by_deviance.cpp R_loess_by_col.cpp R_cr_adjust.cpp R_levenberg.cpp R_maximize_interpolant.cpp R_one_group.cpp R_simple_good_turing.cpp \
+  core/adj_coxreid.cpp core/glm_levenberg.cpp core/glm_one_group.cpp core/interpolator.cpp 
+C_SOURCES=core/fmm_spline.c
+OBJECTS=$(CPP_SOURCES:.cpp=.o) $(C_SOURCES:.c=.o)
+
+all: $(SHLIB)
+
+clean:
+	@rm -fv $(OBJECTS)
 

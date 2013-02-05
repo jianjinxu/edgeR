@@ -9,7 +9,7 @@
 \description{Extracts the top DE tags in a data frame for a given pair of groups, ranked by p-value or absolute log-fold change.}
 
 \usage{
-topTags(object, n=10, adjust.method="BH", sort.by="p.value")
+topTags(object, n=10, adjust.method="BH", sort.by="PValue")
 }
 
 \arguments{ 
@@ -19,7 +19,7 @@ topTags(object, n=10, adjust.method="BH", sort.by="p.value")
 
 \item{adjust.method}{character string stating the method used to adjust p-values for multiple testing, passed on to \code{p.adjust}}
 
-\item{sort.by}{character string, indicating whether tags should be sorted by p-value (\code{"p.value"}) or absolute log-fold change (\code{"logFC"}); default is to sort by p-value.}
+\item{sort.by}{character string, should the top tags be sorted by p-value (\code{"PValue"}), by absolute log-fold change (\code{"logFC"}), or not sorted (\code{"none"}).}
 }
 
 \value{an object of class \code{TopTags} containing the following elements for the top \code{n} most differentially expressed tags as determined by \code{sort.by}.

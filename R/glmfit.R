@@ -1,37 +1,26 @@
 #  FIT GENERALIZED LINEAR MODELS
 
-glmFit <- function(y, design, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count.total=0.5, start=NULL, method="auto", ...)
+glmFit <- function(y, design, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count=0.125, start=NULL, method="auto", ...)
 UseMethod("glmFit")
 
-glmFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count.total=0.5, start=NULL, method="auto", ...)
+glmFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count=0.125, start=NULL, method="auto", ...)
 {
-	if( is.null(dispersion) ) {
-		if( !is.null(y$tagwise.dispersion) )
-			dispersion <- y$tagwise.dispersion
-		else {
-			if( !is.null(y$trended.dispersion) )
-				dispersion <- y$trended.dispersion
-			else {
-				if( !is.null(y$common.dispersion) )
-					dispersion <- y$common.dispersion
-				else
-					stop("No dispersion values found in DGEList object. Run dispersion estimation functions such as estimateGLMCommonDisp, estimateGLMTrendedDisp and estimateGLMTagwiseDisp before using glmFit.\n")
-			}
-		}
-	}
+	if(is.null(dispersion)) dispersion <- getDispersion(y)
+	if(is.null(dispersion)) stop("No dispersion values found in DGEList object. Run dispersion estimation functions such as estimateGLMCommonDisp, estimateGLMTrendedDisp and estimateGLMTagwiseDisp before using glmFit.")
 	if(is.null(offset) && is.null(lib.size)) offset <- getOffset(y)
-	fit <- glmFit(y=y$counts,design=design,dispersion=dispersion,offset=offset,weights=weights,lib.size=lib.size,prior.count.total=prior.count.total,start=start,method=method,...)
+	fit <- glmFit(y=y$counts,design=design,dispersion=dispersion,offset=offset,weights=weights,lib.size=lib.size,prior.count=prior.count,start=start,method=method,...)
 	fit$samples <- y$samples
 	fit$genes <- y$genes
+	fit$prior.df <- y$prior.df
 	new("DGEGLM",fit)
 }
 
-glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count.total=0.5, start=NULL, method="auto", ...)
+glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count=0.125, start=NULL, method="auto", ...)
 #	Fit negative binomial generalized linear model for each transcript
 #	to a series of digital expression libraries
 #	Davis McCarthy and Gordon Smyth
 
-#	Created 17 August 2010. Last modified 12 July 2012.
+#	Created 17 August 2010. Last modified 13 Nov 2012.
 {
 #	Check input
 	y <- as.matrix(y)
@@ -89,14 +78,14 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 	fit <- switch(method,
 		linesearch=mglmLS(y,design=design,dispersion=dispersion,coef.start=start,offset=offset,...),
 		oneway=mglmOneWay(y,design=design,dispersion=dispersion,offset=offset),
-		levenberg=mglmLevenberg(y,design=design,dispersion=dispersion,offset=offset,coef.start=start,maxit=500,...),
+		levenberg=mglmLevenberg(y,design=design,dispersion=dispersion,offset=offset,coef.start=start,maxit=250,...),
 		simple=mglmSimple(y,design=design,dispersion=dispersion,offset=offset,weights=weights)
 	)
 
 #	Prepare output
 	fit$counts <- y
-	if(prior.count.total>0)
-		fit$coefficients <- predFC(y,design,offset=offset,dispersion=dispersion,prior.count.total=prior.count.total)*log(2)
+	if(prior.count>0)
+		fit$coefficients <- predFC(y,design,offset=offset,dispersion=dispersion,prior.count=prior.count)*log(2)
 	else
 		fit$coefficients <- as.matrix(fit$coefficients)
 	colnames(fit$coefficients) <- colnames(design)
@@ -117,67 +106,91 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 }
 
 
-glmLRT <- function(glmfit,coef=ncol(glmfit$design),contrast=NULL)
+glmLRT <- function(glmfit,coef=ncol(glmfit$design),contrast=NULL,test="chisq")
 #	Tagwise likelihood ratio tests for DGEGLM
-#	Gordon Smyth and Davis McCarthy.
-#	Created 1 July 2010. Last modified 29 July 2012.
+#	Gordon Smyth, Davis McCarthy and Yunshun Chen.
+#	Created 1 July 2010.  Last modified 14 Dec 2012.
 {
+#	Check glmfit
 	if(!is(glmfit,"DGEGLM")) {
 		if(is(glmfit,"DGEList") && is(coef,"DGEGLM")) {
-			stop("First argument is no longer required. Rerun with just the glmfit and coef or contrast arguments.")
+			stop("First argument is no longer required. Rerun with just the glmfit and coef/contrast arguments.")
 		}
 		stop("glmfit must be an DGEGLM object (usually produced by glmFit).")
 	}
+	ngenes <- nrow(glmfit)
+	nlibs <- ncol(glmfit)
 
-#	Full design matrix
+#	Check test
+	test <- match.arg(test,c("F","f","chisq"))
+	if(test=="f") test <- "F"
+	
+#	Check design matrix
 	design <- as.matrix(glmfit$design)
 	nbeta <- ncol(design)
 	if(nbeta < 2) stop("Need at least two columns for design, usually the first is the intercept column")
 	coef.names <- colnames(design)
 
-#	contrast takes precedence over coef
-#	Evaluate contrast
-#	Reform design matrix so that contrast of interest is last column
+#	Evaluate logFC for coef to be tested
+#	Note that contrast takes precedence over coef: if contrast is given
+#	then reform design matrix so that contrast of interest is last column.
 	if(is.null(contrast)) {
-        if(length(coef) > 1)
-            coef <- unique(coef)
+		if(length(coef) > 1) coef <- unique(coef)
 		if(is.character(coef)) {
-            check.coef <- coef %in% colnames(design)
-            if( any(!check.coef) )
-                stop("One or more named coef arguments do not match a column of the design matrix.\n")
+			check.coef <- coef %in% colnames(design)
+			if(any(!check.coef)) stop("One or more named coef arguments do not match a column of the design matrix.")
 			coef.name <- coef
-            coef <- match(coef, colnames(design))
-        }
-        else
-            coef.name <- coef.names[coef]
-        logFC <- glmfit$coefficients[,coef,drop=FALSE]/log(2)
-        if(length(coef)==1) logFC <- as.vector(logFC)
-	} else {
-		contrast <- drop(contrast)
-#		Would be better if multiple contrasts were treated same as multiple coefs (Gordon 29 July 2012)
-		if(length(dim(contrast)>1)) {
-			contrast <- contrast[,1]
-			warning("contrast is a matrix, using first column only")
+			coef <- match(coef, colnames(design))
 		}
-		logFC <- (glmfit$coefficients %*% contrast)/log(2)
-		i <- contrast!=0
-		coef.name <- paste(paste(contrast[i],coef.names[i],sep="*"),collapse=" ")
-		qr <- qr(contrast)
-		Q <- qr.Q(qr,complete=TRUE)
-		Q <- cbind(Q[,-1],Q[,1]*qr$qr[1,1])
+		else
+			coef.name <- coef.names[coef]
+		logFC <- glmfit$coefficients[,coef,drop=FALSE]/log(2)
+	} else {
+		contrast <- as.matrix(contrast)
+		qrc <- qr(contrast)
+		ncontrasts <- qrc$rank
+		if(ncontrasts==0) stop("contrasts are all zero")
+		coef <- 1:ncontrasts
+		if(ncontrasts < ncol(contrast)) contrast <- contrast[,qrc$pivot[coef]]
+		logFC <- drop((glmfit$coefficients %*% contrast)/log(2))
+		if(ncontrasts>1) {
+			coef.name <- paste("LR test of",ncontrasts,"contrasts")
+		} else {
+			contrast <- drop(contrast)
+			i <- contrast!=0
+			coef.name <- paste(paste(contrast[i],coef.names[i],sep="*"),collapse=" ")
+		}
+		Dvec <- rep.int(1,nlibs)
+		Dvec[coef] <- diag(qrc$qr)[coef]
+		Q <- qr.Q(qrc,complete=TRUE,Dvec=Dvec)
 		design <- design %*% Q
-		coef <- nbeta
 	}
+	if(length(coef)==1) logFC <- as.vector(logFC)
 
 #	Null design matrix
 	design0 <- design[,-coef,drop=FALSE]
 
 #	Null fit
-	fit.null <- glmFit(glmfit$counts,design=design0,offset=glmfit$offset,weights=glmfit$weights,dispersion=glmfit$dispersion)
+	fit.null <- glmFit(glmfit$counts,design=design0,offset=glmfit$offset,weights=glmfit$weights,dispersion=glmfit$dispersion,prior.count=0)
 
+#	Likelihood ratio statistic
 	LR <- fit.null$deviance - glmfit$deviance
 	df.test <- fit.null$df.residual - glmfit$df.residual
-	LRT.pvalue <- pchisq(LR, df=df.test, lower.tail = FALSE, log.p = FALSE)
+
+#	Chisquare or F-test	
+	LRT.pvalue <- switch(test,
+		"F" = {
+			phi <- quantile(glmfit$dispersion,p=0.5)
+			mu <- quantile(glmfit$fitted.values,p=0.5)
+			gamma.prop <- (phi*mu/(1 + phi*mu))^2
+			prior.df <- glmfit$prior.df
+			if(is.null(prior.df)) prior.df <- 20
+			glmfit$df.total <- glmfit$df.residual + prior.df/gamma.prop
+			pf(LR/df.test, df1=df.test, df2=glmfit$df.total, lower.tail = FALSE, log.p = FALSE)
+		},
+		"chisq" = pchisq(LR, df=df.test, lower.tail = FALSE, log.p = FALSE)
+	)
+
 	rn <- rownames(glmfit)
 	if(is.null(rn))
 		rn <- 1:nrow(glmfit)

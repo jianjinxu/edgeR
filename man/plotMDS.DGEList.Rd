@@ -11,7 +11,7 @@ for the top genes that best distinguish the samples.
      ndim=max(dim.plot), xlab=paste("Dimension",dim.plot[1]), ylab=paste("Dimension",dim.plot[2]), ...)
 }
 \arguments{
-  \item{x}{numeric matrix or \code{DGEList} object.}
+  \item{x}{an \code{DGEList} object.}
   \item{top}{number of top genes used to calculate pairwise distances.}
   \item{labels}{character vector of sample names or labels. If \code{x} has no column names, then defaults the index of the samples.}
   \item{col}{numeric or character vector of colors for the plotting characters. See \code{\link[graphics]{text}} for possible values.}

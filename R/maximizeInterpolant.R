@@ -1,26 +1,25 @@
-#############################################################
+maximizeInterpolant <- function( x, y ) 
 # maximizeInterpolant: written by Aaron Lun
 #
-# This function does the same thing as maximizeInterpolant
-# except that compiled C++ code lies at its core. It takes an
-# ordered set of spline points and a likelihood matrix where
-# each row corresponds to a tag and each column corresponds
-# to a spline point. It then calculates the position at 
-# which the maximum interpolated likelihood occurs for each
-# row. It is faster than the original and also calculates
-# exact solutions (avoiding errors in the Newton-Raphson
-# algorithm where narrow peaks are 'jumped' over).
-
-maximizeInterpolant <- function( x, y ) {
+# This function takes an ordered set of spline points and a likelihood matrix where each row 
+# corresponds to a tag and each column corresponds to a spline point. It then calculates the 
+# position at which the maximum interpolated likelihood occurs for each by solving the derivative
+# of the spline function.
+{
     if (is.vector(y)) {
-        y<-rbind(y);
-        warning("Converting vector of likelihoods to matrix format.");
+        y<-rbind(y)
+        warning("coverting vector of likelihoods to matrix format for interpolation")
     }
     if (length(x)!=ncol(y)) { 
-        stop("Number of columns must equal number of spline points.");
+        stop("number of columns must equal number of spline points")
     } else if (is.unsorted(x) || anyDuplicated(x)) {
-        stop("Spline points must be unique and sorted.");
+        stop("spline points must be unique and sorted")
     }
-    out<-.Call("maximize_interpolant", x, y, PACKAGE="edgeR");
+
+#	Performing some type checking.
+	if (!is.double(x)) storage.mode(x)<-"double"
+	if (!is.double(y)) storage.mode(y)<-"double"
+    out<-.Call("R_maximize_interpolant", x, t(y), PACKAGE="edgeR")
+	if (is.character(out)) { stop(out) }
     return(out);
 }

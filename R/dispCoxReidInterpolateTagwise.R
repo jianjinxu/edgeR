@@ -1,34 +1,40 @@
-dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, trend=TRUE, abundance=NULL, min.row.sum=5, prior.df=20, span=0.3, grid.npts=11, grid.range=c(-6,6))
+dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, trend=TRUE, AveLogCPM=NULL, min.row.sum=5, prior.df=10, span=0.3, grid.npts=11, grid.range=c(-6,6))
 #	Estimate tagwise NB dispersions
 #	using weighted Cox-Reid Adjusted Profile-likelihood
 #	and cubic spline interpolation over a tagwise grid.
 #	Yunshun Chen and Gordon Smyth
-#	Created August 2010. Last modified 1 Oct 2012.
-
-#	Comment 3 July 2012: Absorb into estimateGLMTagwise()?
+#	Created August 2010. Last modified 4 Oct 2012.
 {
-#	Check input arguments
+#	Check y
 	y <- as.matrix(y)
 	ntags <- nrow(y)
 	nlibs <- ncol(y)
+
+#	Check design
 	design <- as.matrix(design)
 	if(!is.fullrank(design)) stop("design matrix must be full column rank")
 	ncoefs <- ncol(design)
 	if(ncoefs >= nlibs) stop("no residual degrees of freedom")
+
+#	Check offset
 	if(is.null(offset)) offset <- 0
 	offset <- expandAsMatrix(offset,dim(y))
+
+#	Check dispersion
 	ldisp <- length(dispersion)
 	if(ldisp==1) {
 		dispersion <- rep(dispersion,ntags)
 	} else {
 		if(ldisp != ntags) stop("length of dispersion doesn't match nrow(y)")
 	}
-	if(is.null(abundance)) abundance <- mglmOneGroup(y,offset=offset,dispersion=0.05)
+
+#	Check AveLogCPM
+	if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y,offset=offset)
 
 #	Apply min.row.sum and use input dispersion for small count tags
 	i <- (rowSums(y) >= min.row.sum)
 	if(any(!i)) {
-		if(any(i)) dispersion[i] <- Recall(y=y[i,],design=design,offset=offset[i,],dispersion=dispersion[i],abundance=abundance[i],grid.npts=grid.npts,min.row.sum=0,prior.df=prior.df,span=span,trend=trend)
+		if(any(i)) dispersion[i] <- Recall(y=y[i,],design=design,offset=offset[i,],dispersion=dispersion[i],AveLogCPM=AveLogCPM[i],grid.npts=grid.npts,min.row.sum=0,prior.df=prior.df,span=span,trend=trend)
 		return(dispersion)
 	}
 
@@ -41,7 +47,7 @@ dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, tr
 		apl[,i] <- adjustedProfileLik(spline.disp, y=y, design=design, offset=offset)
 	}
 	if(trend) {
-		o <- order(abundance)
+		o <- order(AveLogCPM)
 		oo <- order(o)
 		width <- floor(span*ntags)
 		apl.smooth <- movingAverageByCol(apl[o,],width=width)[oo,]

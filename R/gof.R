@@ -27,14 +27,14 @@ gof <- function( glmfit, pcutoff=0.1, adjust="holm", plot=FALSE, main="qq-plot o
     ## Calculate Deviance or Pearson goodness of fit statistics
     ## for the dispersion parameter and find dispersion outliers
     ## Davis McCarthy
-    ## 8 Feb 2011. Last modified 23 Mar 2011.
+    ## 8 Feb 2011. Last modified 13 Nov 2012.
 {
     y <- as.matrix(y)
 	nlibs <- ncol(y)
 	ntags <- nrow(y)
     npar <- ncol(design)
     if( is.null(fit) )
-        fit <- glmFit(y, design, dispersion, offset=offset)
+        fit <- glmFit(y, design, dispersion, offset=offset, prior.count=0)
     method <- match.arg(method, c("LR","Pearson"))
 
     if( method=="LR") {

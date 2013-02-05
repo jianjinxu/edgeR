@@ -13,7 +13,7 @@ adjustedProfileLik <- function(dispersion, y, design, offset, adjust=TRUE)
 
 #	Fit tagwise linear models. This is actually the most time-consuming
 #	operation that I can see for this function.
-	fit <- glmFit(y,design=design,dispersion=dispersion,offset=offset)
+	fit <- glmFit(y,design=design,dispersion=dispersion,offset=offset,prior.count=0)
 
 #	Compute log-likelihood.
 	mu <- fit$fitted
@@ -28,11 +28,17 @@ adjustedProfileLik <- function(dispersion, y, design, offset, adjust=TRUE)
 		
 #	Calculating the Cox-Reid adjustment.
 	if(ncol(design)==1) {
-		D <- sum(mu/(1+mu*dispersion))
+		D <- rowSums(mu/(1+mu*dispersion))
 		cr <- 0.5*log(abs(D))
 	} else {
 		W <- mu/(1+dispersion*mu)
-		cr<-.Call("cr_adjustment", W, design, nrow(design), PACKAGE="edgeR")
+
+#	Checking type, otherwise the C++ code will complain.
+#	Note the use of a transposed matrix for easy row access in column-major format.
+		if (!is.double(W)) storage.mode(W)<-"double"
+		if (!is.double(design)) storage.mode(design)<-"double"
+		cr <- .Call("R_cr_adjust", t(W), design, nrow(design), PACKAGE="edgeR")
+		if (is.character(cr)) { stop(cr) }
 	}
  
 	return(loglik - cr)

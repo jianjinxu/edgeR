@@ -1,22 +1,24 @@
-#  Last modified 1 Oct 2012
+#  Last modified 27 Oct 2012
 
-estimateGLMCommonDisp <- function(y, design=NULL, offset=NULL, method="CoxReid", verbose=FALSE, ...) 
+estimateGLMCommonDisp <- function(y, design=NULL, offset=NULL, method="CoxReid", subset=10000, AveLogCPM=NULL, verbose=FALSE, ...) 
 UseMethod("estimateGLMCommonDisp")
 
-estimateGLMCommonDisp.DGEList <- function(y, design=NULL, offset=NULL, method="CoxReid", verbose=FALSE, ...)
+estimateGLMCommonDisp.DGEList <- function(y, design=NULL, offset=NULL, method="CoxReid", subset=10000, AveLogCPM=NULL, verbose=FALSE, ...)
 {
-    if( is.null(offset) )
-        offset <- getOffset(y)
-	y$abundance <- mglmOneGroup(y$counts,offset=getOffset(y),dispersion=0.05)
-	y$logCPM <- log1p(exp(y$abundance+log(1e6)))/log(2)
-	d <- estimateGLMCommonDisp(y=y$counts, design=design, offset=offset, method=method, verbose=verbose, ...)
+	if(is.null(offset)) offset <- getOffset(y)
+	y$AveLogCPM <- AveLogCPM
+	if(is.null(y$AveLogCPM)) y$AveLogCPM <- aveLogCPM(y$counts,offset=offset)
+	d <- estimateGLMCommonDisp(y=y$counts, design=design, offset=offset, method=method, subset=subset, AveLogCPM=y$AveLogCPM, verbose=verbose, ...)
 	y$common.dispersion <- d
 	y
 }
 
-estimateGLMCommonDisp.default <- function(y, design=NULL, offset=NULL, method="CoxReid", verbose=FALSE, ...)
+estimateGLMCommonDisp.default <- function(y, design=NULL, offset=NULL, method="CoxReid", subset=10000, AveLogCPM=NULL, verbose=FALSE, ...)
 {
+#	Check y
 	y <- as.matrix(y)
+
+#	Check design
 	if(is.null(design)) {
 		design <- matrix(1,ncol(y),1)
 		rownames(design) <- colnames(y)
@@ -28,11 +30,21 @@ estimateGLMCommonDisp.default <- function(y, design=NULL, offset=NULL, method="C
 		warning("No residual df: setting dispersion to NA")
 		return(NA)
 	}
-	method <- match.arg(method, c("CoxReid","Pearson","deviance"))
+
+#	Check method
+	method <- match.arg(method, c("CoxReid","Pearson","Pearson2","deviance"))
+
+#	Check offset
+	if(is.null(offset)) offset <- log(colSums(y))
+
+#	Check AveLogCPM
+	if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y,offset=offset)
+
+#	Call lower-level function
 	disp <- switch(method,
-		CoxReid=dispCoxReid(y, design=design, offset=offset, ...),
-		Pearson=dispPearson(y, design=design, offset=offset, ...),
-		deviance=dispDeviance(y, design=design, offset=offset, ...)
+		CoxReid=dispCoxReid(y, design=design, offset=offset, subset=subset, AveLogCPM=AveLogCPM, ...),
+		Pearson=dispPearson(y, design=design, offset=offset, subset=subset, AveLogCPM=AveLogCPM, ...),
+		deviance=dispDeviance(y, design=design, offset=offset, subset=subset, AveLogCPM=AveLogCPM, ...)
 	)
 	if(verbose) cat("Disp =",round(disp,5),", BCV =",round(sqrt(disp),4),"\n")
 	disp
