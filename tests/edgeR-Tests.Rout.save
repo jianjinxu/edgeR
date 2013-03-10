@@ -1,14 +1,12 @@
 
-R version 2.15.0 (2012-03-30)
+R version 2.15.2 (2012-10-26) -- "Trick or Treat"
 Copyright (C) 2012 The R Foundation for Statistical Computing
 ISBN 3-900051-07-0
-Platform: x86_64-unknown-linux-gnu (64-bit)
+Platform: i386-w64-mingw32/i386 (32-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
 Type 'license()' or 'licence()' for distribution details.
-
-  Natural language support but running in an English locale
 
 R is a collaborative project with many contributors.
 Type 'contributors()' for more information and
@@ -419,6 +417,10 @@ x0     1     4001    1.0008730
 x1     1     4176    1.0014172
 x2     1     3971    0.9977138
 
+$AveLogCPM
+[1] 13.503149  8.366552  9.821821  9.950076  9.827756
+995 more elements ...
+
 > glmFit(d,design,dispersion=dispersion.true,method="levenberg", prior.count=0.5/3)
 An object of class "DGEGLM"
 $coefficients
@@ -496,6 +498,10 @@ $samples
 x0     1     4001    1.0008730
 x1     1     4176    1.0014172
 x2     1     3971    0.9977138
+
+$AveLogCPM
+[1] 13.503149  8.366552  9.821821  9.950076  9.827756
+995 more elements ...
 
 > 
 > # Exact tests
@@ -614,4 +620,4 @@ $n0
 > 
 > proc.time()
    user  system elapsed 
-  3.128   0.035   3.167 
+   3.91    0.04    3.94 

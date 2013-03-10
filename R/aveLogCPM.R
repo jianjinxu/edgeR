@@ -1,4 +1,4 @@
-aveLogCPM <- function(y,dispersion=0.05,offset=0)
+aveLogCPM <- function(y,dispersion=0.05,offset=log(colSums(y)))
 #	Fit null (single-group) negative-binomial glm with log-link to DGE data
 #  Gordon Smyth
 #	18 Aug 2010. Last modified 25 July 2012.

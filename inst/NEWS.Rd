@@ -2,11 +2,24 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.1.5}{\itemize{
+\item
+The default method of plotMDS() for DGEList objects has changed.  The
+default method is now to convert to moderated logCPM values and call
+the plotMDS() method for numeric matrices.  The old method based on
+BCV-distances is available by setting method="BCV".
+
+\item
+glmQLFTest() can now take either a DGEList object and design matrix
+or a fitted glm object.  It can also now produce a plot of the
+residual deviances and shrunk deviances versus logCPM.
+}}
+
 
 \section{Version 3.1.4}{\itemize{
 \item
-The gene set test functions roast(), mroast() and camera(), which are
-now generic, have methods defined for DGEList data objects.
+The gene set test functions roast(), mroast() and camera(), defined in the limma package,
+now have methods defined for DGEList data objects.
 This facilitates gene set testing and pathway analysis of expression
 profiles within edgeR.
 
@@ -22,6 +35,9 @@ glmLRT now permits contrast arg to be a matrix with multiple columns, making its
 The argument prior.count.total has been changed to prior.count
 throughout the package, and now refers to the average prior.count
 per observation rather than the total prior count across a transcript.
+
+\item
+Various improvements to internal C++ code.
 
 \item
 Bug fix to subsetting for DGEGLM objects.

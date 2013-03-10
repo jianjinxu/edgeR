@@ -110,7 +110,7 @@ estimateDisp <- function(y, design=NULL, offset=NULL, prior.df=NULL, trend.metho
 			s2 <- glmfit$deviance / df.residual
 			s2[df.residual==0] <- 0
 			s2 <- pmax(s2,0)
-			s2.fit <- squeezeVar(s2, df=df.residual, covariate=glmfit$abundance, robust=robust, winsor.tail.p=winsor.tail.p)
+			s2.fit <- squeezeVar(s2, df=df.residual, covariate=AveLogCPM, robust=robust, winsor.tail.p=winsor.tail.p)
 
 			prior.df <- s2.fit$df.prior
 		}

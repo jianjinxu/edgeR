@@ -4,6 +4,7 @@ glmFit <- function(y, design, dispersion=NULL, offset=NULL, weights=NULL, lib.si
 UseMethod("glmFit")
 
 glmFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count=0.125, start=NULL, method="auto", ...)
+#	Last modified 7 Dec 2013.
 {
 	if(is.null(dispersion)) dispersion <- getDispersion(y)
 	if(is.null(dispersion)) stop("No dispersion values found in DGEList object. Run dispersion estimation functions such as estimateGLMCommonDisp, estimateGLMTrendedDisp and estimateGLMTagwiseDisp before using glmFit.")
@@ -12,6 +13,7 @@ glmFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 	fit$samples <- y$samples
 	fit$genes <- y$genes
 	fit$prior.df <- y$prior.df
+	fit$AveLogCPM <- y$AveLogCPM
 	new("DGEGLM",fit)
 }
 

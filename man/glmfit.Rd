@@ -14,7 +14,7 @@ Conduct genewise statistical tests for a given coefficient or coefficient contra
 \method{glmFit}{DGEList}(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL,
        prior.count=0.125, start=NULL, method="auto", ...)
 glmLRT(glmfit, coef=ncol(glmfit$design), contrast=NULL, test="chisq")
-glmQLFTest(glmfit, coef=ncol(glmfit$design), contrast=NULL, abundance.trend=TRUE, winsor.tail.p=c(0.05,0.1))
+glmQLFTest(y, design=NULL, dispersion=NULL, coef=ncol(glmfit$design), contrast=NULL, abundance.trend=TRUE, robust=FALSE, winsor.tail.p=c(0.05,0.1), plot=FALSE)
 }
 
 \arguments{
@@ -24,7 +24,7 @@ glmQLFTest(glmfit, coef=ncol(glmfit$design), contrast=NULL, abundance.trend=TRUE
 Must be of full column rank.
 Defaults to a single column of ones, equivalent to treating the columns as replicate libraries.}
 
-\item{dispersion}{numeric scalar or vector providing the value for the dispersion parameter that is used in fitting the GLM for each transcript. Can be a common value for all tags, or a vector of values can provide a unique dispersion value for each tag. If \code{NULL} will be extracted from \code{y}, with order of precedence: tagwise dispersion, trended dispersions, common dispersion.}
+\item{dispersion}{numeric scalar or vector of negative binomial dispersions. Can be a common value for all tags, or a vector of values can provide a unique dispersion value for each tag. If \code{NULL} will be extracted from \code{y}, with order of precedence: tagwise dispersion, trended dispersions, common dispersion.}
 
 \item{offset}{numeric matrix of same size as \code{y} giving offsets for the log-linear models.  Can be a scalor or a vector of length \code{ncol{y}}, in which case it is expanded out to a matrix.}
 
@@ -50,7 +50,11 @@ Defaults to a single column of ones, equivalent to treating the columns as repli
 
 \item{abundance.trend}{logical, whether to allow an abundance-dependent trend when estimating the prior values for the quasi-likelihood multiplicative dispersion parameter.}
 
-\item{winsor.tail.p}{numeric vector of length 2 giving proportion to trim (Winsorize) from lower and upper tail of the distribution of genewise deviances when estimating the hyperparameters. Positive values produce robust empirical Bayes ignoring outlier small or large deviances.} 
+\item{robust}{logical, whether to estimate the prior.df robustly.}
+
+\item{winsor.tail.p}{numeric vector of length 2 giving proportion to trim (Winsorize) from lower and upper tail of the distribution of genewise deviances when estimating the hyperparameters. Positive values produce robust empirical Bayes ignoring outlier small or large deviances. Only used when \code{robust=TRUE}.} 
+
+\item{plot}{logical, whether to plot the quasi-likelihood dispersion estimates vs abundance}
 }
 
 \value{

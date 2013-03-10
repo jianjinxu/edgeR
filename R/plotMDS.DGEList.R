@@ -1,11 +1,14 @@
-plotMDS.DGEList <- function (x, top=500, labels=colnames(x), col=NULL, cex=1, dim.plot=c(1, 2), ndim=max(dim.plot), xlab=paste("Dimension",dim.plot[1]), ylab=paste("Dimension",dim.plot[2]), ...)
+plotMDS.DGEList <- function (x, top=500, labels=colnames(x), col=NULL, cex=1, dim.plot=c(1, 2), ndim=max(dim.plot), xlab=NULL, ylab=NULL, method="logFC", prior.count=2, gene.selection="pairwise", ...)
 #	Multidimensional scaling plot of digital gene expression profiles
 #	Yunshun Chen, Mark Robinson and Gordon Smyth
-#	23 May 2011.  Last modified 11 Nov 2012.
+#	23 May 2011.  Last modified 7 Feb 2013.
 {
 #	Remove rows with missing or Inf values
 	ok <- is.finite(x$counts)
-	if(!all(ok)) x <- x[rowSums(ok)>0,]
+	if(!all(ok)) {
+		x <- x[rowSums(ok)>0,]
+		x$samples$lib.size <- rowSums(x$counts)
+	}
 	nprobes <- nrow(x)
 	nsamples <- ncol(x)
 
@@ -15,6 +18,17 @@ plotMDS.DGEList <- function (x, top=500, labels=colnames(x), col=NULL, cex=1, di
 
 #	Check value for dim.plot
 	if(nsamples < ndim) stop("Dimension to be plotted is greater than number of libraries")
+
+#	Default method is to convert to moderated logCPM and call limma plotMDS
+	method <- match.arg(method, c("logFC","bcv","BCV"))
+	if(method=="logFC") {
+		if(is.null(xlab)) xlab <- paste("Leading logFC dim",dim.plot[1])
+		if(is.null(ylab)) ylab <- paste("Leading logFC dim",dim.plot[2])
+		y <- cpm(x,log=TRUE,prior.count=prior.count)
+		return(plotMDS(y,top=top,labels=labels,col=col,cex=cex,dim.plot=dim.plot,ndim=ndim,gene.selection=gene.selection,xlab=xlab,ylab=ylab,...))
+	}
+
+#	From here method="bcv"
 
 	x$samples$group <- factor(rep.int(1,nsamples))
 
@@ -52,5 +66,7 @@ plotMDS.DGEList <- function (x, top=500, labels=colnames(x), col=NULL, cex=1, di
 	mds <- new("MDS",list(dim.plot=dim.plot,distance.matrix=dd,cmdscale.out=a1,top=top))
 	mds$x <- a1[,dim.plot[1]]
 	mds$y <- a1[,dim.plot[2]]
+	if(is.null(xlab)) xlab <- paste("BCV distance",dim.plot[1])
+	if(is.null(ylab)) ylab <- paste("BCV distance",dim.plot[2])
 	plotMDS(mds,labels=labels,col=col,cex=cex,xlab=xlab,ylab=ylab,...)
 }

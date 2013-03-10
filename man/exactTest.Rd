@@ -44,12 +44,12 @@ Libraries are assumed to be equal in size - e.g. adjusted pseudocounts from the 
 }
 
 \value{
-\code{exactTestDoubleTail} and friends produce a numeric vector of genewise p-values, one for each row of \code{y1} and \code{y2}.
-
 \code{exactTest} produces an object of class \code{DGEExact} containing the following components:
 \item{table}{data frame containing columns for the log2-fold-change, \code{logFC}, the average log2-counts-per-million, \code{logCPM}, and the two-sided p-value \code{PValue}}
 \item{comparison}{character vector giving the names of the two groups being compared} 
 \item{genes}{optional data frame containing annotation for transcript; taken from \code{object}}
+
+The low-level functions, \code{exactTestDoubleTail} etc, produce a numeric vector of genewise p-values, one for each row of \code{y1} and \code{y2}.
 }
 
 \details{
@@ -57,23 +57,27 @@ The functions test for differential expression between two groups of count libra
 They implement the exact test proposed by Robinson and Smyth (2008) for a difference in mean between two groups of negative binomial random variables.
 The functions accept two groups of count libraries, and a test is performed for each row of data.
 For each row, the test is conditional on the sum of counts for that row.
-The test can be viewed as a generalization of the well-known exact binomial test, implemented in the function \code{binom.test} in the stats package, but generalized to overdispersed counts.
+The test can be viewed as a generalization of the well-known exact binomial test (implemented in \code{binomTest}) but generalized to overdispersed counts.
 
-The low level functions \code{exactTestDoubleTail}, \code{exactTestBetaApprox}, \code{exactTestBySmallP} and \code{exactTestByDeviance} all assume
-that the libraries have been normalized to have the same size (expected column sum under the null hypothesis).
-The higher level function \code{exactTest} is intended to be called by users.
-This has a more object-orientated flavor and produces an object containing all the necessary components for downstream analysis.
-\code{exactTest} equalizes the library sizes using \code{\link{equalizeLibSizes}} before calling one of the low level functions.
+\code{exactTest} is the main user-level function, and produces an object containing all the necessary components for downstream analysis.
+\code{exactTest} calls one of the low level functions \code{exactTestDoubleTail}, \code{exactTestBetaApprox}, \code{exactTestBySmallP} or \code{exactTestByDeviance} to do the p-value computation.
+The low level functions all assume that the libraries have been normalized to have the same size, i.e., to have the same expected column sum under the null hypothesis.
+\code{exactTest} equalizes the library sizes using \code{\link{equalizeLibSizes}} before calling the low level functions.
 
 The functions \code{exactTestDoubleTail}, \code{exactTestBySmallP} and \code{exactTestByDeviance} correspond to different ways to define the two-sided rejection region when the two groups have different numbers of samples.
 \code{exactTestBySmallP} implements the method of small probabilities as proposed by Robinson and Smyth (2008).
-This method corresponds to \code{binom.test} when the dispersion is near zero, but gives poor results when the dispersion is very large.
+This method corresponds exactly to \code{binomTest} as the dispersion approaches zero, but gives poor results when the dispersion is very large.
 \code{exactTestDoubleTail} computes two-sided p-values by doubling the smaller tail probability.
 \code{exactTestByDeviance} uses the deviance goodness of fit statistics to define the rejection region, and is therefore equivalent to a conditional likelihood ratio test.
-This has good statistical properties but is relatively slow to compute.
+
+Note that \code{rejection.region="smallp"} is no longer recommended.
+It is preserved as an option only for backward compatiblity with early versions of edgeR.
+\code{rejection.region="deviance"} has good theoretical statistical properties but is relatively slow to compute.
+\code{rejection.region="doubletail"} is just slightly more conservative than \code{rejection.region="deviance"}, but is recommended because of its much greater speed.
 For general remarks on different types of rejection regions for exact tests see Gibbons and Pratt (1975).
 
 \code{exactTestBetaApprox} implements an asymptotic beta distribution approximation to the conditional count distribution.
+It is called by the other functions for rows with both group counts greater than \code{big.count}.
 }
 
 \references{
@@ -89,18 +93,14 @@ Gibbons, JD and Pratt, JW (1975).  P-values: interpretation and methodology.
 \examples{
 # generate raw counts from NB, create list object
 y <- matrix(rnbinom(80,size=1/0.2,mu=10),nrow=20,ncol=4)
-rownames(y) <- paste("Gene",1:nrow(y),sep=".")
-group <- factor(c(1,1,2,2))
-d <- DGEList(counts=y,group=group,lib.size=rep(1000,4))
+d <- DGEList(counts=y, group=c(1,1,2,2), lib.size=rep(1000,4))
 
-# estimate dispersions and find differences in expression
-d <- estimateCommonDisp(d, verbose=TRUE)
-d <- estimateTagwiseDisp(d)
-de <- exactTest(d)
+de <- exactTest(d, dispersion=0.2)
 topTags(de)
 
-# same example using low-level exactTest function directly
-p.value <- exactTestDoubleTail(y[,1:2],y[,3:4],dispersion=0.2)
+# same p-values using low-level function directly
+p.value <- exactTestDoubleTail(y[,1:2], y[,3:4], dispersion=0.2)
+sort(p.value)[1:10]
 }
 
 \seealso{

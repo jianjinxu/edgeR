@@ -1,7 +1,9 @@
-calcNormFactors <- function(object, method=c("TMM","RLE","upperquartile"), refColumn=NULL, logratioTrim=.3, sumTrim=0.05, doWeighting=TRUE, Acutoff=-1e10, p=0.75)
-#	Normalization of RNA-Seq data.
-#	Created October 22 October 2009.  Last modified 1 June 2012.
+calcNormFactors <- function(object, method=c("TMM","RLE","upperquartile","none"), refColumn=NULL, logratioTrim=.3, sumTrim=0.05, doWeighting=TRUE, Acutoff=-1e10, p=0.75)
+#	Scale normalization of RNA-Seq data.
+#	Mark Robinson.  Edits by Gordon Smyth.
+#	Created October 22 October 2009.  Last modified 24 Feb 2013.
 {
+#	Check object
 	if(is(object,"DGEList")) {
 		x <- as.matrix(object$counts)
 		lib.size <- object$samples$lib.size
@@ -9,18 +11,34 @@ calcNormFactors <- function(object, method=c("TMM","RLE","upperquartile"), refCo
 		x <- as.matrix(object)
 		lib.size <- colSums(x)
 	}
+
+#	Check method	
 	method <- match.arg(method)
-	if(method=="TMM" & is.null(refColumn)) {	  
-		f75 <- .calcFactorQuantile(data=x, lib.size=lib.size, p=0.75)
-		refColumn <- which.min(abs(f75-mean(f75)))
-		if(length(refColumn)==0) refColumn <- 1
-	}
+
+#	Remove all zero rows
+	allzero <- rowSums(x>0) == 0
+	if(any(allzero)) x <- x[!allzero,,drop=FALSE]
+
+#	Degenerate cases
+	if(nrow(x)==0 || ncol(x)==1) method="none"
+
+#	Calculate factors
 	f <- switch(method,
-		TMM = apply(x,2,.calcFactorWeighted,ref=x[,refColumn], logratioTrim=logratioTrim, sumTrim=sumTrim, doWeighting=doWeighting, Acutoff=Acutoff),
+		TMM = {
+			f75 <- .calcFactorQuantile(data=x, lib.size=lib.size, p=0.75)
+			refColumn <- which.min(abs(f75-mean(f75)))
+			if(length(refColumn)==0) refColumn <- 1
+			apply(x,2,.calcFactorWeighted,ref=x[,refColumn], logratioTrim=logratioTrim, sumTrim=sumTrim, doWeighting=doWeighting, Acutoff=Acutoff)
+		},
 		RLE = .calcFactorRLE(x)/lib.size,
-		upperquartile = .calcFactorQuantile(x,lib.size,p=p)
+		upperquartile = .calcFactorQuantile(x,lib.size,p=p),
+		none = rep(1,ncol(x))
 	)
+
+#	Factors should multiple to one
 	f <- f/exp(mean(log(f)))
+
+#	Output
 	if(is(object, "DGEList")) {
 		object$samples$norm.factors <- f
 		return(object)
@@ -38,17 +56,16 @@ calcNormFactors <- function(object, method=c("TMM","RLE","upperquartile"), refCo
 
 .calcFactorQuantile <- function (data, lib.size, p=0.75)
 {
-	i <- apply(data<=0,1,all)
-	if(any(i)) data <- data[!i,,drop=FALSE]
+#	i <- apply(data<=0,1,all)
+#	if(any(i)) data <- data[!i,,drop=FALSE]
 	y <- t(t(data)/lib.size)
 	f <- apply(y,2,function(x) quantile(x,p=p))
-	f/exp(mean(log(f)))
+#	f/exp(mean(log(f)))
 }
 
 .calcFactorWeighted <- function(obs, ref, logratioTrim=.3, sumTrim=0.05, doWeighting=TRUE, Acutoff=-1e10)
 {
-	if( all(obs==ref) )
-	return(1)
+	if( all(obs==ref) ) return(1)
 
 	obs <- as.numeric(obs)
 	ref <- as.numeric(ref)
@@ -58,29 +75,29 @@ calcNormFactors <- function(object, method=c("TMM","RLE","upperquartile"), refCo
 	logR <- log2((obs/nO)/(ref/nR))			# log ratio of expression, accounting for library size
 	absE <- (log2(obs/nO) + log2(ref/nR))/2	# absolute expression
 	v <- (nO-obs)/nO/obs + (nR-ref)/nR/ref	 # estimated asymptotic variance
-	
+
 #	remove infinite values, cutoff based on A
 	fin <- is.finite(logR) & is.finite(absE) & (absE > Acutoff)
-	
+
 	logR <- logR[fin]
 	absE <- absE[fin]
 	v <- v[fin]
-	
+
 #	taken from the original mean() function
 	n <- sum(fin)
 	loL <- floor(n * logratioTrim) + 1
 	hiL <- n + 1 - loL
 	loS <- floor(n * sumTrim) + 1
 	hiS <- n + 1 - loS
-	
+
 #	keep <- (rank(logR) %in% loL:hiL) & (rank(absE) %in% loS:hiS)
 #	a fix from leonardo ivan almonacid cardenas, since rank() can return
 #	non-integer values when there are a lot of ties
 	keep <- (rank(logR)>=loL & rank(logR)<=hiL) & (rank(absE)>=loS & rank(absE)<=hiS)
-	
+
 	if(doWeighting)
-	2^( sum(logR[keep]/v[keep], na.rm=TRUE) / sum(1/v[keep], na.rm=TRUE) )
+		2^( sum(logR[keep]/v[keep], na.rm=TRUE) / sum(1/v[keep], na.rm=TRUE) )
 	else
-	2^( mean(logR[keep], na.rm=TRUE) )
+		2^( mean(logR[keep], na.rm=TRUE) )
 }
 

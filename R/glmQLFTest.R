@@ -1,11 +1,23 @@
-glmQLFTest <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, abundance.trend=TRUE, winsor.tail.p=c(0.05,0.1))
+glmQLFTest <- function(y, design=NULL, dispersion=NULL, coef=ncol(glmfit$design), contrast=NULL, abundance.trend=TRUE, robust=FALSE, winsor.tail.p=c(0.05,0.1), plot=FALSE)
 #	Quasi-likelihood F-tests for DGE glms.
 #	Davis McCarthy and Gordon Smyth.
-#	Created 18 Feb 2011. Last modified 8 Dec 2012.
+#	Created 18 Feb 2011. Last modified 10 March 2013.
 {
-#	Check glmfit
-	disptype <- attr(glmfit$dispersion,"type")
-	if(!is.null(disptype)) if(disptype=="tagwise") stop("glmfit should be computed using trended dispersions, not tagwise")
+	if(abundance.trend) A <- y$AveLogCPM
+
+#	Initial fit with trended dispersion
+	if(is(y,"DGEList")) {
+		if(is.null(dispersion)) {
+			dispersion <- y$trended.dispersion
+			if(is.null(dispersion)) dispersion <- y$common.dispersion
+			if(is.null(dispersion)) dispersion <- 0.05
+		}
+		glmfit <- glmFit(y,design=design,dispersion=dispersion)
+	} else {
+		glmfit <- y
+		disptype <- attr(glmfit$dispersion,"type")
+		if(!is.null(disptype)) if(disptype=="tagwise") stop("glmfit should be computed using trended dispersions, not tagwise")
+	}
 
 #	Call glmLRT to get most of the results that we need for the QL F-test calculations
 	out <- glmLRT(glmfit, coef=coef, contrast=contrast)
@@ -24,17 +36,30 @@ glmQLFTest <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, abundanc
 	s2 <- glmfit$deviance / df.residual
 	s2[df.residual==0] <- 0
 	s2 <- pmax(s2,0)
-	if( abundance.trend )
-		s2.fit <- squeezeVar(s2, df=df.residual,covariate=glmfit$abundance,winsor.tail.p=winsor.tail.p)
-	else
-		s2.fit <- squeezeVar(s2, df=df.residual,winsor.tail.p=winsor.tail.p)
+	if(abundance.trend) {
+		if(is.null(A)) A <- out$AveLogCPM
+		if(is.null(A)) A <- log1p(exp(out$abundance+log(1e6)))
+		if(is.null(A)) A <- aveLogCPM(glmfit$counts,offset=glmfit$offset)
+		if(is.null(out$AveLogCPM)) out$AveLogCPM <- A
+	} else {
+		A <- NULL
+	}
+	s2.fit <- squeezeVar(s2,df=df.residual,covariate=A,robust=robust,winsor.tail.p=winsor.tail.p)
+
+#	Plot
+	if(plot) {
+		plot(A,sqrt(sqrt(s2)),xlab="Average Log2 CPM",ylab="Quarter-Root Mean Deviance",pch=16,cex=0.2)
+		o <- order(A)
+		points(A[o],sqrt(sqrt(s2.fit$var.post[o])),pch=16,cex=0.2,col="red")
+		lines(A[o],sqrt(sqrt(s2.fit$var.prior[o])),col="blue")
+	}
 
 #	Compute the QL F-statistic
 	F <- out$table$LR / out$df.test / s2.fit$var.post
 	df.total <- s2.fit$df.prior+df.residual
 	max.df.residual <- ncol(glmfit$counts)-ncol(glmfit$design)
 	df.total <- pmin(df.total, length(s2)*max.df.residual)
-	
+
 #	Compute p-values from the QL F-statistic
 	F.pvalue <- pf(F, df1=out$df.test, df2=df.total, lower.tail=FALSE, log.p=FALSE)
 

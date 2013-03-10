@@ -8,7 +8,7 @@ for the top genes that best distinguish the samples.
 }
 \usage{
 \method{plotMDS}{DGEList}(x, top=500, labels=colnames(x), col=NULL, cex=1, dim.plot=c(1,2),
-     ndim=max(dim.plot), xlab=paste("Dimension",dim.plot[1]), ylab=paste("Dimension",dim.plot[2]), ...)
+     ndim=max(dim.plot), xlab=NULL, ylab=NULL, method="logFC", prior.count=2, gene.selection="pairwise", ...)
 }
 \arguments{
   \item{x}{an \code{DGEList} object.}
@@ -18,8 +18,11 @@ for the top genes that best distinguish the samples.
   \item{cex}{numeric vector of plot symbol expansions. See \code{\link[graphics]{text}} for possible values.}
   \item{dim.plot}{which two dimensions should be plotted, numeric vector of length two.}
   \item{ndim}{number of dimensions in which data is to be represented}
-  \item{xlab}{title for the x-axis}
-  \item{ylab}{title for the y-axis}
+  \item{xlab}{x-axis label}
+  \item{ylab}{y-axis label}
+  \item{method}{how to compute distances.  Possible values are "logFC" or \code{"bcv"}.}
+  \item{prior.count}{average prior count to be added to observation to shrink the estimated log-fold-changes towards zero. Only used when \code{method="logFC"}.}
+  \item{gene.selection}{character, \code{"pairwise"} to choose the top genes separately for each pairwise comparison between the samples or \code{"common"} to select the same genes for all comparisons. Only used when \code{method="logFC"}.}
   \item{...}{any other arguments are passed to \code{plot}.}
 }
 
