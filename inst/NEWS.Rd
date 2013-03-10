@@ -13,6 +13,17 @@ BCV-distances is available by setting method="BCV".
 glmQLFTest() can now take either a DGEList object and design matrix
 or a fitted glm object.  It can also now produce a plot of the
 residual deviances and shrunk deviances versus logCPM.
+
+\item
+estimateDisp() now has a robust option for estimating the prior degrees
+of freedom and the tagwise dispersion.
+
+\item
+New option method="none" for calcNormFactors().
+
+\item
+glmFit() now preserves the AveLogCPM vector found in the DGEList
+object rather than recomputing it.
 }}
 
 
@@ -27,6 +38,8 @@ profiles within edgeR.
 New functions estimateDisp() and WLEB() to automate the estimation
 of common, trended and tagwise dispersions, for either glms or for
 classic edgeR.
+This function also incorporate automatic estimation of the prior
+degrees of freedom.
 
 \item
 glmLRT now permits contrast arg to be a matrix with multiple columns, making its behavior analogous to the coef argument.
