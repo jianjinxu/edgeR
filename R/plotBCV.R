@@ -1,7 +1,7 @@
 plotBCV <- function(y, xlab="Average log CPM", ylab="Biological coefficient of variation", pch=16, cex=0.2, col.common="red", col.trend="blue", col.tagwise="black", ...)
 #	Plot biological coefficient of variation against average log CPM
 #	Davis McCarthy, Yunshun Chen, Gordon Smyth.
-#	Created 18 January 2012.  Last modified 30 Sep 2012.
+#	Created 18 January 2012.  Last modified 11 March 2013.
 {
 #	Check y
 	if(!is(y,"DGEList")) stop("y must be a DGEList.")
@@ -35,6 +35,10 @@ plotBCV <- function(y, xlab="Average log CPM", ylab="Biological coefficient of v
 		cols <- c(cols,col.trend)
 	}
 	legend("topright",legend=labels,lwd=2,col=cols)
+
+#	Add binned dispersions if appropriate
+	if(!is.null(y$trend.method)) if(y$trend.method %in% c("bin.spline","bin.loess")) if(!is.null(y$bin.dispersion)) if(!is.null(y$bin.AveLogCPM))
+		points(y$bin.AveLogCPM, sqrt(y$bin.dispersion), pch=16, cex=1, col=col.trend)
 
 	invisible()
 }

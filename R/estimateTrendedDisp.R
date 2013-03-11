@@ -10,7 +10,7 @@ estimateTrendedDisp <- function(object, method="bin.spline", df=5, span=2/3)
 
 	ntags <- nrow(object$counts)	
 	logCPM <- object$AveLogCPM
-	if(is.null(logCPM)) logCPM <- aveLogCPM(object$counts,offset=getOffset(object))
+	if(is.null(logCPM)) logCPM <- aveLogCPM(object)
 	
 	nbins <- 50
 	if(nbins>ntags) stop("nbins greater than number of rows of data")

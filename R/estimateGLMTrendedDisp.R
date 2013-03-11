@@ -1,17 +1,15 @@
-#  Last modified 3 Oct 2012
+#  Last modified 11 March 2013
 
-estimateGLMTrendedDisp <- function(y, design=NULL, offset=NULL, AveLogCPM=NULL, method="auto", ...) 
+estimateGLMTrendedDisp <- function(y, ...) 
 UseMethod("estimateGLMTrendedDisp")
 
-estimateGLMTrendedDisp.DGEList <- function(y, design=NULL, offset=NULL, AveLogCPM=NULL, method="auto", ...)
+estimateGLMTrendedDisp.DGEList <- function(y, design=NULL, method="auto", ...)
 {
-	if(is.null(offset)) offset <- getOffset(y)
-	if(is.null(AveLogCPM)) AveLogCPM <- y$AveLogCPM
-	d <- estimateGLMTrendedDisp(y=y$counts, design=design, offset=offset, AveLogCPM=AveLogCPM, method=method, ...)
-	y$AveLogCPM <- d$AveLogCPM
+	if(is.null(y$AveLogCPM)) y$AveLogCPM <- aveLogCPM(y)
+	d <- estimateGLMTrendedDisp(y=y$counts, design=design, offset=getOffset(y), AveLogCPM=y$AveLogCPM, method=method, ...)
 	y$trended.dispersion <- d$dispersion
 	y$bin.dispersion <- d$bin.dispersion
-	y$bin.abundance <- d$bin.abundance
+	y$bin.AveLogCPM <- d$bin.AveLogCPM
 	y$design <- d$design
 	y$trend.method <- d$trend.method
 	y
@@ -41,9 +39,10 @@ estimateGLMTrendedDisp.default <- function(y, design=NULL, offset=NULL, AveLogCP
 		lib.size <- colSums(y)
 		offset <- log(lib.size)
 	}
+	offset <- expandAsMatrix(offset,dim(y))
 
 #	Check AveLogCPM
-	if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y,offset=offset)
+	if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y,lib.size=exp(offset))
 
 #	Check method	
 	method <- match.arg(method,c("auto","bin.spline","bin.loess","power","spline"))

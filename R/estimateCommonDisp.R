@@ -30,7 +30,7 @@ estimateCommonDisp <- function(object,tol=1e-06,rowsum.filter=5,verbose=FALSE)
 	object$pseudo.counts <- out$pseudo.counts
 
 #	Average logCPM
-	object$AveLogCPM <- aveLogCPM(object$counts,offset=getOffset(object))
+	object$AveLogCPM <- aveLogCPM(object)
 	object$pseudo.lib.size <- out$common.lib.size
 	object
 }

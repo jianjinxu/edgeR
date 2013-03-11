@@ -1,21 +1,19 @@
-# Created March 2011. Last modified 4 Oct 2012.
+# Created March 2011. Last modified 11 March 2013.
 
-estimateGLMTagwiseDisp <- function(y, design=NULL, offset=NULL, dispersion=NULL, prior.df=10, trend=TRUE, span=NULL, AveLogCPM=NULL, ...) 
+estimateGLMTagwiseDisp <- function(y, ...) 
 UseMethod("estimateGLMTagwiseDisp")
 
-estimateGLMTagwiseDisp.DGEList <- function(y, design=NULL, offset=NULL, dispersion=NULL, prior.df=10, trend=!is.null(y$trended.dispersion), span=NULL, AveLogCPM=NULL, ...)
+estimateGLMTagwiseDisp.DGEList <- function(y, design=NULL, dispersion=NULL, prior.df=10, trend=!is.null(y$trended.dispersion), span=NULL, ...)
 {
-	if(is.null(offset)) offset <- getOffset(y)
 	if(trend) {
 		if(is.null(dispersion)) dispersion <- y$trended.dispersion
 		if(is.null(dispersion)) stop("No trended.dispersion found in data object. Run estimateGLMTrendedDisp first.")
-		if(is.null(AveLogCPM)) AveLogCPM <- y$AveLogCPM
-		if(is.null(AveLogCPM)) y$AveLogCPM <- AveLogCPM <- aveLogCPM(y$counts,offset=offset)
+		if(is.null(y$AveLogCPM)) y$AveLogCPM <- aveLogCPM(y)
 	} else {
 		if(is.null(dispersion)) dispersion <- y$common.dispersion
 		if(is.null(dispersion)) stop("No common.dispersion found in data object. Run estimateGLMCommonDisp first.")
 	}
-	out <- estimateGLMTagwiseDisp(y=y$counts, design=design, offset=offset, dispersion=dispersion, trend=trend, prior.df=prior.df, AveLogCPM=AveLogCPM, ...)
+	out <- estimateGLMTagwiseDisp(y=y$counts, design=design, offset=getOffset(y), dispersion=dispersion, trend=trend, prior.df=prior.df, AveLogCPM=y$AveLogCPM, ...)
 	y$prior.df <- prior.df
 	y$span <- out$span
 	y$tagwise.dispersion <- out$tagwise.dispersion
@@ -47,7 +45,7 @@ estimateGLMTagwiseDisp.default <- function(y, design=NULL, offset=NULL, dispersi
 	if(is.null(span)) if(ntags>10) span <- (10/ntags)^0.23 else span <- 1
 
 #	Check AveLogCPM
-	if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y,offset=offset)
+	if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y,lib.size=exp(offset))
 
 #	Call Cox-Reid grid method
 	tagwise.dispersion <- dispCoxReidInterpolateTagwise(y, design, offset=offset, dispersion, trend=trend, prior.df=prior.df, span=span, AveLogCPM=AveLogCPM, ...)

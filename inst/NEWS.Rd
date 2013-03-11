@@ -2,6 +2,19 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.1.6}{\itemize{
+\item
+Changing the aveLogCPM() function so that it spreads out the low
+abundance values more.  It now gives negative as well as positive
+values.
+
+\item
+The value for AveLogCPM is now computed just once, and not updated
+when the dispersion is re-estimated.  This serves now as a standard
+measure of abundance for the purpose of trends and plots.  The use
+of the old abundance measure is phased out.
+}}
+
 \section{Version 3.1.5}{\itemize{
 \item
 The default method of plotMDS() for DGEList objects has changed.  The

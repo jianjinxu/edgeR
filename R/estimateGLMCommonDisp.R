@@ -1,15 +1,13 @@
 #  Last modified 27 Oct 2012
 
-estimateGLMCommonDisp <- function(y, design=NULL, offset=NULL, method="CoxReid", subset=10000, AveLogCPM=NULL, verbose=FALSE, ...) 
+estimateGLMCommonDisp <- function(y, ...) 
 UseMethod("estimateGLMCommonDisp")
 
-estimateGLMCommonDisp.DGEList <- function(y, design=NULL, offset=NULL, method="CoxReid", subset=10000, AveLogCPM=NULL, verbose=FALSE, ...)
+estimateGLMCommonDisp.DGEList <- function(y, design=NULL, method="CoxReid", subset=10000, verbose=FALSE, ...)
 {
-	if(is.null(offset)) offset <- getOffset(y)
-	y$AveLogCPM <- AveLogCPM
-	if(is.null(y$AveLogCPM)) y$AveLogCPM <- aveLogCPM(y$counts,offset=offset)
-	d <- estimateGLMCommonDisp(y=y$counts, design=design, offset=offset, method=method, subset=subset, AveLogCPM=y$AveLogCPM, verbose=verbose, ...)
-	y$common.dispersion <- d
+	if(is.null(y$AveLogCPM)) y$AveLogCPM <- aveLogCPM(y)
+	disp <- estimateGLMCommonDisp(y=y$counts, design=design, offset=getOffset(y), method=method, subset=subset, AveLogCPM=y$AveLogCPM, verbose=verbose, ...)
+	y$common.dispersion <- disp
 	y
 }
 
@@ -38,7 +36,7 @@ estimateGLMCommonDisp.default <- function(y, design=NULL, offset=NULL, method="C
 	if(is.null(offset)) offset <- log(colSums(y))
 
 #	Check AveLogCPM
-	if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y,offset=offset)
+	if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y)
 
 #	Call lower-level function
 	disp <- switch(method,

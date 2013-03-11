@@ -4,11 +4,12 @@ glmFit <- function(y, design, dispersion=NULL, offset=NULL, weights=NULL, lib.si
 UseMethod("glmFit")
 
 glmFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count=0.125, start=NULL, method="auto", ...)
-#	Last modified 7 Dec 2013.
+#	Created 11 May 2011.  Last modified 11 March 2013.
 {
 	if(is.null(dispersion)) dispersion <- getDispersion(y)
-	if(is.null(dispersion)) stop("No dispersion values found in DGEList object. Run dispersion estimation functions such as estimateGLMCommonDisp, estimateGLMTrendedDisp and estimateGLMTagwiseDisp before using glmFit.")
+	if(is.null(dispersion)) stop("No dispersion values found in DGEList object.")
 	if(is.null(offset) && is.null(lib.size)) offset <- getOffset(y)
+	if(is.null(y$AveLogCPM)) y$AveLogCPM <- aveLogCPM(y)
 	fit <- glmFit(y=y$counts,design=design,dispersion=dispersion,offset=offset,weights=weights,lib.size=lib.size,prior.count=prior.count,start=start,method=method,...)
 	fit$samples <- y$samples
 	fit$genes <- y$genes
@@ -21,7 +22,6 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 #	Fit negative binomial generalized linear model for each transcript
 #	to a series of digital expression libraries
 #	Davis McCarthy and Gordon Smyth
-
 #	Created 17 August 2010. Last modified 13 Nov 2012.
 {
 #	Check input
@@ -99,7 +99,7 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 		fit$deviance <- deviances(y,fit$fitted.values,dispersion)
 	}
 	if(is.null(fit$df.residual)) fit$df.residual <- rep(nlibs-ncol(design),ngenes)
-	if(is.null(fit$abundance)) fit$abundance <- mglmOneGroup(y, offset=offset, dispersion=dispersion)
+#	if(is.null(fit$abundance)) fit$abundance <- mglmOneGroup(y, offset=offset, dispersion=dispersion)
 	if(is.null(fit$design)) fit$design <- design
 	if(is.null(fit$offset)) fit$offset <- offset
 	if(is.null(fit$dispersion)) fit$dispersion <- dispersion
@@ -198,9 +198,10 @@ glmLRT <- function(glmfit,coef=ncol(glmfit$design),contrast=NULL,test="chisq")
 		rn <- 1:nrow(glmfit)
 	else
 		rn <- make.unique(rn)
+	if(is.null(glmfit$AveLogCPM)) glmfit$AveLogCPM <- aveLogCPM(glmfit)
 	tab <- data.frame(
 		logFC=logFC,
-		logCPM=(glmfit$abundance+log(1e6))/log(2),
+		logCPM=glmfit$AveLogCPM,
 		LR=LR,
 		PValue=LRT.pvalue,
 		row.names=rn

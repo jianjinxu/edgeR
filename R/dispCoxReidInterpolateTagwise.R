@@ -3,7 +3,7 @@ dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, tr
 #	using weighted Cox-Reid Adjusted Profile-likelihood
 #	and cubic spline interpolation over a tagwise grid.
 #	Yunshun Chen and Gordon Smyth
-#	Created August 2010. Last modified 4 Oct 2012.
+#	Created August 2010. Last modified 11 March 2013.
 {
 #	Check y
 	y <- as.matrix(y)
@@ -17,8 +17,15 @@ dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, tr
 	if(ncoefs >= nlibs) stop("no residual degrees of freedom")
 
 #	Check offset
-	if(is.null(offset)) offset <- 0
+	lib.size <- NULL
+	if(is.null(offset)) {
+		lib.size <- colSums(y)
+		offset <- log(lib.size)
+	}
 	offset <- expandAsMatrix(offset,dim(y))
+
+#	Check AveLogCPM
+	if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y,lib.size=lib.size)
 
 #	Check dispersion
 	ldisp <- length(dispersion)
@@ -27,9 +34,6 @@ dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, tr
 	} else {
 		if(ldisp != ntags) stop("length of dispersion doesn't match nrow(y)")
 	}
-
-#	Check AveLogCPM
-	if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y,offset=offset)
 
 #	Apply min.row.sum and use input dispersion for small count tags
 	i <- (rowSums(y) >= min.row.sum)

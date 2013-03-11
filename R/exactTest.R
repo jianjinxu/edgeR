@@ -49,10 +49,6 @@ exactTest <- function(object, pair=1:2, dispersion="auto", rejection.region="dou
 	offset <- log(lib.size)
 	lib.size.average <- exp(mean(offset))
 
-#	Average abundance
-	abundance <- mglmOneGroup(y,dispersion=dispersion,offset=offset)
-	AveLogCPM <- log1p(exp(abundance+log(1e6)))/log(2)
-
 #	logFC
 	prior.count <- prior.count*lib.size/mean(lib.size)
 	offset.aug <- log(lib.size+2*prior.count)
@@ -69,6 +65,7 @@ exactTest <- function(object, pair=1:2, dispersion="auto", rejection.region="dou
 	logFC <- (abundance2-abundance1)/log(2)
 
 #	Equalize library sizes
+	abundance <- mglmOneGroup(y,dispersion=dispersion,offset=offset)
 	e <- exp(abundance)
 	input.mean <- matrix(e,ntags,n1)
 	output.mean <- input.mean*lib.size.average
@@ -85,6 +82,8 @@ exactTest <- function(object, pair=1:2, dispersion="auto", rejection.region="dou
 		smallp=exactTestBySmallP(y1,y2,dispersion=dispersion,big.count=big.count)
 	)
 
+	AveLogCPM <- object$AveLogCPM
+	if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(object)
 	de.out <- data.frame(logFC=logFC, logCPM=AveLogCPM, PValue=exact.pvals)
 	rn <- rownames(object$counts)
 	if(!is.null(rn)) rownames(de.out) <- make.unique(rn)

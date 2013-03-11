@@ -22,8 +22,8 @@ estimateDisp <- function(y, design=NULL, offset=NULL, prior.df=NULL, trend.metho
 	l0 <- matrix(0, ntags, grid.length)
 
 	if(is.null(offset)) offset <- getOffset(y)
+	AveLogCPM <- aveLogCPM(y)
 	offset <- expandAsMatrix(offset, dim(y))
-	AveLogCPM <- aveLogCPM(y$counts,offset=offset)
 
 
 	### Classic edgeR

@@ -1,8 +1,8 @@
-dispBinTrend <- function(y, design=NULL, offset=0, df=5, span=2/3, min.n=400, method.bin="CoxReid", method.trend="spline", trace=0, AveLogCPM=NULL, ...)
+dispBinTrend <- function(y, design=NULL, offset=NULL, df=5, span=2/3, min.n=400, method.bin="CoxReid", method.trend="spline", trace=0, AveLogCPM=NULL, ...)
 #	Estimate common dispersion in bins based on AveLogCPM,
 #	then fit a curve through the dispersions
 #	Davis McCarthy, Gordon Smyth
-#	Created 10 Feb 2011.  Last modified 3 Oct 2012.
+#	Created 10 Feb 2011.  Last modified 11 March 2013.
 {
 #	Check y
 	y <- as.matrix(y)
@@ -20,14 +20,14 @@ dispBinTrend <- function(y, design=NULL, offset=0, df=5, span=2/3, min.n=400, me
 	}
 
 #	Check offset
-	offset <- expandAsMatrix(offset,dim(y))
+	if(is.null(offset)) offset <- expandAsMatrix(log(colSums(y)),dim(y))
 
 #	Check methods
 	method.bin <- match.arg(method.bin, c("CoxReid", "Pearson", "deviance"))
 	method.trend <- match.arg(method.trend, c("spline", "loess"))
 
 #	Check AveLogCPM
-	if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y,offset=offset)
+	if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y)
 
 #	Define bins of genes based on min.n in each bin
 #	All zero rows are marked as group==0

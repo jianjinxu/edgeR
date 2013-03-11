@@ -1,7 +1,7 @@
 glmQLFTest <- function(y, design=NULL, dispersion=NULL, coef=ncol(glmfit$design), contrast=NULL, abundance.trend=TRUE, robust=FALSE, winsor.tail.p=c(0.05,0.1), plot=FALSE)
 #	Quasi-likelihood F-tests for DGE glms.
 #	Davis McCarthy and Gordon Smyth.
-#	Created 18 Feb 2011. Last modified 10 March 2013.
+#	Created 18 Feb 2011. Last modified 11 March 2013.
 {
 	if(abundance.trend) A <- y$AveLogCPM
 
@@ -52,6 +52,7 @@ glmQLFTest <- function(y, design=NULL, dispersion=NULL, coef=ncol(glmfit$design)
 		o <- order(A)
 		points(A[o],sqrt(sqrt(s2.fit$var.post[o])),pch=16,cex=0.2,col="red")
 		lines(A[o],sqrt(sqrt(s2.fit$var.prior[o])),col="blue")
+		legend("topright",pch=16,col=c("black","red"),legend=c("Raw","Squeezed"))
 	}
 
 #	Compute the QL F-statistic

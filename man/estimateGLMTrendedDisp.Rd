@@ -9,24 +9,18 @@
 Estimates the abundance-dispersion trend by Cox-Reid approximate profile likelihood.
 }
 
-
 \usage{
-\S3method{estimateGLMTrendedDisp}{DGEList}(y, design=NULL, offset=NULL, AveLogCPM=NULL, method="auto", ...)
+\S3method{estimateGLMTrendedDisp}{DGEList}(y, design=NULL, method="auto", ...)
 \S3method{estimateGLMTrendedDisp}{default}(y, design=NULL, offset=NULL, AveLogCPM=NULL, method="auto",  ...)
 }
 
 \arguments{ 
 \item{y}{a matrix of counts or a \code{DGEList} object.)}
-
 \item{design}{numeric design matrix, as for \code{\link{glmFit}}.}
-
 \item{method}{method (low-level function) used to estimated the trended dispersions.
 Possible values are \code{"auto"} (default, switch to \code{"bin.spline"} method if the number of tags is great than 200 and \code{"power"} method otherwise),\code{"bin.spline"}, \code{"bin.loess"} (which both result in a call to \code{dispBinTrend}), \code{"power"} (call to \code{dispCoxReidPowerTrend}), or \code{"spline"} (call to \code{dispCoxReidSplineTrend}).}
-
 \item{offset}{numeric scalar, vector or matrix giving the linear model offsets, as for \code{\link{glmFit}}.}
-
 \item{AveLogCPM}{numeric vector giving average log2 counts per million for each gene.}
-
 \item{\ldots}{other arguments are passed to lower-level functions \code{\link{dispBinTrend}}, \code{\link{dispCoxReidPowerTrend}} or \code{\link{dispCoxReidSplineTrend}}.}
 }
 

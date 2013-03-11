@@ -82,7 +82,7 @@ spliceVariants <- function(y, geneID, dispersion=NULL, group=NULL, estimate.gene
 		if( any(this.genes) ) {
 			gene.counts.mat <- matrix(t(exons[full.index,]), nrow=sum(this.genes), ncol=ncol(exons)*i.exons, byrow=TRUE)
 			if(i.exons==1) {
-				abundance[this.genes] <- mglmOneGroup(gene.counts.mat, dispersion[this.genes])
+				abundance[this.genes] <- aveLogCPM(gene.counts.mat)
 				splicevars.out$LR[this.genes] <- 0
 				splicevars.out$PValue[this.genes] <- 1
 			}
@@ -95,7 +95,7 @@ spliceVariants <- function(y, geneID, dispersion=NULL, group=NULL, estimate.gene
 				coef <- (ncol(X.null)+1):ncol(X.full)
 				## Fit NB GLMs to these genes
 				fit.this <- glmFit(gene.counts.mat, X.full, dispersion[this.genes], offset=0, prior.count=0)
-				abundance[this.genes] <- fit.this$abundance
+				abundance[this.genes] <- aveLogCPM(gene.counts.mat)
 				results.this <- glmLRT(fit.this, coef=coef)
 				if(sum(this.genes)==1) {
 					splicevars.out$LR[this.genes] <- results.this$table$LR[1]
@@ -108,7 +108,7 @@ spliceVariants <- function(y, geneID, dispersion=NULL, group=NULL, estimate.gene
 			}
 		}
 	}
-	splicevars.out$logCPM <- (abundance-log(1e6))/log(2)
+	splicevars.out$logCPM <- abundance
 	## Create a list with the exons divided up neatly by geneID (a bit slow using in-built fn)
 	## Not really necessary, so leave out for the time being
 	## exon.list <- split(as.data.frame(exons), rownames(exons))

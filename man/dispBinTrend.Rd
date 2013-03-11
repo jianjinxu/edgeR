@@ -8,31 +8,21 @@ Estimate the abundance-dispersion trend by computing the common dispersion for b
 }
 
 \usage{
-dispBinTrend(y, design=NULL, offset=0, df = 5, span=2/3, min.n=400, method.bin="CoxReid",
+dispBinTrend(y, design=NULL, offset=NULL, df = 5, span=2/3, min.n=400, method.bin="CoxReid",
           method.trend="spline", trace=0, AveLogCPM=NULL, \dots)
 }
 
 \arguments{
 \item{y}{numeric matrix of counts}
-
 \item{design}{numeric matrix giving the design matrix for the GLM that is to be fit.}
-
 \item{offset}{numeric scalar, vector or matrix giving the offset (in addition to the log of the effective library size) that is to be included in the NB GLM for the transcripts. If a scalar, then this value will be used as an offset for all transcripts and libraries. If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each transcript. If a matrix, then each library for each transcript can have a unique offset, if desired. In \code{adjustedProfileLik} the \code{offset} must be a matrix with the same dimension as the table of counts.}
-
 \item{df}{degrees of freedom for spline curve.}
-
 \item{span}{span used for loess curve.}
-
 \item{min.n}{minimim number of genes in a bins.}
-
 \item{method.bin}{method used to estimate the dispersion in each bin. Possible values are \code{"CoxReid"}, \code{"Pearson"} or \code{"deviance"}.}
-
 \item{method.trend}{type of curve to smooth the bins. Possible values are \code{"spline"} for a natural cubic regression spline or \code{"loess"} for a linear lowess curve.}
-
 \item{trace}{logical, should iteration information be output?}
-
 \item{AveLogCPM}{numeric vector giving average log2 counts per million for each gene}
-
 \item{\dots}{other arguments are passed to \code{estimateGLMCommonDisp}}
 }
 
@@ -67,9 +57,8 @@ y <- matrix(rnbinom(ntags*nlibs,mu=rep(means,nlibs),size=0.1*means),nrow=ntags,n
 keep <- rowSums(y) > 0
 y <- y[keep,]
 group <- factor(c(1,1,2,2))
-lib.size <- colSums(y)
 design <- model.matrix(~group) # Define the design matrix for the full model
-out <- dispBinTrend(y, design, offset=log(lib.size), min.n=100, span=0.3)
+out <- dispBinTrend(y, design, min.n=100, span=0.3)
 with(out, plot(AveLogCPM, sqrt(dispersion)))
 }
 

@@ -1,13 +1,14 @@
 estimateTagwiseDisp <- function(object, prior.df=10, trend="movingave", span=NULL, method="grid", grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
 #  Tagwise dispersion using weighted conditional likelihood empirical Bayes.
 #  Davis McCarthy, Mark Robinson, Yunshun Chen, Gordon Smyth.
-#  Created 2009. Last modified 2 Oct 2012.
+#  Created 2009. Last modified 11 March 2013.
 
 #  Notes 3 July 2012:
 #  - interpolating derivatives would be better than interpolating loglik values.
 #  - share code with estimateGLMTagwiseDisp?
 {
 	if( !is(object,"DGEList") ) stop("object must be a DGEList")
+	if(is.null(object$AveLogCPM)) object$AveLogCPM <- aveLogCPM(object)
 	if( is.null(object$common.dispersion) ) {
 		message("Running estimateCommonDisp() on DGEList object before proceeding with estimateTagwiseDisp().")
 		object <- estimateCommonDisp(object)
