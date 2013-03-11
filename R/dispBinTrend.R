@@ -1,4 +1,4 @@
-dispBinTrend <- function(y, design=NULL, offset=NULL, df=5, span=2/3, min.n=400, method.bin="CoxReid", method.trend="spline", trace=0, AveLogCPM=NULL, ...)
+dispBinTrend <- function(y, design=NULL, offset=NULL, df=5, span=0.3, min.n=400, method.bin="CoxReid", method.trend="spline", trace=0, AveLogCPM=NULL, ...)
 #	Estimate common dispersion in bins based on AveLogCPM,
 #	then fit a curve through the dispersions
 #	Davis McCarthy, Gordon Smyth
