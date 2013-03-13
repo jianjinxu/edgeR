@@ -8,7 +8,7 @@ Estimate the abundance-dispersion trend by computing the common dispersion for b
 }
 
 \usage{
-dispBinTrend(y, design=NULL, offset=NULL, df = 5, span=2/3, min.n=400, method.bin="CoxReid",
+dispBinTrend(y, design=NULL, offset=NULL, df = 5, span=0.3, min.n=400, method.bin="CoxReid",
           method.trend="spline", trace=0, AveLogCPM=NULL, \dots)
 }
 

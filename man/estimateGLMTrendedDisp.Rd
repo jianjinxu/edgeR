@@ -10,8 +10,8 @@ Estimates the abundance-dispersion trend by Cox-Reid approximate profile likelih
 }
 
 \usage{
-\S3method{estimateGLMTrendedDisp}{DGEList}(y, design=NULL, method="auto", ...)
-\S3method{estimateGLMTrendedDisp}{default}(y, design=NULL, offset=NULL, AveLogCPM=NULL, method="auto",  ...)
+\S3method{estimateGLMTrendedDisp}{DGEList}(y, design=NULL, offset=NULL, AveLogCPM=NULL, method="auto", ...)
+\S3method{estimateGLMTrendedDisp}{default}(y, design=NULL, offset=NULL, AveLogCPM=NULL, method="auto", ...)
 }
 
 \arguments{ 

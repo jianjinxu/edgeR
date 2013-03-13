@@ -1,22 +1,28 @@
-# Created March 2011. Last modified 11 March 2013.
+# Created March 2011. Last modified 13 March 2013.
 
 estimateGLMTagwiseDisp <- function(y, ...) 
 UseMethod("estimateGLMTagwiseDisp")
 
-estimateGLMTagwiseDisp.DGEList <- function(y, design=NULL, dispersion=NULL, prior.df=10, trend=!is.null(y$trended.dispersion), span=NULL, ...)
+estimateGLMTagwiseDisp.DGEList <- function(y, design=NULL, offset=NULL, dispersion=NULL, prior.df=10, trend=!is.null(y$trended.dispersion), span=NULL, AveLogCPM=NULL, ...)
 {
+#	If provided as arguments, offset and AveLogCPM over-rule the values stored in y
+	if(!is.null(AveLogCPM)) y$AveLogCPM <- AveLogCPM
+	if(is.null(y$AveLogCPM)) y$AveLogCPM <- aveLogCPM(y)
+	if(!is.null(offset)) y$offset <- expandAsMatrix(offset,dim(y))
+
+#	Find appropriate dispersion
 	if(trend) {
 		if(is.null(dispersion)) dispersion <- y$trended.dispersion
 		if(is.null(dispersion)) stop("No trended.dispersion found in data object. Run estimateGLMTrendedDisp first.")
-		if(is.null(y$AveLogCPM)) y$AveLogCPM <- aveLogCPM(y)
 	} else {
 		if(is.null(dispersion)) dispersion <- y$common.dispersion
 		if(is.null(dispersion)) stop("No common.dispersion found in data object. Run estimateGLMCommonDisp first.")
 	}
-	out <- estimateGLMTagwiseDisp(y=y$counts, design=design, offset=getOffset(y), dispersion=dispersion, trend=trend, prior.df=prior.df, AveLogCPM=y$AveLogCPM, ...)
+
+	d <- estimateGLMTagwiseDisp(y=y$counts, design=design, offset=getOffset(y), dispersion=dispersion, trend=trend, prior.df=prior.df, AveLogCPM=y$AveLogCPM, ...)
 	y$prior.df <- prior.df
-	y$span <- out$span
-	y$tagwise.dispersion <- out$tagwise.dispersion
+	y$span <- d$span
+	y$tagwise.dispersion <- d$tagwise.dispersion
 	y
 }
 

@@ -1,17 +1,21 @@
 #  Last modified 11 March 2013
 
-estimateGLMTrendedDisp <- function(y, ...) 
+estimateGLMTrendedDisp <- function(y, design=NULL, offset=NULL, AveLogCPM=NULL, method="auto", ...) 
 UseMethod("estimateGLMTrendedDisp")
 
-estimateGLMTrendedDisp.DGEList <- function(y, design=NULL, method="auto", ...)
+estimateGLMTrendedDisp.DGEList <- function(y, design=NULL, offset=NULL, AveLogCPM=NULL, method="auto", ...)
 {
+#	If provided as arguments, offset and AveLogCPM over-rule the values stored in y
+	if(!is.null(AveLogCPM)) y$AveLogCPM <- AveLogCPM
 	if(is.null(y$AveLogCPM)) y$AveLogCPM <- aveLogCPM(y)
+	if(!is.null(offset)) y$offset <- expandAsMatrix(offset,dim(y))
+
 	d <- estimateGLMTrendedDisp(y=y$counts, design=design, offset=getOffset(y), AveLogCPM=y$AveLogCPM, method=method, ...)
 	y$trended.dispersion <- d$dispersion
+	y$trend.method <- d$trend.method
 	y$bin.dispersion <- d$bin.dispersion
 	y$bin.AveLogCPM <- d$bin.AveLogCPM
 	y$design <- d$design
-	y$trend.method <- d$trend.method
 	y
 }
 

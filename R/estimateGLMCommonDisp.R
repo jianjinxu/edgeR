@@ -1,13 +1,18 @@
-#  Last modified 27 Oct 2012
+#  Last modified 13 March 2013
 
-estimateGLMCommonDisp <- function(y, ...) 
+estimateGLMCommonDisp <- function(y, design=NULL, offset=NULL, method="CoxReid", subset=10000, AveLogCPM=NULL, verbose=FALSE, ...) 
 UseMethod("estimateGLMCommonDisp")
 
-estimateGLMCommonDisp.DGEList <- function(y, design=NULL, method="CoxReid", subset=10000, verbose=FALSE, ...)
+estimateGLMCommonDisp.DGEList <- function(y, design=NULL, offset=NULL, method="CoxReid", subset=10000, AveLogCPM=NULL, verbose=FALSE, ...)
 {
+#	If provided as arguments, offset and AveLogCPM over-rule the values stored in y
+	if(!is.null(AveLogCPM)) y$AveLogCPM <- AveLogCPM
 	if(is.null(y$AveLogCPM)) y$AveLogCPM <- aveLogCPM(y)
+	if(!is.null(offset)) y$offset <- expandAsMatrix(offset,dim(y))
+
 	disp <- estimateGLMCommonDisp(y=y$counts, design=design, offset=getOffset(y), method=method, subset=subset, AveLogCPM=y$AveLogCPM, verbose=verbose, ...)
 	y$common.dispersion <- disp
+	y$design <- design
 	y
 }
 
