@@ -44,6 +44,7 @@ Rows correspond to the alternative hypotheses mixed, up or down.}
 
 
 \code{mroast.DGEList} produces a data.frame with a row for each set and the following columns:
+	\item{NGenes}{number of genes in each gene set}
 	\item{PropDown}{proportion of genes in set with \code{z < -sqrt(2)}}
 	\item{PropUp}{proportion of genes in set with \code{z > sqrt(2)}}
 	\item{Direction}{direction of change}

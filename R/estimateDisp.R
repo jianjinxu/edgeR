@@ -15,7 +15,7 @@ estimateDisp <- function(y, design=NULL, offset=NULL, prior.df=NULL, trend.metho
 	ntags <- nrow(y$counts)
 	nlibs <- ncol(y$counts)
 
-	## Spline points
+	# Spline points
 	spline.pts <- seq(from=grid.range[1],to=grid.range[2],length=grid.length)
 	spline.disp <- 0.1 * 2^spline.pts
 	grid.vals <- spline.disp/(1+spline.disp)
@@ -26,15 +26,14 @@ estimateDisp <- function(y, design=NULL, offset=NULL, prior.df=NULL, trend.metho
 	offset <- expandAsMatrix(offset, dim(y))
 
 
-	### Classic edgeR
+	# Classic edgeR
 	if(is.null(design)){
-
+		design <- model.matrix(~group)
 		if( all(tabulate(group)<=1) ) {
 			warning("There is no replication, setting dispersion to NA.")
 			y$common.dispersion <- NA
 			return(y)
 		}
-		
 		pseudo.obj <- y
 
 		q2q.out <- equalizeLibSizes(y, dispersion=0.01)
@@ -50,26 +49,8 @@ estimateDisp <- function(y, design=NULL, offset=NULL, prior.df=NULL, trend.metho
 	
 		for(j in 1:grid.length) for(i in 1:length(ysplit)) 
 			l0[,j] <- condLogLikDerDelta(ysplit[[i]], grid.vals[j], der=0) + l0[,j]
-
-		ngroups <- length(unique(group))
-
-		if(is.null(prior.df)) prior.df <- 10
-		prior.n <- prior.df/(nlibs-ngroups)
-
-		out <- WLEB(theta=spline.pts, loglik=l0, prior.n=prior.n, covariate=AveLogCPM, 
-			trend.method=trend.method, span=span)
-		
-		y$common.dispersion <- 0.1 * 2^out$overall
-		y$trended.dispersion <- 0.1 * 2^out$trend
-		y$trend.method <- trend.method
-		y$span <- out$span
-		y$tagwise.dispersion <- 0.1 * 2^out$individual
-		y$AveLogCPM <- AveLogCPM
-		y$prior.df <- prior.df
-		y$prior.n <- prior.n
-	} 
-
-	### GLM edgeR
+	}
+	# GLM edgeR
 	else {
 		design <- as.matrix(design)
 		if(ncol(design) >= ncol(y$counts)) {
@@ -77,77 +58,75 @@ estimateDisp <- function(y, design=NULL, offset=NULL, prior.df=NULL, trend.metho
 			y$common.dispersion <- NA
 			return(y)
 		}
-
 		for(i in 1:grid.length)
 			l0[,i] <- adjustedProfileLik(spline.disp[i], y=y$counts, design=design, offset=offset)
 
-		ncoefs <- ncol(design)
+	}
 
-		out.1 <- WLEB(theta=spline.pts, loglik=l0, covariate=AveLogCPM, 
-			trend.method=trend.method, span=span, individual=FALSE, m0.out=TRUE)
+	out.1 <- WLEB(theta=spline.pts, loglik=l0, covariate=AveLogCPM, trend.method=trend.method, span=span, individual=FALSE, m0.out=TRUE)
 
-		y$common.dispersion <- 0.1 * 2^out.1$overall
-		y$trended.dispersion <- 0.1 * 2^out.1$trend
-		y$AveLogCPM <- AveLogCPM
-		y$trend.method <- trend.method
-		y$span <- out.1$span
+	y$common.dispersion <- 0.1 * 2^out.1$overall
+	y$trended.dispersion <- 0.1 * 2^out.1$trend
+	y$trend.method <- trend.method
+	y$AveLogCPM <- AveLogCPM
+	y$span <- out.1$span
 
-		### Calculate prior.df
-		if(is.null(prior.df)){
-			glmfit <- glmFit(y, design, dispersion=y$trended.dispersion, prior.count=0)
+	# Calculate prior.df
+	if(is.null(prior.df)){
+		glmfit <- glmFit(y, design, dispersion=y$trended.dispersion, prior.count=0)
 
-			# Residual deviances
-			df.residual <- glmfit$df.residual
+		# Residual deviances
+		df.residual <- glmfit$df.residual
 
-			# Adjust df.residual for fitted values at zero
-			zerofit <- (glmfit$fitted.values < 1e-14)
-			Q <- qr.Q(qr(glmfit$design))
-			h <- rowSums(Q^2)
-			dffromzeros <- zerofit %*% (1-h)
-			df.residual <- drop(round(df.residual-dffromzeros))
+		# Adjust df.residual for fitted values at zero
+		zerofit <- (glmfit$fitted.values < 1e-14)
+		Q <- qr.Q(qr(glmfit$design))
+		h <- rowSums(Q^2)
+		dffromzeros <- zerofit %*% (1-h)
+		df.residual <- drop(round(df.residual-dffromzeros))
 
-			# Empirical Bayes squeezing of the quasi-likelihood variance factors
-			s2 <- glmfit$deviance / df.residual
-			s2[df.residual==0] <- 0
-			s2 <- pmax(s2,0)
-			s2.fit <- squeezeVar(s2, df=df.residual, covariate=AveLogCPM, robust=robust, winsor.tail.p=winsor.tail.p)
+		# Empirical Bayes squeezing of the quasi-likelihood variance factors
+		s2 <- glmfit$deviance / df.residual
+		s2[df.residual==0] <- 0
+		s2 <- pmax(s2,0)
+		s2.fit <- squeezeVar(s2, df=df.residual, covariate=AveLogCPM, robust=robust, winsor.tail.p=winsor.tail.p)
 
-			prior.df <- s2.fit$df.prior
-		}
-		prior.n <- prior.df/(nlibs-ncoefs)
+		prior.df <- s2.fit$df.prior
+	}
+	ncoefs <- ncol(design)
+	prior.n <- prior.df/(nlibs-ncoefs)
 			
-		# Protecting against infinite prior.n's; otherwise, interpolation of a matrix of Inf values will give the smallest value.
-
-		if(!robust){
-		# scalar prior.n
-			if (prior.n > 1e6) { 
-				if (trend.method!='none') { 
-					y$tagwise.dispersion <- y$trended.dispersion
-				} else {
-					y$tagwise.dispersion <- rep(y$common.dispersion, ntags)
-				}
-			} else {
-				out.2 <- WLEB(theta=spline.pts, loglik=l0, prior.n=prior.n, covariate=AveLogCPM, 
-					trend.method=trend.method, span=span, overall=FALSE, trend=FALSE, m0=out.1$shared.loglik)
-				y$tagwise.dispersion <- 0.1 * 2^out.2$individual	
-			}
-
-		} else {
-		# vector prior.n
-			i <- prior.n > 1e6
-			y$tagwise.dispersion <- rep(y$common.dispersion, ntags)
+	# Protecting against infinite prior.n's; otherwise, interpolation of a matrix of Inf values will give the smallest value.
+	if(!robust){
+	# scalar prior.n
+		if (prior.n > 1e6) { 
 			if (trend.method!='none') { 
-				y$tagwise.dispersion[i] <- y$trended.dispersion[i]
-			} 
+				y$tagwise.dispersion <- y$trended.dispersion
+			} else {
+				y$tagwise.dispersion <- rep(y$common.dispersion, ntags)
+			}
+		} else {
+			out.2 <- WLEB(theta=spline.pts, loglik=l0, prior.n=prior.n, covariate=AveLogCPM, 
+				trend.method=trend.method, span=span, overall=FALSE, trend=FALSE, m0=out.1$shared.loglik)
+			y$tagwise.dispersion <- 0.1 * 2^out.2$individual	
+		}
+
+	} else {
+	# vector prior.n
+		i <- prior.n > 1e6
+		y$tagwise.dispersion <- rep(y$common.dispersion, ntags)
+		if (trend.method!='none') { 
+			y$tagwise.dispersion[i] <- y$trended.dispersion[i]
+		} 
+		if(sum(!i)!=0){
+		# Make sure that there are still some genes with finite prior.df
 			out.2 <- WLEB(theta=spline.pts, loglik=l0[!i,], prior.n=prior.n[!i], covariate=AveLogCPM[!i], 
 				trend.method=trend.method, span=span, overall=FALSE, trend=FALSE, m0=out.1$shared.loglik[!i,])
 			y$tagwise.dispersion[!i] <- 0.1 * 2^out.2$individual	
 		}
-
-		y$prior.df <- prior.df
-		y$prior.n <- prior.n
 	}
-
+	y$prior.df <- prior.df
+	y$prior.n <- prior.n
 	y
 }
 

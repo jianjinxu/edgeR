@@ -30,7 +30,7 @@ aveLogCPM.default <- function(y,lib.size=NULL,prior.count=2,dispersion=0.05, ...
 	y <- as.matrix(y)
 	if(is.null(lib.size)) lib.size <- colSums(y)
 	prior.count.scaled <- lib.size/mean(lib.size) * prior.count
-	offset <- log(lib.size+prior.count.scaled)
+	offset <- log(lib.size+2*prior.count.scaled)
 	abundance <- mglmOneGroup(t(t(y)+prior.count.scaled),dispersion=dispersion,offset=offset)
 	(abundance+log(1e6)) / log(2)
 }

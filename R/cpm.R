@@ -24,7 +24,7 @@ cpm.default <- function(x, lib.size=NULL, log=FALSE, prior.count=0.25, ...)
 	}
 	lib.size <- 1e-6*lib.size
 	if(log)
-		log2(t( (t(x)+prior.count.scaled) / lib.size ))
+		log2(t( (t(x)+2*prior.count.scaled) / lib.size ))
 	else
 		t(t(x)/lib.size)
 }
