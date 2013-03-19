@@ -111,8 +111,10 @@ McCarthy, DJ, Chen, Y, Smyth, GK (2012). Differential expression analysis of mul
 \emph{Nucleic Acids Research} 40, 4288-4297.
 \url{http://nar.oxfordjournals.org/content/40/10/4288}
 
-Lund, SP, Nettleton, D, McCarthy, DJ, Smyth, GK (2012). Detecting differential expression in RNA-sequence data using quasi-likelihood with shrunken dispersion estimates.
-\emph{Statistical Applications in Genetics and Molecular Biology}. (Accepted 31 July 2012)
+Lund, SP, Nettleton, D, McCarthy, DJ, and Smyth, GK (2012).
+Detecting differential expression in RNA-sequence data using quasi-likelihood with shrunken dispersion estimates.
+\emph{Statistical Applications in Genetics and Molecular Biology} Volume 11, Issue 5, Article 8.
+\url{http://www.statsci.org/smyth/pubs/121013-QuasiSeqPreprint.pdf}
 }
 
 \author{Davis McCarthy and Gordon Smyth}
