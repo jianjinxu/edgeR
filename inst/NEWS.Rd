@@ -2,24 +2,47 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
-\section{Version 3.1.6}{\itemize{
+\section{Version 3.2.0}{\itemize{
+\item
+New function aveLogCPM(). This is now used by all functions in the package to set AveLogCPM, which is now the standard measure of abundance. 
+The value for AveLogCPM is now computed just once, and not updated when the dispersion is re-estimated. The use of the old abundance measure is phased out.
+
+\item
+glmFit() now preserves the AveLogCPM vector found in the DGEList
+object rather than recomputing it.
+
 \item
 Changing the aveLogCPM() function so that it spreads out the low
-abundance values more.  It now gives negative as well as positive
-values.
+abundance values more.
 
 \item
-The value for AveLogCPM is now computed just once, and not updated
-when the dispersion is re-estimated.  This serves now as a standard
-measure of abundance for the purpose of trends and plots.  The use
-of the old abundance measure is phased out.
-}}
+The argument prior.count.total has been changed to prior.count
+throughout the package, and now refers to the average prior.count
+per observation rather than the total prior count across a transcript.
 
-\section{Version 3.1.5}{\itemize{
 \item
-The default method of plotMDS() for DGEList objects has changed.  The
-default method is now to convert to moderated logCPM values and call
-the plotMDS() method for numeric matrices.  The old method based on
+Adding prior.count=0 to the calls to glmFit() in several functions, to avoid unnecessary calculations of predicted fold-changes.
+The change saves nearly half of computation time for glm dispersion estimation.
+
+\item
+Changing lib.size prior.count adjustment in aveLogCPM() and cpm().
+
+\item
+New functions estimateDisp() and WLEB() to automate the estimation
+of common, trended and tagwise dispersions, for either glms or for
+classic edgeR. These functions also incorporate automatic estimation of the prior
+degrees of freedom.
+
+\item
+New function rpkm() which computes reads per kilobase per million (RPKM) values.
+
+\item
+The gene set test functions roast(), mroast() and camera(), defined in the limma package,
+now have methods defined for DGEList data objects. This facilitates gene set testing and pathway analysis of expression
+profiles within edgeR.
+
+\item
+The default method of plotMDS() for DGEList objects has changed. The old method based on
 BCV-distances is available by setting method="BCV".
 
 \item
@@ -28,89 +51,34 @@ or a fitted glm object.  It can also now produce a plot of the
 residual deviances and shrunk deviances versus logCPM.
 
 \item
-estimateDisp() now has a robust option for estimating the prior degrees
-of freedom and the tagwise dispersion.
-
-\item
 New option method="none" for calcNormFactors().
 
 \item
-glmFit() now preserves the AveLogCPM vector found in the DGEList
-object rather than recomputing it.
-}}
-
-
-\section{Version 3.1.4}{\itemize{
-\item
-The gene set test functions roast(), mroast() and camera(), defined in the limma package,
-now have methods defined for DGEList data objects.
-This facilitates gene set testing and pathway analysis of expression
-profiles within edgeR.
-
-\item
-New functions estimateDisp() and WLEB() to automate the estimation
-of common, trended and tagwise dispersions, for either glms or for
-classic edgeR.
-This function also incorporate automatic estimation of the prior
-degrees of freedom.
+Reduce default span for dispBinTrend().
 
 \item
 glmLRT now permits contrast arg to be a matrix with multiple columns, making its behavior analogous to the coef argument.
 
 \item
-The argument prior.count.total has been changed to prior.count
-throughout the package, and now refers to the average prior.count
-per observation rather than the total prior count across a transcript.
-
-\item
 Various improvements to internal C++ code.
 
 \item
-Bug fix to subsetting for DGEGLM objects.
-
-\item
-Bug fix to plotMDS.DGEList to make consistent use of norm.factors.
-
-\item
 Functions binCMLDispersion() bin.dispersion() removed.
-}}
-
-
-\section{Version 3.1.3}{\itemize{
-\item
-New function aveLogCPM.
-This is now used by all functions in the package to set AveLogCPM, which is now the standard measure of abundance.
 
 \item
-Bug fix to subsetting for DGEGLM objects.
-}}
+In glmFit(), the maximum number of iterations in the call to mglmLevenberg() is reduced to 250.
 
-
-\section{Version 3.1.2}{\itemize{
 \item
 Include a code example in Section 2.9 (item 2) of the User's Guide about how to pre-specify the dispersion value.
 
 \item
-Adding prior.count.total=0 to the calls to glmFit() in several functions, to avoid unnecessary calculations of predicted fold-changes.
-(The change saves nearly half of computation time for glm dispersion estimation.)
+New section on between and with subject designs in User's Guide.
 
 \item
-In glmFit(), the maximum number of iterations in the call to mglmLevenberg() is reduced to 250.
-Previously the number of iterations was so large that the Levenberg damping parameter could become exactly zero due to floating point underflow,
-making an infinite loop possible in rare pathological cases.
+Bug fix to subsetting for DGEGLM objects.
 
 \item
 Bug fix to plotMDS.DGEList to make consistent use of norm.factors.
-}}
-
-
-\section{Version 3.1.1}{\itemize{
-\item
-New function rpkm().
-
-\item
-New section on between and with subject designs in User's Guide.
-Correct a number of typos in Section 3.4 of the User's Guide.
 
 \item
 Bug fix to plotBCV() when logCPM is not found in data object.
