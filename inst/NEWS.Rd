@@ -28,6 +28,9 @@ The change saves nearly half of computation time for glm dispersion estimation.
 Changing lib.size prior.count adjustment in aveLogCPM() and cpm().
 
 \item
+F-test is now an option in glmLRT(). The default is still Chi-square test.
+
+\item
 New functions estimateDisp() and WLEB() to automate the estimation
 of common, trended and tagwise dispersions, for either glms or for
 classic edgeR. These functions also incorporate automatic estimation of the prior
