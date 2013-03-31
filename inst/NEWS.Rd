@@ -3,88 +3,76 @@
 \encoding{UTF-8}
 
 \section{Version 3.2.0}{\itemize{
-\item
-New function aveLogCPM(). This is now used by all functions in the package to set AveLogCPM, which is now the standard measure of abundance. 
-The value for AveLogCPM is now computed just once, and not updated when the dispersion is re-estimated. The use of the old abundance measure is phased out.
 
 \item
-glmFit() now preserves the AveLogCPM vector found in the DGEList
-object rather than recomputing it.
-
-\item
-Changing the aveLogCPM() function so that it spreads out the low
-abundance values more.
-
-\item
-The argument prior.count.total has been changed to prior.count
-throughout the package, and now refers to the average prior.count
-per observation rather than the total prior count across a transcript.
-
-\item
-Adding prior.count=0 to the calls to glmFit() in several functions, to avoid unnecessary calculations of predicted fold-changes.
-The change saves nearly half of computation time for glm dispersion estimation.
-
-\item
-Changing lib.size prior.count adjustment in aveLogCPM() and cpm().
-
-\item
-F-test is now an option in glmLRT(). The default is still Chi-square test.
+The User's Guide has a new section on between and within subject designs and a new case study on RNA-seq profiling of unrelated Nigerian individuals.
+Section 2.9 (item 2) now gives a code example of how to pre-specify the dispersion value.
 
 \item
 New functions estimateDisp() and WLEB() to automate the estimation
-of common, trended and tagwise dispersions, for either glms or for
-classic edgeR. These functions also incorporate automatic estimation of the prior
-degrees of freedom.
+of common, trended and tagwise dispersions.
+The function estimateDisp() provides a simpler alternative pipeline and in principle replaces all the other dispersion estimation functions, for both glms and for classic edgeR.
+It can also incorporate automatic estimation of the prior degrees of freedom, and can do this in a robust fashion.
 
 \item
-New function rpkm() which computes reads per kilobase per million (RPKM) values.
+glmLRT() now permits the contrast argument to be a matrix with multiple columns, making the treatment of this argument analogous to that of the coef argument.
 
 \item
-The gene set test functions roast(), mroast() and camera(), defined in the limma package,
-now have methods defined for DGEList data objects. This facilitates gene set testing and pathway analysis of expression
-profiles within edgeR.
+glmLRT() now has a new F-test option.
+This option takes into account the uncertainty with which the dispersion is estimated and is more conservative than the default chi-square test.
 
 \item
-The default method of plotMDS() for DGEList objects has changed. The old method based on
-BCV-distances is available by setting method="BCV".
+glmQLFTest() has a number of important improvements.
+It now has a simpler alternative calling sequence: it can take either a fitted model object as before, or it can take a DGEList object and design matrix and do the model fit itself.
+If provided with a fitted model object, it now checks whether the dispersion is of a suitable type (common or trended).
+It now optionally produces a plot of the raw and shrunk residual mean deviances versus AveLogCPM.
+It now has the option of robustifying the empirical Bayes step.
+It now has a more careful calculation of residual df that takes special account of cases where all replicates in a group are identically zero.
 
 \item
-glmQLFTest() can now take either a DGEList object and design matrix
-or a fitted glm object.  It can also now produce a plot of the
-residual deviances and shrunk deviances versus logCPM.
+The gene set test functions roast(), mroast() and camera() now have methods defined for DGEList data objects.
+This facilitates gene set testing and pathway analysis of expression profiles within edgeR.
+
+\item
+The default method of plotMDS() for DGEList objects has changed.
+The new default forms log-counts-per-million and computes Euclidean distances.
+The old method based on BCV-distances is available by setting method="BCV".
+The annotation of the plot axes has been improved so that the distance method used is apparent from the plot.
+
+\item
+The argument prior.count.total used for shrinking log-fold-changes has been changed to prior.count in various functions throughout the package, and now refers to the average prior.count per observation rather than the total prior count across a transcript.
+The treatment of prior.counts has also been changed very slightly in cpm() when log=TRUE.
+
+\item
+New function aveLogCPM() to compute the average log count per million for each transcript across all libraries.
+This is now used by all functions in the package to set AveLogCPM, which is now the standard measure of abundance. 
+The value for AveLogCPM is now computed just once, and not updated when the dispersion is estimated or when a linear model is fitted.
+glmFit() now preserves the AveLogCPM vector found in the DGEList object rather than recomputing it.
+The use of the old abundance measure is being phased out.
+
+\item
+The glm dispersion estimation functions are now much faster.
+
+\item
+New function rpkm() to compute reads per kilobase per million (RPKM).
 
 \item
 New option method="none" for calcNormFactors().
 
 \item
-Reduce default span for dispBinTrend().
-
-\item
-glmLRT now permits contrast arg to be a matrix with multiple columns, making its behavior analogous to the coef argument.
+The default span used by dispBinTrend() has been reduced.
 
 \item
 Various improvements to internal C++ code.
 
 \item
-Functions binCMLDispersion() bin.dispersion() removed.
-
-\item
-In glmFit(), the maximum number of iterations in the call to mglmLevenberg() is reduced to 250.
-
-\item
-Include a code example in Section 2.9 (item 2) of the User's Guide about how to pre-specify the dispersion value.
-
-\item
-New section on between and with subject designs in User's Guide.
+Functions binCMLDispersion() and bin.dispersion() have been removed as obsolete.
 
 \item
 Bug fix to subsetting for DGEGLM objects.
 
 \item
 Bug fix to plotMDS.DGEList to make consistent use of norm.factors.
-
-\item
-Bug fix to plotBCV() when logCPM is not found in data object.
 }}
 
 
