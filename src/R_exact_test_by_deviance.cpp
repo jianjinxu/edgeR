@@ -132,7 +132,7 @@ SEXP R_exact_test_by_deviance(SEXP sums_1, SEXP sums_2, SEXP n_1, SEXP n_2, SEXP
     	}
 	} catch (std::exception& e) { 
 		UNPROTECT(1);
-		throw e;
+		throw;
 	}
 
    	UNPROTECT(1);

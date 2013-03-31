@@ -111,16 +111,14 @@ SEXP R_loess_by_col(SEXP x, SEXP y, SEXP n_cols, SEXP s) try {
          	 * So, the computation should work from [0, 3]. There's no need to worry about the extra 'C' as it
          	 * will have weight zero.
          	 */
-			int m=frame_end;
-			while (m >=0) {
+			for (int m=frame_end; m>=0; --m) { 
             	const double rel_dist=(max_dist > low_value ? std::abs(x_ptr[m]-cur_point)/max_dist : 0);
             	const double weight=std::pow(1-std::pow(rel_dist, 3.0), 3.0);
-				if (weight < 0) { break; }
+				if (weight < 0) { continue; }
             	total_weight+=weight;            
             	
             	for (int i=0; i<ncols; ++i) { f_ptrs[i][cur_p]+=weight*y_ptrs[i][m]; }
             	if (m==cur_p) { out_leverage=weight; }
-				--m;
         	}
 
         	// Normalizing by the total weight.
@@ -129,7 +127,7 @@ SEXP R_loess_by_col(SEXP x, SEXP y, SEXP n_cols, SEXP s) try {
     	}
 	} catch (std::exception& e) {
 		UNPROTECT(1);
-		throw e;
+		throw;
 	}
 	
     UNPROTECT(1);

@@ -26,7 +26,7 @@ SEXP R_maximize_interpolant(SEXP spline_pts, SEXP likelihoods) try {
     	}
 	} catch (std::exception &e) {
 		UNPROTECT(1);
-		throw e;
+		throw;
 	}
    	UNPROTECT(1);
     return(output);    

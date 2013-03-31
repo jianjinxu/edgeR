@@ -53,7 +53,7 @@ SEXP R_one_group (SEXP nt, SEXP nl, SEXP y, SEXP disp, SEXP offsets, SEXP max_it
     	}
 	} catch (std::exception& e) { 
 		UNPROTECT(1);
-		throw e;
+		throw; 
 	}
 
 	// Returning everything as a list.

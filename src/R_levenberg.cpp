@@ -70,7 +70,7 @@ SEXP R_levenberg (SEXP nlib, SEXP ntag, SEXP design, SEXP counts, SEXP disp, SEX
     	}
 	} catch (std::exception& e) {
 		UNPROTECT(1);
-		throw e;
+		throw;
 	}
 
     UNPROTECT(1);

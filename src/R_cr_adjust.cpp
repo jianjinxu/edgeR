@@ -38,7 +38,7 @@ SEXP R_cr_adjust (SEXP w, SEXP x, SEXP nlibs) try {
     	} 
 	} catch (std::exception& e) {
 		UNPROTECT(1);
-		throw e;
+		throw; 
 	}
 
     UNPROTECT(1);

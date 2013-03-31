@@ -90,7 +90,7 @@ SEXP R_simple_good_turing (SEXP obs, SEXP freq, SEXP conf) try {
 		for (long i=0; i<rows; ++i) { out_ptr[i]*=factor; }
 	} catch (std::exception& e) {
 		UNPROTECT(1);
-		throw e;
+		throw;
 	} 
 
 	UNPROTECT(1);
