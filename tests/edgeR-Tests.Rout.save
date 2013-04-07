@@ -1,7 +1,6 @@
 
-R version 2.15.2 (2012-10-26) -- "Trick or Treat"
-Copyright (C) 2012 The R Foundation for Statistical Computing
-ISBN 3-900051-07-0
+R version 3.0.0 (2013-04-03) -- "Masked Marvel"
+Copyright (C) 2013 The R Foundation for Statistical Computing
 Platform: i386-w64-mingw32/i386 (32-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
@@ -310,7 +309,6 @@ Loading required package: splines
 > colnames(y) <- c("x0","x1","x2")
 > rownames(y) <- paste("Gene",1:ntags,sep="")
 > d <- DGEList(y)
-Calculating library sizes from column totals.
 > d <- calcNormFactors(d)
 > fit <- glmFit(d, design, dispersion=dispersion.true, prior.count=0.5/3)
 > results <- glmLRT(fit, coef=2)
@@ -548,8 +546,6 @@ Coefficient:  LR test of 2 contrasts
 > z = matrix(c(2,0,4,6,4,3,7,1,1,0,1,1,0,3,1,2,0,1,2,1,0,3,1,0), 8, 3)
 > gz = c(1,2,2,2,2,2,2,2)
 > spliceVariants(DGEList(counts = z, group = c(1,2,2)), gz)
-Calculating library sizes from column totals.
-Calculating library sizes from column totals.
 An object of class "DGEExact"
 $table
   logFC   logCPM       LR     PValue
@@ -612,4 +608,4 @@ $n0
 > 
 > proc.time()
    user  system elapsed 
-   4.35    0.07    4.41 
+   4.30    0.04    4.35 

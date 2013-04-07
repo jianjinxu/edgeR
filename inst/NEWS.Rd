@@ -2,6 +2,11 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.3.1}{\itemize{
+\item
+Updates to DGEList() and DGEList-class documentation.
+}}
+
 \section{Version 3.2.0}{\itemize{
 
 \item

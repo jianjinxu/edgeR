@@ -38,8 +38,7 @@ glmQLFTest <- function(y, design=NULL, dispersion=NULL, coef=ncol(glmfit$design)
 	s2 <- pmax(s2,0)
 	if(abundance.trend) {
 		if(is.null(A)) A <- out$AveLogCPM
-		if(is.null(A)) A <- log1p(exp(out$abundance+log(1e6)))
-		if(is.null(A)) A <- aveLogCPM(glmfit$counts,offset=glmfit$offset)
+		if(is.null(A)) A <- aveLogCPM(glmfit$counts)
 		if(is.null(out$AveLogCPM)) out$AveLogCPM <- A
 	} else {
 		A <- NULL

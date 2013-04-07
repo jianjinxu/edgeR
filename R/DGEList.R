@@ -1,28 +1,19 @@
-DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, norm.factors=NULL, group=rep.int(1,ncol(counts)), genes=NULL, remove.zeros=FALSE) 
+DGEList <- function(counts=matrix(0,0,0), lib.size=colSums(counts), norm.factors=rep(1,ncol(counts)), group=rep(1,ncol(counts)), genes=NULL, remove.zeros=FALSE) 
 #	Construct DGEList object from components, with some checking
-#	Last modified 18 June 2012
+#	Last modified 7 April June 2013
 {
 #	Check counts
 	counts <- as.matrix(counts)
 	nlib <- ncol(counts)
 	ntags <- nrow(counts)
 	if(nlib>0 && is.null(colnames(counts))) colnames(counts) <- paste("Sample",1:ncol(counts),sep="")
-	rn <- rownames(counts)
+	if(ntags>0 && is.null(rownames(counts))) rownames(counts) <- 1:ntags
 
 #	Check lib.size
-	if(is.null(lib.size)) {
-		lib.size <- colSums(counts)
-		message("Calculating library sizes from column totals.")
-	} else {
-		if(nlib != length(lib.size)) stop("Length of 'lib.size' must equal number of columns in 'counts'")
-	}
+	if(nlib != length(lib.size)) stop("Length of 'lib.size' must equal number of columns in 'counts'")
 
 #	Check norm.factors
-	if(is.null(norm.factors)) {
-		norm.factors <- rep(1,nlib)
-	} else {
-		if(nlib != length(norm.factors)) stop("Length of 'norm.factors' must equal number of columns in 'counts'")
-	}
+	if(nlib != length(norm.factors)) stop("Length of 'norm.factors' must equal number of columns in 'counts'")
 
 #	Check group
 	group <- as.factor(group)
@@ -34,8 +25,7 @@ DGEList <- function(counts=matrix(0,0,0), lib.size=NULL, norm.factors=NULL, grou
 
 	if(!is.null(genes)) {
 		genes <- as.data.frame(genes, stringsAsFactors=FALSE)
-		if(nrow(genes) != ntags) stop("counts and genes have different nrows")
-		if(!is.null(rn)) rownames(genes) <- rn
+		if(nrow(genes) != ntags) stop("counts and genes have different numbers of rows")
 		x$genes <- genes
 	}
 
