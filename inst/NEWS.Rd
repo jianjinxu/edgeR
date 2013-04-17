@@ -2,6 +2,20 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.3.2}{\itemize{
+\item
+Update to cutWithMinN() so that it does not fail even when there are many repeated x values.
+
+\item
+New computation for nbins in dispBinTrend.  Now changes more smoothly with the number of genes.
+
+\item
+Fixes to calcNormFactors with method="TMM" so that it takes account of lib.size and refCol if these are preset.
+
+\item
+Updates to class documentation.
+}}
+
 \section{Version 3.3.1}{\itemize{
 \item
 Updates to DGEList() and DGEList-class documentation.

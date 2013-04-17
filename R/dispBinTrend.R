@@ -1,4 +1,4 @@
-dispBinTrend <- function(y, design=NULL, offset=NULL, df=5, span=0.3, min.n=400, method.bin="CoxReid", method.trend="spline", trace=0, AveLogCPM=NULL, ...)
+dispBinTrend <- function(y, design=NULL, offset=NULL, df=5, span=0.3, min.n=400, method.bin="CoxReid", method.trend="spline", AveLogCPM=NULL, ...)
 #	Estimate common dispersion in bins based on AveLogCPM,
 #	then fit a curve through the dispersions
 #	Davis McCarthy, Gordon Smyth
@@ -32,8 +32,22 @@ dispBinTrend <- function(y, design=NULL, offset=NULL, df=5, span=0.3, min.n=400,
 #	Define bins of genes based on min.n in each bin
 #	All zero rows are marked as group==0
 	group <- as.numeric(pos)
-	nbins <- floor(npostags/min.n)
-	nbins <- min(max(nbins,1),1000)
+
+	if(npostags < 100)
+		nbins <- 1
+	else {
+		nbins <- floor(npostags^0.4)
+		nbins <- min(nbins,1000)
+		min.n <- min(min.n,floor(npostags/nbins))
+	}
+	if(min.n < 50) {
+		nbins <- floor(npostags/50)
+		min.n <- 50
+	}
+
+#	nbins <- floor(npostags/min.n)
+#	nbins <- min(max(nbins,1),1000)
+
 	if(nbins>1) group[pos] <- cutWithMinN(AveLogCPM[pos],intervals=nbins,min.n=min.n)$group
 
 #	Estimate dispersion in each bin

@@ -1,7 +1,7 @@
 calcNormFactors <- function(object, method=c("TMM","RLE","upperquartile","none"), refColumn=NULL, logratioTrim=.3, sumTrim=0.05, doWeighting=TRUE, Acutoff=-1e10, p=0.75)
 #	Scale normalization of RNA-Seq data.
 #	Mark Robinson.  Edits by Gordon Smyth.
-#	Created October 22 October 2009.  Last modified 24 Feb 2013.
+#	Created October 22 October 2009.  Last modified 16 Apr 2013.
 {
 #	Check object
 	if(is(object,"DGEList")) {
@@ -26,9 +26,16 @@ calcNormFactors <- function(object, method=c("TMM","RLE","upperquartile","none")
 	f <- switch(method,
 		TMM = {
 			f75 <- .calcFactorQuantile(data=x, lib.size=lib.size, p=0.75)
-			refColumn <- which.min(abs(f75-mean(f75)))
-			if(length(refColumn)==0) refColumn <- 1
-			apply(x,2,.calcFactorWeighted,ref=x[,refColumn], logratioTrim=logratioTrim, sumTrim=sumTrim, doWeighting=doWeighting, Acutoff=Acutoff)
+			if( is.null(refColumn) )
+                          refColumn <- which.min(abs(f75-mean(f75)))
+			if(length(refColumn)==0 | refColumn < 1 | refColumn > ncol(x)) refColumn <- 1
+                        f <- rep(NA,ncol(x))
+                        for(i in 1:ncol(x))
+                          f[i] <- .calcFactorWeighted(obs=x[,i],ref=x[,refColumn], libsize.obs=lib.size[i], 
+                                                      libsize.ref=lib.size[refColumn],
+                                                      logratioTrim=logratioTrim, sumTrim=sumTrim, 
+                                                      doWeighting=doWeighting, Acutoff=Acutoff)
+                        f
 		},
 		RLE = .calcFactorRLE(x)/lib.size,
 		upperquartile = .calcFactorQuantile(x,lib.size,p=p),
@@ -63,15 +70,16 @@ calcNormFactors <- function(object, method=c("TMM","RLE","upperquartile","none")
 #	f/exp(mean(log(f)))
 }
 
-.calcFactorWeighted <- function(obs, ref, logratioTrim=.3, sumTrim=0.05, doWeighting=TRUE, Acutoff=-1e10)
+.calcFactorWeighted <- function(obs, ref, libsize.obs=NULL, libsize.ref=NULL, logratioTrim=.3, sumTrim=0.05, doWeighting=TRUE, Acutoff=-1e10)
 {
 	if( all(obs==ref) ) return(1)
 
 	obs <- as.numeric(obs)
 	ref <- as.numeric(ref)
 
-	nO <- sum(obs)
-	nR <- sum(ref)
+	if( is.null(libsize.obs) ) nO <- sum(obs) else nO <- libsize.obs
+	if( is.null(libsize.ref) ) nR <- sum(ref) else nR <- libsize.ref
+
 	logR <- log2((obs/nO)/(ref/nR))			# log ratio of expression, accounting for library size
 	absE <- (log2(obs/nO) + log2(ref/nR))/2	# absolute expression
 	v <- (nO-obs)/nO/obs + (nR-ref)/nR/ref	 # estimated asymptotic variance
