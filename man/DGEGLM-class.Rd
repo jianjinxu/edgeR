@@ -5,47 +5,56 @@
 \title{Digital Gene Expression Generalized Linear Model results - class}
 
 \description{
-A simple list-based class for storing results of a GLM fit
-to each tag/gene in a DGE dataset.
+A list-based S4 class for storing results of a GLM fit to each gene in a DGE dataset.
 }
 
-\section{Slots/List Components}{
+\section{List Components}{
+For objects of this class, rows correspond to genomic features and columns to coefficients in the linear model.
+The genomic features are called genes, but in reality might correspond to transcripts, tags, exons etc.
+
 Objects of this class contain the following list components:
+\tabular{ll}{
+ \code{coefficients } \tab matrix containing the coefficients computed from fitting the model defined by the design matrix to each gene in the dataset.\cr
 
- \code{coefficients}: matrix containing the coefficients
-  computed from fitting the model defined by the design matrix to each gene/tag in the dataset.
+  \code{df.residual } \tab vector containing the residual degrees of freedom for the model fit to each gene in the dataset.\cr
 
-  \code{df.residual}: vector containing the residual degrees of freedom for the model fit to each tag/gene in the dataset.
+  \code{deviance } \tab vector giving the deviance from the model fit to each gene.\cr
 
-  \code{deviance}: vector giving the deviance from the model fit to each tag/gene.
+  \code{design } \tab design matrix for the full model from the likelihood ratio test.\cr
 
- \code{design}: design matrix for the full model from the likelihood
-  ratio test.
+  \code{offset } \tab scalar, vector or matrix of offset values to be included in the GLMs for each gene.\cr
 
-  \code{offset}: scalar, vector or matrix of offset values to be included in the GLMs for each tag/gene.
+  \code{samples } \tab data frame containing information about the samples comprising the dataset.\cr
 
-  \code{samples}: data frame containing information about the samples comprising the dataset.
+  \code{genes } \tab data frame containing information about the genes or tags for which we have DGE data (can be \code{NULL} if there is no information available).\cr
 
-  \code{genes}: data frame containing information about the genes or tags for which we have DGE data (can be \code{NULL} if there is no information available).
+  \code{dispersion } \tab scalar or vector providing the value of the dispersion parameter used in the negative binomial GLM for each gene.\cr
 
-  \code{dispersion}: scalar or vector providing the value of the dispersion parameter used in the negative binomial GLM for each tag/gene.
+  \code{lib.size } \tab vector providing the effective library size for each sample in the dataset.\cr
 
-  \code{lib.size}: vector providing the effective library size for each sample in the dataset.
+  \code{weights } \tab matrix of weights used in the GLM fitting for each gene.\cr
 
-  \code{weights}: matrix of weights used in the GLM fitting for each tag/gene.
+  \code{fitted.values } \tab the fitted (expected) values from the GLM for each gene.\cr
 
-  \code{fitted.values}: the fitted (expected) values--here they are counts--from the GLM for each tag/gene.
-
-  \code{abundance}: vector of gene/tag abundances (expression level), on the log2 scale, computed from the mean count for each gene/tag after scaling count by normalized library size.
-
+  \code{AveLogCPM } \tab numeric vector giving average log2 counts per million for each gene.
+}
 }
 
 \section{Methods}{
 This class inherits directly from class \code{list} so any operation appropriate for lists will work on objects of this class.
-\code{DGEGLM} objects also have a \code{show} method.
-}
 
-\author{Davis McCarthy}
+The dimensions, row names and column names of a \code{DGEGLM} object are defined by those of the dataset, see \code{\link{dim.DGEGLM}} or \code{\link{dimnames.DGEGLM}}.
+
+\code{DGEGLM} objects can be subsetted, see \code{\link{subsetting}}.
+
+\code{DGEGLM} objects also have a \code{show} method so that printing produces a compact summary of their contents.
+
+}
+\author{edgeR team. First created by Davis McCarthy.}
+
+\seealso{
+Other classes defined in edgeR are \code{\link{DGEList-class}}, \code{\link{DGEExact-class}}, \code{\link{DGELRT-class}}, \code{\link{TopTags-class}}
+}
 
 \keyword{classes}
 

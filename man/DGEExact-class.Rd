@@ -14,11 +14,11 @@ The genomic features are called genes, but in reality might correspond to transc
 
 Objects of this class contain the following list components:
 \tabular{ll}{
-  \code{table } \tab data frame containing the log-concentration (i.e. expression level), the log-fold change in expression between the two groups/conditions and the exact p-value for differential expression, for each tag.\cr
+  \code{table } \tab data frame containing columns for the log2-fold-change, \code{logFC}, the average log2-counts-per-million, \code{logCPM}, and the two-sided p-value \code{PValue}.\cr
   
   \code{comparison } \tab vector giving the two experimental groups/conditions being compared.\cr
   
-  \code{genes } \tab a data frame containing information about each transcript (can be \code{NULL}).\cr
+  \code{genes } \tab a data frame containing information about each gene (can be \code{NULL}).\cr
 }
 }
 

@@ -8,9 +8,11 @@ A list-based S4 class for storing read counts and associated information from di
 }
 
 \section{List Components}{
+For objects of this class, rows correspond to genomic features and columns to samples.
+The genomic features are called genes, but in reality might correspond to transcripts, tags, exons etc.
 Objects of this class contain the following essential list components:
 \tabular{ll}{
-  \code{counts } \tab numeric matrix of read counts, one row for each gene (or genomic feature) and one column for each sample (library).\cr
+  \code{counts } \tab numeric matrix of read counts, one row for each gene and one column for each sample.\cr
   
   \code{samples } \tab data.frame with a row for each sample and columns \code{group}, \code{lib.size} and \code{norm.factors} containing the group labels, library sizes and normalization factors.
   Other columns can be optionally added to give more detailed sample information.
@@ -31,7 +33,10 @@ Optional components include:
 }
 }
 
-\seealso{ \code{\link{DGEList}} }
+\seealso{
+\code{\link{DGEList}} constructs DGEList objects.
+Other classes defined in edgeR are \code{\link{DGEExact-class}}, \code{\link{DGEGLM-class}}, \code{\link{DGELRT-class}}, \code{\link{TopTags-class}}
+}
 
 \section{Methods}{
 This class inherits directly from class \code{list}, so \code{DGEList} objects can be manipulated as if they were ordinary lists.
