@@ -54,9 +54,10 @@ function(object, i, j, ...) {
 assign("[.DGEGLM",
 function(object, i, j, ...)
 #  Subsetting for DGEGLM objects
-#  Davis McCarthy	
-#  11 May 2011.  Last modified 5 Dec 2012.
+#  Davis McCarthy, Gordon Smyth
+#  11 May 2011.  Last modified 8 April 2013.
 {
+	if(nargs() != 3) stop("Two subscripts required",call.=FALSE)
 	if(!missing(j))
 		stop("Subsetting columns not allowed for DGEGLM object. Try subsetting elements of DGEGLM object instead.",call.=FALSE)
 	if(!missing(i)) {
@@ -79,9 +80,10 @@ function(object, i, j, ...)
 assign("[.DGEExact",
 function(object, i, j, ...)
 #  Subsetting for DGEExact objects
-#  Davis McCarthy	
-#  6 October 2010.  Last modified 6 Oct 2010.
+#  Davis McCarthy, Gordon Smyth
+#  6 October 2010.  Last modified 8 April 2013.
 {
+	if(nargs() != 3) stop("Two subscripts required",call.=FALSE)
 	if(!missing(j))
 		stop("Subsetting columns not allowed for DGEExact object. Try subsetting object$table instead.",call.=FALSE)
 	if(!missing(i)) {
@@ -91,12 +93,14 @@ function(object, i, j, ...)
 	object
 })
 
+
 assign("[.DGELRT",
 function(object, i, j, ...)
 #  Subsetting for DGELRT objects
-#  Davis McCarthy	
-#  6 April 2011.  Last modified 23 June 2011.
+#  Davis McCarthy, Gordon Smyth	
+#  6 April 2011.  Last modified 8 April 2013.
 {
+	if(nargs() != 3) stop("Two subscripts required",call.=FALSE)
 	if(!missing(j))
 		stop("Subsetting columns not allowed for DGELRT object. Try subsetting object$table instead.",call.=FALSE)
 	if(!missing(i)) {
@@ -112,15 +116,29 @@ function(object, i, j, ...)
 })
 
 
-
 assign("[.TopTags",
 function(object, i, j, ...)
 #  Subsetting for TopTags objects
-#	Gordon Smyth
-#  7 October 2009.  Last modified 9 October 2009.
+#  Gordon Smyth 
+#  7 October 2009. Last modified 8 April 2013.
 {
-	if(!missing(j)) stop("Subsetting columns not allowed for TopTags object. Try subsetting object$table instead.",call.=FALSE)
-	if(!missing(i)) object$table <- object$table[i,,drop=FALSE]
+	if(nargs() != 3) stop("Two subscripts required",call.=FALSE)
+	if(missing(i))
+		if(missing(j))
+			return(object)
+		else {
+			object$table <- object$table[,j,drop=FALSE]
+		}
+	else {
+		if(is.character(i)) {
+			i <- match(i,rownames(object$counts))
+			i <- i[!is.na(i)]
+		}
+		if(missing(j)) {
+			object$table <- object$table[i,,drop=FALSE]
+		} else {
+			object$table <- object$table[i,j,drop=FALSE]
+		}
+	}
 	object
 })
-

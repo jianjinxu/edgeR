@@ -21,8 +21,8 @@ Test whether a set of genes is highly ranked relative to other genes in terms of
 }
 
 \details{
-\code{camera.DGEList} implements methods proposed by Wu and Smyth (2012), but for the digital gene expression data, eg. RNA-Seq data.
-\code{camera.DGEList} performs a \emph{competitive} test in the sense defined by Goeman and Buhlmann (2007).
+This function implements a method proposed by Wu and Smyth (2012) for the digital gene expression data, eg. RNA-Seq data.
+\code{camera} performs a \emph{competitive} test in the sense defined by Goeman and Buhlmann (2007).
 It tests whether the genes in the set are highly ranked in terms of differential expression relative to genes not in the set.
 It has similar aims to \code{geneSetTest} but accounts for inter-gene correlation.
 See \code{\link{roast.DGEList}} for an analogous \emph{self-contained} gene set test.
@@ -31,18 +31,12 @@ The function can be used for any sequencing experiment which can be represented 
 The design matrix for the experiment is specified as for the \code{\link{glmFit}} function, and the contrast of interest is specified as for the \code{\link{glmLRT}} function.
 This allows users to focus on differential expression for any coefficient or contrast in a model by giving the vector of test statistic values.
 
-\code{camera.DGEList} estimates p-values after adjusting the variance of test statistics by an estimated variance inflation factor.
+\code{camera} estimates p-values after adjusting the variance of test statistics by an estimated variance inflation factor.
 The inflation factor depends on estimated genewise correlation and the number of genes in the gene set.
 }
 
 \value{
-A data.frame with a row for each set and the following columns:
-\item{NGenes}{number of genes in set}
-\item{Correlation}{inter-gene correlation}
-\item{Direction}{direction of change (\code{"Up"} or \code{"Down"})}
-\item{PValue}{two-tailed p-value}
-\item{FDR}{Benjamini and Hochberg FDR adjusted p-value}
-
+A data.frame. See \code{\link{camera}} for details.
 }
 
 \author{Yunshun Chen, Gordon Smyth}

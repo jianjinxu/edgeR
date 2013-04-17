@@ -2,7 +2,7 @@ cutWithMinN <- function(x, intervals=2, min.n=1)
 #	Cut numeric x into intervals, as equally spaced as possible subject
 #	to including a minimum number of values in each interval
 #	Gordon Smyth
-#	7 May 2011.  Last modified 3 Aug 2012.
+#	7 May 2011.  Last modified 17 Apr 2013.
 {
 #	Check input
 	x <- as.numeric(x)
@@ -41,12 +41,28 @@ cutWithMinN <- function(x, intervals=2, min.n=1)
 	if(all(n>=min.n)) return(list(group=z,breaks=breaks.eqx))
 
 #	Step down gradually
-	for (i in 1:10) {
+	for (i in 1:9) {
 		breaks <- (i*breaks.eqn+(10-i)*breaks.eqx)/10
 		z <- cut(x,breaks=breaks,labels=FALSE)
 		n <- tabulate(z)
 		if(all(n>=min.n)) return(list(group=z,breaks=breaks))
 	}
 
-	stop("Function has failed")
+#	Try equally spaced by quantiles
+	z <- cut(x,breaks=breaks,labels=FALSE)
+	n <- tabulate(z)
+	if(all(n>=min.n)) return(list(group=z,breaks=breaks))
+
+#	If all else fails, order by x
+	o <- order(x)
+	n <- floor(nx/intervals)
+	nresid <- nx - intervals*n
+	n <- rep.int(n,intervals)
+	n[1] <- n[1] + nresid
+	z <- rep(1:intervals,n)
+	z[o] <- z
+	return(list(group=z,breaks=breaks.eqn))
+
+#	Function should never fail
+	stop("Could not cut x into requested number of intervals with specified min.n in each group")
 }

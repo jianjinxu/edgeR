@@ -36,26 +36,13 @@ Rotation gene set testing for Negative Binomial generalized linear models.
 }
 
 \value{
-\code{roast.DGEList} produces an object of class \code{"Roast"}. This consists of a list with the following components:
-  \item{p.value}{data.frame with columns \code{Active.Prop} and \code{P.Value}, giving the proportion of genes in the set contributing meaningfully to significance and estimated p-values, respectively.
-Rows correspond to the alternative hypotheses mixed, up or down.}
-  \item{var.prior}{prior value for residual variances.}
-  \item{df.prior}{prior degrees of freedom for residual variances.}
+\code{roast} produces an object of class \code{\link[limma:roast]{Roast}}. See \code{\link{roast}} for details.
 
-
-\code{mroast.DGEList} produces a data.frame with a row for each set and the following columns:
-	\item{NGenes}{number of genes in each gene set}
-	\item{PropDown}{proportion of genes in set with \code{z < -sqrt(2)}}
-	\item{PropUp}{proportion of genes in set with \code{z > sqrt(2)}}
-	\item{Direction}{direction of change}
-	\item{PValue}{two-sided directional p-value}
-	\item{FDR}{directional false discovery rate}
-	\item{PValue.Mixed}{non-directional p-value}
-	\item{FDR.Mixed}{non-directional false discovery rate}
+\code{mroast} produces a data.frame. See \code{\link{mroast}} for details.
 }
 
 \details{
-This function implements the ROAST gene set test from Wu et al (2010), but for the digital gene expression data, eg. RNA-Seq data.
+This function implements a method for the ROAST gene set test from Wu et al (2010) for the digital gene expression data, eg. RNA-Seq data.
 Basically, the Negative Binomial generalized linear models are fitted for count data. The fitted values are converted into z-scores, and then it calls the \code{roast} function in \code{limma} package to conduct the gene set test.
 It tests whether any of the genes in the set are differentially expressed.
 This allows users to focus on differential expression for any coefficient or contrast in a generalized linear model.
@@ -78,16 +65,16 @@ The output gives p-values three possible alternative hypotheses,
 \code{"Down"} to test whether the genes in the set tend to be down-regulated, with negative t-statistics,
 and \code{"Mixed"} to test whether the genes in the set tend to be differentially expressed, without regard for direction.
 
-\code{roast.DGEList} estimates p-values by simulation, specifically by random rotations of the orthogonalized residuals (Langsrud, 2005), so p-values will vary slightly from run to run.
+\code{roast} estimates p-values by simulation, specifically by random rotations of the orthogonalized residuals (Langsrud, 2005), so p-values will vary slightly from run to run.
 To get more precise p-values, increase the number of rotations \code{nrot}.
 The p-value is computed as \code{(b+1)/(nrot+1)} where \code{b} is the number of rotations giving a more extreme statistic than that observed (Phipson and Smyth, 2010).
 This means that the smallest possible p-value is \code{1/(nrot+1)}.
 
-\code{mroast.DGEList} does roast tests for multiple sets, including adjustment for multiple testing.
-By default, \code{mroast.DGEList} reports ordinary p-values but uses mid-p-values (Routledge, 1994) at the multiple testing stage.
+\code{mroast} does roast tests for multiple sets, including adjustment for multiple testing.
+By default, \code{mroast} reports ordinary p-values but uses mid-p-values (Routledge, 1994) at the multiple testing stage.
 Mid-p-values are probably a good choice when using false discovery rates (\code{adjust.method="BH"}) but not when controlling the family-wise type I error rate (\code{adjust.method="holm"}).
 
-\code{roast.DGEList} performs a \emph{self-contained} test in the sense defined by Goeman and Buhlmann (2007).
+\code{roast} performs a \emph{self-contained} test in the sense defined by Goeman and Buhlmann (2007).
 For a \emph{competitive} gene set test, see \code{\link{camera.DGEList}}.
 }
 

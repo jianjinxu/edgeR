@@ -1,13 +1,13 @@
 \name{dimnames}
 \alias{dimnames.DGEList}
-\alias{dimnames<-.DGEList}
 \alias{dimnames.DGEExact}
-\alias{dimnames<-.DGEExact}
 \alias{dimnames.DGEGLM}
-\alias{dimnames<-.DGEGLM}
+\alias{dimnames.DGELRT}
 \alias{dimnames.TopTags}
-\alias{dimnames<-.TopTags}
-\title{Retrieve the Dimension Names of a DGEList Object}
+\alias{dimnames<-.DGEList}
+\alias{dimnames<-.DGEGLM}
+
+\title{Retrieve the Dimension Names of a DGE Object}
 \description{
 Retrieve the dimension names of a digital gene expression data object.
 }
@@ -16,11 +16,13 @@ Retrieve the dimension names of a digital gene expression data object.
 \method{dimnames}{DGEList}(x) <- value
 }
 \arguments{
-  \item{x}{an object of class \code{DGEList}, \code{DGEExact}, \code{DGEGLM} or \code{TopTags}}
-  \item{value}{a possible value for \code{dimnames(x)}: see \code{\link{dimnames}}}
+  \item{x}{an object of class \code{DGEList}, \code{DGEExact}, \code{DGEGLM}, \code{DGELRT} or \code{TopTags}}
+  \item{value}{a possible value for \code{dimnames(x)}, see \code{\link{dimnames}}}
 }
 \details{
-The dimension names of a microarray object are the same as those of the most important matrix component of that object.
+The dimension names of a DGE data object are the same as those of the most important component of that object.
+
+Setting dimension names is currently only permitted for \code{DGEList} or \code{DGEGLM} objects.
 
 A consequence is that \code{rownames} and \code{colnames} will work as expected.
 }
@@ -31,7 +33,4 @@ If a list, its components are either \code{NULL} or a character vector the lengt
 \author{Gordon Smyth}
 \seealso{
   \code{\link[base]{dimnames}} in the base package.
-  
-  \link{02.Classes} gives an overview of data classes used in LIMMA.
 }
-\keyword{array}

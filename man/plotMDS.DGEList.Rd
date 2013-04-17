@@ -46,13 +46,7 @@ This function can be slow when there are many libraries.
 \value{
 A plot is created on the current graphics device.
 
-An object of class \code{"MDS"} is invisibly returned.
-This is a list containing the following components:
-\item{distance.matrix}{numeric matrix of pairwise distances between columns of \code{x}}
-\item{cmdscale.out}{output from the function \code{cmdscale} given the distance matrix}
-\item{dim.plot}{dimensions plotted}
-\item{x}{x-xordinates of plotted points}
-\item{y}{y-cordinates of plotted points}
+An object of class \code{\link[limma:plotMDS]{MDS}} is invisibly returned.
 }
 
 \author{Yunshun Chen, Mark Robinson and Gordon Smyth}
