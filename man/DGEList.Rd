@@ -23,6 +23,11 @@ DGEList(counts = matrix(0, 0, 0), lib.size = colSums(counts), norm.factors = rep
   \item{remove.zeros}{logical, whether to remove rows that have 0 total count.}
 }
 
+\details{
+To facilitate programming pipelines,
+\code{NULL} values can be input for \code{lib.size}, \code{norm.factors} or \code{group}, in which case the default value is used as if the argument had been missing.
+}
+
 \value{a \code{\link[edgeR:DGEList-class]{DGEList}} object}
 
 \author{edgeR team. First created by Mark Robinson.}

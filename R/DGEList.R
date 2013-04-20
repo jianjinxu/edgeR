@@ -10,12 +10,15 @@ DGEList <- function(counts=matrix(0,0,0), lib.size=colSums(counts), norm.factors
 	if(ntags>0 && is.null(rownames(counts))) rownames(counts) <- 1:ntags
 
 #	Check lib.size
+	if(is.null(lib.size)) lib.size <- colSums(counts)
 	if(nlib != length(lib.size)) stop("Length of 'lib.size' must equal number of columns in 'counts'")
 
 #	Check norm.factors
+	if(is.null(norm.factors)) norm.factors <- rep(1,ncol(counts))
 	if(nlib != length(norm.factors)) stop("Length of 'norm.factors' must equal number of columns in 'counts'")
 
 #	Check group
+	if(is.null(group)) group <- rep(1,ncol(counts))
 	group <- as.factor(group)
 	if(nlib != length(group)) stop("Length of 'group' must equal number of columns in 'counts'")
 

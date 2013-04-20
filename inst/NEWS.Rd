@@ -2,6 +2,12 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.3.3}{\itemize{
+\item
+DGEList() accepts NULL as a possible value again for the group, lib.size and norm.factors arguments.
+It is treated the same way as a missing argument.
+}}
+
 \section{Version 3.3.2}{\itemize{
 \item
 Update to cutWithMinN() so that it does not fail even when there are many repeated x values.
@@ -19,6 +25,7 @@ Updates to class documentation.
 \section{Version 3.3.1}{\itemize{
 \item
 Updates to DGEList() and DGEList-class documentation.
+Arguments lib.size, group and norm.factors are now set to their defaults in the function definition rather than set to NULL.
 }}
 
 \section{Version 3.2.0}{\itemize{
