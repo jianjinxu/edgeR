@@ -34,6 +34,7 @@ private:
 	bool failed;
 
 	double nb_deviance(const double*, const double*, const double&) const;
+	void autofill(const double*, double*, const double*);
 };
 
 class adj_coxreid {
