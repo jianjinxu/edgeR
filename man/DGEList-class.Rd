@@ -44,7 +44,7 @@ However they can also be treated as if they were matrices for the purposes of su
 
 The dimensions, row names and column names of a \code{DGEList} object are defined by those of \code{counts}, see \code{\link{dim.DGEList}} or \code{\link{dimnames.DGEList}}.
 
-\code{DGEList} objects can be subsetted, see \code{\link{subsetting}}.
+\code{DGEList} objects can be subsetted, see \code{\link[edgeR:subsetting]{subsetting}}.
 
 \code{DGEList} objects also have a \code{show} method so that printing produces a compact summary of their contents.
 }

@@ -1,16 +1,15 @@
 plotMDS.DGEList <- function (x, top=500, labels=colnames(x), col=NULL, cex=1, dim.plot=c(1, 2), ndim=max(dim.plot), xlab=NULL, ylab=NULL, method="logFC", prior.count=2, gene.selection="pairwise", ...)
 #	Multidimensional scaling plot of digital gene expression profiles
 #	Yunshun Chen, Mark Robinson and Gordon Smyth
-#	23 May 2011.  Last modified 7 Feb 2013.
+#	23 May 2011.  Last modified 28 May 2013.
 {
-#	Remove rows with missing or Inf values
-	ok <- is.finite(x$counts)
-	if(!all(ok)) {
-		x <- x[rowSums(ok)>0,]
-		x$samples$lib.size <- rowSums(x$counts)
-	}
+#	Check x
+	x$counts <- as.matrix(x$counts)
+	if(!all(is.finite(x$counts))) stop("Missing or infinite counts not allowed")
+
 	nprobes <- nrow(x)
 	nsamples <- ncol(x)
+	if(nsamples < 3) stop("Need at least 3 columns of data")
 
 #	Check value for labels
 	if(is.null(labels)) labels <- 1:nsamples
