@@ -28,7 +28,11 @@ estimateDisp <- function(y, design=NULL, offset=NULL, prior.df=NULL, trend.metho
 
 	# Classic edgeR
 	if(is.null(design)){
-		design <- model.matrix(~group)
+		# One group
+		if(length(levels(group))==1)
+			design <- matrix(1,nlibs,1)
+		else
+			design <- model.matrix(~group)
 		if( all(tabulate(group)<=1) ) {
 			warning("There is no replication, setting dispersion to NA.")
 			y$common.dispersion <- NA

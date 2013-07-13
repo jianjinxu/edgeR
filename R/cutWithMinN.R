@@ -58,7 +58,7 @@ cutWithMinN <- function(x, intervals=2, min.n=1)
 	n <- floor(nx/intervals)
 	nresid <- nx - intervals*n
 	n <- rep.int(n,intervals)
-	n[1] <- n[1] + nresid
+	if(nresid>0) n[1:nresid] <- n[1:nresid]+1
 	z <- rep(1:intervals,n)
 	z[o] <- z
 	return(list(group=z,breaks=breaks.eqn))

@@ -2,6 +2,19 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.3.5}{\itemize{
+\item
+Refinement to cutWithMinN() to make the bin numbers more equal in the worst case.
+
+\item
+estimateDisp() now creates the design matrix correctly when the design matrix is not given as an argument and there is only one group.  Previously this case gave an error.
+}}
+
+\section{Version 3.3.4}{\itemize{
+\item
+plotMDS.DGEList now gives a friendly error message when there are fewer than 3 data columns.
+}}
+
 \section{Version 3.3.3}{\itemize{
 \item
 DGEList() accepts NULL as a possible value again for the group, lib.size and norm.factors arguments.
