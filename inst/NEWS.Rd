@@ -8,6 +8,9 @@ Refinement to cutWithMinN() to make the bin numbers more equal in the worst case
 
 \item
 estimateDisp() now creates the design matrix correctly when the design matrix is not given as an argument and there is only one group.  Previously this case gave an error.
+
+\item
+Minor edit to glm.h code.
 }}
 
 \section{Version 3.3.4}{\itemize{
@@ -26,13 +29,13 @@ It is treated the same way as a missing argument.
 Update to cutWithMinN() so that it does not fail even when there are many repeated x values.
 
 \item
-New computation for nbins in dispBinTrend.  Now changes more smoothly with the number of genes.
+Refinement to computation for nbins in dispBinTrend.  Now changes more smoothly with the number of genes.  trace argument is retired.
 
 \item
 Fixes to calcNormFactors with method="TMM" so that it takes account of lib.size and refCol if these are preset.
 
 \item
-Updates to class documentation.
+Updates to help pages for the data classes.
 }}
 
 \section{Version 3.3.1}{\itemize{
