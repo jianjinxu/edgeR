@@ -120,7 +120,6 @@ glmLRT <- function(glmfit,coef=ncol(glmfit$design),contrast=NULL,test="chisq")
 		}
 		stop("glmfit must be an DGEGLM object (usually produced by glmFit).")
 	}
-	ngenes <- nrow(glmfit)
 	nlibs <- ncol(glmfit)
 
 #	Check test
