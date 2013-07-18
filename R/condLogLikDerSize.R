@@ -1,9 +1,7 @@
 condLogLikDerSize <- function(y, r, der=1L)
-# Calculate derivatives of the conditional log-likelihood function l_g{r}
-# with respect to r=1/phi (phi is the dispersion parameter)
-# der is derivative (0th deriv is the function)
-# For a single group of replicate libraries, all of the same total size
-# Written by Mark Robinson
+#	Derivatives of the conditional log-likelihood function (given the row sum)
+#	with respect to r=1/dispersion
+#	for a single group of replicate libraries, all of the same total size
 {
 #	Vector interpreted as matrix of one row, i.e., one gene
 	if (is.vector(y)) {
@@ -12,13 +10,12 @@ condLogLikDerSize <- function(y, r, der=1L)
 		y <- as.matrix(y)
 	}
 
-	t <- rowSums(y,na.rm=TRUE)
-	n <- rowSums(!is.na(y))
-	g <- dim(y)[1]
+	n <- ncol(y)
+	m <- rowMeans(y)
 
 	switch(der+1L,
-		rowSums(lgamma(y+r)) + lgamma(n*r) - lgamma(t+n*r) - n*lgamma(r),
-		rowSums(digamma(y+r)) + n*digamma(n*r) - n*digamma(t+n*r) - n*digamma(r),
-		rowSums(trigamma(y+r)) + n^2*trigamma(n*r) - n^2*trigamma(t+n*r) - n*trigamma(r)
+		rowSums(lgamma(y+r)) + lgamma(n*r) - lgamma(n*(m+r)) - n*lgamma(r),
+		rowSums(digamma(y+r)) + n*digamma(n*r) - n*digamma(n*(m+r)) - n*digamma(r),
+		rowSums(trigamma(y+r)) + n^2*trigamma(n*r) - n^2*trigamma(n*(m+r)) - n*trigamma(r)
 	)
 }
