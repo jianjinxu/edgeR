@@ -21,6 +21,7 @@ glmQLFTest <- function(y, design=NULL, dispersion=NULL, coef=ncol(glmfit$design)
 
 #	Call glmLRT to get most of the results that we need for the QL F-test calculations
 	out <- glmLRT(glmfit, coef=coef, contrast=contrast)
+	if(is.null(out$AveLogCPM)) out$AveLogCPM <- aveLogCPM(glmfit$counts)
 
 #	Residual deviances
 	df.residual <- glmfit$df.residual
@@ -37,9 +38,7 @@ glmQLFTest <- function(y, design=NULL, dispersion=NULL, coef=ncol(glmfit$design)
 	s2[df.residual==0] <- 0
 	s2 <- pmax(s2,0)
 	if(abundance.trend) {
-		if(is.null(A)) A <- out$AveLogCPM
-		if(is.null(A)) A <- aveLogCPM(glmfit$counts)
-		if(is.null(out$AveLogCPM)) out$AveLogCPM <- A
+		A <- out$AveLogCPM
 	} else {
 		A <- NULL
 	}
@@ -47,6 +46,7 @@ glmQLFTest <- function(y, design=NULL, dispersion=NULL, coef=ncol(glmfit$design)
 
 #	Plot
 	if(plot) {
+		if(!abundance.trend) A <- out$AveLogCPM
 		plot(A,sqrt(sqrt(s2)),xlab="Average Log2 CPM",ylab="Quarter-Root Mean Deviance",pch=16,cex=0.2)
 		o <- order(A)
 		points(A[o],sqrt(sqrt(s2.fit$var.post[o])),pch=16,cex=0.2,col="red")
