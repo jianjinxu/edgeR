@@ -29,7 +29,16 @@ double glm_levenberg::nb_deviance (const double* y, const double* mu, const doub
     }
     return dev*2;
 }
-    
+
+void glm_levenberg::autofill(const double* offset, double* mu, const double* beta) {
+	for (int lib=0; lib<nlibs; ++lib) {
+		double& cur_mean=(mu[lib]=offset[lib]);
+		for (int coef=0; coef<ncoefs; ++coef) { cur_mean+=design[coef*nlibs+lib]*beta[coef]; }
+		cur_mean=std::exp(cur_mean);
+	}
+	return;
+}
+
 /* Now, the actual constructors for the GLM object. */
 
 glm_levenberg::glm_levenberg(const int& nl, const int& nc, const double*d, const int& mi, const double& tol) : nlibs(nl), ncoefs(nc),
@@ -84,8 +93,11 @@ int glm_levenberg::fit(const double* offset, const double* y, const double& disp
         for (int lib=0; lib<nlibs; ++lib) { mu[lib]=0; }
         return 0;
     }
-
-    // Iterating using reweighted least squares.
+    
+	/* Otherwise, we have to make sure 'beta' and 'mu' make sense relative to one another.
+ 	 * We then proceed to iterating using reweighted least squares.
+ 	 */
+	autofill(offset, mu, beta);
 	dev=nb_deviance(y, mu, disp);
     double max_info=-1, lambda=0;
 
@@ -172,11 +184,7 @@ int glm_levenberg::fit(const double* offset, const double* y, const double& disp
 
             // Updating beta and the means. 'dbeta' stores 'Y' from the solution of (X*VX)Y=dl, corresponding to a NR step.
             for (int i=0; i<ncoefs; ++i) { beta_new[i]=beta[i]+dbeta[i]; }
-            for (int lib=0; lib<nlibs; ++lib) {
-                double& cur_mean=(mu_new[lib]=offset[lib]);
-                for (int coef=0; coef<ncoefs; ++coef) { cur_mean+=design[coef*nlibs+lib]*beta_new[coef]; }
-                cur_mean=std::exp(cur_mean);
-            }
+            autofill(offset, mu_new, beta_new);
 
             /* Checking if the deviance has decreased or if it's too small to care about. Either case is good
              * and means that we'll be using the updated fitted values and coefficients. Otherwise, if we have
