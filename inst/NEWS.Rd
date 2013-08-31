@@ -2,6 +2,12 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.3.8}{\itemize{
+\item
+predFC() with design=NULL now uses normalization factors correctly.
+However this use of predFC() to compute counts per million is being phased out in favour of cpm().
+}}
+
 \section{Version 3.3.5}{\itemize{
 \item
 Refinement to cutWithMinN() to make the bin numbers more equal in the worst case.

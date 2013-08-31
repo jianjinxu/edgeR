@@ -22,12 +22,6 @@ predFC.default <- function(y,design=NULL,prior.count=0.125,offset=NULL,dispersio
 	ngenes <- nrow(y)
 	nsamples <- ncol(y)
 
-#	Check design
-	if(is.null(design))
-		return(cpm(y,prior.count=prior.count,log=TRUE))
-	else
-		design <- as.matrix(design)
-
 #	Check prior.count
 	if(prior.count<0) stop("prior.count should be non-negative")
 
@@ -37,6 +31,13 @@ predFC.default <- function(y,design=NULL,prior.count=0.125,offset=NULL,dispersio
 		offset <- log(lib.size)
 	} else
 		lib.size <- exp(offset)
+
+#	Check design
+	if(is.null(design)) {
+		warning("Behaviour of predFC with design=NULL is scheduled to be deprecated April 2014. Use cpm() instead.",call.=FALSE)
+		return(cpm(y,lib.size=lib.size,log=TRUE,prior.count=prior.count))
+	} else
+		design <- as.matrix(design)
 
 #	Add prior counts in proportion to library sizes
 	if(is.null(dim(lib.size)))
@@ -49,7 +50,7 @@ predFC.default <- function(y,design=NULL,prior.count=0.125,offset=NULL,dispersio
 	y <- y+prior.count
 
 #	Return matrix of coefficients on log2 scale
-   g <- glmFit(y,design,offset=log(lib.size),dispersion=dispersion,prior.count=0)
-   g$coefficients/log(2)
+	g <- glmFit(y,design,offset=log(lib.size),dispersion=dispersion,prior.count=0)
+	g$coefficients/log(2)
 }
 
