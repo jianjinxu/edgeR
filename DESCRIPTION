@@ -1,10 +1,11 @@
 Package: edgeR
-Version: 3.5.0
-Date: 2013/08/31
+Version: 3.5.1
+Date: 2013/10/18
 Title: Empirical analysis of digital gene expression data in R
-Author: Mark Robinson <mrobinson@wehi.edu.au>, Davis McCarthy <dmccarthy@wehi.edu.au>, Yunshun Chen <yuchen@wehi.edu.au>, Aaron Lun <alun@wehi.edu.au>, Gordon Smyth <smyth@wehi.edu.au>
-Maintainer: Mark Robinson <mrobinson@wehi.edu.au>, Davis McCarthy <dmccarthy@wehi.edu.au>, Yunshun Chen <yuchen@wehi.edu.au>, Gordon Smyth <smyth@wehi.edu.au>
-Depends: R (>= 2.15.0), methods, limma
+Author: Mark Robinson <mark.robinson@imls.uzh.ch>, Davis McCarthy <dmccarthy@wehi.edu.au>, Yunshun Chen <yuchen@wehi.edu.au>, Aaron Lun <alun@wehi.edu.au>, Xiaobei Zhou <xiaobei.zhou@uzh.ch>, Gordon Smyth <smyth@wehi.edu.au>
+Maintainer: Mark Robinson <mark.robinson@imls.uzh.ch>, Davis McCarthy <dmccarthy@wehi.edu.au>, Yunshun Chen <yuchen@wehi.edu.au>, Gordon Smyth <smyth@wehi.edu.au>
+Depends: R (>= 2.15.0), limma
+Imports: methods
 Suggests: MASS, statmod, splines, locfit, KernSmooth
 biocViews: Bioinformatics, DifferentialExpression, SAGE, HighThroughputSequencing, RNAseq, ChIPseq
 Description: Differential expression analysis of RNA-seq and digital gene expression profiles with biological replication.  Uses empirical Bayes estimation and exact tests based on the negative binomial distribution.  Also useful for differential signal analysis with other types of genome-scale count data.

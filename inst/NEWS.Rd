@@ -2,52 +2,45 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
-\section{Version 3.3.8}{\itemize{
+\section{Version 3.5.1}{\itemize{
 \item
-predFC() with design=NULL now uses normalization factors correctly.
-However this use of predFC() to compute counts per million is being phased out in favour of cpm().
+New function processHairpinReads().
+
+\item
+aveLogCPM() now returns a value even when all the counts are zero.
 }}
 
-\section{Version 3.3.5}{\itemize{
-\item
-Refinement to cutWithMinN() to make the bin numbers more equal in the worst case.
+\section{Version 3.4.0}{\itemize{
 
 \item
 estimateDisp() now creates the design matrix correctly when the design matrix is not given as an argument and there is only one group.  Previously this case gave an error.
 
 \item
-Minor edit to glm.h code.
-}}
-
-\section{Version 3.3.4}{\itemize{
-\item
 plotMDS.DGEList now gives a friendly error message when there are fewer than 3 data columns.
-}}
 
-\section{Version 3.3.3}{\itemize{
 \item
-DGEList() accepts NULL as a possible value again for the group, lib.size and norm.factors arguments.
-It is treated the same way as a missing argument.
-}}
+Updates to DGEList() so that arguments lib.size, group and norm.factors are now set to their defaults in the function definition rather than set to NULL.
+However NULL is still accepted as a possible value for these arguments in the function call, in which case the default value is used as if the argument was missing.
 
-\section{Version 3.3.2}{\itemize{
 \item
-Update to cutWithMinN() so that it does not fail even when there are many repeated x values.
+Refinement to cutWithMinN() to make the bin numbers more equal in the worst case.
+Also a bug fix so that cutWithMinN() does not fail even when there are many repeated x values.
 
 \item
 Refinement to computation for nbins in dispBinTrend.  Now changes more smoothly with the number of genes.  trace argument is retired.
 
 \item
+Updates to help pages for the data classes.
+
+\item
 Fixes to calcNormFactors with method="TMM" so that it takes account of lib.size and refCol if these are preset.
 
 \item
-Updates to help pages for the data classes.
-}}
+Bug fix to glmQLFTest when plot=TRUE but abundance.trend=FALSE.
 
-\section{Version 3.3.1}{\itemize{
 \item
-Updates to DGEList() and DGEList-class documentation.
-Arguments lib.size, group and norm.factors are now set to their defaults in the function definition rather than set to NULL.
+predFC() with design=NULL now uses normalization factors correctly.
+However this use of predFC() to compute counts per million is being phased out in favour of cpm().
 }}
 
 \section{Version 3.2.0}{\itemize{
@@ -271,7 +264,6 @@ Function pooledVar() removed as no longer necessary.
 
 \item
 Minor fixes to various functions to ensure correct results in special cases.
-
 }}
 
 
