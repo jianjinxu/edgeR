@@ -95,7 +95,7 @@ The returned coefficients are affected but not the likelihood ratio tests or p-v
 
 \code{glmLRT} conducts likelihood ratio tests for one or more coefficients in the linear model.
 If \code{coef} is used, the null hypothesis is that all the coefficients indicated by \code{coef} are equal to zero.
-If \code{contrast} is non-null, then the null hypothesis is that the specified contrast of the coefficients is equal to zero.
+If \code{contrast} is non-null, then the null hypothesis is that the specified contrasts of the coefficients are equal to zero.
 For example, a contrast of \code{c(0,1,-1)}, assuming there are three coefficients, would test the hypothesis that the second and third coefficients are equal.
 
 \code{glmQLFTest} implements the quasi-likelihood method of Lund et al (2012).
