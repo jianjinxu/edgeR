@@ -13,10 +13,11 @@
 
 \begin{document}
 
-\title{edgeR: differential expression analysis \\ of digital gene expression data}
+\title{edgeR Package Introduction}
 \author{Mark Robinson, Davis McCarthy, Yunshun Chen,\\
 Aaron Lun, Gordon K.\ Smyth}
-\date{18 October 2012}
+\date{10 October 2012\\
+Revised 10 November 2013}
 \maketitle
 
 
