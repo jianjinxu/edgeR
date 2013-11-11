@@ -8,7 +8,7 @@ exportClasses("DGEList","DGEExact","DGEGLM","DGELRT","TopTags")
 exportMethods("show")
 
 import(methods)
-import(limma)
+importFrom("limma",camera,mroast,plotMDS,roast)
 
 S3method(as.matrix,DGEList)
 S3method(dim,DGEList)
