@@ -2,6 +2,14 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.5.6}{\itemize{
+\item
+New function validDGEList().
+
+\item
+aveLogCPM() now returns a value even when all the counts are zero.
+}}
+
 \section{Version 3.5.1}{\itemize{
 \item
 New function processHairpinReads().

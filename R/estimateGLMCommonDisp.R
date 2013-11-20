@@ -1,4 +1,4 @@
-#  Last modified 13 March 2013
+#  Last modified 20 Nov 2013
 
 estimateGLMCommonDisp <- function(y, design=NULL, offset=NULL, method="CoxReid", subset=10000, AveLogCPM=NULL, verbose=FALSE, ...) 
 UseMethod("estimateGLMCommonDisp")
@@ -6,6 +6,7 @@ UseMethod("estimateGLMCommonDisp")
 estimateGLMCommonDisp.DGEList <- function(y, design=NULL, offset=NULL, method="CoxReid", subset=10000, AveLogCPM=NULL, verbose=FALSE, ...)
 {
 #	If provided as arguments, offset and AveLogCPM over-rule the values stored in y
+	y <- validDGEList(y)
 	if(!is.null(AveLogCPM)) y$AveLogCPM <- AveLogCPM
 	if(is.null(y$AveLogCPM)) y$AveLogCPM <- aveLogCPM(y)
 	if(!is.null(offset)) y$offset <- expandAsMatrix(offset,dim(y))

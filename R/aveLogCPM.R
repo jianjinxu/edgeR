@@ -4,10 +4,14 @@ UseMethod("aveLogCPM")
 aveLogCPM.DGEList <- function(y, normalized.lib.sizes=TRUE, prior.count=2, dispersion=0.05, ...)
 #	log2(AveCPM)
 #	Gordon Smyth
-#	11 March 2013.
+#	11 March 2013.  Last modified 20 November 2013.
 {
 	lib.size <- y$samples$lib.size
-	if(normalized.lib.sizes) lib.size <- lib.size*y$samples$norm.factors
+	if(is.null(lib.size)) lib.size <- colSums(y$counts)
+	if(normalized.lib.sizes) {
+		nf <- y$samples$norm.factors
+		if(!is.null(y$samples$norm.factors)) lib.size <- lib.size*nf
+	}
 	aveLogCPM(y$counts,lib.size=lib.size,prior.count=prior.count,dispersion=dispersion)
 }
 

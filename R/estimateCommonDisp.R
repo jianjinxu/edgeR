@@ -1,9 +1,10 @@
 estimateCommonDisp <- function(object,tol=1e-06,rowsum.filter=5,verbose=FALSE)
-# Do two iterations of calculating pseudodata and estimating common dispersion
-# Davis McCarthy, Mark Robinson, Gordon Smyth.
-# Created 2009. Last modified 2 Aug 2012.
+#	Estimate common dispersion using exact conditional likelihood
+#	Davis McCarthy, Mark Robinson, Gordon Smyth.
+#	Created 2009. Last modified 20 Nov 2013.
 {
 	if(!is(object,"DGEList")) stop("Currently supports DGEList objects")
+	object <- validDGEList(object)
 	group <- object$samples$group <- as.factor(object$samples$group)
 
 	if( all(tabulate(group)<=1) ) {
