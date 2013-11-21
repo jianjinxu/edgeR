@@ -25,7 +25,4 @@ Numeric matrix of dimension \code{dim}.
 expandAsMatrix(1:3,c(4,3))
 expandAsMatrix(1:4,c(4,3))
 }
-\seealso{
-\code{\link{mglmLS}}.
-}
 \keyword{hplot}

@@ -8,8 +8,8 @@
 \description{Computes estimated coefficients for a NB glm in such a way that the log-fold-changes are shrunk towards zero.}
 
 \usage{
-\S3method{predFC}{DGEList}(y, design=NULL, prior.count=0.125, offset=NULL, dispersion=NULL)
-\S3method{predFC}{default}(y, design=NULL, prior.count=0.125, offset=NULL, dispersion=0)
+\S3method{predFC}{DGEList}(y, design=NULL, prior.count=0.125, offset=NULL, dispersion=NULL, ...)
+\S3method{predFC}{default}(y, design=NULL, prior.count=0.125, offset=NULL, dispersion=0, ...)
 }
 
 \arguments{
@@ -21,7 +21,9 @@
 
 \item{offset}{numeric vector or matrix giving the offset in the log-linear model predictor, as for \code{\link{glmFit}}. Usually equal to log library sizes.}
 
-\item{dispersion}{the negative binomial dispersion}
+\item{dispersion}{numeric vector of negative binomial dispersions.}
+
+\item{\ldots}{other arguments are passed to \code{glmFit}.}
 }
 
 \details{
@@ -49,6 +51,13 @@ Numeric matrix of linear model coefficients (if \code{design} is given) or logCP
 }
 
 \author{Belinda Phipson and Gordon Smyth}
+
+\references{
+Phipson, B. (2013).
+\emph{Empirical Bayes modelling of expression profiles and their associations}.
+PhD Thesis. University of Melbourne, Australia.
+\url{http://repository.unimelb.edu.au/10187/17614}
+}
 
 \examples{
 # generate counts for a two group experiment with n=2 in each group and 100 genes

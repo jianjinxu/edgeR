@@ -95,8 +95,7 @@ fit <- glmFit(d, design, dispersion=dispersion.true, prior.count=0.5/3)
 results <- glmLRT(fit, coef=2)
 topTags(results)
 d <- estimateGLMCommonDisp(d, design, verbose=TRUE)
-glmFit(d,design,dispersion=dispersion.true,method="simple", prior.count=0.5/3)
-glmFit(d,design,dispersion=dispersion.true,method="levenberg", prior.count=0.5/3)
+glmFit(d,design,dispersion=dispersion.true, prior.count=0.5/3)
 
 # Exact tests
 y <- matrix(rnbinom(20,mu=10,size=3/2),5,4)

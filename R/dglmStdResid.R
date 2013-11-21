@@ -10,7 +10,7 @@ dglmStdResid <- function(y, design, dispersion=0, offset=0, nbins=100, make.plot
 		stop("Number of entries in argument 'offset' incompatible with 'y'. Must have length equal to 1 or to the number of entries in the matrix of counts or to the number of columns in the matrix of counts.\n")
 	else
 		offset <- matrix(offset, nrow=ngenes, ncol=nlibs, byrow=TRUE)
-	fit <- mglmLS(y, design=design, dispersion=0, offset=offset)
+	fit <- mglmLevenberg(y, design=design, dispersion=0, offset=offset)
     means <- as.vector(fit$fitted)
     std.resid <- nlibs * ( as.vector(y) - means )^2 / ( nlibs - ncol(design) ) # Obtain an approximate value for the standardized residual: denominator is (n - p) / n instead of the usual (1 - leverage)
     n <- length(means)

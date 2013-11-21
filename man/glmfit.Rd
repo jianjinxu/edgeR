@@ -12,7 +12,7 @@ Conduct genewise statistical tests for a given coefficient or coefficient contra
 
 \usage{
 \method{glmFit}{DGEList}(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL,
-       prior.count=0.125, start=NULL, method="auto", ...)
+       prior.count=0.125, start=NULL, ...)
 glmLRT(glmfit, coef=ncol(glmfit$design), contrast=NULL, test="chisq")
 glmQLFTest(y, design=NULL, dispersion=NULL, coef=ncol(glmfit$design), contrast=NULL, abundance.trend=TRUE, robust=FALSE, winsor.tail.p=c(0.05,0.1), plot=FALSE)
 }
@@ -36,9 +36,7 @@ Defaults to a single column of ones, equivalent to treating the columns as repli
 
 \item{start}{optional numeric matrix of initial estimates for the linear model coefficients.}
 
-\item{method}{which fitting algorithm to use.  Possible values are \code{"auto"}, \code{"linesearch"}, \code{"levenberg"} or \code{"simple"}.}
-
-\item{...}{other arguments are passed to lower-level functions, for example to \code{mglmLS}.}
+\item{...}{other arguments are passed to lower level fitting functions.}
 
 \item{glmfit}{a \code{DGEGLM} object, usually output from \code{glmFit}.}
 
@@ -85,8 +83,7 @@ The data frame \code{table} contains the following columns:
 
 \code{glmFit} fits genewise negative binomial glms, all with the same design matrix but possibly different dispersions, offsets and weights.
 When the design matrix defines a one-way layout, or can be re-parametrized to a one-way layout, the glms are fitting very quickly using \code{\link{mglmOneGroup}}.
-Otherwise the default fitting method, implemented in \code{\link{mglmLS}}, is a parallelized line search algorithm described by McCarthy et al (2012).
-Other possible fitting methods are \code{\link{mglmLevenberg}} and \code{\link{mglmSimple}}.
+Otherwise the default fitting method, implemented in \code{\link{mglmLevenberg}} a Fisher scoring algorithm with Levenberg-style damping.
 
 Positive \code{prior.count} cause the returned coefficients to be shrunk in such a way that fold-changes between the treatment conditions are decreased.
 In particular, infinite fold-changes are avoided.
@@ -152,7 +149,7 @@ d <- estimateGLMCommonDisp(d, design, verbose=TRUE)
 }
 
 \seealso{
-Low-level computations are done by \code{\link{mglmOneGroup}}, \code{\link{mglmLS}}, \code{\link{mglmLevenberg}} or \code{\link{mglmSimple}}.
+Low-level computations are done by \code{\link{mglmOneGroup}} or \code{\link{mglmLevenberg}}.
 
 \code{\link{topTags}} displays results from \code{glmLRT} or \code{glmQLFTest}.
 

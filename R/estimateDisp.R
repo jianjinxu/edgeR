@@ -77,7 +77,7 @@ estimateDisp <- function(y, design=NULL, offset=NULL, prior.df=NULL, trend.metho
 
 	# Calculate prior.df
 	if(is.null(prior.df)){
-		glmfit <- glmFit(y, design, dispersion=y$trended.dispersion, prior.count=0)
+		glmfit <- glmFit(y, design, offset=offset, dispersion=y$trended.dispersion, prior.count=0)
 
 		# Residual deviances
 		df.residual <- glmfit$df.residual
@@ -124,8 +124,8 @@ estimateDisp <- function(y, design=NULL, offset=NULL, prior.df=NULL, trend.metho
 		} 
 		if(sum(!i)!=0){
 		# Make sure that there are still some genes with finite prior.df
-			out.2 <- WLEB(theta=spline.pts, loglik=l0[!i,], prior.n=prior.n[!i], covariate=AveLogCPM[!i], 
-				trend.method=trend.method, span=span, overall=FALSE, trend=FALSE, m0=out.1$shared.loglik[!i,])
+			out.2 <- WLEB(theta=spline.pts, loglik=l0[!i,,drop=FALSE], prior.n=prior.n[!i], covariate=AveLogCPM[!i], 
+				trend.method=trend.method, span=span, overall=FALSE, trend=FALSE, m0=out.1$shared.loglik[!i,,drop=FALSE])
 			y$tagwise.dispersion[!i] <- 0.1 * 2^out.2$individual	
 		}
 	}

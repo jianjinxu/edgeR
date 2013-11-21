@@ -1,16 +1,16 @@
 #  FIT GENERALIZED LINEAR MODELS
 
-glmFit <- function(y, design, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count=0.125, start=NULL, method="auto", ...)
+glmFit <- function(y, design, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count=0.125, start=NULL, ...)
 UseMethod("glmFit")
 
-glmFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count=0.125, start=NULL, method="auto", ...)
+glmFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count=0.125, start=NULL, ...)
 #	Created 11 May 2011.  Last modified 11 March 2013.
 {
 	if(is.null(dispersion)) dispersion <- getDispersion(y)
 	if(is.null(dispersion)) stop("No dispersion values found in DGEList object.")
 	if(is.null(offset) && is.null(lib.size)) offset <- getOffset(y)
 	if(is.null(y$AveLogCPM)) y$AveLogCPM <- aveLogCPM(y)
-	fit <- glmFit(y=y$counts,design=design,dispersion=dispersion,offset=offset,weights=weights,lib.size=lib.size,prior.count=prior.count,start=start,method=method,...)
+	fit <- glmFit(y=y$counts,design=design,dispersion=dispersion,offset=offset,weights=weights,lib.size=lib.size,prior.count=prior.count,start=start,...)
 	fit$samples <- y$samples
 	fit$genes <- y$genes
 	fit$prior.df <- y$prior.df
@@ -18,11 +18,11 @@ glmFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 	new("DGEGLM",fit)
 }
 
-glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count=0.125, start=NULL, method="auto", ...)
+glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count=0.125, start=NULL, ...)
 #	Fit negative binomial generalized linear model for each transcript
 #	to a series of digital expression libraries
 #	Davis McCarthy and Gordon Smyth
-#	Created 17 August 2010. Last modified 13 Nov 2012.
+#	Created 17 August 2010. Last modified 21 Nov 2013.
 {
 #	Check input
 	y <- as.matrix(y)
@@ -51,59 +51,36 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 		weights[weights <= 0] <- NA
 		y[!is.finite(weights)] <- NA
 	}
-	method <- match.arg(method,c("auto","linesearch","levenberg","simple"))
 #	End of input checking
 
 	ngenes <- nrow(y)
 	nlibs <- ncol(y)
 	isna <- any(is.na(y))
 
-#	Choose fitting algorithm
-	if(method=="auto") {
-		if(isna || iswt) {
-			method <- "simple"
-		} else {
-			group <- designAsFactor(design)
-			if(nlevels(group)==ncol(design)) {
-				method <- "oneway"
-			} else {
-				method <- "levenberg"
-			}
-		}
+#	Fit the tagwise glms
+#	If the design is equivalent to a oneway layout, use a shortcut algorithm
+	group <- designAsFactor(design)
+	if(nlevels(group)==ncol(design)) {
+		fit <- mglmOneWay(y,design=design,dispersion=dispersion,offset=offset)
+		devfun <- deviances.function(dispersion)
+		fit$deviance <- devfun(y,fit$fitted.values,dispersion)
+		fit$method <- "oneway"
+	} else {
+		fit <- mglmLevenberg(y,design=design,dispersion=dispersion,offset=offset,coef.start=start,maxit=250,...)
+		fit$method <- "levenberg"
 	}
-	if(method!="simple") {
-		if(iswt) stop("weights only supported by simple fitting method")
-		if(isna) stop("NAs only supported by simple fitting method")
-	}
-
-#	Fit a glm to each gene
-	fit <- switch(method,
-		linesearch=mglmLS(y,design=design,dispersion=dispersion,coef.start=start,offset=offset,...),
-		oneway=mglmOneWay(y,design=design,dispersion=dispersion,offset=offset),
-		levenberg=mglmLevenberg(y,design=design,dispersion=dispersion,offset=offset,coef.start=start,maxit=250,...),
-		simple=mglmSimple(y,design=design,dispersion=dispersion,offset=offset,weights=weights)
-	)
 
 #	Prepare output
 	fit$counts <- y
-	if(prior.count>0)
-		fit$coefficients <- predFC(y,design,offset=offset,dispersion=dispersion,prior.count=prior.count)*log(2)
-	else
-		fit$coefficients <- as.matrix(fit$coefficients)
+	if(prior.count>0) fit$coefficients <- predFC(y,design,offset=offset,dispersion=dispersion,prior.count=prior.count)*log(2)
 	colnames(fit$coefficients) <- colnames(design)
 	rownames(fit$coefficients) <- rownames(y)
-	fit$fitted.values <- as.matrix(fit$fitted.values)
 	dimnames(fit$fitted.values) <- dimnames(y)
-	if(is.null(fit$deviance)) {
-		deviances <- deviances.function(dispersion)
-		fit$deviance <- deviances(y,fit$fitted.values,dispersion)
-	}
-	if(is.null(fit$df.residual)) fit$df.residual <- rep(nlibs-ncol(design),ngenes)
-#	if(is.null(fit$abundance)) fit$abundance <- mglmOneGroup(y, offset=offset, dispersion=dispersion)
-	if(is.null(fit$design)) fit$design <- design
-	if(is.null(fit$offset)) fit$offset <- offset
-	if(is.null(fit$dispersion)) fit$dispersion <- dispersion
-	fit$method <- method
+#	FIXME: we are not allowing missing values, so df.residual must be same for all tags
+	fit$df.residual <- rep(nlibs-ncol(design),ngenes)
+	fit$design <- design
+	fit$offset <- offset
+	fit$dispersion <- dispersion
 	new("DGEGLM",fit)
 }
 

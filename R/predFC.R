@@ -1,7 +1,7 @@
-predFC <- function(y,design=NULL,prior.count=0.125,offset=NULL,dispersion=NULL) 
+predFC <- function(y,design=NULL,prior.count=0.125,offset=NULL,dispersion=NULL,...) 
 UseMethod("predFC")
 
-predFC.DGEList <- function(y,design=NULL,prior.count=0.125,offset=NULL,dispersion=NULL)
+predFC.DGEList <- function(y,design=NULL,prior.count=0.125,offset=NULL,dispersion=NULL,...)
 {
 	if(is.null(offset)) offset <- getOffset(y)
 	if(is.null(dispersion)) dispersion <- getDispersion(y)
@@ -12,7 +12,7 @@ predFC.DGEList <- function(y,design=NULL,prior.count=0.125,offset=NULL,dispersio
 	predFC.default(y=y$counts,design=design,prior.count=prior.count,offset=offset,dispersion=dispersion)
 }
 
-predFC.default <- function(y,design=NULL,prior.count=0.125,offset=NULL,dispersion=0)
+predFC.default <- function(y,design=NULL,prior.count=0.125,offset=NULL,dispersion=0,...)
 #	Shrink log-fold-changes towards zero by augmenting data counts
 #	Gordon Smyth and Belinda Phipson
 #	17 Aug 2011.  Last modified 4 Nov 2012.
@@ -50,7 +50,7 @@ predFC.default <- function(y,design=NULL,prior.count=0.125,offset=NULL,dispersio
 	y <- y+prior.count
 
 #	Return matrix of coefficients on log2 scale
-	g <- glmFit(y,design,offset=log(lib.size),dispersion=dispersion,prior.count=0)
+	g <- glmFit(y,design,offset=log(lib.size),dispersion=dispersion,prior.count=0,...)
 	g$coefficients/log(2)
 }
 

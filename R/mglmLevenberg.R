@@ -46,19 +46,19 @@ mglmLevenberg <- function(y, design, dispersion=0, offset=0, coef.start=NULL, st
 # 	Checking arguments and calling the C++ method. Warning; this WILL overwrite 'beta' and 'mu' in memory. 
 #	Also note that we use transposed matrices so that each row of the original can be accessed from column-major
 #	storage in C++.
-	if (!is.double(design)) storage.mode(design)<-"double"
-	if (!is.double(y)) storage.mode(y)<-"double"
-	if (!is.double(dispersion)) storage.mode(dispersion)<-"double"
-	if (!is.double(offset)) storage.mode(offset)<-"double"
-	if (!is.double(beta)) storage.mode(beta)<-"double"
-	if (!is.double(mu)) storage.mode(mu)<-"double"
+	if (!is.double(design)) storage.mode(design) <- "double"
+	if (!is.double(y)) storage.mode(y) <- "double"
+	if (!is.double(dispersion)) storage.mode(dispersion) <- "double"
+	if (!is.double(offset)) storage.mode(offset) <- "double"
+	if (!is.double(beta)) storage.mode(beta) <- "double"
+	if (!is.double(mu)) storage.mode(mu) <- "double"
 	output <- .Call("R_levenberg", nlibs, ngenes, design, t(y), dispersion, offset, beta, mu, tol, maxit, PACKAGE="edgeR")
 	if (is.character(output)) { stop(output) }
 
-	# Naming the output and returning it.  
+#	Naming the output and returning it.  
 	names(output) <- c("coefficients", "fitted.values", "deviance", "iter", "failed")
-	output$coefficients<-t(output$coefficients)
-	output$fitted.values<-t(output$fitted.values)
+	output$coefficients <- t(output$coefficients)
+	output$fitted.values <- t(output$fitted.values)
 	colnames(output$coefficients) <- colnames(design)
 	rownames(output$coefficients) <- rownames(y)
 	dimnames(output$fitted.values) <- dimnames(y)
