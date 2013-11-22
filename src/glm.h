@@ -1,15 +1,24 @@
 #ifndef GLM_H
 #define GLM_H
+#define WEIGHTED 1
 
 #include "utils.h"
 
-std::pair<double,bool> glm_one_group(const int&, const int&, const double&, const double*, const double*, const double&);
+std::pair<double,bool> glm_one_group(const int&, const int&, const double&, const double*, 
+#ifdef WEIGHTED
+		const double*, 
+#endif
+		const double*, const double&);
 
 class glm_levenberg {
 public:
 	glm_levenberg(const int&, const int&, const double*, const int&, const double&);
 	~glm_levenberg();
-	int fit(const double*, const double*, const double&, double*, double*);
+	int fit(const double*, const double*, 
+#ifdef WEIGHTED
+			const double*, 
+#endif
+			const double&, double*, double*);
 
 	const bool& is_failure() const;
 	const int& get_iterations()  const;
@@ -33,7 +42,11 @@ private:
 	int iter;
 	bool failed;
 
-	double nb_deviance(const double*, const double*, const double&) const;
+	double nb_deviance(const double*, const double*, 
+#ifdef WEIGHTED
+			const double*, 
+#endif
+			const double&) const;
 	void autofill(const double*, double*, const double*);
 };
 

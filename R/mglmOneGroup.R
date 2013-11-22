@@ -1,42 +1,52 @@
-mglmOneGroup <- function(y,dispersion=0,offset=0,maxit=50,tol=1e-10)
-#	Fit null (single-group) negative-binomial glm with log-link to DGE data
+mglmOneGroup <- function(y,dispersion=0,offset=0,weights=NULL,maxit=50,tol=1e-10,verbose=FALSE)
+#	Fit single-group negative-binomial glm
 #	Aaron Lun and Gordon Smyth
-#	18 Aug 2010. Last modified 19 October 2012.
+#	18 Aug 2010. Last modified 22 Nov 2013.
 {
-#	Check input values for y
+#	Check y
 	y <- as.matrix(y)
+	if(!is.numeric(y)) stop("y is non-numeric")
 	if(any(y<0)) stop("y must be non-negative")
 	ntags <- nrow(y)
 	nlibs <- ncol(y)
 
-#	Check input values for dispersion
+#	Check dispersion
+	dispersion <- as.vector(dispersion)
+	if(typeof(dispersion) != "double") stop("dispersion not floating point number")
 	if(any(dispersion<0)) stop("dispersion must be non-negative")
 
+#	Check offset
+	if(typeof(offset) != "double") stop("offset not floating point number")
+
 #	All-Poisson special case
-	N <- exp(offset)
-	if(all(dispersion==0)) {
+	if(all(dispersion==0) && is.null(weights)) {
+		N <- exp(offset)
 		if(is.null(dim(N)))
 			m <- mean(N)
 		else
 			m <- .rowMeans(N,ntags,nlibs)
-		return(log(.rowMeans(y/m,ntags,nlibs)))
+	    return(log(.rowMeans(y/m, ntags, nlibs)))
 	}
 
-#	Expanding the offset and dispersion values.
+#	Check weights
+	if(is.null(weights)) weights=1
+	if(typeof(weights) == "integer") storage.mode(weights) <- "double"
+	if(typeof(weights) != "double") stop("weights is non-numeric")
+
+#	Expansions to full dimensions
 	dispersion <- rep(dispersion,length=ntags)
 	offset <- expandAsMatrix(offset,dim(y))
-
-#	Checking type for entry into C++ code.
-	if (!is.double(dispersion)) storage.mode(dispersion)<-"double"
-	if (!is.double(offset)) storage.mode(offset)<-"double"
-	stopifnot(is.numeric(y));
+	weights <- expandAsMatrix(weights,dim(y))
 
 #	Fisher scoring iteration.
-#	Matrices are transposed so that obs for each tag are in consecutive locations
-#	facilitating easy memory access in C
-	output<-.Call("R_one_group", ntags, nlibs, t(y), dispersion, t(offset), maxit, tol, PACKAGE="edgeR")
-	if (is.character(output) ) { stop(output) }
-	if (any(!output[[2]])) warning(paste("max iteractions exceeded for", sum(!output[[2]]), "tags", sep=" "))
+#	Matrices are transposed so that values for each tag are in consecutive memory locations in C
+	output <- .Call("R_one_group", ntags, nlibs, t(y), dispersion, t(offset), t(weights), maxit, tol, PACKAGE="edgeR")
+
+#	Check error condition
+	if(is.character(output)) stop(output)
+
+#	Convergence achieved for all tags?
+	if(verbose) if (any(!output[[2]])) warning(paste("max iteractions exceeded for", sum(!output[[2]]), "tags", sep=" "))
 
 	output[[1]]
 }

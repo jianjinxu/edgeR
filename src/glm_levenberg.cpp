@@ -8,26 +8,46 @@
  * very big or very small.
  */
     
-const double one_million=std::pow(10, 6.0), one_millionth=std::pow(10, -6.0);
+const double one_million=std::pow(10, 6.0), one_millionth=std::pow(10, -6.0), one_tenthousandth=std::pow(10, -4.0);
 const double mildly_low_value=std::pow(10, -8.0), supremely_low_value=std::pow(10, -13.0), ridiculously_low_value=std::pow(10, -100.0);
 
-double glm_levenberg::nb_deviance (const double* y, const double* mu, const double& phi) const {
-    double dev=0;
+double glm_levenberg::nb_deviance (const double* y, const double* mu, 
+#ifdef WEIGHTED
+		const double* w, 
+#endif		
+		const double& phi) const {
+    double tempdev=0, unitdev, cur_y, cur_mu;
     for (int i=0; i<nlibs; ++i) {
         // We add a small value to protect against zero during division and logging.
-        const double& cur_y=(y[i] < mildly_low_value ? mildly_low_value : y[i]);
-        const double& cur_mu=(mu[i] < mildly_low_value ? mildly_low_value : mu[i]);
-        const double product=cur_mu*phi;
-        // Calculating the deviance using either the Poisson (small phi*mu), the Gamma (large) or NB (everything else).
-        if (product < one_millionth) {
-            dev+=cur_y * std::log(cur_y/cur_mu) - (cur_y - cur_mu);
-        } else if (product > one_million) {
-            dev+=(cur_y - cur_mu)/cur_mu - std::log(cur_y/cur_mu); // * cur_mu/(1+product);
+        cur_y=y[i]+mildly_low_value;
+        cur_mu=mu[i]+mildly_low_value;
+
+        /* Calculating the deviance using either the Poisson (small phi*mu), the Gamma (large) or NB (everything else).
+         * Some additional work is put in to make the transitions between families smooth.
+         */
+        if (phi < one_tenthousandth) {
+			const double resid = cur_y - cur_mu;
+			unitdev=cur_y * std::log(cur_y/cur_mu) - resid - 0.5*resid*resid*phi*(1+phi*(2/3*resid-cur_y));
+//			printf("Poisson as %f\n", unitdev);
         } else {
-            dev+=cur_y * std::log( cur_y/cur_mu ) + (cur_y + 1/phi) * std::log( (cur_mu + 1/phi)/(cur_y + 1/phi) );
-        }
+			const double product=cur_mu*phi;
+			if (product > one_million) {
+            	unitdev=(cur_y - cur_mu)/cur_mu - std::log(cur_y/cur_mu);
+				unitdev*=cur_mu/(1+product);
+//				printf("Gamma as %f\n", unitdev);
+        	} else {
+				const double invphi=1/phi;
+            	unitdev=cur_y * std::log( cur_y/cur_mu ) + (cur_y + invphi) * std::log( (cur_mu + invphi)/(cur_y + invphi) );
+//				printf("NB as %f\n", unitdev);
+        	}
+		}
+#ifdef WEIGHTED
+        tempdev+=w[i]*unitdev;
+#else
+		tempdev+=unitdev;
+#endif
     }
-    return dev*2;
+    return tempdev*2;
 }
 
 void glm_levenberg::autofill(const double* offset, double* mu, const double* beta) {
@@ -76,7 +96,11 @@ const char normal='n', transposed='t', uplo='U';
 const double a=1, b=0;
 const int nrhs=1;
 
-int glm_levenberg::fit(const double* offset, const double* y, const double& disp, double* mu, double* beta) {
+int glm_levenberg::fit(const double* offset, const double* y, 
+#ifdef WEIGHTED
+		const double* w, 
+#endif
+		const double& disp, double* mu, double* beta) {
 	// We expect 'mu' and 'beta' to be supplied. We then check the maximum value of the counts.
     double ymax=0;
     for (int lib=0; lib<nlibs; ++lib) { 
@@ -98,7 +122,11 @@ int glm_levenberg::fit(const double* offset, const double* y, const double& disp
  	 * We then proceed to iterating using reweighted least squares.
  	 */
 	autofill(offset, mu, beta);
-	dev=nb_deviance(y, mu, disp);
+	dev=nb_deviance(y, mu, 
+#ifdef WEIGHTED
+			w, 
+#endif
+			disp);
     double max_info=-1, lambda=0;
 
     while ((++iter) <= maxit) {
@@ -106,10 +134,10 @@ int glm_levenberg::fit(const double* offset, const double* y, const double& disp
 
 		/* Here we set up the matrix XtWX i.e. the Fisher information matrix. X is the design matrix and W is a diagonal matrix
  		 * with the working weights for each observation (i.e. library). The working weights are part of the first derivative of
- 		 * the log-likelihood for a given coefficient. When multiplied by two covariates in the design matrix, you get the Fisher 
- 		 * information (i.e. variance of the log-likelihood) for that pair. This takes the role of the second derivative of the 
- 		 * log-likelihood. The working weights are formed by taking the reciprocal of the product of the variance (in terms of the mean) 
- 		 * and the square of the derivative of the link function.
+ 		 * the log-likelihood for a given coefficient, multiplied by any user-specified weights. When multiplied by two covariates 
+ 		 * in the design matrix, you get the Fisher information (i.e. variance of the log-likelihood) for that pair. This takes 
+ 		 * the role of the second derivative of the log-likelihood. The working weights are formed by taking the reciprocal of the 
+ 		 * product of the variance (in terms of the mean) and the square of the derivative of the link function.
  		 *
  		 * We also set up the actual derivative of the log likelihoods in 'dl'. This is done by multiplying each covariate by the 
  		 * difference between the mu and observation and dividing by the variance and derivative of the link function. This is
@@ -119,9 +147,14 @@ int glm_levenberg::fit(const double* offset, const double* y, const double& disp
  		 */
         for (int row=0; row<nlibs; ++row) {
             const double& cur_mu=mu[row];
-			const double denom=1+cur_mu*disp;
+			const double denom=(1+cur_mu*disp);
+#ifdef WEIGHTED
+            const double weight=cur_mu/denom*w[row];
+			const double deriv=(y[row]-cur_mu)/denom*w[row];
+#else
             const double weight=cur_mu/denom;
 			const double deriv=(y[row]-cur_mu)/denom;
+#endif
             for (int col=0; col<ncoefs; ++col){ 
 				const int index=col*nlibs+row;
                 wx[index]=design[index]*weight;
@@ -192,7 +225,11 @@ int glm_levenberg::fit(const double* offset, const double* y, const double& disp
              * lambda up so we want to retake the step from where we were before). This is why we don't modify the values
              * in-place until we're sure we want to take the step.
              */
-            const double dev_new=nb_deviance(y, mu_new, disp);
+            const double dev_new=nb_deviance(y, mu_new, 
+#ifdef WEIGHTED
+					w, 
+#endif
+					disp);
             if (dev_new/ymax < supremely_low_value) { low_dev=true; }
             if (dev_new <= dev || low_dev) {
 				for (int i=0; i<ncoefs; ++i) { beta[i]=beta_new[i]; }

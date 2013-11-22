@@ -13,10 +13,10 @@ Fit the same log-link negative binomial or Poisson generalized linear model (GLM
 }
 
 \usage{
-mglmOneGroup(y, dispersion=0, offset=0, maxit=50, tol=1e-10)
-mglmOneWay(y, design=NULL, dispersion=0, offset=0, maxit=50)
-mglmLevenberg(y, design, dispersion=0, offset=0, coef.start=NULL, start.method="null",
-          tol=1e-06, maxit=200)
+mglmOneGroup(y, dispersion=0, offset=0, weights=NULL, maxit=50, tol=1e-10, verbose=FALSE)
+mglmOneWay(y, design=NULL, dispersion=0, offset=0, weights=NULL, maxit=50, tol=1e-10)
+mglmLevenberg(y, design, dispersion=0, offset=0, weights=NULL,
+              coef.start=NULL, start.method="null", maxit=200, tol=1e-06)
 deviances.function(dispersion)
 designAsFactor(design)
 }
@@ -32,6 +32,8 @@ Can be a scalar giving one value for all tags, or a vector of length equal to th
 
 \item{offset}{numeric vector or matrix giving the offset that is to be included in the log-linear model predictor.  Can be a scalar, a vector of length equal to the number of libraries, or a matrix of the same size as \code{y}.}
 
+\item{weights}{numeric vector or matrix of non-negative quantitative weights.
+Can be a vector of length equal to the number of libraries, or a matrix of the same size as \code{y}.}
 \item{coef.start}{numeric matrix of starting values for the linear model coefficients.
 Number of rows should agree with \code{y} and number of columns should agree with \code{design}.}
 
@@ -40,6 +42,8 @@ Number of rows should agree with \code{y} and number of columns should agree wit
 \item{tol}{numeric scalar giving the convergence tolerance. For \code{mglmOneGroup}, convergence is judged successful when the step size falls below \code{tol} in absolute size.}
 
 \item{maxit}{scalar giving the maximum number of iterations for the Fisher scoring algorithm.}
+
+\item{verbose}{logical. If \code{TRUE}, warnings will be issued when \code{maxit} iterations are exceeded before convergence is achieved.}
 }
 
 \details{

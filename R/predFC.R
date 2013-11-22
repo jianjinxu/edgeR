@@ -1,7 +1,7 @@
-predFC <- function(y,design=NULL,prior.count=0.125,offset=NULL,dispersion=NULL,...) 
+predFC <- function(y,design=NULL,prior.count=0.125,offset=NULL,dispersion=NULL,weights=NULL,...) 
 UseMethod("predFC")
 
-predFC.DGEList <- function(y,design=NULL,prior.count=0.125,offset=NULL,dispersion=NULL,...)
+predFC.DGEList <- function(y,design=NULL,prior.count=0.125,offset=NULL,dispersion=NULL,weights=NULL,...)
 {
 	if(is.null(offset)) offset <- getOffset(y)
 	if(is.null(dispersion)) dispersion <- getDispersion(y)
@@ -9,10 +9,10 @@ predFC.DGEList <- function(y,design=NULL,prior.count=0.125,offset=NULL,dispersio
 		dispersion <- 0
 		message("dispersion set to zero")
 	}
-	predFC.default(y=y$counts,design=design,prior.count=prior.count,offset=offset,dispersion=dispersion)
+	predFC.default(y=y$counts,design=design,prior.count=prior.count,offset=offset,dispersion=dispersion,weights=weights,...)
 }
 
-predFC.default <- function(y,design=NULL,prior.count=0.125,offset=NULL,dispersion=0,...)
+predFC.default <- function(y,design=NULL,prior.count=0.125,offset=NULL,dispersion=0,weights=NULL,...)
 #	Shrink log-fold-changes towards zero by augmenting data counts
 #	Gordon Smyth and Belinda Phipson
 #	17 Aug 2011.  Last modified 4 Nov 2012.
@@ -21,6 +21,7 @@ predFC.default <- function(y,design=NULL,prior.count=0.125,offset=NULL,dispersio
 	y <- as.matrix(y)
 	ngenes <- nrow(y)
 	nsamples <- ncol(y)
+
 
 #	Check prior.count
 	if(prior.count<0) stop("prior.count should be non-negative")
@@ -31,7 +32,6 @@ predFC.default <- function(y,design=NULL,prior.count=0.125,offset=NULL,dispersio
 		offset <- log(lib.size)
 	} else
 		lib.size <- exp(offset)
-
 #	Check design
 	if(is.null(design)) {
 		warning("Behaviour of predFC with design=NULL is scheduled to be deprecated April 2014. Use cpm() instead.",call.=FALSE)
@@ -50,7 +50,7 @@ predFC.default <- function(y,design=NULL,prior.count=0.125,offset=NULL,dispersio
 	y <- y+prior.count
 
 #	Return matrix of coefficients on log2 scale
-	g <- glmFit(y,design,offset=log(lib.size),dispersion=dispersion,prior.count=0,...)
-	g$coefficients/log(2)
+   g <- glmFit(y,design,offset=log(lib.size),dispersion=dispersion,prior.count=0,weights=weights,...)
+   g$coefficients/log(2)
 }
 

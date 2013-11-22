@@ -40,5 +40,8 @@ DGEList <- function(counts=matrix(0,0,0), lib.size=colSums(counts), norm.factors
 		}
 	}
 
+#	x$offset <- expandAsMatrix(getOffset(x),dim(counts))
+#	x$weights <- matrix(1,ntags,nlib)
+
 	x
 }

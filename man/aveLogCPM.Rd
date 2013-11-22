@@ -11,8 +11,8 @@ Compute average log2 counts-per-million for each row of counts.
 }
 
 \usage{
-\method{aveLogCPM}{DGEList}(y, normalized.lib.sizes=TRUE, prior.count=2, dispersion=0.05, \dots)
-\method{aveLogCPM}{default}(y, lib.size=NULL, prior.count=2, dispersion=0.05, \dots)
+\method{aveLogCPM}{DGEList}(y, normalized.lib.sizes=TRUE, prior.count=2, dispersion=0.05, weights=NULL, \dots)
+\method{aveLogCPM}{default}(y, lib.size=NULL, prior.count=2, dispersion=0.05, weights=NULL, \dots)
 }
 
 \arguments{
@@ -22,6 +22,7 @@ Compute average log2 counts-per-million for each row of counts.
 \item{prior.count}{average value to be added to each count, to avoid infinite values on the log-scale.}
 \item{dispersion}{numeric scalar or vector of negative-binomial dispersions.}
 \item{\dots}{other arguments are not currently used}
+\item{weights}{optional numeric matrix giving observation weights}
 }
 
 \details{

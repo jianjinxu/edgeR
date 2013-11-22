@@ -2,6 +2,11 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.5.8}{\itemize{
+\item
+glm fitting functions now support weights.
+}}
+
 \section{Version 3.5.7}{\itemize{
 \item
 Functions mglmLS() and mglmSimple() are retired.

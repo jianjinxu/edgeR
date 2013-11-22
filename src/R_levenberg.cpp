@@ -1,12 +1,13 @@
 #include "glm.h"
+#include "matvec_check.h"
 
 extern "C" {
 
-SEXP R_levenberg (SEXP nlib, SEXP ntag, SEXP design, SEXP counts, SEXP disp, SEXP offset, SEXP beta, SEXP fitted, SEXP tol, SEXP maxit) try {
+SEXP R_levenberg (SEXP nlib, SEXP ntag, SEXP design, SEXP counts, SEXP disp, SEXP offset, SEXP weights,
+		SEXP beta, SEXP fitted, SEXP tol, SEXP maxit) try {
 	if (!IS_NUMERIC(design)) { throw  std::runtime_error("design matrix should be double precision"); }
 	if (!IS_NUMERIC(counts)) { throw  std::runtime_error("count matrix should be double precision"); }
 	if (!IS_NUMERIC(disp)) { throw std::runtime_error("dispersion vector should be double precision"); }
-	if (!IS_NUMERIC(offset)) { throw std::runtime_error("offset matrix should be double precision"); }
 	if (!IS_NUMERIC(beta)) { throw std::runtime_error("matrix of start values for coefficients should be double precision"); }
 	if (!IS_NUMERIC(fitted)) { throw std::runtime_error("matrix of starting fitted values should be double precision"); }
 
@@ -25,13 +26,16 @@ SEXP R_levenberg (SEXP nlib, SEXP ntag, SEXP design, SEXP counts, SEXP disp, SEX
         throw std::runtime_error("dimensions of the fitted matrix do not match those of the count matrix");
     } else if (LENGTH(disp)!=num_tags) { 
 		throw std::runtime_error("length of dispersion vector must be equal to the number of tags"); 
-	} else if (LENGTH(offset)!=clen) {
-		throw std::runtime_error("dimensions of offset matrix must match that of the count matrix"); 
-	}
+	} 
 
     // Initializing pointers to the assorted features.
-    double* beta_ptr=NUMERIC_POINTER(beta), *design_ptr=NUMERIC_POINTER(design), *count_ptr=NUMERIC_POINTER(counts), 
-		*fitted_ptr=NUMERIC_POINTER(fitted), *offset_ptr=NUMERIC_POINTER(offset), *disp_ptr=NUMERIC_POINTER(disp);
+    const double* beta_ptr=NUMERIC_POINTER(beta), 
+		  *design_ptr=NUMERIC_POINTER(design), 
+		  *count_ptr=NUMERIC_POINTER(counts), 
+	  	  *fitted_ptr=NUMERIC_POINTER(fitted), 
+		  *disp_ptr=NUMERIC_POINTER(disp);
+	matvec_check allo(num_libs, num_tags, offset, "offset");
+	matvec_check allw(num_libs, num_tags, weights, "weight");
 
     // Initializing output cages.
     SEXP output=PROTECT(NEW_LIST(5));
@@ -52,18 +56,25 @@ SEXP R_levenberg (SEXP nlib, SEXP ntag, SEXP design, SEXP counts, SEXP disp, SEX
 			// Copying elements to the new_beta and new_fitted, so output is automatically stored.
 			for (int i=0; i<num_libs; ++i) { new_fitted_ptr[i]=fitted_ptr[i]; }
 			for (int i=0; i<num_coefs; ++i) { new_beta_ptr[i]=beta_ptr[i]; }
-			if (glbg.fit(offset_ptr, count_ptr, *disp_ptr, new_fitted_ptr, new_beta_ptr)) {
+			if (glbg.fit(allo.access(), count_ptr, 
+#ifdef WEIGHTED
+						allw.access(),
+#endif
+						*disp_ptr, new_fitted_ptr, new_beta_ptr)) {
 				std::stringstream errout;
 				errout<< "solution using Cholesky decomposition failed for tag " << tag+1;
 				throw std::runtime_error(errout.str());
 			} 
-			offset_ptr+=num_libs;
-			count_ptr+=num_libs;
+			allo.advance();
+			allw.advance();
+			
 			++disp_ptr;
+			count_ptr+=num_libs;
 			fitted_ptr+=num_libs;
 			new_fitted_ptr+=num_libs;
 			beta_ptr+=num_coefs;
 			new_beta_ptr+=num_coefs;
+			
 			*(dev_ptr++)=glbg.get_deviance();
 			*(iter_ptr++)=glbg.get_iterations();
 			*(fail_ptr++)=glbg.is_failure();

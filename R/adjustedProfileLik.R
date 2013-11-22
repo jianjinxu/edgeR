@@ -35,8 +35,8 @@ adjustedProfileLik <- function(dispersion, y, design, offset, adjust=TRUE)
 
 #	Checking type, otherwise the C++ code will complain.
 #	Note the use of a transposed matrix for easy row access in column-major format.
-		if (!is.double(W)) storage.mode(W)<-"double"
-		if (!is.double(design)) storage.mode(design)<-"double"
+		if (!is.double(W)) storage.mode(W) <- "double"
+		if (!is.double(design)) storage.mode(design) <- "double"
 		cr <- .Call("R_cr_adjust", t(W), design, nrow(design), PACKAGE="edgeR")
 		if (is.character(cr)) { stop(cr) }
 	}

@@ -1,7 +1,7 @@
 aveLogCPM <- function(y, ...)
 UseMethod("aveLogCPM")
 
-aveLogCPM.DGEList <- function(y, normalized.lib.sizes=TRUE, prior.count=2, dispersion=0.05, ...)
+aveLogCPM.DGEList <- function(y, normalized.lib.sizes=TRUE, prior.count=2, dispersion=0.05, weights=NULL, ...)
 #	log2(AveCPM)
 #	Gordon Smyth
 #	11 March 2013.  Last modified 20 November 2013.
@@ -12,10 +12,10 @@ aveLogCPM.DGEList <- function(y, normalized.lib.sizes=TRUE, prior.count=2, dispe
 		nf <- y$samples$norm.factors
 		if(!is.null(y$samples$norm.factors)) lib.size <- lib.size*nf
 	}
-	aveLogCPM(y$counts,lib.size=lib.size,prior.count=prior.count,dispersion=dispersion)
+	aveLogCPM(y$counts,lib.size=lib.size,prior.count=prior.count,dispersion=dispersion,weights=weights)
 }
 
-aveLogCPM.DGEGLM <- function(y, prior.count=2, dispersion=0.05, ...)
+aveLogCPM.DGEGLM <- function(y, prior.count=2, dispersion=0.05, weights=NULL, ...)
 #	log2(AveCPM)
 #	Gordon Smyth
 #	11 March 2013.
@@ -23,10 +23,10 @@ aveLogCPM.DGEGLM <- function(y, prior.count=2, dispersion=0.05, ...)
 	offset <- y$offset
 	if(is.matrix(offset)) offset <- colMeans(offset)
 	lib.size <- exp(offset)
-	aveLogCPM(y$counts,lib.size=lib.size,prior.count=prior.count,dispersion=dispersion)
+	aveLogCPM(y$counts,lib.size=lib.size,prior.count=prior.count,dispersion=dispersion,weights=weights)
 }
 
-aveLogCPM.default <- function(y,lib.size=NULL,prior.count=2,dispersion=0.05, ...)
+aveLogCPM.default <- function(y,lib.size=NULL,prior.count=2,dispersion=0.05,weights=NULL, ...)
 #	log2(AveCPM)
 #	Gordon Smyth
 #	25 Aug 2012. Last modified 30 Sept 2013.
@@ -43,7 +43,7 @@ aveLogCPM.default <- function(y,lib.size=NULL,prior.count=2,dispersion=0.05, ...
 	} else {
 		prior.count.scaled <- lib.size/mean.lib.size * prior.count
 		offset <- log(lib.size+2*prior.count.scaled)
-		abundance <- mglmOneGroup(t(t(y)+prior.count.scaled),dispersion=dispersion,offset=offset)
+		abundance <- mglmOneGroup(t(t(y)+prior.count.scaled),dispersion=dispersion,offset=offset,weights=weights)
 	}
 	(abundance+log(1e6)) / log(2)
 }

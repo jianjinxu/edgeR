@@ -9,7 +9,7 @@ glmFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 	if(is.null(dispersion)) dispersion <- getDispersion(y)
 	if(is.null(dispersion)) stop("No dispersion values found in DGEList object.")
 	if(is.null(offset) && is.null(lib.size)) offset <- getOffset(y)
-	if(is.null(y$AveLogCPM)) y$AveLogCPM <- aveLogCPM(y)
+	if(is.null(y$AveLogCPM)) y$AveLogCPM <- aveLogCPM(y,weights=weights)
 	fit <- glmFit(y=y$counts,design=design,dispersion=dispersion,offset=offset,weights=weights,lib.size=lib.size,prior.count=prior.count,start=start,...)
 	fit$samples <- y$samples
 	fit$genes <- y$genes
@@ -48,7 +48,7 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 	iswt <- !is.null(weights)
 	if(iswt) {
 		weights <- expandAsMatrix(weights,dim(y))
-		weights[weights <= 0] <- NA
+		weights[weights <= 0] <- 1e-6
 		y[!is.finite(weights)] <- NA
 	}
 #	End of input checking
@@ -72,7 +72,7 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 
 #	Prepare output
 	fit$counts <- y
-	if(prior.count>0) fit$coefficients <- predFC(y,design,offset=offset,dispersion=dispersion,prior.count=prior.count)*log(2)
+	if(prior.count>0) fit$coefficients <- predFC(y,design,offset=offset,dispersion=dispersion,prior.count=prior.count,weights=weights,...)*log(2)
 	colnames(fit$coefficients) <- colnames(design)
 	rownames(fit$coefficients) <- rownames(y)
 	dimnames(fit$fitted.values) <- dimnames(y)
@@ -88,7 +88,7 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 glmLRT <- function(glmfit,coef=ncol(glmfit$design),contrast=NULL,test="chisq")
 #	Tagwise likelihood ratio tests for DGEGLM
 #	Gordon Smyth, Davis McCarthy and Yunshun Chen.
-#	Created 1 July 2010.  Last modified 14 Dec 2012.
+#	Created 1 July 2010.  Last modified 22 Nov 2013.
 {
 #	Check glmfit
 	if(!is(glmfit,"DGEGLM")) {
@@ -97,6 +97,7 @@ glmLRT <- function(glmfit,coef=ncol(glmfit$design),contrast=NULL,test="chisq")
 		}
 		stop("glmfit must be an DGEGLM object (usually produced by glmFit).")
 	}
+	if(is.null(glmfit$AveLogCPM)) glmfit$AveLogCPM <- aveLogCPM(glmfit)
 	nlibs <- ncol(glmfit)
 
 #	Check test
@@ -174,7 +175,6 @@ glmLRT <- function(glmfit,coef=ncol(glmfit$design),contrast=NULL,test="chisq")
 		rn <- 1:nrow(glmfit)
 	else
 		rn <- make.unique(rn)
-	if(is.null(glmfit$AveLogCPM)) glmfit$AveLogCPM <- aveLogCPM(glmfit)
 	tab <- data.frame(
 		logFC=logFC,
 		logCPM=glmfit$AveLogCPM,
