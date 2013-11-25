@@ -2,14 +2,29 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.5.10}{\itemize{
+\item
+New function estimateGLMRobustDisp().
+}}
+
 \section{Version 3.5.9}{\itemize{
 \item
 Dispersion estimation functions now support observation weights.
+
+\item
+The DGEList methods for esimateDisp(), estimateGLMCommonDisp(), estimateGLMTrendedDisp() and estimateGLMTagwiseDisp no longer accept offset, weights or AveLogCPM as arguments.
+These quantities are now always taken from the DGEList object.
+
+\item
+Edits to many help pages.
 }}
 
 \section{Version 3.5.8}{\itemize{
 \item
 glm fitting functions now support observation weights.
+
+\item
+aveLogCPM() now supports observation offsets.
 }}
 
 \section{Version 3.5.7}{\itemize{
