@@ -60,12 +60,12 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.siz
 #	If the design is equivalent to a oneway layout, use a shortcut algorithm
 	group <- designAsFactor(design)
 	if(nlevels(group)==ncol(design)) {
-		fit <- mglmOneWay(y,design=design,dispersion=dispersion,offset=offset)
+		fit <- mglmOneWay(y,design=design,dispersion=dispersion,offset=offset,weights=weights)
 		devfun <- deviances.function(dispersion)
 		fit$deviance <- devfun(y,fit$fitted.values,dispersion)
 		fit$method <- "oneway"
 	} else {
-		fit <- mglmLevenberg(y,design=design,dispersion=dispersion,offset=offset,coef.start=start,maxit=250,...)
+		fit <- mglmLevenberg(y,design=design,dispersion=dispersion,offset=offset,weights=weights,coef.start=start,maxit=250)
 		fit$method <- "levenberg"
 	}
 

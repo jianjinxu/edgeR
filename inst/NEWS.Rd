@@ -2,6 +2,11 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.5.12}{\itemize{
+\item
+Bug fix to glmFit.
+}}
+
 \section{Version 3.5.11}{\itemize{
 \item
 Bug fix to R_one_group.cpp.
