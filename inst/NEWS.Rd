@@ -2,9 +2,14 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.5.9}{\itemize{
+\item
+Dispersion estimation functions now support observation weights.
+}}
+
 \section{Version 3.5.8}{\itemize{
 \item
-glm fitting functions now support weights.
+glm fitting functions now support observation weights.
 }}
 
 \section{Version 3.5.7}{\itemize{

@@ -8,8 +8,8 @@
 \description{Computes estimated coefficients for a NB glm in such a way that the log-fold-changes are shrunk towards zero.}
 
 \usage{
-\S3method{predFC}{DGEList}(y, design=NULL, prior.count=0.125, offset=NULL, dispersion=NULL, weights=NULL, ...)
-\S3method{predFC}{default}(y, design=NULL, prior.count=0.125, offset=NULL, dispersion=0, weights=NULL, ...)
+\S3method{predFC}{DGEList}(y, design=NULL, prior.count=0.125, offset=NULL, dispersion=NULL, weights=NULL, \dots)
+\S3method{predFC}{default}(y, design=NULL, prior.count=0.125, offset=NULL, dispersion=0, weights=NULL, \dots)
 }
 
 \arguments{

@@ -1,16 +1,17 @@
 #  FIT GENERALIZED LINEAR MODELS
 
-glmFit <- function(y, design, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count=0.125, start=NULL, ...)
+glmFit <- function(y, ...)
 UseMethod("glmFit")
 
-glmFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count=0.125, start=NULL, ...)
+glmFit.DGEList <- function(y, design=NULL, dispersion=NULL, prior.count=0.125, start=NULL, ...)
 #	Created 11 May 2011.  Last modified 11 March 2013.
 {
 	if(is.null(dispersion)) dispersion <- getDispersion(y)
 	if(is.null(dispersion)) stop("No dispersion values found in DGEList object.")
-	if(is.null(offset) && is.null(lib.size)) offset <- getOffset(y)
-	if(is.null(y$AveLogCPM)) y$AveLogCPM <- aveLogCPM(y,weights=weights)
-	fit <- glmFit(y=y$counts,design=design,dispersion=dispersion,offset=offset,weights=weights,lib.size=lib.size,prior.count=prior.count,start=start,...)
+
+	if(is.null(y$AveLogCPM)) y$AveLogCPM <- aveLogCPM(y)
+
+	fit <- glmFit(y=y$counts,design=design,dispersion=dispersion,offset=getOffset(y),lib.size=NULL,weights=y$weights,prior.count=prior.count,start=start,...)
 	fit$samples <- y$samples
 	fit$genes <- y$genes
 	fit$prior.df <- y$prior.df
@@ -18,14 +19,18 @@ glmFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 	new("DGEGLM",fit)
 }
 
-glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights=NULL, lib.size=NULL, prior.count=0.125, start=NULL, ...)
+glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.size=NULL, weights=NULL, prior.count=0.125, start=NULL, ...)
 #	Fit negative binomial generalized linear model for each transcript
 #	to a series of digital expression libraries
 #	Davis McCarthy and Gordon Smyth
-#	Created 17 August 2010. Last modified 21 Nov 2013.
+#	Created 17 August 2010. Last modified 22 Nov 2013.
 {
-#	Check input
+#	Check y
 	y <- as.matrix(y)
+	ntag <- nrow(y)
+	nlib <- ncol(y)
+
+#	Check design
 	if(is.null(design)) {
 		design <- matrix(1,ncol(y),1)
 		rownames(design) <- colnames(y)
@@ -35,27 +40,21 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 		ne <- nonEstimable(design)
 		if(!is.null(ne)) stop(paste("Design matrix not of full rank.  The following coefficients not estimable:\n", paste(ne, collapse = " ")))
 	}
-	if(is.null(dispersion)) {
-		stop("No dispersion values provided.")
-	} else {
-		if(!( length(dispersion)==1 | length(dispersion)==nrow(y) ))
-			stop("Length of dispersion vector incompatible with count matrix. Dispersion argument must be either of length 1 (i.e. common dispersion) or length equal to the number of rows of y (i.e. individual dispersion value for each tag/gene).")
-	}
-	if(!is.null(offset) && !is.null(lib.size)) warning("offset and lib.size both supplied: offset takes precedence, lib.size ignored.")
-	if(is.null(lib.size)) lib.size <- colSums(y)
-	if(is.null(offset)) offset <- log(lib.size)
-	offset <- expandAsMatrix(offset,dim(y))
-	iswt <- !is.null(weights)
-	if(iswt) {
-		weights <- expandAsMatrix(weights,dim(y))
-		weights[weights <= 0] <- 1e-6
-		y[!is.finite(weights)] <- NA
-	}
-#	End of input checking
 
-	ngenes <- nrow(y)
-	nlibs <- ncol(y)
-	isna <- any(is.na(y))
+#	Check dispersion
+	if(is.null(dispersion)) stop("No dispersion values provided.")
+
+#	Check offset and lib.size
+	if(is.null(offset)) {
+		if(is.null(lib.size)) lib.size <- colSums(y)
+		offset <- log(lib.size)
+	}
+	offset <- expandAsMatrix(offset,dim(y))
+
+#	Check weights
+	if(is.null(weights)) weights <- 1
+	weights[weights <= 0] <- 1e-6
+	weights <- expandAsMatrix(weights,dim(y))
 
 #	Fit the tagwise glms
 #	If the design is equivalent to a oneway layout, use a shortcut algorithm
@@ -77,7 +76,7 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, weights
 	rownames(fit$coefficients) <- rownames(y)
 	dimnames(fit$fitted.values) <- dimnames(y)
 #	FIXME: we are not allowing missing values, so df.residual must be same for all tags
-	fit$df.residual <- rep(nlibs-ncol(design),ngenes)
+	fit$df.residual <- rep(nlib-ncol(design),ntag)
 	fit$design <- design
 	fit$offset <- offset
 	fit$dispersion <- dispersion

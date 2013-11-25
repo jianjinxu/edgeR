@@ -8,7 +8,7 @@ Compute adjusted profile-likelihoods for estimating the dispersion parameters of
 }
 
 \usage{
-adjustedProfileLik(dispersion, y, design, offset, adjust=TRUE)
+adjustedProfileLik(dispersion, y, design, offset, weights=NULL, adjust=TRUE)
 }
 
 \arguments{
@@ -16,6 +16,7 @@ adjustedProfileLik(dispersion, y, design, offset, adjust=TRUE)
 \item{y}{numeric matrix of counts.}
 \item{design}{numeric matrix giving the design matrix.}
 \item{offset}{numeric matrix of same size as \code{y} giving offsets for the log-linear models.  Can be a scalor or a vector of length \code{ncol(y)}, in which case it is expanded out to a matrix.}
+\item{weights}{optional numeric matrix giving observation weights}
 \item{adjust}{logical, if \code{TRUE} then Cox-Reid adjustment is made to the log-likelihood, if \code{FALSE} then the log-likelihood is returned without adjustment.}
 }
 

@@ -1,49 +1,80 @@
 aveLogCPM <- function(y, ...)
 UseMethod("aveLogCPM")
 
-aveLogCPM.DGEList <- function(y, normalized.lib.sizes=TRUE, prior.count=2, dispersion=0.05, weights=NULL, ...)
+aveLogCPM.DGEList <- function(y, normalized.lib.sizes=TRUE, prior.count=2, dispersion=NULL, ...)
 #	log2(AveCPM)
 #	Gordon Smyth
-#	11 March 2013.  Last modified 20 November 2013.
+#	Created 11 March 2013.  Last modified 24 November 2013.
 {
+#	Library sizes should be stored in y but are sometimes missing
 	lib.size <- y$samples$lib.size
 	if(is.null(lib.size)) lib.size <- colSums(y$counts)
+
+#	Normalization factors should be stored in y but are sometimes missing
 	if(normalized.lib.sizes) {
 		nf <- y$samples$norm.factors
 		if(!is.null(y$samples$norm.factors)) lib.size <- lib.size*nf
 	}
-	aveLogCPM(y$counts,lib.size=lib.size,prior.count=prior.count,dispersion=dispersion,weights=weights)
+
+#	Dispersion supplied as argument over-rules value in object
+	if(is.null(dispersion)) dispersion <- y$common.dispersion
+
+	aveLogCPM(y$counts,lib.size=lib.size,prior.count=prior.count,dispersion=dispersion,weights=y$weights)
 }
 
-aveLogCPM.DGEGLM <- function(y, prior.count=2, dispersion=0.05, weights=NULL, ...)
+aveLogCPM.DGEGLM <- function(y, prior.count=2, dispersion=NULL, ...)
 #	log2(AveCPM)
 #	Gordon Smyth
-#	11 March 2013.
+#	Created 11 March 2013.  Last modified 24 Nov 2013.
 {
-	offset <- y$offset
-	if(is.matrix(offset)) offset <- colMeans(offset)
-	lib.size <- exp(offset)
-	aveLogCPM(y$counts,lib.size=lib.size,prior.count=prior.count,dispersion=dispersion,weights=weights)
+#	Dispersion supplied as argument over-rules value in object
+	if(is.null(dispersion)) dispersion <- y$dispersion
+
+	aveLogCPM(y$counts,offset=y$offset,prior.count=prior.count,dispersion=dispersion,weights=y$weights)
 }
 
-aveLogCPM.default <- function(y,lib.size=NULL,prior.count=2,dispersion=0.05,weights=NULL, ...)
+aveLogCPM.default <- function(y,lib.size=NULL,offset=NULL,prior.count=2,dispersion=NULL,weights=NULL, ...)
 #	log2(AveCPM)
 #	Gordon Smyth
-#	25 Aug 2012. Last modified 30 Sept 2013.
+#	Created 25 Aug 2012. Last modified 24 Nov 2013.
 {
-#	Check input
+#	Check y
 	y <- as.matrix(y)
 	if(any(y<0)) stop("y must be non-negative")
-	if(is.null(lib.size)) lib.size <- colSums(y)
+
+#	Check prior.count
 	if(prior.count<0) prior.count <- 0
 
+#	Check dispersion
+	if(is.null(dispersion)) dispersion <- 0.05
+
+#	Check lib.size and offset.
+#	If offset is provided, it takes precedence over lib.size.
+#	However it must have a similar average to log(lib.size)
+#	for the results to be meaningful as logCPM values
+	if(is.null(offset)) {
+		if(is.null(lib.size)) lib.size <- colSums(y)
+	} else {
+		lib.size <- exp(offset)
+	}
 	mean.lib.size <- mean(lib.size)
+
+#	Special case when all counts are zero
 	if(mean.lib.size==0) {
 		abundance <- rep(-log(nrow(y)),nrow(y))
-	} else {
-		prior.count.scaled <- lib.size/mean.lib.size * prior.count
-		offset <- log(lib.size+2*prior.count.scaled)
-		abundance <- mglmOneGroup(t(t(y)+prior.count.scaled),dispersion=dispersion,offset=offset,weights=weights)
+		return( (abundance+log(1e6)) / log(2) )
 	}
+
+#	Scale prior counts to preserve fold changes
+	prior.count.scaled <- lib.size/mean.lib.size * prior.count
+
+#	Add double prior counts to library sizes
+	offset <- log(lib.size+2*prior.count.scaled)
+
+#	Add prior counts to y
+	if(is.null(dim(prior.count.scaled))) prior.count.scale <- matrix(1,nrow(y),1) %*% prior.count.scaled
+	y <- y+prior.count.scaled
+
+	abundance <- mglmOneGroup(y,dispersion=dispersion,offset=offset,weights=weights)
 	(abundance+log(1e6)) / log(2)
 }

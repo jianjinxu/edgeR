@@ -8,7 +8,7 @@ Both of these functions plot the log-fold change (i.e. the log of the ratio of e
 }
 \usage{
 plotSmear(object, pair=NULL, de.tags=NULL, xlab="Average logCPM", ylab="logFC", pch=19,
-     cex=0.2, smearWidth=0.5, panel.first=grid(), smooth.scatter=FALSE, lowess=FALSE, ...)
+     cex=0.2, smearWidth=0.5, panel.first=grid(), smooth.scatter=FALSE, lowess=FALSE, \dots)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

@@ -3,6 +3,7 @@
 \alias{estimateGLMTagwiseDisp.DGEList}
 \alias{estimateGLMTagwiseDisp.default}
 
+
 \title{Empirical Bayes Tagwise Dispersions for Negative Binomial GLMs}
 
 \description{
@@ -10,10 +11,10 @@ Compute an empirical Bayes estimate of the negative binomial dispersion paramete
 }
 
 \usage{
-\S3method{estimateGLMTagwiseDisp}{DGEList}(y, design=NULL, offset=NULL, dispersion=NULL, prior.df=10,
-          trend=!is.null(y$trended.dispersion), span=NULL, AveLogCPM=NULL, ...)
+\S3method{estimateGLMTagwiseDisp}{DGEList}(y, design=NULL, prior.df=10,
+          trend=!is.null(y$trended.dispersion), span=NULL, \dots)
 \S3method{estimateGLMTagwiseDisp}{default}(y, design=NULL, offset=NULL, dispersion, prior.df=10,
-          trend=TRUE, span=NULL, AveLogCPM=NULL, ...)
+          trend=TRUE, span=NULL, AveLogCPM=NULL, weights=NULL, \dots)
 }
 
 \arguments{
@@ -25,6 +26,7 @@ Compute an empirical Bayes estimate of the negative binomial dispersion paramete
 \item{prior.df}{prior degrees of freedom.}
 \item{span}{width of the smoothing window, in terms of proportion of the data set. Default value decreases with the number of tags.}
 \item{AveLogCPM}{numeric vector giving average log2 counts per million for each gene}
+\item{weights}{optional numeric matrix giving observation weights}
 \item{\ldots}{other arguments are passed to \code{\link{dispCoxReidInterpolateTagwise}}.}
 }
 
@@ -71,5 +73,3 @@ summary(d$tagwise.dispersion)
 
 \code{\link{estimateCommonDisp}} for common dispersion or \code{\link{estimateTagwiseDisp}} for tagwise dispersion in the context of a multiple group experiment (one-way layout).
 }
-
-\keyword{algebra}

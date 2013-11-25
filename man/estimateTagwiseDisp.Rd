@@ -68,7 +68,7 @@ assessing differences in tag abundance. \emph{Bioinformatics} 23, 2881-2887.
 
 \author{Mark Robinson, Davis McCarthy, Yunshun Chen and Gordon Smyth}
 \examples{
-# See exactTest
+# See ?exactTest or ?estimateTrendedDisp for examples
 }
 
 \seealso{

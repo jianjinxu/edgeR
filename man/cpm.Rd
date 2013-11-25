@@ -9,8 +9,8 @@
 \description{Computes counts per million (CPM) or reads per kilobase per million (RPKM) values.}
 
 \usage{
-\method{cpm}{DGEList}(x, normalized.lib.sizes=TRUE, log=FALSE, prior.count=0.25, ...)
-\method{cpm}{default}(x, lib.size=NULL, log=FALSE, prior.count=0.25, ...)
+\method{cpm}{DGEList}(x, normalized.lib.sizes=TRUE, log=FALSE, prior.count=0.25, \dots)
+\method{cpm}{default}(x, lib.size=NULL, log=FALSE, prior.count=0.25, \dots)
 rpkm(x, gene.length, normalized.lib.sizes=TRUE, log=FALSE, prior.count=0.25)
 }
 \arguments{ 

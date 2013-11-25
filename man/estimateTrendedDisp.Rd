@@ -32,11 +32,19 @@ An object of class \code{DGEList} with the same components as for \code{\link{es
 
 \author{Yunshun Chen and Gordon Smyth}
 \examples{
-y <- matrix(rnbinom(6000, mu=100, size=10), 1000, 6)
-group <- c(0,0,0,1,1,1)
-d <- DGEList(y, group=group)
-d <- estimateCommonDisp(d)
-d <- estimateTrendedDisp(d)
+ngenes <- 1000
+nlib <- 4
+log2cpm <- seq(from=0,to=16,length=ngenes)
+lib.size <- 1e7
+mu <- 2^log2cpm * lib.size * 1e-6
+dispersion <- 1/sqrt(mu) + 0.1
+counts <- rnbinom(ngenes*nlib, mu=mu, size=1/dispersion)
+counts <- matrix(counts,ngenes,nlib)
+y <- DGEList(counts,lib.size=rep(lib.size,nlib))
+y <- estimateCommonDisp(y)
+y <- estimateTrendedDisp(y)
+y <- estimateTagwiseDisp(y)
+plotBCV(y)
 }
 
 \seealso{

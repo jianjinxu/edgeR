@@ -5,7 +5,7 @@
 Turn a \code{TopTags} object into a \code{data.frame}.
 }
 \usage{
-\method{as.data.frame}{TopTags}(x, row.names = NULL, optional = FALSE, ...)
+\method{as.data.frame}{TopTags}(x, row.names = NULL, optional = FALSE, \dots)
 }
 \arguments{
   \item{x}{an object of class \code{TopTags}}

@@ -8,15 +8,13 @@ Maximizes the negative binomial likelihood to give the estimate of the common, t
 }
 
 \usage{
-estimateDisp(y, design=NULL, offset=NULL, prior.df=NULL, trend.method="locfit", span=NULL, grid.length=21, grid.range=c(-10,10), robust=FALSE, winsor.tail.p=c(0.05,0.1), tol=1e-06)
+estimateDisp(y, design=NULL, prior.df=NULL, trend.method="locfit", span=NULL, grid.length=21, grid.range=c(-10,10), robust=FALSE, winsor.tail.p=c(0.05,0.1), tol=1e-06)
 }
 
 \arguments{
 \item{y}{\code{DGEList} object}
 
 \item{design}{numeric design matrix}
-
-\item{offset}{numeric vector or matrix of offsets for the log-linear models}
 
 \item{prior.df}{prior degrees of freedom. It is used in calculating \code{prior.n}.}
 

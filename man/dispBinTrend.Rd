@@ -9,7 +9,7 @@ Estimate the abundance-dispersion trend by computing the common dispersion for b
 
 \usage{
 dispBinTrend(y, design=NULL, offset=NULL, df = 5, span=0.3, min.n=400, method.bin="CoxReid",
-          method.trend="spline", AveLogCPM=NULL, \dots)
+          method.trend="spline", AveLogCPM=NULL, weights=NULL, \dots)
 }
 
 \arguments{
@@ -22,6 +22,7 @@ dispBinTrend(y, design=NULL, offset=NULL, df = 5, span=0.3, min.n=400, method.bi
 \item{method.bin}{method used to estimate the dispersion in each bin. Possible values are \code{"CoxReid"}, \code{"Pearson"} or \code{"deviance"}.}
 \item{method.trend}{type of curve to smooth the bins. Possible values are \code{"spline"} for a natural cubic regression spline or \code{"loess"} for a linear lowess curve.}
 \item{AveLogCPM}{numeric vector giving average log2 counts per million for each gene}
+\item{weights}{optional numeric matrix giving observation weights}
 \item{\dots}{other arguments are passed to \code{estimateGLMCommonDisp}}
 }
 

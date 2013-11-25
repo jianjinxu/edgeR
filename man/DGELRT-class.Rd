@@ -29,7 +29,7 @@ Objects of this class contain the following list components:
   \code{design } \tab design matrix for the full model from the likelihood
   ratio test.\cr
 
-  \code{... } \tab if the argument \code{y} to \code{glmLRT} (which
+  \code{\dots } \tab if the argument \code{y} to \code{glmLRT} (which
   produces the \code{DGELRT} object) was itself a \code{DGEList} object, then
   the \code{DGELRT} will contain all of the elements of \code{y},
   except for the table of counts and the table of pseudocounts.\cr

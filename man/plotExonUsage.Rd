@@ -6,7 +6,7 @@
 \description{Create a plot of exon usage for a given gene by plotting the (un)transformed counts for each exon, coloured by experimental group.}
 
 \usage{
-plotExonUsage(y, geneID, group=NULL, transform="none", counts.per.million=TRUE, legend.coords=NULL, ...)
+plotExonUsage(y, geneID, group=NULL, transform="none", counts.per.million=TRUE, legend.coords=NULL, \dots)
 }
 \arguments{ 
 
@@ -22,7 +22,7 @@ plotExonUsage(y, geneID, group=NULL, transform="none", counts.per.million=TRUE, 
 
 \item{legend.coords}{optional vector of length 2 giving the x- and y-coordinates of the legend on the plot. If \code{NULL} (default), the legend will be automatically placed near the top right corner of the plot.}
 
-\item{...}{optional further arguments to be passed on to \code{plot}.}
+\item{\dots}{optional further arguments to be passed on to \code{plot}.}
 }
 
 \value{\code{plotExonUsage} (invisibly) returns the transformed matrix of counts for the gene being plotted and produces a plot to the current device.}

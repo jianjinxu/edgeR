@@ -10,8 +10,8 @@ Estimate a common dispersion parameter across multiple negative binomial general
 }
 
 \usage{
-dispCoxReid(y, design=NULL, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5,
-            subset=10000, AveLogCPM=NULL)
+dispCoxReid(y, design=NULL, offset=NULL, weights=NULL, AveLogCPM=NULL, interval=c(0,4),
+            tol=1e-5, min.row.sum=5, subset=10000)
 dispDeviance(y, design=NULL, offset=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5,
             subset=10000, AveLogCPM=NULL, robust=FALSE, trace=FALSE)
 dispPearson(y, design=NULL, offset=NULL, min.row.sum=5, subset=10000,
@@ -25,15 +25,17 @@ dispPearson(y, design=NULL, offset=NULL, min.row.sum=5, subset=10000,
 
 \item{offset}{numeric vector or matrix of offsets for the log-linear models, as for \code{\link{glmFit}}.}
 
-\item{interval}{numeric vector of length 2 giving allowable values for the dispersion, passed to \code{optimize}.}
+\item{weights}{optional numeric matrix giving observation weights}
+
+\item{AveLogCPM}{numeric vector giving average log2 counts per million.}
+
+\item{interval}{numeric vector of length 2 giving minimum and maximum allowable values for the dispersion, passed to \code{optimize}.}
 
 \item{tol}{the desired accuracy, see \code{optimize} or \code{uniroot}.}
 
 \item{min.row.sum}{integer. Only rows with at least this number of counts are used.}
 
 \item{subset}{integer, number of rows to use in the calculation.  Rows used are chosen evenly spaced by AveLogCPM.}
-
-\item{AveLogCPM}{numeric vector giving average log2 counts per million.}
 
 \item{trace}{logical, should iteration information be output?}
 

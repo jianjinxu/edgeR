@@ -2,7 +2,7 @@
 ########### Weighted Likelihood Empirical Bayes ##############
 ##############################################################
 
-estimateDisp <- function(y, design=NULL, offset=NULL, prior.df=NULL, trend.method="locfit", span=NULL, grid.length=21, grid.range=c(-10,10), robust=FALSE, winsor.tail.p=c(0.05,0.1), tol=1e-06)
+estimateDisp <- function(y, design=NULL, prior.df=NULL, trend.method="locfit", span=NULL, grid.length=21, grid.range=c(-10,10), robust=FALSE, winsor.tail.p=c(0.05,0.1), tol=1e-06)
 #  Estimating dispersion using weighted conditional likelihood empirical Bayes.
 #  Use GLM approach if a design matrix is given, and classic approach otherwise.
 #  It calculates a matrix of likelihoods for each gene at a set of dispersion grid points, and then calls WLEB() to do the shrinkage.
@@ -21,7 +21,7 @@ estimateDisp <- function(y, design=NULL, offset=NULL, prior.df=NULL, trend.metho
 	grid.vals <- spline.disp/(1+spline.disp)
 	l0 <- matrix(0, ntags, grid.length)
 
-	if(is.null(offset)) offset <- getOffset(y)
+	offset <- getOffset(y)
 	AveLogCPM <- aveLogCPM(y)
 	offset <- expandAsMatrix(offset, dim(y))
 
@@ -77,7 +77,7 @@ estimateDisp <- function(y, design=NULL, offset=NULL, prior.df=NULL, trend.metho
 
 	# Calculate prior.df
 	if(is.null(prior.df)){
-		glmfit <- glmFit(y, design, offset=offset, dispersion=y$trended.dispersion, prior.count=0)
+		glmfit <- glmFit(y$counts, design, offset=offset, dispersion=y$trended.dispersion, prior.count=0)
 
 		# Residual deviances
 		df.residual <- glmfit$df.residual

@@ -11,7 +11,7 @@ To represent counts that were low (e.g. zero in 1 library and non-zero in the ot
 \usage{
 maPlot(x, y, logAbundance=NULL, logFC=NULL, normalize=FALSE, plot.it=TRUE,
      smearWidth=1, col=NULL, allCol="black", lowCol="orange", deCol="red",
-     de.tags=NULL, smooth.scatter=FALSE, lowess=FALSE, ...)
+     de.tags=NULL, smooth.scatter=FALSE, lowess=FALSE, \dots)
 }
 %- maybe also 'usage' for other objects documented here.
 \arguments{

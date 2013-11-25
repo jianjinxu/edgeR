@@ -1,13 +1,15 @@
-dispBinTrend <- function(y, design=NULL, offset=NULL, df=5, span=0.3, min.n=400, method.bin="CoxReid", method.trend="spline", AveLogCPM=NULL, ...)
+dispBinTrend <- function(y, design=NULL, offset=NULL, df=5, span=0.3, min.n=400, method.bin="CoxReid", method.trend="spline", AveLogCPM=NULL, weights=NULL, ...)
 #	Estimate common dispersion in bins based on AveLogCPM,
 #	then fit a curve through the dispersions
 #	Davis McCarthy, Gordon Smyth
-#	Created 10 Feb 2011.  Last modified 17 April 2013.
+#	Created 10 Feb 2011.  Last modified 25 Nov 2013.
 {
 #	Check y
 	y <- as.matrix(y)
 	nlibs <- ncol(y)
 	ntags <- nrow(y)
+
+#	Check for all zero rows
 	pos <- rowSums(y)>0
 	if(!any(pos)) return(AveLogCPM=AveLogCPM, dispersion=rep(0,ntags))
 	npostags <- sum(pos)
@@ -20,14 +22,15 @@ dispBinTrend <- function(y, design=NULL, offset=NULL, df=5, span=0.3, min.n=400,
 	}
 
 #	Check offset
-	if(is.null(offset)) offset <- expandAsMatrix(log(colSums(y)),dim(y))
+	if(is.null(offset)) offset <- log(colSums(y))
+	offset <- expandAsMatrix(offset,dim(y))
 
 #	Check methods
 	method.bin <- match.arg(method.bin, c("CoxReid", "Pearson", "deviance"))
 	method.trend <- match.arg(method.trend, c("spline", "loess"))
 
 #	Check AveLogCPM
-	if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y)
+	if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y,weights=weights)
 
 #	Define bins of genes based on min.n in each bin
 #	All zero rows are marked as group==0
@@ -54,7 +57,7 @@ dispBinTrend <- function(y, design=NULL, offset=NULL, df=5, span=0.3, min.n=400,
 	bin.d <- bin.A <- rep(0,nbins)
 	for(i in 1:nbins) {
 		bin <- group==i
-		bin.d[i] <- estimateGLMCommonDisp(y[bin,], design, method=method.bin, offset[bin,], min.row.sum=0, ...)
+		bin.d[i] <- estimateGLMCommonDisp(y[bin,], design, method=method.bin, offset[bin,], min.row.sum=0, weights=weights[bin,] ,...)
 		bin.A[i] <- mean(AveLogCPM[bin])
 	}
 

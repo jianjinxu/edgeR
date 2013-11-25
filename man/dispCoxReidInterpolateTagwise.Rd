@@ -9,7 +9,7 @@ Estimate tagwise dispersion parameters across multiple negative binomial general
 
 \usage{
 dispCoxReidInterpolateTagwise(y, design, offset=NULL, dispersion, trend=TRUE, AveLogCPM=NULL,
-          min.row.sum=5, prior.df=10, span=0.3, grid.npts=11, grid.range=c(-6,6))
+          min.row.sum=5, prior.df=10, span=0.3, grid.npts=11, grid.range=c(-6,6), weights=NULL)
 }
 
 \arguments{ 
@@ -34,6 +34,7 @@ dispCoxReidInterpolateTagwise(y, design, offset=NULL, dispersion, trend=TRUE, Av
 \item{grid.npts}{numeric scalar, the number of points at which to place knots for the spline-based estimation of the tagwise dispersion estimates.}
 
 \item{grid.range}{numeric vector of length 2, giving relative range, in terms of \code{log2(dispersion)}, on either side of trendline for each tag for spline grid points.}
+\item{weights}{optional numeric matrix giving observation weights}
 }
 
 \value{\code{dispCoxReidInterpolateTagwise} produces a vector of tagwise dispersions having the same length as the number of genes in the count data.

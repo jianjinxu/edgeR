@@ -6,7 +6,7 @@ Plot genewise biological coefficient of variation (BCV) against gene abundance (
 }
 \usage{
 plotBCV(y, xlab="Average log CPM", ylab="Biological coefficient of variation",
-     pch=16, cex=0.2, col.common="red", col.trend="blue", col.tagwise="black", ...)
+     pch=16, cex=0.2, col.common="red", col.trend="blue", col.tagwise="black", \dots)
 }
 \arguments{
   \item{y}{a \code{DGEList} object.}
@@ -17,7 +17,7 @@ plotBCV(y, xlab="Average log CPM", ylab="Biological coefficient of variation",
   \item{col.common}{color of line showing common dispersion}
   \item{col.trend}{color of line showing dispersion trend}
   \item{col.tagwise}{color of points showing tagwise dispersions}
-  \item{...}{any other arguments are passed to \code{plot}.}
+  \item{\dots}{any other arguments are passed to \code{plot}.}
 }
 
 \details{

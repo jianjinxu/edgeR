@@ -10,8 +10,8 @@ Estimates a common negative binomial dispersion parameter for a DGE dataset with
 }
 
 \usage{
-\S3method{estimateGLMCommonDisp}{DGEList}(y, design=NULL, offset=NULL, method="CoxReid", subset=10000, AveLogCPM=NULL, verbose=FALSE, ...)
-\S3method{estimateGLMCommonDisp}{default}(y, design=NULL, offset=NULL, method="CoxReid", subset=10000, AveLogCPM=NULL, verbose=FALSE, ...)
+\S3method{estimateGLMCommonDisp}{DGEList}(y, design=NULL, method="CoxReid", subset=10000, verbose=FALSE, \dots)
+\S3method{estimateGLMCommonDisp}{default}(y, design=NULL, offset=NULL, method="CoxReid", subset=10000, AveLogCPM=NULL, verbose=FALSE, weights=NULL,\dots)
 }
 
 \arguments{
@@ -29,15 +29,17 @@ Possible values are \code{"CoxReid"}, \code{"Pearson"} or \code{"deviance"}.}
 \item{AveLogCPM}{numeric vector giving average log2 counts per million for each gene}
 
 \item{verbose}{logical, if \code{TRUE} estimated dispersion and BCV will be printed to standard output.}
+\item{weights}{optional numeric matrix giving observation weights}
 
 \item{\ldots}{other arguments are passed to lower-level functions.
 See \code{\link{dispCoxReid}}, \code{\link{dispPearson}} and \code{\link{dispDeviance}} for details.}
 }
 
 \value{
-The default method returns a numeric vector of length 1 containing the estimated dispersion.
+The default method returns a numeric vector of length 1 containing the estimated common dispersion.
 
 The \code{DGEList} method returns the same \code{DGEList} \code{y} as input but with \code{common.dispersion} as an added component.
+The output object will also contain a component \code{AveLogCPM} if it was not already present in \code{y}.
 }
 
 \details{

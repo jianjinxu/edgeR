@@ -5,7 +5,7 @@
 
 \description{Reads and merges a set of text files containing digital gene expression data.}
 
-\usage{readDGE(files, path=NULL, columns=c(1,2), group=NULL, labels=NULL, ...)}
+\usage{readDGE(files, path=NULL, columns=c(1,2), group=NULL, labels=NULL, \dots)}
 
 \arguments{ 
 \item{files}{character vector of filenames, or alternatively a data.frame with a column containing the file names of the files containing the libraries of counts and, optionally, columns containing the \code{group} to which each library belongs, descriptions of the other samples and other information.}
@@ -14,7 +14,7 @@ The default is the current working directory.}
 \item{columns}{numeric vector stating which two columns contain the tag names and counts, respectively}
 \item{group}{vector, or preferably a factor, indicating the experimental group to which each library belongs. If \code{group} is not \code{NULL}, then this argument overrides any group information included in the \code{files} argument.}
 \item{labels}{character vector giving short names to associate with the libraries. Defaults to the file names.}
-\item{...}{other are passed to \code{read.delim}}
+\item{\dots}{other are passed to \code{read.delim}}
 }
 
 \details{

@@ -10,8 +10,8 @@ Estimates the abundance-dispersion trend by Cox-Reid approximate profile likelih
 }
 
 \usage{
-\S3method{estimateGLMTrendedDisp}{DGEList}(y, design=NULL, offset=NULL, AveLogCPM=NULL, method="auto", ...)
-\S3method{estimateGLMTrendedDisp}{default}(y, design=NULL, offset=NULL, AveLogCPM=NULL, method="auto", ...)
+\S3method{estimateGLMTrendedDisp}{DGEList}(y, design=NULL, method="auto", \dots)
+\S3method{estimateGLMTrendedDisp}{default}(y, design=NULL, offset=NULL, AveLogCPM=NULL, method="auto", weights=NULL, \dots)
 }
 
 \arguments{ 
@@ -21,6 +21,7 @@ Estimates the abundance-dispersion trend by Cox-Reid approximate profile likelih
 Possible values are \code{"auto"} (default, switch to \code{"bin.spline"} method if the number of tags is great than 200 and \code{"power"} method otherwise),\code{"bin.spline"}, \code{"bin.loess"} (which both result in a call to \code{dispBinTrend}), \code{"power"} (call to \code{dispCoxReidPowerTrend}), or \code{"spline"} (call to \code{dispCoxReidSplineTrend}).}
 \item{offset}{numeric scalar, vector or matrix giving the linear model offsets, as for \code{\link{glmFit}}.}
 \item{AveLogCPM}{numeric vector giving average log2 counts per million for each gene.}
+\item{weights}{optional numeric matrix giving observation weights}
 \item{\ldots}{other arguments are passed to lower-level functions \code{\link{dispBinTrend}}, \code{\link{dispCoxReidPowerTrend}} or \code{\link{dispCoxReidSplineTrend}}.}
 }
 

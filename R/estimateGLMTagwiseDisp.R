@@ -1,32 +1,28 @@
-# Created March 2011. Last modified 13 March 2013.
-
 estimateGLMTagwiseDisp <- function(y, ...) 
 UseMethod("estimateGLMTagwiseDisp")
 
-estimateGLMTagwiseDisp.DGEList <- function(y, design=NULL, offset=NULL, dispersion=NULL, prior.df=10, trend=!is.null(y$trended.dispersion), span=NULL, AveLogCPM=NULL, ...)
+estimateGLMTagwiseDisp.DGEList <- function(y, design=NULL, prior.df=10, trend=!is.null(y$trended.dispersion), span=NULL, ...)
 {
-#	If provided as arguments, offset and AveLogCPM over-rule the values stored in y
-	if(!is.null(AveLogCPM)) y$AveLogCPM <- AveLogCPM
-	if(is.null(y$AveLogCPM)) y$AveLogCPM <- aveLogCPM(y)
-	if(!is.null(offset)) y$offset <- expandAsMatrix(offset,dim(y))
-
 #	Find appropriate dispersion
 	if(trend) {
-		if(is.null(dispersion)) dispersion <- y$trended.dispersion
+		dispersion <- y$trended.dispersion
 		if(is.null(dispersion)) stop("No trended.dispersion found in data object. Run estimateGLMTrendedDisp first.")
 	} else {
-		if(is.null(dispersion)) dispersion <- y$common.dispersion
+		dispersion <- y$common.dispersion
 		if(is.null(dispersion)) stop("No common.dispersion found in data object. Run estimateGLMCommonDisp first.")
 	}
 
-	d <- estimateGLMTagwiseDisp(y=y$counts, design=design, offset=getOffset(y), dispersion=dispersion, trend=trend, prior.df=prior.df, AveLogCPM=y$AveLogCPM, ...)
+	if(is.null(y$AveLogCPM)) y$AveLogCPM <- aveLogCPM(y,dispersion=dispersion)
+
+	d <- estimateGLMTagwiseDisp(y=y$counts, design=design, offset=getOffset(y), dispersion=dispersion, trend=trend, prior.df=prior.df, AveLogCPM=y$AveLogCPM, weights=y$weights, ...)
+
 	y$prior.df <- prior.df
 	y$span <- d$span
 	y$tagwise.dispersion <- d$tagwise.dispersion
 	y
 }
 
-estimateGLMTagwiseDisp.default <- function(y, design=NULL, offset=NULL, dispersion, prior.df=10, trend=TRUE, span=NULL, AveLogCPM=NULL, ...)
+estimateGLMTagwiseDisp.default <- function(y, design=NULL, offset=NULL, dispersion, prior.df=10, trend=TRUE, span=NULL, AveLogCPM=NULL, weights=NULL, ...)
 {
 #	Check y
 	y <- as.matrix(y)
@@ -47,14 +43,18 @@ estimateGLMTagwiseDisp.default <- function(y, design=NULL, offset=NULL, dispersi
 		return(rep(NA,ntags))
 	}
 
+#	Check offset
+	if(is.null(offset)) offset <- log(colSums(y))
+
 #	Check span
+#	span can be chosen smaller when ntags is large
 	if(is.null(span)) if(ntags>10) span <- (10/ntags)^0.23 else span <- 1
 
 #	Check AveLogCPM
-	if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y,lib.size=exp(offset))
+	if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y,offset=offset,dispersion=dispersion,weights=weights)
 
 #	Call Cox-Reid grid method
-	tagwise.dispersion <- dispCoxReidInterpolateTagwise(y, design, offset=offset, dispersion, trend=trend, prior.df=prior.df, span=span, AveLogCPM=AveLogCPM, ...)
+	tagwise.dispersion <- dispCoxReidInterpolateTagwise(y, design, offset=offset, dispersion, trend=trend, prior.df=prior.df, span=span, AveLogCPM=AveLogCPM, weights=weights,...)
 
 	list(tagwise.dispersion=tagwise.dispersion,span=span)
 }

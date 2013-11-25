@@ -1,23 +1,19 @@
-#  Last modified 20 Nov 2013
-
-estimateGLMCommonDisp <- function(y, design=NULL, offset=NULL, method="CoxReid", subset=10000, AveLogCPM=NULL, verbose=FALSE, ...) 
+estimateGLMCommonDisp <- function(y, ...) 
 UseMethod("estimateGLMCommonDisp")
 
-estimateGLMCommonDisp.DGEList <- function(y, design=NULL, offset=NULL, method="CoxReid", subset=10000, AveLogCPM=NULL, verbose=FALSE, ...)
+estimateGLMCommonDisp.DGEList <- function(y, design=NULL, method="CoxReid", subset=10000, verbose=FALSE, ...)
 {
-#	If provided as arguments, offset and AveLogCPM over-rule the values stored in y
+#	Check y
 	y <- validDGEList(y)
-	if(!is.null(AveLogCPM)) y$AveLogCPM <- AveLogCPM
 	if(is.null(y$AveLogCPM)) y$AveLogCPM <- aveLogCPM(y)
-	if(!is.null(offset)) y$offset <- expandAsMatrix(offset,dim(y))
 
-	disp <- estimateGLMCommonDisp(y=y$counts, design=design, offset=getOffset(y), method=method, subset=subset, AveLogCPM=y$AveLogCPM, verbose=verbose, ...)
+	disp <- estimateGLMCommonDisp(y=y$counts, design=design, offset=getOffset(y), method=method, subset=subset, AveLogCPM=y$AveLogCPM, verbose=verbose, weights=y$weights, ...)
+
 	y$common.dispersion <- disp
-	y$design <- design
 	y
 }
 
-estimateGLMCommonDisp.default <- function(y, design=NULL, offset=NULL, method="CoxReid", subset=10000, AveLogCPM=NULL, verbose=FALSE, ...)
+estimateGLMCommonDisp.default <- function(y, design=NULL, offset=NULL, method="CoxReid", subset=10000, AveLogCPM=NULL, verbose=FALSE, weights=NULL, ...)
 {
 #	Check y
 	y <- as.matrix(y)
@@ -36,20 +32,22 @@ estimateGLMCommonDisp.default <- function(y, design=NULL, offset=NULL, method="C
 	}
 
 #	Check method
-	method <- match.arg(method, c("CoxReid","Pearson","Pearson2","deviance"))
+	method <- match.arg(method, c("CoxReid","Pearson","deviance"))
+	if(!method == "CoxReid" && !is.null(weights)) warning("weights only supported by CoxReid method")
 
 #	Check offset
 	if(is.null(offset)) offset <- log(colSums(y))
 
 #	Check AveLogCPM
-	if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y)
+	if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y,weights=weights)
 
 #	Call lower-level function
 	disp <- switch(method,
-		CoxReid=dispCoxReid(y, design=design, offset=offset, subset=subset, AveLogCPM=AveLogCPM, ...),
+		CoxReid=dispCoxReid(y, design=design, offset=offset, subset=subset, AveLogCPM=AveLogCPM, weights=weights, ...),
 		Pearson=dispPearson(y, design=design, offset=offset, subset=subset, AveLogCPM=AveLogCPM, ...),
 		deviance=dispDeviance(y, design=design, offset=offset, subset=subset, AveLogCPM=AveLogCPM, ...)
 	)
+
 	if(verbose) cat("Disp =",round(disp,5),", BCV =",round(sqrt(disp),4),"\n")
 	disp
 }

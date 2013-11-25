@@ -2,7 +2,7 @@
 \alias{as.matrix.DGEList}
 \title{Turn a DGEList Object into a Matrix}
 \description{
-Turn a digital gene expression object into a numeric matrix by extracting the count values.
+Coerce a digital gene expression object into a numeric matrix by extracting the count values.
 }
 \usage{
 \method{as.matrix}{DGEList}(x,\dots)

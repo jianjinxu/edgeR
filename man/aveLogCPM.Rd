@@ -11,18 +11,19 @@ Compute average log2 counts-per-million for each row of counts.
 }
 
 \usage{
-\method{aveLogCPM}{DGEList}(y, normalized.lib.sizes=TRUE, prior.count=2, dispersion=0.05, weights=NULL, \dots)
-\method{aveLogCPM}{default}(y, lib.size=NULL, prior.count=2, dispersion=0.05, weights=NULL, \dots)
+\method{aveLogCPM}{DGEList}(y, normalized.lib.sizes=TRUE, prior.count=2, dispersion=NULL, \dots)
+\method{aveLogCPM}{default}(y, lib.size=NULL, offset=NULL, prior.count=2, dispersion=NULL, weights=NULL, \dots)
 }
 
 \arguments{
 \item{y}{numeric matrix containing counts.  Rows for tags and columns for libraries.}
 \item{normalized.lib.sizes}{logical, use normalized library sizes?}
-\item{lib.size}{numeric vector of library sizes. Defaults to \code{colSums(y)}.}
 \item{prior.count}{average value to be added to each count, to avoid infinite values on the log-scale.}
-\item{dispersion}{numeric scalar or vector of negative-binomial dispersions.}
-\item{\dots}{other arguments are not currently used}
-\item{weights}{optional numeric matrix giving observation weights}
+\item{dispersion}{numeric scalar or vector of negative-binomial dispersions. Defaults to 0.05.}
+\item{lib.size}{numeric vector of library sizes. Defaults to \code{colSums(y)}. Ignored if \code{offset} is not \code{NULL}.}
+\item{offset}{numeric matrix of offsets for the log-linear models.}
+\item{weights}{optional numeric matrix of observation weights.}
+\item{\dots}{other arguments are not currently used.}
 }
 
 \details{

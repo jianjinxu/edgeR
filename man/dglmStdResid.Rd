@@ -9,7 +9,7 @@
 
 \usage{
 dglmStdResid(y, design, dispersion=0, offset=0, nbins=100, make.plot=TRUE,
-          xlab="Mean", ylab="Ave. binned standardized residual", ...)
+          xlab="Mean", ylab="Ave. binned standardized residual", \dots)
 getDispersions(binned.object)
 }
 
