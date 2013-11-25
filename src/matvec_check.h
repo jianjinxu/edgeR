@@ -4,11 +4,13 @@
 
 class matvec_check {
 public:
-	matvec_check(const int, const int, SEXP, const char*);
+	matvec_check(const int, const int, SEXP, const char*, const bool nok=false);
+	~matvec_check();
 	void advance();
 	const double* const access() const;
 private:
 	const double* mycheck;
+	double* temp;
 	bool isvec, wasnull;
 	int nl;
 };

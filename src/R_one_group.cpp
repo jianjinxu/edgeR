@@ -24,7 +24,7 @@ SEXP R_one_group (SEXP nt, SEXP nl, SEXP y, SEXP disp, SEXP offsets, SEXP weight
 		ydptr=NUMERIC_POINTER(y); 
 	}
     matvec_check allo(num_libs, num_tags, offsets, "offset");
-	matvec_check allw(num_libs, num_tags, weights, "weight");
+	matvec_check allw(num_libs, num_tags, weights, "weight", true);
 	double* dptr=NUMERIC_POINTER(disp);
 
     // Setting up beta for output. 

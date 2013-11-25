@@ -15,7 +15,7 @@ Conduct genewise statistical tests for a given coefficient or coefficient contra
 \method{glmFit}{default}(y, design=NULL, dispersion=NULL, offset=NULL, lib.size=NULL, weights=NULL,
        prior.count=0.125, start=NULL, \dots)
 glmLRT(glmfit, coef=ncol(glmfit$design), contrast=NULL, test="chisq")
-glmQLFTest(y, design=NULL, dispersion=NULL, offset=NULL, coef=ncol(glmfit$design), contrast=NULL, 
+glmQLFTest(y, design=NULL, dispersion=NULL, coef=ncol(glmfit$design), contrast=NULL, 
        abundance.trend=TRUE, robust=FALSE, winsor.tail.p=c(0.05,0.1), plot=FALSE)
 }
 

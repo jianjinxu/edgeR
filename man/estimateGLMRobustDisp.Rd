@@ -42,7 +42,7 @@ Zhou X, Lindsay H and Robinson MD (2013) Robustly detecting differential express
 
 \author{Xiaobei Zhou, Mark D. Robinson}
 \examples{
-y <- matrix(rnbinom(100*6,mu=10,size=1),ncol=6)
+y <- matrix(rnbinom(100*6,mu=10,size=1/0.1),ncol=6)
 d <- DGEList(counts=y,group=c(1,1,1,2,2,2),lib.size=c(1000:1005))
 design <- model.matrix(~group, data=d$samples) # Define the design matrix for the full model
 d <- estimateGLMRobustDisp(d, design)
@@ -50,10 +50,8 @@ summary(d$tagwise.dispersion)
 }
 
 \seealso{
-\code{\link{estimateGLMTagwiseDisp}} for tagwise dispersion in the context of Negative Binomial GLMs
-\code{\link{estimateGLMCommonDisp}} for common dispersion and \code{\link{estimateGLMTrendedDisp}} for trended dispersion in the context of a generalized linear model.
-
-\code{\link{estimateCommonDisp}} for common dispersion or \code{\link{estimateTagwiseDisp}} for tagwise dispersion in the context of a multiple group experiment (one-way layout).
+This function calls
+\code{\link{estimateGLMTrendedDisp}}
+and
+\code{\link{estimateGLMTagwiseDisp}}.
 }
-
-\keyword{algebra}

@@ -51,10 +51,7 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.siz
 	}
 	offset <- expandAsMatrix(offset,dim(y))
 
-#	Check weights
-	if(is.null(weights)) weights <- 1
-	weights[weights <= 0] <- 1e-6
-	weights <- expandAsMatrix(weights,dim(y))
+#	weights are checked in lower-level functions
 
 #	Fit the tagwise glms
 #	If the design is equivalent to a oneway layout, use a shortcut algorithm

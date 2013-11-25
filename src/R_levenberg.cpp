@@ -35,7 +35,7 @@ SEXP R_levenberg (SEXP nlib, SEXP ntag, SEXP design, SEXP counts, SEXP disp, SEX
 	  	  *fitted_ptr=NUMERIC_POINTER(fitted), 
 		  *disp_ptr=NUMERIC_POINTER(disp);
 	matvec_check allo(num_libs, num_tags, offset, "offset");
-	matvec_check allw(num_libs, num_tags, weights, "weight");
+	matvec_check allw(num_libs, num_tags, weights, "weight", true);
 
     // Initializing output cages.
     SEXP output=PROTECT(NEW_LIST(5));

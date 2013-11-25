@@ -1,7 +1,7 @@
-glmQLFTest <- function(y, design=NULL, dispersion=NULL, offset=NULL, coef=ncol(glmfit$design), contrast=NULL, abundance.trend=TRUE, robust=FALSE, winsor.tail.p=c(0.05,0.1), plot=FALSE)
+glmQLFTest <- function(y, design=NULL, dispersion=NULL, coef=ncol(glmfit$design), contrast=NULL, abundance.trend=TRUE, robust=FALSE, winsor.tail.p=c(0.05,0.1), plot=FALSE)
 #	Quasi-likelihood F-tests for DGE glms.
 #	Davis McCarthy and Gordon Smyth.
-#	Created 18 Feb 2011. Last modified 11 October 2013.
+#	Created 18 Feb 2011. Last modified 25 Nov 2013.
 {
 #	Initial fit with trended dispersion
 	if(is(y,"DGEList")) {
@@ -10,7 +10,7 @@ glmQLFTest <- function(y, design=NULL, dispersion=NULL, offset=NULL, coef=ncol(g
 			if(is.null(dispersion)) dispersion <- y$common.dispersion
 			if(is.null(dispersion)) dispersion <- 0.05
 		}
-		glmfit <- glmFit(y,design=design,dispersion=dispersion,offset=offset)
+		glmfit <- glmFit(y,design=design,dispersion=dispersion)
 	} else {
 		glmfit <- y
 		disptype <- attr(glmfit$dispersion,"type")
