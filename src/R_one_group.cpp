@@ -26,8 +26,6 @@ SEXP R_one_group (SEXP nt, SEXP nl, SEXP y, SEXP disp, SEXP offsets, SEXP weight
     matvec_check allo(num_libs, num_tags, offsets, "offset");
 	matvec_check allw(num_libs, num_tags, weights, "weight");
 	double* dptr=NUMERIC_POINTER(disp);
-	const double* const& wptr=allw.access();
-	const double* const& optr=allo.access();
 
     // Setting up beta for output. 
 	SEXP output=PROTECT(NEW_LIST(2));
@@ -43,9 +41,9 @@ SEXP R_one_group (SEXP nt, SEXP nl, SEXP y, SEXP disp, SEXP offsets, SEXP weight
 				for (int i=0; i<num_libs; ++i) { ydptr[i]=yiptr[i]; }	
 				yiptr+=num_libs;
 			}
-			std::pair<double, bool> out=glm_one_group(num_libs, maxit, tol, optr,
+			std::pair<double, bool> out=glm_one_group(num_libs, maxit, tol, allo.access(),
 #ifdef WEIGHTED					
-					wptr,
+					allw.access(),
 #endif					
 					ydptr, *dptr);
 			(*bptr)=out.first;
