@@ -36,6 +36,7 @@ dispCoxReid <- function(y, design=NULL, offset=NULL, weights=NULL, AveLogCPM=NUL
 		i <- systematicSubset(subset,AveLogCPM)
 		y <- y[i,,drop=FALSE]
 		offset <- offset[i,,drop=FALSE]
+                weights <- weights[i,,drop=FALSE]
 	}
 
 #	Function for optimizing
