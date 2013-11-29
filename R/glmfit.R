@@ -23,7 +23,7 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.siz
 #	Fit negative binomial generalized linear model for each transcript
 #	to a series of digital expression libraries
 #	Davis McCarthy and Gordon Smyth
-#	Created 17 August 2010. Last modified 22 Nov 2013.
+#	Created 17 August 2010. Last modified 26 Nov 2013.
 {
 #	Check y
 	y <- as.matrix(y)
@@ -59,7 +59,7 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.siz
 	if(nlevels(group)==ncol(design)) {
 		fit <- mglmOneWay(y,design=design,dispersion=dispersion,offset=offset,weights=weights)
 		devfun <- deviances.function(dispersion)
-		fit$deviance <- devfun(y,fit$fitted.values,dispersion)
+		fit$deviance <- devfun(y,fit$fitted.values,dispersion,weights)
 		fit$method <- "oneway"
 	} else {
 		fit <- mglmLevenberg(y,design=design,dispersion=dispersion,offset=offset,weights=weights,coef.start=start,maxit=250)
@@ -77,6 +77,7 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.siz
 	fit$design <- design
 	fit$offset <- offset
 	fit$dispersion <- dispersion
+	fit$weights <- weights
 	new("DGEGLM",fit)
 }
 
