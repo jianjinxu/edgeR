@@ -2,6 +2,11 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.5.17}{\itemize{
+\item
+Add is.fullrank and nonEstimable to functions imported from limma.
+}}
+
 \section{Version 3.5.16}{\itemize{
 \item
 More tolerant error checking for dispersion value when computing aveLogCPM().
