@@ -17,6 +17,7 @@ aveLogCPM.DGEList <- function(y, normalized.lib.sizes=TRUE, prior.count=2, dispe
 	}
 
 #	Dispersion supplied as argument over-rules value in object
+#	Should trended.dispersion or tagwise.dispersion be used instead of common.dispersion if available?
 	if(is.null(dispersion)) dispersion <- y$common.dispersion
 
 	aveLogCPM(y$counts,lib.size=lib.size,prior.count=prior.count,dispersion=dispersion,weights=y$weights)
@@ -36,7 +37,7 @@ aveLogCPM.DGEGLM <- function(y, prior.count=2, dispersion=NULL, ...)
 aveLogCPM.default <- function(y,lib.size=NULL,offset=NULL,prior.count=2,dispersion=NULL,weights=NULL, ...)
 #	log2(AveCPM)
 #	Gordon Smyth
-#	Created 25 Aug 2012. Last modified 24 Nov 2013.
+#	Created 25 Aug 2012. Last modified 4 Nov 2013.
 {
 #	Check y
 	y <- as.matrix(y)
@@ -47,6 +48,9 @@ aveLogCPM.default <- function(y,lib.size=NULL,offset=NULL,prior.count=2,dispersi
 
 #	Check dispersion
 	if(is.null(dispersion)) dispersion <- 0.05
+	isna <- is.na(dispersion)
+	if(all(isna)) dispersion <- 0.05
+	if(any(isna)) dispersion[isna] <- mean(dispersion,na.rm=TRUE)
 
 #	Check lib.size and offset.
 #	If offset is provided, it takes precedence over lib.size.

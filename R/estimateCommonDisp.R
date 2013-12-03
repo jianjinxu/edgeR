@@ -29,10 +29,15 @@ estimateCommonDisp <- function(object,tol=1e-06,rowsum.filter=5,verbose=FALSE)
 	if(verbose) cat("Disp =",round(disp,5),", BCV =",round(sqrt(disp),4),"\n")
 	object$common.dispersion <- disp
 	object$pseudo.counts <- out$pseudo.counts
+	object$pseudo.lib.size <- out$common.lib.size
 
 #	Average logCPM
+#	Note different behaviour to estimateGLMCommonDisp:
+#	Here the estimated common.dispersion is used to compute AveLogCPM whereas
+#	estimateGLMCommonDisp calculates AveLogCPM prior to estimating the common
+#	dispersion using a pre-set dispersion of 0.05
 	object$AveLogCPM <- aveLogCPM(object)
-	object$pseudo.lib.size <- out$common.lib.size
+
 	object
 }
 
