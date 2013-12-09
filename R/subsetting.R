@@ -30,22 +30,19 @@ function(object, i, j, ...) {
 		object$genes <- object$genes[i,,drop=FALSE]
 		object$all.zeros <- object$all.zeros[i]
 		object$offset <- object$offset[i,,drop=FALSE]
-		!is.null(object$AveLogCPM)
-			object$AveLogCPM <- object$AveLogCPM[i]
+		object$AveLogCPM <- object$AveLogCPM[i]
 
 		# alter depending on 'j'
 		if(missing(j)) {
 			object$counts <- object$counts[i,,drop=FALSE]
 			object$abundance <- object$abundance[i]
 			object$pseudo.counts <- object$pseudo.counts[i,,drop=FALSE]
-			!is.null(object$weights)
-				object$weights <- object$weights[i,,drop=FALSE]
+			object$weights <- object$weights[i,,drop=FALSE]
 		} else {
 			object$counts <- object$counts[i,j,drop=FALSE]
 			object$samples <- droplevels(object$samples[j])
 			object$pseudo.counts <- object$pseudo.counts[i,j,drop=FALSE]
-			!is.null(object$weights)
-				object$weights <- object$weights[i,j,drop=FALSE]
+			object$weights <- object$weights[i,j,drop=FALSE]
 		}
 	}
 	object
