@@ -13,8 +13,8 @@
 exactTest(object, pair=1:2, dispersion="auto", rejection.region="doubletail",
           big.count=900, prior.count=0.125)
 exactTestDoubleTail(y1, y2, dispersion=0, big.count=900)
-exactTestBySmallP(y1, y2, dispersion=0, big.count=900)
-exactTestByDeviance(y1, y2, dispersion=0, big.count=900)
+exactTestBySmallP(y1, y2, dispersion=0)
+exactTestByDeviance(y1, y2, dispersion=0)
 exactTestBetaApprox(y1, y2, dispersion=0)
 }
 

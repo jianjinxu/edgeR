@@ -1,7 +1,7 @@
 dispCoxReid <- function(y, design=NULL, offset=NULL, weights=NULL, AveLogCPM=NULL, interval=c(0,4), tol=1e-5, min.row.sum=5, subset=10000)
 #	Cox-Reid APL estimator of common dispersion
 #	Gordon Smyth, Davis McCarthy
-#	26 Jan 2011.  Last modified 22 Nov 2013.
+#	26 Jan 2011.  Last modified 9 Dec 2013.
 {
 #	Check y
 	y <- as.matrix(y)
@@ -16,7 +16,7 @@ dispCoxReid <- function(y, design=NULL, offset=NULL, weights=NULL, AveLogCPM=NUL
 	}
 
 #	Check offset
-	if(is.null(offset)) offset <- 0
+	if(is.null(offset)) offset <- log(colSums(y))
 	offset <- expandAsMatrix(offset,dim(y))
 	if(min(interval)<0) stop("please give a non-negative interval for the dispersion")
 
@@ -32,11 +32,11 @@ dispCoxReid <- function(y, design=NULL, offset=NULL, weights=NULL, AveLogCPM=NUL
 
 #	Subsetting
 	if(!is.null(subset) && subset<=nrow(y)/2) {
-		if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y,weights=weights)
+		if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y,offset=offset,weights=weights)
 		i <- systematicSubset(subset,AveLogCPM)
 		y <- y[i,,drop=FALSE]
 		offset <- offset[i,,drop=FALSE]
-                weights <- weights[i,,drop=FALSE]
+		weights <- weights[i,,drop=FALSE]
 	}
 
 #	Function for optimizing

@@ -8,6 +8,7 @@ mglmLevenberg <- function(y, design, dispersion=0, offset=0, weights=NULL, coef.
 {
 #	Check arguments
 	y <- as.matrix(y)
+	if(!is.numeric(y)) stop("y is non-numeric")
 	if(any(y<0)) stop("y must be non-negative")
 	nlibs <- ncol(y)
 	ngenes <- nrow(y)
@@ -53,7 +54,6 @@ mglmLevenberg <- function(y, design, dispersion=0, offset=0, weights=NULL, coef.
 
 # 	Checking arguments and calling the C++ method. We use transposed matrices so that each can be accessed from column-major storage in C++.
 	if (!is.double(design)) storage.mode(design) <- "double"
-	if (!is.double(y)) storage.mode(y) <- "double"
 	if (!is.double(dispersion)) storage.mode(dispersion) <- "double"
 	if (!is.double(offset)) storage.mode(offset) <- "double"
 	if (!is.double(weights)) storage.mode(weights) <- "double"

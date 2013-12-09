@@ -1,8 +1,12 @@
 #ifndef UTILS_H
 #define UTILS_H
+//#define DEBUG
+
+#ifdef DEBUG
+#include <iostream>
+#endif
 
 #include <cmath>
-#include <iostream>
 #include <deque>
 #include <stdexcept>
 #include <sstream>

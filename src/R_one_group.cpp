@@ -14,17 +14,20 @@ SEXP R_one_group (SEXP nt, SEXP nl, SEXP y, SEXP disp, SEXP offsets, SEXP weight
 	if (LENGTH(disp)!=num_tags) { throw std::runtime_error("length of dispersion vector must be 1 or equal to the number of tags"); }
     
     // Setting up some iterators. We provide some flexibility to detecting numeric-ness.
+	double *ydptr=NULL;
+	int* yiptr=NULL;
+	double* yptr=(double*)R_alloc(num_libs, sizeof(double));
 	bool is_integer=IS_INTEGER(y);
-	double *ydptr=0;
-	int* yiptr=0;
 	if (is_integer) { 
 		yiptr=INTEGER_POINTER(y); 
-		ydptr=(double*) R_alloc(num_libs, sizeof(double));
 	} else { 
+		if (!IS_NUMERIC(y)) { throw std::runtime_error("count matrix must be integer or double-precision"); }
 		ydptr=NUMERIC_POINTER(y); 
 	}
-    matvec_check allo(num_libs, num_tags, offsets, "offset");
-	matvec_check allw(num_libs, num_tags, weights, "weight", true);
+    matvec_check allo(num_libs, num_tags, offsets, false, "offset", false);
+	const double* const* optr2=allo.access();
+	matvec_check allw(num_libs, num_tags, weights, false, "weight", true);
+	const double* const* wptr2=allw.access();
 	double* dptr=NUMERIC_POINTER(disp);
 
     // Setting up beta for output. 
@@ -36,19 +39,24 @@ SEXP R_one_group (SEXP nt, SEXP nl, SEXP y, SEXP disp, SEXP offsets, SEXP weight
 	try {
         
     	// Iterating through tags and fitting.
+    	int counter=0;
     	for (int tag=0; tag<num_tags; ++tag) {
+			counter=0;
 			if (is_integer) { 
-				for (int i=0; i<num_libs; ++i) { ydptr[i]=yiptr[i]; }	
-				yiptr+=num_libs;
+				for (int i=0; i<num_libs; ++i, counter+=num_tags) { yptr[i]=double(yiptr[counter]); }	
+				++yiptr;
+			} else {
+				for (int i=0; i<num_libs; ++i, counter+=num_tags) { yptr[i]=ydptr[counter]; }
+				++ydptr;
 			}
-			std::pair<double, bool> out=glm_one_group(num_libs, maxit, tol, allo.access(),
+			std::pair<double, bool> out=glm_one_group(num_libs, maxit, tol, *optr2,
 #ifdef WEIGHTED					
-					allw.access(),
+					*wptr2,
 #endif					
-					ydptr, *dptr);
+					yptr, *dptr);
+
 			(*bptr)=out.first;
 			(*cptr)=out.second;
-			if (!is_integer) { ydptr+=num_libs; }
 			++bptr;
 			++cptr;
 			++dptr;

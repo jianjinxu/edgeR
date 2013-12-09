@@ -2,6 +2,18 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.5.18}{\itemize{
+\item
+The main computation of exactTestByDeviance() now implemented in C++ code.
+
+\item
+The big.count argument has been removed from functions
+exactTestByDeviance() and exactTestBySmallP().
+
+\item
+New default value for offset in dispCoxReid.
+}}
+
 \section{Version 3.5.17}{\itemize{
 \item
 Add is.fullrank and nonEstimable to functions imported from limma.

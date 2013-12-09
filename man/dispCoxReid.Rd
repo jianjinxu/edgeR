@@ -23,7 +23,7 @@ dispPearson(y, design=NULL, offset=NULL, min.row.sum=5, subset=10000,
 
 \item{design}{numeric design matrix, as for \code{\link{glmFit}}.}
 
-\item{offset}{numeric vector or matrix of offsets for the log-linear models, as for \code{\link{glmFit}}.}
+\item{offset}{numeric vector or matrix of offsets for the log-linear models, as for \code{\link{glmFit}}. Defaults to \code{log(colSums(y))}.}
 
 \item{weights}{optional numeric matrix giving observation weights}
 

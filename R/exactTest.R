@@ -78,8 +78,8 @@ exactTest <- function(object, pair=1:2, dispersion="auto", rejection.region="dou
 
 	exact.pvals <- switch(rejection.region,
 		doubletail=exactTestDoubleTail(y1,y2,dispersion=dispersion,big.count=big.count),
-		deviance=exactTestByDeviance(y1,y2,dispersion=dispersion,big.count=big.count),
-		smallp=exactTestBySmallP(y1,y2,dispersion=dispersion,big.count=big.count)
+		deviance=exactTestByDeviance(y1,y2,dispersion=dispersion),
+		smallp=exactTestBySmallP(y1,y2,dispersion=dispersion)
 	)
 
 	AveLogCPM <- object$AveLogCPM
