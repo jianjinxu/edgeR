@@ -4,7 +4,7 @@ assign("[.DGEList",
 function(object, i, j, ...) {
 #  Subsetting for DGEList objects
 #  Davis McCarthy, Gordon Smyth 
-#  24 September 2009.  Last modified 7 May 2012.
+#  24 September 2009.  Last modified 7 Dec 2013.
 
 	if(nargs() != 3) stop("Two subscripts required",call.=FALSE)
 	if(missing(i))
@@ -21,30 +21,31 @@ function(object, i, j, ...) {
 			i <- match(i,rownames(object$counts))
 			i <- i[!is.na(i)]
 		}
+		# alter regardless of 'j'
+		object$conc$conc.common <- object$conc$conc.common[i]
+		object$conc$conc.group <- object$conc$conc.group[i,,drop=FALSE]
+		object$trended.dispersion <- object$trended.dispersion[i]
+		object$tagwise.dispersion <- object$tagwise.dispersion[i]
+		object$infos <- object$infos[i]
+		object$genes <- object$genes[i,,drop=FALSE]
+		object$all.zeros <- object$all.zeros[i]
+		object$offset <- object$offset[i,,drop=FALSE]
+		!is.null(object$AveLogCPM)
+			object$AveLogCPM <- object$AveLogCPM[i]
+
+		# alter depending on 'j'
 		if(missing(j)) {
 			object$counts <- object$counts[i,,drop=FALSE]
-			object$conc$conc.common <- object$conc$conc.common[i,drop=FALSE]
-			object$conc$conc.group <- object$conc$conc.group[i,,drop=FALSE]
-			object$abundance <- object$abundance[i,drop=FALSE]
-			object$trended.dispersion <- object$trended.dispersion[i,drop=FALSE]
-			object$tagwise.dispersion <- object$tagwise.dispersion[i,drop=FALSE]
-			object$infos <- object$infos[i,drop=FALSE]
+			object$abundance <- object$abundance[i]
 			object$pseudo.counts <- object$pseudo.counts[i,,drop=FALSE]
-			object$genes <- object$genes[i,,drop=FALSE]
-			object$all.zeros <- object$all.zeros[i,drop=FALSE]
-			object$offset <- object$offset[i,,drop=FALSE]
+			!is.null(object$weights)
+				object$weights <- object$weights[i,,drop=FALSE]
 		} else {
 			object$counts <- object$counts[i,j,drop=FALSE]
-			object$samples <- droplevels(object$samples[j,,drop=FALSE])
+			object$samples <- droplevels(object$samples[j])
 			object$pseudo.counts <- object$pseudo.counts[i,j,drop=FALSE]
-			object$conc$conc.common <- object$conc$conc.common[i,drop=FALSE]
-			object$conc$conc.group <- object$conc$conc.group[i,,drop=FALSE]
-			object$trended.dispersion <- object$trended.dispersion[i,drop=FALSE]
-			object$tagwise.dispersion <- object$tagwise.dispersion[i,drop=FALSE]
-			object$infos <- object$infos[i,drop=FALSE]
-			object$genes <- object$genes[i,,drop=FALSE]
-			object$all.zeros <- object$all.zeros[i,drop=FALSE]
-			object$offset <- object$offset[i,,drop=FALSE]
+			!is.null(object$weights)
+				object$weights <- object$weights[i,j,drop=FALSE]
 		}
 	}
 	object
@@ -62,16 +63,20 @@ function(object, i, j, ...)
 		stop("Subsetting columns not allowed for DGEGLM object. Try subsetting elements of DGEGLM object instead.",call.=FALSE)
 	if(!missing(i)) {
 		object$coefficients <- object$coefficients[i,,drop=FALSE]
-		object$df.residual <- object$df.residual[i,drop=FALSE]
-		object$deviance <- object$deviance[i,drop=FALSE]
+		object$df.residual <- object$df.residual[i]
+		object$deviance <- object$deviance[i]
 		object$offset <- object$offset[i,,drop=FALSE]
 		object$genes <- object$genes[i,,drop=FALSE]
-		object$trended.dispersion <- object$trended.dispersion[i,drop=FALSE]
-		object$tagwise.dispersion <- object$tagwise.dispersion[i,drop=FALSE]
-		if(length(object$dispersion)>1) object$dispersion <- object$dispersion[i,drop=FALSE]
+		object$trended.dispersion <- object$trended.dispersion[i]
+		object$tagwise.dispersion <- object$tagwise.dispersion[i]
+		if(length(object$dispersion)>1) object$dispersion <- object$dispersion[i]
 		object$weights <- object$weights[i,,drop=FALSE]
 		object$fitted.values <- object$fitted.values[i,,drop=FALSE]
-		object$abundance <- object$abundance[i,drop=FALSE]
+		object$abundance <- object$abundance[i]
+		object$AveLogCPM <- object$AveLogCPM[i]
+		object$counts <- object$counts[i,,drop=FALSE]
+		object$iter <- object$iter[i]
+		object$failed <- object$failed[i]
 	}
 	object
 })
@@ -106,11 +111,20 @@ function(object, i, j, ...)
 	if(!missing(i)) {
 		object$table <- object$table[i,,drop=FALSE]
 		object$genes <- object$genes[i,,drop=FALSE]
-		object$abundance <- object$abundance[i,drop=FALSE]
-		object$trended.dispersion <- object$trended.dispersion[i,drop=FALSE]
-		object$tagwise.dispersion <- object$tagwise.dispersion[i,drop=FALSE]
-		object$dispersion <- object$dispersion[i,drop=FALSE]
+		object$abundance <- object$abundance[i]
+		object$trended.dispersion <- object$trended.dispersion[i]
+		object$tagwise.dispersion <- object$tagwise.dispersion[i]
+		object$dispersion <- object$dispersion[i]
 		object$coefficients <- object$coefficients[i,,drop=FALSE]
+		object$AveLogCPM <- object$AveLogCPM[i]
+		object$counts <- object$counts[i,,drop=FALSE]
+		object$iter <- object$iter[i]
+		object$failed <- object$failed[i]
+		object$df.test <- object$df.test[i]
+		object$offset <- object$offset[i,,drop=FALSE]
+		object$fitted.values <- object$fitted.values[i,,drop=FALSE]
+		object$deviance <- object$deviance[i]
+		object$df.residual <- object$df.residual[i]
 	}
 	object
 })
