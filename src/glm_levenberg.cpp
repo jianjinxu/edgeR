@@ -8,46 +8,23 @@
  * very big or very small.
  */
     
-const double one_million=std::pow(10, 6.0), one_millionth=std::pow(10, -6.0), one_tenthousandth=std::pow(10, -4.0);
-const double mildly_low_value=std::pow(10, -8.0), supremely_low_value=std::pow(10, -13.0), ridiculously_low_value=std::pow(10, -100.0);
+const double one_millionth=std::pow(10, -6.0);
+const double supremely_low_value=std::pow(10, -13.0), ridiculously_low_value=std::pow(10, -100.0);
 
 double glm_levenberg::nb_deviance (const double* y, const double* mu, 
 #ifdef WEIGHTED
 		const double* w, 
 #endif		
 		const double& phi) const {
-    double tempdev=0, unitdev, cur_y, cur_mu;
+    double tempdev=0;
     for (int i=0; i<nlibs; ++i) {
-        // We add a small value to protect against zero during division and logging.
-        cur_y=y[i]+mildly_low_value;
-        cur_mu=mu[i]+mildly_low_value;
-
-        /* Calculating the deviance using either the Poisson (small phi*mu), the Gamma (large) or NB (everything else).
-         * Some additional work is put in to make the transitions between families smooth.
-         */
-        if (phi < one_tenthousandth) {
-			const double resid = cur_y - cur_mu;
-			unitdev=cur_y * std::log(cur_y/cur_mu) - resid - 0.5*resid*resid*phi*(1+phi*(2/3*resid-cur_y));
-//			printf("Poisson as %f\n", unitdev);
-        } else {
-			const double product=cur_mu*phi;
-			if (product > one_million) {
-            	unitdev=(cur_y - cur_mu)/cur_mu - std::log(cur_y/cur_mu);
-				unitdev*=cur_mu/(1+product);
-//				printf("Gamma as %f\n", unitdev);
-        	} else {
-				const double invphi=1/phi;
-            	unitdev=cur_y * std::log( cur_y/cur_mu ) + (cur_y + invphi) * std::log( (cur_mu + invphi)/(cur_y + invphi) );
-//				printf("NB as %f\n", unitdev);
-        	}
-		}
 #ifdef WEIGHTED
-        tempdev+=w[i]*unitdev;
+        tempdev+=w[i]*compute_unit_nb_deviance(y[i], mu[i], phi);
 #else
-		tempdev+=unitdev;
+		tempdev+=compute_unit_nb_deviance(y[i], mu[i], phi);
 #endif
     }
-    return tempdev*2;
+    return tempdev;
 }
 
 void glm_levenberg::autofill(const double* offset, double* mu, const double* beta) {

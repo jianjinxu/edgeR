@@ -1,13 +1,11 @@
 #include "utils.h"
+#include "glm.h"
 extern "C" {
 #include "Rmath.h"
 }
+#ifdef DEBUG
 #include <iostream>
-
-double nbdev (const int& sum, const double& mu, const double& size) {
-    const double use_sum=(sum > low_value ? sum : low_value);
-   	return 2* ( use_sum*std::log(use_sum/mu) - (use_sum+size)*std::log((use_sum+size)/(mu+size)) );
-}
+#endif
 
 extern "C" {
 
@@ -45,13 +43,14 @@ SEXP R_exact_test_by_deviance(SEXP sums_1, SEXP sums_2, SEXP n_1, SEXP n_2, SEXP
  			 * greater than that observed for the current partition. We start computing from the extremes
  			 * in both cases.
  			 */
-			const double obsdev=nbdev(s1, mu1, r1)+nbdev(s2, mu2, r2);
+			const double phi1=1/r1, phi2=1/r2;
+			const double obsdev=compute_unit_nb_deviance(s1, mu1, phi1)+compute_unit_nb_deviance(s2, mu2, phi2);
 			double& currentp=(p_ptr[i]=0);
 		
 			// Going from the left.	
 			int j=0;
 			while (j <= stotal) {
-				if (obsdev <= nbdev(j, mu1, r1)+nbdev(stotal-j, mu2, r2)) { 
+				if (obsdev <= compute_unit_nb_deviance(j, mu1, phi1)+compute_unit_nb_deviance(stotal-j, mu2, phi2)) { 
 					currentp+=dnbinom(j, r1, p, 0) * dnbinom(stotal-j, r2, p, 0);
 				} else { break; }
 				++j;
@@ -59,7 +58,7 @@ SEXP R_exact_test_by_deviance(SEXP sums_1, SEXP sums_2, SEXP n_1, SEXP n_2, SEXP
 
 			// Going from the right, or what's left of it.
 			for (int k=0; k<=stotal-j; ++k) {
-				if (obsdev <= nbdev(k, mu2, r2)+nbdev(stotal-k, mu1, r1)) { 
+				if (obsdev <= compute_unit_nb_deviance(k, mu2, phi2)+compute_unit_nb_deviance(stotal-k, mu1, phi1)) { 
 					currentp+=dnbinom(k, r2, p, 0) * dnbinom(stotal-k, r1, p, 0);
 				} else { break; }
 			}

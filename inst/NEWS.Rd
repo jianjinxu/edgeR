@@ -2,6 +2,17 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.5.20}{\itemize{
+\item
+New functions nbinomDeviance() and nbinomUnitDeviance.
+Old function deviances.function() removed.
+}}
+
+\section{Version 3.5.19}{\itemize{
+\item
+Bug fix to subsetting for DGEList objects.
+}}
+
 \section{Version 3.5.18}{\itemize{
 \item
 The main computation of exactTestByDeviance() now implemented in C++ code.

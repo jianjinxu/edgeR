@@ -50,6 +50,8 @@ private:
 	void autofill(const double*, double*, const double*);
 };
 
+double compute_unit_nb_deviance(double, double, const double&);
+
 class adj_coxreid {
 public:
 	adj_coxreid(const int&, const int&, const double*);

@@ -3,7 +3,6 @@
 \alias{mglmOneGroup}
 \alias{mglmOneWay}
 \alias{mglmLevenberg}
-\alias{deviances.function}
 \alias{designAsFactor}
 
 \title{Fit Negative Binomial Generalized Linear Model to Multiple Response Vectors: Low Level Functions}
@@ -17,7 +16,6 @@ mglmOneGroup(y, dispersion=0, offset=0, weights=NULL, maxit=50, tol=1e-10, verbo
 mglmOneWay(y, design=NULL, dispersion=0, offset=0, weights=NULL, maxit=50, tol=1e-10)
 mglmLevenberg(y, design, dispersion=0, offset=0, weights=NULL,
               coef.start=NULL, start.method="null", maxit=200, tol=1e-06)
-deviances.function(dispersion)
 designAsFactor(design)
 }
 
