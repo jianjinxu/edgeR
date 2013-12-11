@@ -2,7 +2,6 @@
 \alias{topTags}
 \alias{TopTags-class}
 \alias{show,TopTags-method}
-\alias{[.TopTags}
 
 \title{Table of the Top Differentially Expressed Tags}
 

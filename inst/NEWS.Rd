@@ -2,6 +2,11 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.5.22}{\itemize{
+\item
+Simplification of the subsetting code for DGEList, DGEExact, DGEGLM, DGELRT and TopTags data objects using the new utility function subsetListOfArrays in the limma package.
+}}
+
 \section{Version 3.5.20}{\itemize{
 \item
 New functions nbinomDeviance() and nbinomUnitDeviance.

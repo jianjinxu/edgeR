@@ -4,27 +4,29 @@
 \alias{[.DGEExact}
 \alias{[.DGELRT}
 \alias{[.DGEGLM}
+\alias{[.TopTags}
 \title{Subset DGEList, DGEGLM, DGEExact and DGELRT Objects}
 \description{
 Extract a subset of a \code{DGEList}, \code{DGEGLM}, \code{DGEExact} or \code{DGELRT} object.
 }
 \usage{
-\method{[}{DGEList}(object, i, j, \ldots)
-\method{[}{DGEGLM}(object, i, j, \ldots)
-\method{[}{DGEExact}(object, i, j, \ldots)
-\method{[}{DGELRT}(object, i, j, \ldots)
+\method{[}{DGEList}(object, i, j)
+\method{[}{DGEGLM}(object, i, j)
+\method{[}{DGEExact}(object, i, j)
+\method{[}{DGELRT}(object, i, j)
+\method{[}{TopTags}(object, i, j)
 }
 \arguments{
- \item{object}{object of class \code{DGEList}, \code{DGEGLM}, \code{DGEExact} or \code{DGELRT}, respectively}
-  \item{i,j}{elements to extract. \code{i} subsets the tags or genes while \code{j} subsets the libraries. Note, columns of \code{DGEGLM}, \code{DGEExact} and \code{DGELRT} objects cannot be subsetted.}
-  \item{\ldots}{not used}
+ \item{object}{object of class \code{DGEList}, \code{DGEGLM}, \code{DGEExact} or \code{DGELRT}. For \code{subsetListOfArrays}, any list of conformal matrices and vectors.}
+  \item{i,j}{elements to extract. \code{i} subsets the tags or genes while \code{j} subsets the libraries.
+  Note, columns of \code{DGEGLM}, \code{DGEExact} and \code{DGELRT} objects cannot be subsetted.}
 }
 \details{
 \code{i,j} may take any values acceptable for the matrix components of \code{object} of class \code{DGEList}.
 See the \link{Extract} help entry for more details on subsetting matrices. For \code{DGEGLM}, \code{DGEExact} and \code{DGELRT} objects, only rows (i.e. \code{i}) may be subsetted.
 }
 \value{
-An object of class \code{DGEList}, \code{DGEGLM}, \code{DGEExact} or \code{DGELRT} as appropriate, holding data from the specified subset of tags/genes and libraries.
+An object of the same class as \code{object} holding data from the specified subset of rows and columns.
 }
 \author{Davis McCarthy, Gordon Smyth}
 \seealso{
@@ -43,4 +45,3 @@ results <- exactTest(d)
 results[1:2,]
 # NB: cannot subset columns for DGEExact objects
 }
-\keyword{manip}
