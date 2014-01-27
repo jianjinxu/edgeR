@@ -75,7 +75,7 @@ Read_In_Barcodes(char* filename){
   fclose(fin);
   num_barcode = count;
   free(line);
-  Rprintf(" -- Number of Barcodes is : %d\n", num_barcode);
+  Rprintf(" -- Number of Barcodes : %d\n", num_barcode);
 }
 
 int
@@ -196,7 +196,7 @@ Read_In_Hairpins(char *filename){
   fclose(fin);
   num_hairpin = count;
   free(line);
-  Rprintf(" -- Number of Hairpin is : %d\n", num_hairpin);
+  Rprintf(" -- Number of Hairpins : %d\n", num_hairpin);
 }
 
 void
@@ -311,7 +311,7 @@ Process_Hairpin_Reads(char *filename){
     hairpinindex[num_read] = hairpin_index;
   }
   if (isverbose)
-    Rprintf("Number of Read in file %s is : %ld\n", filename, num_read_thisfile);  
+    Rprintf("Number of reads in file %s : %ld\n", filename, num_read_thisfile);  
   fclose(fin);
   free(line);
   free(this_barcode);
@@ -549,20 +549,20 @@ processHairpinReads(char **file, int *filecount,
   Rprintf(" -- Barcode: start position %d\t end position %d\t length %d\n", barcode_start, barcode_end, barcode_length);  
   Rprintf(" -- Hairpin: start position %d\t end position %d\t length %d\n", hairpin_start, hairpin_end, hairpin_length); 
   if (allow_shifting) {
-    Rprintf(" -- Allow hairpin sequence to be mapped to a shifted position, <= %d base left or right to specified position. \n", shifting_n_base);
+    Rprintf(" -- Allow hairpin sequences to be matched to a shifted position, <= %d base left or right of the specified positions. \n", shifting_n_base);
   } else {
-    Rprintf(" -- Hairpin sequence need to be match at specified position. \n");
+    Rprintf(" -- Hairpin sequences need to match at specified positions. \n");
   }
   if (allow_mismatch) {
     Rprintf(" -- Allow sequence mismatch, <= %d base in barcode sequence and <= %d base in hairpin sequence. \n", barcode_n_mismatch, hairpin_n_mismatch );
   } else {
-    Rprintf(" -- Mismatch in barcode/hairpin sequence is not allowed. \n");
+    Rprintf(" -- Mismatch in barcode/hairpin sequences not allowed. \n");
   }
 
   Rprintf("\nTotal number of read is %ld \n", num_read);
-  Rprintf("There are %ld reads (%.4f percent) with barcode match\n", barcodecount, 100.0*barcodecount/num_read);
-  Rprintf("There are %ld reads (%.4f percent) with hairpin match\n", hairpincount, 100.0*hairpincount/num_read);
-  Rprintf("There are %ld reads (%.4f percent) with both barcode and hairpin match\n", bchpcount, 100.0*bchpcount/num_read);
+  Rprintf("There are %ld reads (%.4f percent) with barcode matches\n", barcodecount, 100.0*barcodecount/num_read);
+  Rprintf("There are %ld reads (%.4f percent) with hairpin matches\n", hairpincount, 100.0*hairpincount/num_read);
+  Rprintf("There are %ld reads (%.4f percent) with both barcode and hairpin matches\n", bchpcount, 100.0*bchpcount/num_read);
 
   Output_Summary_Table(*output);
   free(barcodeindex);

@@ -2,6 +2,18 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.5.23}{\itemize{
+\item
+More careful calculation of residual df in the presence of exactly zero fitted values for glmQLFTest() and estimateDisp().
+The new code allows for deflation of residual df for more complex experimental designs.
+
+\item
+Update to User's Guide to give more advice on read alignment and counting.
+
+\item
+Update to processHairpinReads.
+}}
+
 \section{Version 3.5.22}{\itemize{
 \item
 Simplification of the subsetting code for DGEList, DGEExact, DGEGLM, DGELRT and TopTags data objects using the new utility function subsetListOfArrays in the limma package.

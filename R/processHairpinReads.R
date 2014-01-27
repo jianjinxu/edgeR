@@ -45,10 +45,10 @@ processHairpinReads = function(readfile, barcodefile, hairpinfile,
 
   # check that barcodes and hairpins provided have no duplicates, are in specified length.
   barcodelength <- barcodeEnd - barcodeStart + 1;
-  barcodes <- read.table(barcodefile, header=FALSE, sep="\t");
+  barcodes <- read.table(barcodefile, header=TRUE, sep="\t");
   numbc <- nrow(barcodes) 
-  barcodeseqs <- as.character(barcodes[,2])
-  barcodenames <- as.character(barcodes[,1])
+  barcodeseqs <- as.character(barcodes$Sequences) #[,2])
+  barcodenames <- as.character(barcodes$ID) #[,1])
   if ((min(nchar(barcodeseqs)) != barcodelength) || (max(nchar(barcodeseqs)) != barcodelength))
     stop(paste("Barcode sequence length is set to ", barcodelength, ", there are barcode sequence not in specified length.\n", sep=""))
   if (length(unique(barcodeseqs)) != numbc)
@@ -57,13 +57,13 @@ processHairpinReads = function(readfile, barcodefile, hairpinfile,
     stop("There are duplicate barcode names.\n")
   tempbarcodefile <- paste("Barcode", as.character(Sys.getpid()), "temp.txt", sep = "_")
   # passing only barcode sequences to C function
-  write.table(barcodes[, 2], file=tempbarcodefile, sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE);
+  write.table(barcodeseqs, file=tempbarcodefile, sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE);
 
   hairpinlength <- hairpinEnd - hairpinStart + 1;
-  hairpins <- read.table(hairpinfile, header=FALSE, sep="\t");
+  hairpins <- read.table(hairpinfile, header=TRUE, sep="\t");
   numhp <- nrow(hairpins) 
-  hairpinseqs <- as.character(hairpins[,2])
-  hairpinnames <- as.character(hairpins[,1])
+  hairpinseqs <- as.character(hairpins$Sequences) #[,2])
+  hairpinnames <- as.character(hairpins$ID) #[,1])
   if ((min(nchar(hairpinseqs)) != hairpinlength) || (max(nchar(hairpinseqs)) != hairpinlength))
     stop(paste("Hairpin sequence length is set to ", hairpinlength, ", there are hairpin sequences not in specified length.\n", sep=""))
   if (length(unique(hairpinseqs)) != numhp)
@@ -73,7 +73,7 @@ processHairpinReads = function(readfile, barcodefile, hairpinfile,
   
   # passing only hairpin sequences to C function
   temphairpinfile <- paste("Hairpin", as.character(Sys.getpid()), "temp.txt", sep = "_")
-  write.table(hairpins[, 2], file=temphairpinfile, sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE);
+  write.table(hairpinseqs, file=temphairpinfile, sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE);
     
   if (allowShifting) {
       if ((shiftingBase <= 0) || (shiftingBase > 5))
@@ -101,17 +101,24 @@ processHairpinReads = function(readfile, barcodefile, hairpinfile,
      as.integer(allowShiftedMismatch),
      as.character(tempoutfile), as.integer(verbose))
 	 
-  summary = read.table(tempoutfile, sep="\t", header=FALSE)
+  summary <- read.table(tempoutfile, sep="\t", header=FALSE)
   file.remove(tempoutfile)
   file.remove(tempbarcodefile)
   file.remove(temphairpinfile)
+  close(reads)
   if (nrow(summary) != length(hairpinnames))
       stop("Number of hairpins from result count matrix doesn't agree with given hairpin list. ")
   if (ncol(summary) != length(barcodenames))
       stop("Number of barcodes from result count matrix doesn't agree with given barcode list. ")
   colnames(summary) = barcodenames
   rownames(summary) = hairpinnames
-  
-  x <- DGEList(counts = summary, genes = data.frame(ID=hairpinnames,Sequence=hairpinseqs))
+  x <- DGEList(counts = summary, genes = hairpins)
+  if(!is.null(barcodes$group)) {
+     x$samples = cbind("ID"=barcodes$ID, "lib.size"=x$samples$lib.size, 
+                       "norm.factors"=x$samples$norm.factors,
+                       barcodes[,-match(c("ID","Sequences"), colnames(barcodes))])
+  } else {
+     x$samples = cbind("ID"=barcodes$ID, x$samples, barcodes[,-match(c("ID","Sequences"), colnames(barcodes))])
+  }
+  x
 }
-

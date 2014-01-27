@@ -1,7 +1,7 @@
 glmQLFTest <- function(y, design=NULL, dispersion=NULL, coef=ncol(glmfit$design), contrast=NULL, abundance.trend=TRUE, robust=FALSE, winsor.tail.p=c(0.05,0.1), plot=FALSE)
 #	Quasi-likelihood F-tests for DGE glms.
 #	Davis McCarthy and Gordon Smyth.
-#	Created 18 Feb 2011. Last modified 25 Nov 2013.
+#	Created 18 Feb 2011. Last modified 18 Jan 2014.
 {
 #	Initial fit with trended dispersion
 	if(is(y,"DGEList")) {
@@ -25,11 +25,8 @@ glmQLFTest <- function(y, design=NULL, dispersion=NULL, coef=ncol(glmfit$design)
 	df.residual <- glmfit$df.residual
 
 #	Adjust df.residual for fitted values at zero
-	zerofit <- (glmfit$fitted.values < 1e-14)
-	Q <- qr.Q(qr(glmfit$design))
-	h <- rowSums(Q^2)
-	dffromzeros <- zerofit %*% (1-h)
-	df.residual <- drop(round(df.residual-dffromzeros))
+	zerofit <- (glmfit$fitted.values < 1e-4) & (glmfit$counts < 1e-4)
+	df.residual <- .residDF(zerofit, design)
 
 #	Empirical Bayes squeezing of the quasi-likelihood variance factors
 	s2 <- glmfit$deviance / df.residual
@@ -72,7 +69,7 @@ glmQLFTest <- function(y, design=NULL, dispersion=NULL, coef=ncol(glmfit$design)
 	out$table$F <- F
 	out$table$PValue <- F.pvalue
 
-	out$df.residual.corrected <- df.residual
+	out$df.residual <- df.residual
 	out$s2.fit <- s2.fit
 	out$df.prior <- s2.fit$df.prior
 	out$df.total <- df.total

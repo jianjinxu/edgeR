@@ -1,6 +1,6 @@
 nbinomDeviance <- function(y,mean,dispersion=0,weights=NULL)
 #	Negative binomial residual deviance
-#	y is a matrix, and a deviance is computed to be a row
+#	y is a matrix and a deviance is computed for each row
 #	A vector y is taken to be a matrix with one row.
 #	Original version 23 November 2010.
 #	Last modified 9 Dec 2013.

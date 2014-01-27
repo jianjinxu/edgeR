@@ -83,11 +83,8 @@ estimateDisp <- function(y, design=NULL, prior.df=NULL, trend.method="locfit", s
 		df.residual <- glmfit$df.residual
 
 		# Adjust df.residual for fitted values at zero
-		zerofit <- (glmfit$fitted.values < 1e-14)
-		Q <- qr.Q(qr(glmfit$design))
-		h <- rowSums(Q^2)
-		dffromzeros <- zerofit %*% (1-h)
-		df.residual <- drop(round(df.residual-dffromzeros))
+		zerofit <- (glmfit$fitted.values < 1e-4) & (glmfit$counts < 1e-4)
+		df.residual <- .residDF(zerofit, design)
 
 		# Empirical Bayes squeezing of the quasi-likelihood variance factors
 		s2 <- glmfit$deviance / df.residual
