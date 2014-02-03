@@ -17,7 +17,7 @@ estimateGLMTrendedDisp.DGEList <- function(y, design=NULL, method="auto", ...)
 estimateGLMTrendedDisp.default <- function(y, design=NULL, offset=NULL, AveLogCPM=NULL, method="auto", weights=NULL, ...)
 {
 #	Check y
-	y <- as.matrix(y)
+	y <- round(as.matrix(y))
 	ntags <- nrow(y)
 	if(ntags==0) return(numeric(0))
 	nlibs <- ncol(y)

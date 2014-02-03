@@ -4,7 +4,7 @@ dispCoxReid <- function(y, design=NULL, offset=NULL, weights=NULL, AveLogCPM=NUL
 #	26 Jan 2011.  Last modified 9 Dec 2013.
 {
 #	Check y
-	y <- as.matrix(y)
+	y <- round(as.matrix(y))
 
 #	Check design
 	if(is.null(design)) {

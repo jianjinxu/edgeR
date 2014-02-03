@@ -25,7 +25,7 @@ estimateGLMTagwiseDisp.DGEList <- function(y, design=NULL, prior.df=10, trend=!i
 estimateGLMTagwiseDisp.default <- function(y, design=NULL, offset=NULL, dispersion, prior.df=10, trend=TRUE, span=NULL, AveLogCPM=NULL, weights=NULL, ...)
 {
 #	Check y
-	y <- as.matrix(y)
+	y <- round(as.matrix(y))
 	ntags <- nrow(y)
 	if(ntags==0) return(numeric(0))
 	nlibs <- ncol(y)

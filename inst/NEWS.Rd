@@ -2,6 +2,12 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.5.24}{\itemize{
+\item
+estimateGLMCommonDisp(), estimateGLMTrendedDisp() and estimateGLMTagwiseDisp() now round the counts to make sure they are integers.
+Previously non-integer values could give meaningless dispersion estimates because the likelihood function is undefined.
+}}
+
 \section{Version 3.5.23}{\itemize{
 \item
 More careful calculation of residual df in the presence of exactly zero fitted values for glmQLFTest() and estimateDisp().
