@@ -4,8 +4,8 @@
 
 \section{Version 3.5.24}{\itemize{
 \item
-estimateGLMCommonDisp(), estimateGLMTrendedDisp() and estimateGLMTagwiseDisp() now round the counts to make sure they are integers.
-Previously non-integer values could give meaningless dispersion estimates because the likelihood function is undefined.
+estimateGLMCommonDisp(), estimateGLMTrendedDisp(), estimateGLMTagwiseDisp() and estimateDisp() now round the counts to make sure they are integers.
+Previously non-integer counts could give errors or meaningless dispersion estimates because the negative binomial likelihood is undefined at non-integers.
 }}
 
 \section{Version 3.5.23}{\itemize{
