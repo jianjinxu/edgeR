@@ -2,6 +2,11 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.5.27}{\itemize{
+\item
+new function sumTechReps() to sum over technical replicate libraries.
+}}
+
 \section{Version 3.5.26}{\itemize{
 \item
 adjustedProfileLik() now evaluates the likelihood in a continuous fashion for non-integer y values.
