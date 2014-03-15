@@ -31,7 +31,7 @@ estimateTagwiseDisp <- function(object, prior.df=10, trend="movingave", span=NUL
 		grid.vals <- spline.disp/(1+spline.disp)
 	
 		l0 <- matrix(0,ntags,grid.length)
-		for(j in 1:grid.length) for(i in 1:length(y)) l0[,j] <- condLogLikDerDelta(y[[i]],grid.vals[j],der=0)+l0[,j]
+		for(j in 1:grid.length) for(i in 1:length(y)) l0[,j] <- condLogLikDerDelta(y[[i]],grid.vals[j],der=0L)+l0[,j]
 
 		if(is.null(span)) if(trend=="movingave") span <- 0.3 else span <- 0.5
 		m0 <- switch(trend,
@@ -50,7 +50,7 @@ estimateTagwiseDisp <- function(object, prior.df=10, trend="movingave", span=NUL
 		if(trend != "none") stop("optimize method doesn't allow for abundance-dispersion trend")
 		if(verbose) message("Tagwise dispersion optimization begun, may be slow, progress reported every 100 tags")
 		for(tag in seq_len(ntags)) {
-			delta.this <- optimize(weightedCondLogLikDerDelta, interval=c(1e-4,100/(100+1)), tol=tol, maximum=TRUE, y=y, tag=tag, ntags=ntags, prior.n=prior.n, der=0)
+			delta.this <- optimize(weightedCondLogLikDerDelta, interval=c(1e-4,100/(100+1)), tol=tol, maximum=TRUE, y=y, tag=tag, ntags=ntags, prior.n=prior.n, der=0L)
 			delta[tag] <- delta.this$maximum
 			if(verbose) if(tag%%100==0) message("tag ",tag)
 		}

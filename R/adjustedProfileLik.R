@@ -4,7 +4,7 @@ adjustedProfileLik <- function(dispersion, y, design, offset, weights=NULL, adju
 # y is matrix: rows are genes/tags/transcripts, columns are samples/libraries
 # offset is matrix of the same dimensions as y
 # Yunshun Chen, Gordon Smyth, Aaron Lun
-# Created June 2010. Last modified 21 Aug 2012.
+# Created June 2010. Last modified 17 Feb 2014.
 {
 	if(any(dim(y)!=dim(offset))) offset <- expandAsMatrix(offset,dim(y))
 	ntags <- nrow(y)
@@ -19,9 +19,17 @@ adjustedProfileLik <- function(dispersion, y, design, offset, weights=NULL, adju
 	mu <- fit$fitted
 	if(is.null(weights)) weights <- 1
 	if(dispersion[1] == 0){
-		loglik <- rowSums(weights*dpois(y,lambda=mu,log = TRUE))
+#		loglik <- rowSums(weights*dpois(y,lambda=mu,log = TRUE))
+		ll <- y*log(mu)-mu-lgamma(y+1)
+		ll[mu==0] <- 0
+		loglik <- rowSums(weights*ll)
+		
 	} else {
-		loglik <- rowSums(weights*dnbinom(y,size=1/dispersion,mu=mu,log = TRUE))
+#		loglik <- rowSums(weights*dnbinom(y,size=1/dispersion,mu=mu,log = TRUE))
+		r <- 1/dispersion
+		ll <- y*log(mu)-y*log(mu+r)+r*log(r)-r*log(mu+r)+lgamma(y+r)-lgamma(y+1)-lgamma(r)
+		ll[mu==0] <- 0
+		loglik <- rowSums(weights*ll)		
 	}
 	if (!adjust) {
 		return(loglik)

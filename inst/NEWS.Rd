@@ -2,6 +2,15 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.5.26}{\itemize{
+\item
+adjustedProfileLik() now evaluates the likelihood in a continuous fashion for non-integer y values.
+This means that rounding of counts to integers is not necessary.
+
+\item
+camera.DGEList(), roast.DGEList() and mroast.DGEList() now include ... argument.
+}}
+
 \section{Version 3.5.24}{\itemize{
 \item
 estimateGLMCommonDisp(), estimateGLMTrendedDisp(), estimateGLMTagwiseDisp() and estimateDisp() now round the counts to make sure they are integers.

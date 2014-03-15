@@ -34,7 +34,7 @@ plotBCV <- function(y, xlab="Average log CPM", ylab="Biological coefficient of v
 		labels <- c(labels,"Trend")
 		cols <- c(cols,col.trend)
 	}
-	legend("topright",legend=labels,lwd=2,col=cols)
+	legend("topright",legend=labels,lty=c(-1,1,1),pch=c(pch,-1,-1),pt.cex=cex,lwd=2,col=cols)
 
 #	Add binned dispersions if appropriate
 #	if(!is.null(y$trend.method)) if(y$trend.method %in% c("bin.spline","bin.loess")) if(!is.null(y$bin.dispersion)) if(!is.null(y$bin.AveLogCPM))

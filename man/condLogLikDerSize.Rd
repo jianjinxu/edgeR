@@ -18,10 +18,10 @@ condLogLikDerDelta(y, delta, der=1L)
 \item{der}{integer specifying derivative required, either 0 (the function), 1 (first derivative) or 2 (second derivative)}
 }
 
-\value{vector of function/derivative evaluations, one for each transcript,with respect to }
+\value{vector of row-wise derivatives with respect to \code{r} or \code{delta}}
 
 \details{The library sizes must be equalized before running this function. This function carries out the actual mathematical computations for the conditional log-likelihood and its derivatives, calculating the conditional log-likelihood for each tag/transcript.
-Derivatives are with respect to either the size or the delta parametrization of the dispersion.
+Derivatives are with respect to either the size (\code{r}) or the delta parametrization (\code{delta}) of the dispersion.
 }
 
 

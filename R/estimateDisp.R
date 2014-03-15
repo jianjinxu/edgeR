@@ -6,10 +6,9 @@ estimateDisp <- function(y, design=NULL, prior.df=NULL, trend.method="locfit", s
 #  Estimating dispersion using weighted conditional likelihood empirical Bayes.
 #  Use GLM approach if a design matrix is given, and classic approach otherwise.
 #  It calculates a matrix of likelihoods for each gene at a set of dispersion grid points, and then calls WLEB() to do the shrinkage.
-#  Yunshun Chen, Gordon Smyth. Created July 2012. Last modified 4 Feb 2014.
+#  Yunshun Chen, Gordon Smyth. Created July 2012. Last modified 17 Feb 2014.
 {
 	if( !is(y,"DGEList") ) stop("y must be a DGEList")
-	y$counts <- round(as.matrix(y$counts))
 	group <- y$samples$group <- as.factor(y$samples$group)
 
 	trend <- match.arg(trend.method, c("none", "loess", "locfit", "movingave"))
