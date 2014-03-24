@@ -8,7 +8,7 @@ cpm.DGEList <- function(x, normalized.lib.sizes=TRUE, log=FALSE, prior.count=0.2
 {
 	lib.size <- x$samples$lib.size
 	if(normalized.lib.sizes) lib.size <- lib.size*x$samples$norm.factors
-	cpm(x$counts,lib.size=lib.size,log=log,prior.count=prior.count)
+	cpm.default(x$counts,lib.size=lib.size,log=log,prior.count=prior.count)
 }
 
 cpm.default <- function(x, lib.size=NULL, log=FALSE, prior.count=0.25, ...)
@@ -28,17 +28,3 @@ cpm.default <- function(x, lib.size=NULL, log=FALSE, prior.count=0.25, ...)
 	else
 		t(t(x)/lib.size)
 }
-
-rpkm <- function(x, gene.length, normalized.lib.sizes=TRUE, log=FALSE, prior.count=0.25)
-#	Reads per kilobase of gene length per million reads of sequencing
-#	Gordon Smyth
-#	Created 1 November 2012. Last modified 11 March 2012.
-{
-	y <- cpm(x=x,normalized.lib.sizes=normalized.lib.sizes,log=log,prior.count=prior.count)
-	gene.length.kb <- gene.length/1000
-	if(log)
-		y-log2(gene.length.kb)
-	else
-		y/gene.length.kb
-}
-
