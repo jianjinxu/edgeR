@@ -17,7 +17,7 @@ glm fitting and dispersion estimation functions now support observation weights.
 aveLogCPM() now supports observation offsets.
 
 \item
-The DGEList methods for esimateDisp(), estimateGLMCommonDisp(), estimateGLMTrendedDisp() and estimateGLMTagwiseDisp no longer accept offset, weights or AveLogCPM as arguments.
+The DGEList methods for estimateDisp(), estimateGLMCommonDisp(), estimateGLMTrendedDisp() and estimateGLMTagwiseDisp no longer accept offset, weights or AveLogCPM as arguments.
 These quantities are now always taken from the DGEList object.
 
 \item
@@ -39,7 +39,8 @@ new function sumTechReps() to sum over technical replicate libraries.
 camera.DGEList(), roast.DGEList() and mroast.DGEList() now include ... argument.
 
 \item
-Simplification of the subsetting code for DGEList, DGEExact, DGEGLM, DGELRT and TopTags data objects using the new utility function subsetListOfArrays in the limma package.
+Subsetting a DGEList object now has the option of resetting to the library sizes to the new column sums.
+Internally, the subsetting code for DGEList, DGEExact, DGEGLM, DGELRT and TopTags data objects has been simplified using the new utility function subsetListOfArrays in the limma package.
 
 \item
 New functions nbinomDeviance() and nbinomUnitDeviance.

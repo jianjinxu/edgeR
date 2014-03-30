@@ -17,16 +17,28 @@ sumTechReps.default <- function(x,ID=colnames(x),...)
 sumTechReps.DGEList <- function(x,ID=colnames(x),...)
 #	Sum over replicate columns, for matrices
 #	Yifang Hu and Gordon Smyth
-#	Created 14 March 2014
+#	Created 14 March 2014. Last modified 17 March 2014.
 {
-	x$common.dispersion <- x$trended.dispersion <- x$tagwise.dispersion <- NULL
-	x$weights <- NULL
 	d <- duplicated(ID)
 	if(!any(d)) return(x)
+	
+	x$common.dispersion <- x$trended.dispersion <- x$tagwise.dispersion <- NULL
+	x$weights <- NULL
+	
 	y <- x[,!d]
-	y$counts <- sumTechReps(x$counts,ID=ID,...)
-	y$samples$lib.size <- rowsum(x$samples$lib.size,group=ID,reorder=FALSE,na.rm=FALSE)
-	y$samples$norm.factors <- tapply(x$samples$norm.factors,ID,mean)
+
+#	Sum counts
+	y$counts <- sumTechReps.default(x$counts,ID=ID,...)
+
+#	Sum library sizes
+	y$samples$lib.size <- drop(rowsum(x$samples$lib.size,group=ID,reorder=FALSE,na.rm=FALSE))
+
+#	Average normalization factors
+	y$samples$norm.factors <- drop(rowsum(x$samples$norm.factors,group=ID,reorder=FALSE,na.rm=FALSE))
+	n <- rep(1L,nrow(x$samples))
+	n <- drop(rowsum(n,group=ID,reorder=FALSE,na.rm=FALSE))
+	y$samples$norm.factors <- y$samples$norm.factors/n
+
 	rownames(y$samples) <- colnames(y$counts)
 	y
 }

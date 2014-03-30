@@ -1,9 +1,9 @@
 #  SUBSET DATA SETS
 
 assign("[.DGEList",
-function(object, i, j)
+function(object, i, j, keep.lib.sizes=TRUE)
 #  Subsetting for DGEList objects
-#  24 September 2009.  Last modified 11 Dec 2013.
+#  24 September 2009.  Last modified 17 March 2014.
 {  
 #	Recognized components
 	IJ <- c("counts","pseudo.counts","offset","weights")
@@ -12,7 +12,9 @@ function(object, i, j)
 	I  <- c("AveLogCPM","trended.dispersion","tagwise.dispersion","prior.n","prior.df")
 #	Obsolete <- c("conc","infos","all.zeros")
 
-	subsetListOfArrays(object,i,j,IJ=IJ,IX=IX,I=I,JX=JX)
+	out <- subsetListOfArrays(object,i,j,IJ=IJ,IX=IX,I=I,JX=JX)
+	if(!(missing(i) || keep.lib.sizes)) out$samples$lib.size <- colSums(out$counts)
+	out
 })
 
 assign("[.DGEGLM",
