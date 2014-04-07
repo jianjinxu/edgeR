@@ -5,75 +5,69 @@
 \section{Version 3.6.0}{\itemize{
 
 \item
-The User's Guide has a new section (3.2.4) on questions and contrasts.
-This section describes the basic rules of making contrasts based on research questions.
+Improved treatment of fractional counts.
+Previously the classic edgeR pipeline permitted fractional counts but the glm pipeline did not.
+edgeR now permits fractional counts throughout.
 
 \item
-More advice on read alignment and counting is given in the User's Guide.
+All glm-based functions in edgeR now accept quantitative observation-level weights.
+The glm fitting function mglmLS() and mglmSimple() are retired, and all glm fitting is now done by either mglmLevenberg() or mglmOneWay().
 
 \item
-New function estimateGLMRobustDisp() for computing a robust dispersion estimate for each gene using observation weights.
-glm fitting and dispersion estimation functions now support observation weights.
-aveLogCPM() now supports observation offsets.
-
-\item
-The DGEList methods for estimateDisp(), estimateGLMCommonDisp(), estimateGLMTrendedDisp() and estimateGLMTagwiseDisp no longer accept offset, weights or AveLogCPM as arguments.
-These quantities are now always taken from the DGEList object.
-
-\item
-adjustedProfileLik() now evaluates the likelihood in a continuous fashion for non-integer y values.
-This means that rounding of counts to integers is not necessary.
+New capabilities for robust estimation allowing for observation-level outliers.
+In particular, the new function estimateGLMRobustDisp() computes a robust dispersion estimate for each gene.
 
 \item
 More careful calculation of residual df in the presence of exactly zero fitted values for glmQLFTest() and estimateDisp().
 The new code allows for deflation of residual df for more complex experimental designs.
 
 \item
-rpkm() is now a generic function.
-The method for DGEList objects tries to find the gene lengths in x$genes.
+New function processHairpinReads() for analyzing data from shRNA-seq screens.
 
 \item
-new function sumTechReps() to sum over technical replicate libraries.
-
-\item
-camera.DGEList(), roast.DGEList() and mroast.DGEList() now include ... argument.
-
-\item
-Subsetting a DGEList object now has the option of resetting to the library sizes to the new column sums.
-Internally, the subsetting code for DGEList, DGEExact, DGEGLM, DGELRT and TopTags data objects has been simplified using the new utility function subsetListOfArrays in the limma package.
+New function sumTechReps() to collapse counts over technical replicate libraries.
 
 \item
 New functions nbinomDeviance() and nbinomUnitDeviance.
 Old function deviances.function() removed.
 
 \item
+New function validDGEList().
+
+\item
+rpkm() is now a generic function, and it now tries to find the gene lengths automatically if available from the annotation information in a DGEList object.
+
+\item
+Subsetting a DGEList object now has the option of resetting to the library sizes to the new column sums.
+Internally, the subsetting code for DGEList, DGEExact, DGEGLM, DGELRT and TopTags data objects has been simplified using the new utility function subsetListOfArrays in the limma package.
+
+\item
+To strengthen the interface and to strengthen the object-orientated nature of the functions, the DGEList methods for estimateDisp(), estimateGLMCommonDisp(), estimateGLMTrendedDisp() and estimateGLMTagwiseDisp no longer accept offset, weights or AveLogCPM as arguments.
+These quantities are now always taken from the DGEList object.
+
+\item
+The User's Guide has new sections on read alignment, producing a table of counts, and on how to translate scientific questions into contrasts when using a glm.
+
+\item
+camera.DGEList(), roast.DGEList() and mroast.DGEList() now include ... argument.
+
+\item
 The main computation of exactTestByDeviance() now implemented in C++ code.
 
 \item
-The big.count argument has been removed from functions
-exactTestByDeviance() and exactTestBySmallP().
+The big.count argument has been removed from functions exactTestByDeviance() and exactTestBySmallP().
 
 \item
 New default value for offset in dispCoxReid.
 
 \item
-Add is.fullrank and nonEstimable to functions imported from limma.
-
-\item
 More tolerant error checking for dispersion value when computing aveLogCPM().
 
 \item
-Functions mglmLS() and mglmSimple() are retired.
-All glm fitting now done by mglmLevenberg() or mglmOneWay().
-
-\item
-New function validDGEList().
-
-\item
-New function processHairpinReads().
-
-\item
 aveLogCPM() now returns a value even when all the counts are zero.
+
+\item
+The functions is.fullrank and nonEstimable are now imported from limma.
 }}
 
 
