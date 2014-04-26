@@ -54,9 +54,9 @@ Differential expression analysis for sequence count data
 Bullard JH, Purdom E, Hansen KD, Dudoit S. (2010)
 Evaluation of statistical methods for normalization and differential expression in mRNA-Seq experiments.
 \emph{BMC Bioinformatics} 11, 94.
-A scaling normalization method for differential expression analysis of RNA-seq data.
 
 Robinson MD, Oshlack A (2010).
+A scaling normalization method for differential expression analysis of RNA-seq data.
 \emph{Genome Biology} 11, R25.
 }
 
