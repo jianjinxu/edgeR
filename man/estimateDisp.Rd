@@ -48,13 +48,11 @@ This function calculates a matrix of likelihoods for each gene at a set of dispe
 }
 
 \references{
-McCarthy, DJ, Chen, Y, Smyth, GK (2012). Differential expression analysis of multifactor RNA-Seq experiments with respect to biological variation.
-\emph{Nucleic Acids Research} 40, 4288-4297.
-\url{http://nar.oxfordjournals.org/content/40/10/4288}
-
-Robinson, MD, and Smyth, GK (2007). Moderated statistical tests for
-assessing differences in tag abundance. \emph{Bioinformatics} 23, 2881-2887.
-\url{http://bioinformatics.oxfordjournals.org/content/23/21/2881}
+Chen, Y, Lun, ATL, and Smyth, GK (2014).
+Differential expression analysis of complex RNA-seq experiments using edgeR.
+In: \emph{Statistical Analysis of Next Generation Sequence Data},
+Somnath Datta and Daniel S Nettleton (eds), Springer, New York.
+\url{http://www.statsci.org/smyth/pubs/edgeRChapterPreprint.pdf}
 }
 
 \author{Yunshun Chen, Gordon Smyth}

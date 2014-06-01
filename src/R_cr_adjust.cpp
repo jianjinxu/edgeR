@@ -26,7 +26,7 @@ SEXP R_cr_adjust (SEXP w, SEXP x, SEXP nlibs) try {
     double* out_ptr=NUMERIC_POINTER(output);
     try {
 		// Running through each tag.
-       	for (long tag=0; tag<num_tags; ++tag) {
+       	for (int tag=0; tag<num_tags; ++tag) {
 			std::pair<double, bool> x=acr.compute(wptr);
 			if (!x.second) { 
 				std::stringstream errout;

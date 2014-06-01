@@ -37,7 +37,7 @@ adj_coxreid::~adj_coxreid () {
 }
 
 std::pair<double, bool> adj_coxreid::compute(const double* wptr) {
-    /* Setting working weight_matrix to 'A=XtWX' with column-major storage.
+    /* Setting working weight_matrix to 'A=Xt %*% diag(W) %*% X' with column-major storage.
  	 * This represents the expected Fisher information. The overall strategy is
  	 * to compute the determinant of the information matrix in order to compute
  	 * the adjustment factor for the likelihood (in order to account for uncertainty
@@ -63,13 +63,22 @@ std::pair<double, bool> adj_coxreid::compute(const double* wptr) {
     /* For triangular matrices, we need the diagonal to compute the determinant. Fortunately, 
  	 * this remains the diagonal of the output matrix despite the permutations performed by 
  	 * the pivoting. We sum over all log'd diagonal elements to get the log determinant of the 
- 	 * information matrix (valid because det(AB)=det(A)*det(B) and we're using the result of 
- 	 * the decomposition). We then have to halve the resulting value. 
+ 	 * information matrix (valid because det(LDL*)=det(L)*det(D)*det(L*) and we're using the 
+ 	 * result of the decomposition). We then have to halve the resulting value. 
+ 	 *
+ 	 * Note the protection against zero. This just replaces it with an appropriately small
+ 	 * non-zero value, if the diagnoal element is zero or NA. This is valid because the set
+ 	 * of fitted values which are zero will be constant at all dispersions. Thus, any replacement
+ 	 * value will eventually cancel out during interpolation to obtain the CRAPLE.
      */
     double sum_log_diagonals=0;
     for (int i=0; i<ncoefs; ++i) { 
         const double& cur_val=working_matrix[i*ncoefs+i];
-        sum_log_diagonals+=(cur_val < low_value ? log_low_value : std::log(cur_val));
+		if (cur_val < low_value || !std::isfinite(cur_val))  { 
+			sum_log_diagonals += log_low_value; 
+		} else {
+			sum_log_diagonals += std::log(cur_val);
+		}
     }
 	return std::make_pair(sum_log_diagonals*0.5, true);
 }
