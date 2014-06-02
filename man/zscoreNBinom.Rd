@@ -22,7 +22,8 @@ Numeric vector or matrix giving equivalent deviates from a standard normal distr
 }
 
 \details{
-This function computes the mid-p value of \code{q}, then converts to the standard normal deviate with the same cumulative probability distribution value.
+This function computes the mid-p value of \code{q}, then converts to the standard normal 
+deviate with the same cumulative probability distribution value.
 
 Care is taken to do the computations accurately in both tails of the distributions.
 }

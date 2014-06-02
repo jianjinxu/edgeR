@@ -10,8 +10,9 @@ Creates a \code{DGEList} object from a table of counts (rows=features, columns=s
 }
 
 \usage{
-DGEList(counts = matrix(0, 0, 0), lib.size = colSums(counts), norm.factors = rep(1,ncol(counts)),
-     group = rep(1,ncol(counts)), genes = NULL, remove.zeros = FALSE)
+DGEList(counts = matrix(0, 0, 0), lib.size = colSums(counts), 
+	norm.factors = rep(1,ncol(counts)), group = rep(1,ncol(counts)), 
+	genes = NULL, remove.zeros = FALSE)
 }
 
 \arguments{

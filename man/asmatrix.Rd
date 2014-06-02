@@ -2,7 +2,8 @@
 \alias{as.matrix.DGEList}
 \title{Turn a DGEList Object into a Matrix}
 \description{
-Coerce a digital gene expression object into a numeric matrix by extracting the count values.
+Coerce a digital gene expression object into a numeric matrix by extracting the count 
+values.
 }
 \usage{
 \method{as.matrix}{DGEList}(x,\dots)
@@ -21,6 +22,7 @@ A numeric matrix.
 }
 \author{Gordon Smyth}
 \seealso{
-  \code{\link{as.matrix}} in the base package or \code{\link[limma]{as.matrix.RGList}} in the limma package.
+  \code{\link{as.matrix}} in the base package or \code{\link[limma]{as.matrix.RGList}} in 
+the limma package.
 }
 \keyword{array}

@@ -12,16 +12,21 @@ getDispersion(y)
 }
 
 \arguments{ 
-\item{y}{\code{DGEList} object containing (at least) the elements \code{counts} (table of raw counts), \code{group} (factor indicating group) and \code{lib.size} (numeric vector of library sizes)}
+\item{y}{\code{DGEList} object containing (at least) the elements \code{counts} (table of 
+raw counts), \code{group} (factor indicating group) and \code{lib.size} (numeric vector 
+of library sizes)}
 }
 
 \description{
 \code{getCounts(y)} returns the matrix of read counts \code{y$counts}.
 
-\code{getOffset(y)} returns offsets for the log-linear predictor account for sequencing depth and possibly other normalization factors.
-Specifically it returns the matrix \code{y$offset} if it is non-null, otherwise it returns the log product of \code{lib.size} and \code{norm.factors} from \code{y$samples}.
+\code{getOffset(y)} returns offsets for the log-linear predictor account for sequencing 
+depth and possibly other normalization factors.
+Specifically it returns the matrix \code{y$offset} if it is non-null, otherwise it 
+returns the log product of \code{lib.size} and \code{norm.factors} from \code{y$samples}.
 
-\code{getDispersion(y)} returns the most complex dispersion estimates (common, trended or tagwise) found in \code{y}.
+\code{getDispersion(y)} returns the most complex dispersion estimates (common, trended or 
+tagwise) found in \code{y}.
 }
 
 \value{\code{getCounts} returns the matrix of counts.

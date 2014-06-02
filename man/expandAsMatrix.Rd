@@ -8,7 +8,8 @@ Expand scalar or vector to a matrix.
 expandAsMatrix(x, dim)
 }
 \arguments{
-  \item{x}{scalar, vector or matrix. If a vector, length must match one of the output dimensions.}
+  \item{x}{scalar, vector or matrix. If a vector, length must match one of the output 
+dimensions.}
   \item{dim}{required dimension for the output matrix.}
 }
 

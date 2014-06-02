@@ -17,7 +17,8 @@ validDGEList(y)
 }
 
 \details{
-This function checks that the standard \code{counts} and \code{samples} components of a \code{DGEList} object are present.
+This function checks that the standard \code{counts} and \code{samples} components of a 
+\code{DGEList} object are present.
 }
 
 \value{
