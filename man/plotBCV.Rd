@@ -2,8 +2,7 @@
 \name{plotBCV}
 \alias{plotBCV}
 \description{
-Plot genewise biological coefficient of variation (BCV) against gene abundance (in log2 
-counts per million).
+Plot genewise biological coefficient of variation (BCV) against gene abundance (in log2 counts per million).
 }
 \usage{
 plotBCV(y, xlab="Average log CPM", ylab="Biological coefficient of variation",

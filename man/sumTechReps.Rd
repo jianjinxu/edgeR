@@ -4,8 +4,7 @@
 \alias{sumTechReps.DGEList}
 \title{Sum Over Replicate Samples}
 \description{
-Condense the columns of a matrix or DGEList object so that counts are summed over 
-technical replicate samples.
+Condense the columns of a matrix or DGEList object so that counts are summed over technical replicate samples.
 }
 \usage{
 \method{sumTechReps}{default}(x, ID=colnames(x), \dots)
@@ -17,12 +16,10 @@ technical replicate samples.
   \item{\dots}{other arguments are not currently used.}
 }
 \details{
-A new matrix or DGEList object is computed in which the counts for technical replicate 
-samples are replaced by their sums.
+A new matrix or DGEList object is computed in which the counts for technical replicate samples are replaced by their sums.
 }
 \value{
-A data object of the same class as \code{x} with a column for each unique value of 
-\code{ID}.
+A data object of the same class as \code{x} with a column for each unique value of \code{ID}.
 Columns are in the same order as the ID values first occur in the ID vector.
 }
 \author{Gordon Smyth and Yifang Hu}

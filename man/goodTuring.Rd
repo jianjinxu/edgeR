@@ -6,8 +6,7 @@
 \title{Good-Turing Frequency Estimation}
 
 \description{
-Non-parametric empirical Bayes estimates of the frequencies of observed (and unobserved) 
-species.
+Non-parametric empirical Bayes estimates of the frequencies of observed (and unobserved) species.
 }
 
 \usage{goodTuring(x, conf=1.96)
@@ -15,11 +14,8 @@ goodTuringPlot(x)
 goodTuringProportions(counts)}
 
 \arguments{ 
-	\item{x}{numeric vector of non-negative integers, representing the observed 
-frequency of each species.}
-	\item{conf}{confidence factor, as a quantile of the standard normal distribution, 
-used to decide for what values the log-linear relationship between frequencies and 
-frequencies of frequencies is acceptable.}
+	\item{x}{numeric vector of non-negative integers, representing the observed frequency of each species.}
+	\item{conf}{confidence factor, as a quantile of the standard normal distribution, used to decide for what values the log-linear relationship between frequencies and frequencies of frequencies is acceptable.}
 	\item{counts}{matrix of counts}
 }
 
@@ -36,24 +32,18 @@ as \code{counts}.
 
 \details{
 Observed counts are assumed to be Poisson distributed.
-Using an non-parametric empirical Bayes strategy, the algorithm evaluates the posterior 
-expectation of each species mean given its observed count.
+Using an non-parametric empirical Bayes strategy, the algorithm evaluates the posterior expectation of each species mean given its observed count.
 The posterior means are then converted to proportions.
-In the empirical Bayes step, the counts are smoothed by assuming a log-linear 
-relationship between frequencies and frequencies of frequencies.
+In the empirical Bayes step, the counts are smoothed by assuming a log-linear relationship between frequencies and frequencies of frequencies.
 The fundamentals of the algorithm are from Good (1953).
-Gale and Sampson (1995) proposed a simplied algorithm with a rule for switching between 
-the observed and smoothed frequencies, and it is Gale and Sampson's simplified algorithm 
-that is implemented here.
-The number of zero values in \code{x} are not used in the algorithm, but is returned by 
-this function.
+Gale and Sampson (1995) proposed a simplied algorithm with a rule for switching between the observed and smoothed frequencies, and it is Gale and Sampson's simplified algorithm that is implemented here.
+The number of zero values in \code{x} are not used in the algorithm, but is returned by this function.
 
 Sampson gives a C code version on his webpage at
 \url{http://www.grsampson.net/RGoodTur.html}
 which gives identical results to this function.
 
-\code{goodTuringPlot} plots log-probability (i.e., log frequencies of frequencies) versus 
-log-frequency.
+\code{goodTuringPlot} plots log-probability (i.e., log frequencies of frequencies) versus log-frequency.
 
 \code{goodTuringProportions} runs \code{goodTuring} on each column of data, then
 uses the results to predict the proportion of each tag in each library.
@@ -65,8 +55,7 @@ Good-Turing frequency estimation without tears.
 \emph{Journal of Quantitative Linguistics} 2, 217-237.
 }
 
-\author{Aaron Lun and Gordon Smyth, adapted from Sampson's C code from 
-\url{http://www.grsampson.net/RGoodTur.html}}
+\author{Aaron Lun and Gordon Smyth, adapted from Sampson's C code from \url{http://www.grsampson.net/RGoodTur.html}}
 
 \examples{
 #  True means of observed species

@@ -5,10 +5,7 @@
 
 \title{Split the Counts or Pseudocounts from a DGEList Object According To Group}
 
-\description{Split the counts from a DGEList object according to group, creating a list 
-where each element consists of a numeric matrix of counts for a particular experimental 
-group. Given a pair of groups, split pseudocounts for these groups, creating a list where 
-each element is a matrix of pseudocounts for a particular gourp.}
+\description{Split the counts from a DGEList object according to group, creating a list where each element consists of a numeric matrix of counts for a particular experimental group. Given a pair of groups, split pseudocounts for these groups, creating a list where each element is a matrix of pseudocounts for a particular gourp.}
 
 \usage{
 splitIntoGroups(object)
@@ -16,22 +13,16 @@ splitIntoGroupsPseudo(pseudo, group, pair)
 }
 
 \arguments{ 
-\item{object}{\code{DGEList}, object containing (at least) the elements \code{counts} 
-(table of raw counts), \code{group} (factor indicating group) and \code{lib.size} 
-(numeric vector of library sizes)}
+\item{object}{\code{DGEList}, object containing (at least) the elements \code{counts} (table of raw counts), \code{group} (factor indicating group) and \code{lib.size} (numeric vector of library sizes)}
 
 \item{pseudo}{numeric matrix of quantile-adjusted pseudocounts to be split}
 
-\item{group}{factor indicating group to which libraries/samples (i.e. columns of 
-\code{pseudo} belong; must be same length as ncol(pseudo)}
+\item{group}{factor indicating group to which libraries/samples (i.e. columns of \code{pseudo} belong; must be same length as ncol(pseudo)}
 
 \item{pair}{vector of length two stating pair of groups to be split for the pseudocounts}
 }
 
-\value{\code{splitIntoGroups} outputs a list in which each element is a matrix of count 
-counts for an individual group. \code{splitIntoGroupsPseudo} outputs a list with two 
-elements, in which each element is a numeric matrix of (pseudo-)count data for one of the 
-groups specified.}
+\value{\code{splitIntoGroups} outputs a list in which each element is a matrix of count counts for an individual group. \code{splitIntoGroupsPseudo} outputs a list with two elements, in which each element is a numeric matrix of (pseudo-)count data for one of the groups specified.}
 
 \author{Davis McCarthy}
 \examples{

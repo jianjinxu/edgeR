@@ -2,12 +2,9 @@
 \alias{condLogLikDerSize}
 \alias{condLogLikDerDelta}
 
-\title{Conditional Log-Likelihood of the Dispersion for a Single Group of Replicate 
-Libraries}
+\title{Conditional Log-Likelihood of the Dispersion for a Single Group of Replicate Libraries}
 
-\description{Derivatives of the negative-binomial log-likelihood with respect to the 
-dispersion parameter for each tag/transcript, conditional on the mean count, for a single 
-group of replicate libraries of the same size.}
+\description{Derivatives of the negative-binomial log-likelihood with respect to the dispersion parameter for each tag/transcript, conditional on the mean count, for a single group of replicate libraries of the same size.}
 
 \usage{
 condLogLikDerSize(y, r, der=1L)
@@ -16,21 +13,15 @@ condLogLikDerDelta(y, delta, der=1L)
 
 \arguments{ 
 \item{y}{matrix of counts, all counts in each row having the same population mean}
-\item{r}{numeric vector or scalar, size parameter of negative binomial distribution, 
-equal to 1/dispersion}
-\item{delta}{numeric vector or scalar, delta parameter of negative binomial, equal to 
-dispersion/(1+dispersion)}
-\item{der}{integer specifying derivative required, either 0 (the function), 1 (first 
-derivative) or 2 (second derivative)}
+\item{r}{numeric vector or scalar, size parameter of negative binomial distribution, equal to 1/dispersion}
+\item{delta}{numeric vector or scalar, delta parameter of negative binomial, equal to dispersion/(1+dispersion)}
+\item{der}{integer specifying derivative required, either 0 (the function), 1 (first derivative) or 2 (second derivative)}
 }
 
 \value{vector of row-wise derivatives with respect to \code{r} or \code{delta}}
 
-\details{The library sizes must be equalized before running this function. This function 
-carries out the actual mathematical computations for the conditional log-likelihood and 
-its derivatives, calculating the conditional log-likelihood for each tag/transcript.
-Derivatives are with respect to either the size (\code{r}) or the delta parametrization 
-(\code{delta}) of the dispersion.
+\details{The library sizes must be equalized before running this function. This function carries out the actual mathematical computations for the conditional log-likelihood and its derivatives, calculating the conditional log-likelihood for each tag/transcript.
+Derivatives are with respect to either the size (\code{r}) or the delta parametrization (\code{delta}) of the dispersion.
 }
 
 

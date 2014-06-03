@@ -15,8 +15,7 @@ maximizeInterpolant(x, y)
 \item{x}{numeric vector of the inputs of the function.}
 
 \item{y}{numeric matrix of function values at the values of \code{x}.
-Columns correspond to \code{x} values and each row corresponds to a different function to 
-be maximized.}
+Columns correspond to \code{x} values and each row corresponds to a different function to be maximized.}
 }
 
 \value{
@@ -24,10 +23,8 @@ numeric vector of input values at which the function maximums occur.
 }
 
 \details{
-Calculates the cubic spline interpolant for each row the method of Forsythe et al (1977) 
-using the function \code{fmm_spline} from \code{splines.c} in the \code{stats} package).
-Then calculates the derivatives of the spline segments adjacant to the input with the 
-maximum function value.
+Calculates the cubic spline interpolant for each row the method of Forsythe et al (1977) using the function \code{fmm_spline} from \code{splines.c} in the \code{stats} package).
+Then calculates the derivatives of the spline segments adjacant to the input with the maximum function value.
 This allows identification of the maximum of the interpolating spline.
 }
 
