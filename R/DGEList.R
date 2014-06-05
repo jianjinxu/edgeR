@@ -1,6 +1,6 @@
 DGEList <- function(counts=matrix(0,0,0), lib.size=colSums(counts), norm.factors=rep(1,ncol(counts)), group=rep(1,ncol(counts)), genes=NULL, remove.zeros=FALSE) 
 #	Construct DGEList object from components, with some checking
-#	Last modified 7 April June 2013
+#	Last modified 5 June 2014
 {
 #	Check counts
 	counts <- as.matrix(counts)
@@ -19,7 +19,7 @@ DGEList <- function(counts=matrix(0,0,0), lib.size=colSums(counts), norm.factors
 
 #	Check group
 	if(is.null(group)) group <- rep(1,ncol(counts))
-	group <- as.factor(group)
+	group <- .check.factor(group)
 	if(nlib != length(group)) stop("Length of 'group' must equal number of columns in 'counts'")
 
 	samples <- data.frame(group=group,lib.size=lib.size,norm.factors=norm.factors)
@@ -43,5 +43,16 @@ DGEList <- function(counts=matrix(0,0,0), lib.size=colSums(counts), norm.factors
 #	x$offset <- expandAsMatrix(getOffset(x),dim(counts))
 #	x$weights <- matrix(1,ntags,nlib)
 
+	x
+}
+
+.check.factor <- function(x)
+{
+	if(is.factor(x)) {
+		i <- table(x)>0
+		if(!all(i)) x <- factor(x,levels=levels(x)[i])
+	} else {
+		x <- factor(x)
+	}
 	x
 }
