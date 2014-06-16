@@ -10,8 +10,11 @@ Estimates a common negative binomial dispersion parameter for a DGE dataset with
 }
 
 \usage{
-\S3method{estimateGLMCommonDisp}{DGEList}(y, design=NULL, method="CoxReid", subset=10000, verbose=FALSE, \dots)
-\S3method{estimateGLMCommonDisp}{default}(y, design=NULL, offset=NULL, method="CoxReid", subset=10000, AveLogCPM=NULL, verbose=FALSE, weights=NULL,\dots)
+\S3method{estimateGLMCommonDisp}{DGEList}(y, design=NULL, method="CoxReid",
+                      subset=10000, verbose=FALSE, \dots)
+\S3method{estimateGLMCommonDisp}{default}(y, design=NULL, offset=NULL,
+                      method="CoxReid", subset=10000, AveLogCPM=NULL,
+                      verbose=FALSE, weights=NULL,\dots)
 }
 
 \arguments{

@@ -6,7 +6,8 @@
 \description{Create a plot of exon usage for a given gene by plotting the (un)transformed counts for each exon, coloured by experimental group.}
 
 \usage{
-plotExonUsage(y, geneID, group=NULL, transform="none", counts.per.million=TRUE, legend.coords=NULL, \dots)
+plotExonUsage(y, geneID, group=NULL, transform="none", counts.per.million=TRUE,
+              legend.coords=NULL, \dots)
 }
 \arguments{ 
 

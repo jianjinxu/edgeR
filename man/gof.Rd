@@ -6,7 +6,8 @@
 \description{Conducts deviance goodness of fit tests for each fit in a \code{DGEGLM} object}
 
 \usage{
-gof(glmfit, pcutoff=0.1, adjust="holm", plot=FALSE, main="qq-plot of genewise goodness of fit", \dots)
+gof(glmfit, pcutoff=0.1, adjust="holm", plot=FALSE,
+    main="qq-plot of genewise goodness of fit", \dots)
 }
 \arguments{ 
 

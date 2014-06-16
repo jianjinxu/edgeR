@@ -12,7 +12,8 @@ Compute average log2 counts-per-million for each row of counts.
 
 \usage{
 \method{aveLogCPM}{DGEList}(y, normalized.lib.sizes=TRUE, prior.count=2, dispersion=NULL, \dots)
-\method{aveLogCPM}{default}(y, lib.size=NULL, offset=NULL, prior.count=2, dispersion=NULL, weights=NULL, \dots)
+\method{aveLogCPM}{default}(y, lib.size=NULL, offset=NULL, prior.count=2, dispersion=NULL,
+          weights=NULL, \dots)
 }
 
 \arguments{
@@ -30,8 +31,12 @@ Compute average log2 counts-per-million for each row of counts.
 This function uses \code{mglmOneGroup} to compute average counts-per-million (AveCPM) for each row of counts, and returns log2(AveCPM).
 An average value of \code{prior.count} is added to the counts before running \code{mglmOneGroup}.
 
-This function is similar to \code{rowMeans(cpm(y, log=TRUE, \dots))}, but with the refinement that larger library sizes are given more weight in the average.
-This function converges to \code{rowMeans(cpm(y, log=TRUE, \dots))} for large values of \code{dispersion}, 
+This function is similar to
+
+\code{rowMeans(cpm(y, log=TRUE, \dots))},
+
+but with the refinement that larger library sizes are given more weight in the average.
+The two versions will agree for large values of the dispersion.
 }
 
 \value{

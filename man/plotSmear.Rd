@@ -10,10 +10,9 @@ Both of these functions plot the log-fold change (i.e. the log of the ratio of e
 plotSmear(object, pair=NULL, de.tags=NULL, xlab="Average logCPM", ylab="logFC", pch=19,
      cex=0.2, smearWidth=0.5, panel.first=grid(), smooth.scatter=FALSE, lowess=FALSE, \dots)
 }
-%- maybe also 'usage' for other objects documented here.
 \arguments{
  \item{object}{\code{DGEList}, \code{DGEExact} or \code{DGELRT} object containing data to produce an MA-plot.}
-  \item{pair}{pair of experimental conditions to plot (if \code{NULL}, the first two conditions are used)}
+  \item{pair}{pair of experimental conditions to plot (if \code{NULL}, the first two conditions are used). Ignored if \code{object} is a \code{DGELRT} object.}
   \item{de.tags}{rownames for tags identified as being differentially expressed; use \code{exactTest} to identify DE genes}
   \item{xlab}{x-label of plot}
   \item{ylab}{y-label of plot}

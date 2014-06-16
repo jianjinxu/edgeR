@@ -9,8 +9,10 @@ Normalize ChIP-Seq read counts to input control values, then test for significan
 }
 
 \usage{
-normalizeChIPtoInput(input, response, dispersion=0.01, niter=6, loss="p", plot=FALSE, verbose=FALSE, \dots)
-calcNormOffsetsforChIP(input, response, dispersion=0.01, niter=6, loss="p", plot=FALSE, verbose=FALSE, \dots)
+normalizeChIPtoInput(input, response, dispersion=0.01, niter=6, loss="p", plot=FALSE,
+                     verbose=FALSE, \dots)
+calcNormOffsetsforChIP(input, response, dispersion=0.01, niter=6, loss="p", plot=FALSE,
+                       verbose=FALSE, \dots)
 }
 
 \arguments{

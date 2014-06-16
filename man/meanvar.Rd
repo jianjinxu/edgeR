@@ -9,8 +9,9 @@
 
 \usage{
 plotMeanVar(object, meanvar=NULL, show.raw.vars=FALSE, show.tagwise.vars=FALSE,
-     show.binned.common.disp.vars=FALSE, show.ave.raw.vars=TRUE, scalar=NULL,
-     NBline=FALSE, nbins=100, log.axes="xy", xlab=NULL, ylab=NULL,  \dots) 
+            show.binned.common.disp.vars=FALSE, show.ave.raw.vars=TRUE,
+            scalar=NULL, NBline=FALSE, nbins=100, log.axes="xy", xlab=NULL,
+            ylab=NULL,  \dots)
 binMeanVar(x, group, nbins=100, common.dispersion=FALSE, object=NULL)
 }
 
@@ -70,13 +71,16 @@ This function is useful for exploring the mean-variance relationship in the data
 y <- matrix(rnbinom(1000,mu=10,size=2),ncol=4)
 d <- DGEList(counts=y,group=c(1,1,2,2),lib.size=c(1000:1003))
 plotMeanVar(d) # Produce a straight-forward mean-variance plot
-meanvar <- plotMeanVar(d, show.raw.vars=TRUE) # Produce a mean-variance plot with the raw variances shown and save the means and variances for later use
-
+# Produce a mean-variance plot with the raw variances shown and save the means
+# and variances for later use
+meanvar <- plotMeanVar(d, show.raw.vars=TRUE) 
 ## If we want to show estimated tagwise variances on the plot, we must first estimate them!
 d <- estimateCommonDisp(d) # Obtain an estimate of the dispersion parameter
 d <- estimateTagwiseDisp(d)  # Obtain tagwise dispersion estimates
-plotMeanVar(d, meanvar=meanvar, show.tagwise.vars=TRUE, NBline=TRUE) # Use previously saved object to speed up plotting;
-## We could also estimate common/tagwise dispersions using the Cox-Reid methods with an appropriate design matrix
+# Use previously saved object to speed up plotting
+plotMeanVar(d, meanvar=meanvar, show.tagwise.vars=TRUE, NBline=TRUE) 
+## We could also estimate common/tagwise dispersions using the Cox-Reid methods with an
+## appropriate design matrix
 }
 
 \seealso{
@@ -86,7 +90,3 @@ plotMeanVar(d, meanvar=meanvar, show.tagwise.vars=TRUE, NBline=TRUE) # Use previ
 }
 
 \keyword{algebra}
-
-
-
-

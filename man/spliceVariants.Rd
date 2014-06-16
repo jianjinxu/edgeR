@@ -6,7 +6,8 @@
 \description{Identify genes exhibiting evidence for splice variants (alternative exon usage/transcript isoforms) from exon-level count data using negative binomial generalized linear models.}
 
 \usage{
-spliceVariants(y, geneID, dispersion=NULL, group=NULL, estimate.genewise.disp=TRUE, trace=FALSE)
+spliceVariants(y, geneID, dispersion=NULL, group=NULL, estimate.genewise.disp=TRUE,
+               trace=FALSE)
 }
 \arguments{ 
 

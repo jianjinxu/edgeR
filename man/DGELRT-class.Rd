@@ -13,26 +13,22 @@ For objects of this class, rows correspond to genomic features and columns to st
 The genomic features are called genes, but in reality might correspond to transcripts, tags, exons etc.
 
 Objects of this class contain the following list components:
-\tabular{ll}{
-  \code{table } \tab data frame containing the log-concentration (i.e. expression level), the log-fold change in expression between the two groups/conditions and the exact p-value for differential expression, for each gene.\cr
-  
-  \code{coefficients.full } \tab matrix containing the coefficients
+\describe{
+  \item{\code{table:}}{ data frame containing the log-concentration (i.e. expression level), the log-fold change in expression between the two groups/conditions and the exact p-value for differential expression, for each gene.}
+  \item{\code{coefficients.full:}}{ matrix containing the coefficients
   computed from fitting the full model (fit using \code{glmFit} and a
-  given design matrix) to each gene in the dataset.\cr
-
-  \code{coefficients.null } \tab matrix containing the coefficients
+  given design matrix) to each gene in the dataset.}
+  \item{\code{coefficients.null:}}{ matrix containing the coefficients
   computed from fitting the null model to each gene in the
   dataset.  The null model is the model to which the full model is
   compared, and is fit using \code{glmFit} and dropping selected
-  column(s) (i.e. coefficient(s)) from the design matrix for the full model.\cr
-
-  \code{design } \tab design matrix for the full model from the likelihood
-  ratio test.\cr
-
-  \code{\dots } \tab if the argument \code{y} to \code{glmLRT} (which
+  column(s) (i.e. coefficient(s)) from the design matrix for the full model.}
+  \item{\code{design:}}{ design matrix for the full model from the likelihood
+  ratio test.}
+  \item{\code{\dots:}}{ if the argument \code{y} to \code{glmLRT} (which
   produces the \code{DGELRT} object) was itself a \code{DGEList} object, then
   the \code{DGELRT} will contain all of the elements of \code{y},
-  except for the table of counts and the table of pseudocounts.\cr
+  except for the table of counts and the table of pseudocounts.}
 }
 }
 

@@ -7,8 +7,10 @@ Distances on the plot represent coefficient of variation of expression between s
 for the top genes that best distinguish the samples.
 }
 \usage{
-\method{plotMDS}{DGEList}(x, top=500, labels=colnames(x), col=NULL, cex=1, dim.plot=c(1,2),
-     ndim=max(dim.plot), xlab=NULL, ylab=NULL, method="logFC", prior.count=2, gene.selection="pairwise", \dots)
+\method{plotMDS}{DGEList}(x, top=500, labels=colnames(x), col=NULL, cex=1,
+	        dim.plot=c(1,2), ndim=max(dim.plot), xlab=NULL,
+	        ylab=NULL, method="logFC", prior.count=2,
+	        gene.selection="pairwise", \dots)
 }
 \arguments{
   \item{x}{an \code{DGEList} object.}

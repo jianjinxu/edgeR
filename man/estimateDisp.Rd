@@ -8,7 +8,9 @@ Maximizes the negative binomial likelihood to give the estimate of the common, t
 }
 
 \usage{
-estimateDisp(y, design=NULL, prior.df=NULL, trend.method="locfit", span=NULL, grid.length=21, grid.range=c(-10,10), robust=FALSE, winsor.tail.p=c(0.05,0.1), tol=1e-06)
+estimateDisp(y, design=NULL, prior.df=NULL, trend.method="locfit", span=NULL,
+             grid.length=21, grid.range=c(-10,10), robust=FALSE,
+             winsor.tail.p=c(0.05,0.1), tol=1e-06)
 }
 
 \arguments{

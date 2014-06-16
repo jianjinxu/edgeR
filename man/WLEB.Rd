@@ -8,7 +8,8 @@ Estimates the parameters which maximize the given log-likelihood matrix using em
 }
 
 \usage{
-WLEB(theta, loglik, prior.n, covariate, trend.method="locfit", span=NULL, overall=TRUE, trend=TRUE, individual=TRUE, m0=NULL, m0.out=FALSE)
+WLEB(theta, loglik, prior.n, covariate, trend.method="locfit", span=NULL, overall=TRUE,
+     trend=TRUE, individual=TRUE, m0=NULL, m0.out=FALSE)
 }
 
 \arguments{

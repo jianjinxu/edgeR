@@ -13,12 +13,10 @@ For objects of this class, rows correspond to genomic features and columns to st
 The genomic features are called genes, but in reality might correspond to transcripts, tags, exons etc.
 
 Objects of this class contain the following list components:
-\tabular{ll}{
-  \code{table } \tab data frame containing columns for the log2-fold-change, \code{logFC}, the average log2-counts-per-million, \code{logCPM}, and the two-sided p-value \code{PValue}.\cr
-  
-  \code{comparison } \tab vector giving the two experimental groups/conditions being compared.\cr
-  
-  \code{genes } \tab a data frame containing information about each gene (can be \code{NULL}).\cr
+\describe{
+  \item{\code{table:}}{ data frame containing columns for the log2-fold-change, \code{logFC}, the average log2-counts-per-million, \code{logCPM}, and the two-sided p-value \code{PValue}.}
+  \item{\code{comparison:}}{ vector giving the two experimental groups/conditions being compared.}
+  \item{\code{genes:}}{ a data frame containing information about each gene (can be \code{NULL}).}
 }
 }
 

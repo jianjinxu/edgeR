@@ -8,7 +8,10 @@ Compute a robust estimate of the negative binomial dispersion parameter for each
 }
 
 \usage{
-estimateGLMRobustDisp(y, design = NULL, prior.df = 10, update.trend = TRUE, trend.method = "bin.loess", maxit = 6, k = 1.345, residual.type = "pearson", verbose = FALSE, record = FALSE) 
+estimateGLMRobustDisp(y, design = NULL, prior.df = 10, update.trend = TRUE,
+                      trend.method = "bin.loess", maxit = 6, k = 1.345,
+                      residual.type = "pearson", verbose = FALSE,
+                      record = FALSE)
 }
 
 \arguments{
