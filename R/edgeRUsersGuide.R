@@ -1,5 +1,5 @@
 edgeRUsersGuide <- function(view=TRUE)
-#	Find and optionally view limma User's Guide
+#	Find and optionally view edgeR User's Guide
 #	Gordon Smyth
 #	23 May 2012.
 {

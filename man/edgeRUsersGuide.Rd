@@ -16,7 +16,7 @@ edgeRUsersGuide(view=TRUE)
 If \code{view=TRUE}, the PDF document reader is started and the User's Guide is opened, as a side effect.}
 
 \details{
-The function \code{vignette("edgeR")} will find the short edgeR Vignette which describes how to obtain the Limma User's Guide.
+The function \code{vignette("edgeR")} will find the short edgeR Vignette which describes how to obtain the edgeR User's Guide.
 The User's Guide is not itself a true vignette because it is not automatically generated using \code{\link{Sweave}} during the package build process.
 This means that it cannot be found using \code{vignette}, hence the need for this special function.
 
