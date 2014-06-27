@@ -2,6 +2,14 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.7.7}{\itemize{
+\item
+The SAGE datasets from Zhang et al (1997) are no longer included with the edgeR package.
+
+\item
+A variety of minor code improvements and bug fixes have been implemented.
+}}
+
 \section{Version 3.6.0}{\itemize{
 
 \item
