@@ -37,7 +37,7 @@ aveLogCPM.DGEGLM <- function(y, prior.count=2, dispersion=NULL, ...)
 aveLogCPM.default <- function(y,lib.size=NULL,offset=NULL,prior.count=2,dispersion=NULL,weights=NULL, ...)
 #	log2(AveCPM)
 #	Gordon Smyth
-#	Created 25 Aug 2012. Last modified 4 Nov 2013.
+#	Created 25 Aug 2012. Last modified 12 Nov 2013.
 {
 #	Check y
 	y <- as.matrix(y)
@@ -76,7 +76,7 @@ aveLogCPM.default <- function(y,lib.size=NULL,offset=NULL,prior.count=2,dispersi
 	offset <- log(lib.size+2*prior.count.scaled)
 
 #	Add prior counts to y
-	if(is.null(dim(prior.count.scaled))) prior.count.scale <- matrix(1,nrow(y),1) %*% prior.count.scaled
+	if(is.null(dim(prior.count.scaled))) prior.count.scaled <- matrix(1,nrow(y),1) %*% prior.count.scaled
 	y <- y+prior.count.scaled
 
 	abundance <- mglmOneGroup(y,dispersion=dispersion,offset=offset,weights=weights)
