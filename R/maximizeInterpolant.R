@@ -19,7 +19,7 @@ maximizeInterpolant <- function( x, y )
 #	Performing some type checking.
 	if (!is.double(x)) storage.mode(x)<-"double"
 	if (!is.double(y)) storage.mode(y)<-"double"
-    out<-.Call("R_maximize_interpolant", x, t(y), PACKAGE="edgeR")
+    out<-.Call(.cR_maximize_interpolant, x, t(y))
 	if (is.character(out)) { stop(out) }
     return(out);
 }

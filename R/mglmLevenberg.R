@@ -59,7 +59,7 @@ mglmLevenberg <- function(y, design, dispersion=0, offset=0, weights=NULL, coef.
 	if (!is.double(weights)) storage.mode(weights) <- "double"
 	if (!is.double(beta)) storage.mode(beta) <- "double"
 	if (!is.double(mu)) storage.mode(mu) <- "double"
-	output <- .Call("R_levenberg", nlibs, ngenes, design, t(y), dispersion, offset, weights, beta, mu, tol, maxit, PACKAGE="edgeR")
+	output <- .Call(.cR_levenberg, nlibs, ngenes, design, t(y), dispersion, offset, weights, beta, mu, tol, maxit)
 
 #	Check for error condition
 	if (is.character(output)) { stop(output) }

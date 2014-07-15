@@ -395,6 +395,9 @@ $offset
 $dispersion
 [1] 0.1
 
+$prior.count
+[1] 0.1666667
+
 $samples
    group lib.size norm.factors
 x0     1     4001    1.0008730
@@ -520,4 +523,4 @@ $n0
 > 
 > proc.time()
    user  system elapsed 
-   3.47    0.06    3.52 
+   3.43    0.06    3.47 

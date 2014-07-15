@@ -16,13 +16,13 @@ matvec_check::matvec_check(const int nlib, const int nlen, SEXP incoming, const 
 		return;
 	}
 	
-	if (!IS_NUMERIC(incoming)) {
+	if (!isNumeric(incoming)) {
 		failed << err << " vector or matrix should be double precision";
 		throw std::runtime_error(failed.str());
 	}
 	
 	// Checking if it is a vector, matrix or transposed matrix.
-	mycheck=NUMERIC_POINTER(incoming);
+	mycheck=REAL(incoming);
 	const int curlen=LENGTH(incoming);
 	if (curlen==0) {
 		// If it's empty, it's treated as a null.

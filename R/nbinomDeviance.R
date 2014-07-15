@@ -33,7 +33,7 @@ nbinomUnitDeviance <- function(y,mean,dispersion=0)
 	if(lend < ntags) dispersion <- rep_len(dispersion, length.out=ntags)
 	if(lend > ntags && lend < nobs) dispersion <- rep_len(dispersion, length.out=nobs)
 
-	out <- .Call("R_compute_nbdev", y=y, mu=mean, phi=dispersion, PACKAGE="edgeR")
+	out <- .Call(.cR_compute_nbdev, y=y, mu=mean, phi=dispersion)
 
 #	Check error status
 	if (is.character(out)) stop(out)

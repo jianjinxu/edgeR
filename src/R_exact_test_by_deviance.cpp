@@ -1,21 +1,14 @@
 #include "utils.h"
 #include "glm.h"
-extern "C" {
 #include "Rmath.h"
-}
-#ifdef DEBUG
-#include <iostream>
-#endif
-
-extern "C" {
 
 SEXP R_exact_test_by_deviance(SEXP sums_1, SEXP sums_2, SEXP n_1, SEXP n_2, SEXP disp) try {
-	if (!IS_INTEGER(n_1) || LENGTH(n_1)!=1 || !IS_INTEGER(n_2) || LENGTH(n_2)!=1) {
+	if (!isInteger(n_1) || LENGTH(n_1)!=1 || !isInteger(n_2) || LENGTH(n_2)!=1) {
  	   	throw std::runtime_error("number of libraries must be integer scalars"); }
-	if (!IS_NUMERIC(disp)) { throw std::runtime_error("dispersion must be a double precision vector"); }
-	if (!IS_INTEGER(sums_1) || !IS_INTEGER(sums_2)) { throw std::runtime_error("sums must be integer vectors"); }
+	if (!isNumeric(disp)) { throw std::runtime_error("dispersion must be a double precision vector"); }
+	if (!isInteger(sums_1) || !isInteger(sums_2)) { throw std::runtime_error("sums must be integer vectors"); }
 
-    const int n1=INTEGER_VALUE(n_1), n2=INTEGER_VALUE(n_2);
+    const int n1=asInteger(n_1), n2=asInteger(n_2);
 	const int nlibs = n1+n2;
     const int ntags=LENGTH(sums_1);
     if (ntags!=LENGTH(sums_2) || ntags!=LENGTH(disp)) {
@@ -23,12 +16,12 @@ SEXP R_exact_test_by_deviance(SEXP sums_1, SEXP sums_2, SEXP n_1, SEXP n_2, SEXP
     } else if (n1<=0 || n2 <=0) { 
         throw std::runtime_error("number of libraries must be positive for each condition");
     }
-    const int* s1_ptr=INTEGER_POINTER(sums_1), *s2_ptr=INTEGER_POINTER(sums_2);
-    const double *d_ptr=NUMERIC_POINTER(disp);
+    const int* s1_ptr=INTEGER(sums_1), *s2_ptr=INTEGER(sums_2);
+    const double *d_ptr=REAL(disp);
 
-    SEXP output=PROTECT(NEW_NUMERIC(ntags));
+    SEXP output=PROTECT(allocVector(REALSXP, ntags));
 	try{
-		double* p_ptr=NUMERIC_POINTER(output);
+		double* p_ptr=REAL(output);
     	for (int i=0; i<ntags; ++i) {
         	const int& s1=s1_ptr[i];
  		    const int& s2=s2_ptr[i];
@@ -74,5 +67,3 @@ SEXP R_exact_test_by_deviance(SEXP sums_1, SEXP sums_2, SEXP n_1, SEXP n_2, SEXP
    	UNPROTECT(1);
     return output;
 } catch (std::exception& e) { return mkString(e.what()); }
-
-}

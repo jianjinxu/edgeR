@@ -77,6 +77,7 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.siz
 	fit$offset <- offset
 	fit$dispersion <- dispersion
 	fit$weights <- weights
+	fit$prior.count <- prior.count
 	new("DGEGLM",fit)
 }
 

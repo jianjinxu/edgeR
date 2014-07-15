@@ -40,7 +40,7 @@ mglmOneGroup <- function(y,dispersion=0,offset=0,weights=NULL,maxit=50,tol=1e-10
 
 #	Fisher scoring iteration.
 #	Matrices are transposed so that values for each tag are in consecutive memory locations in C
-	output <- .Call("R_one_group", ntags, nlibs, y, dispersion, offset, weights, maxit, tol, PACKAGE="edgeR")
+	output <- .Call(.cR_one_group, ntags, nlibs, y, dispersion, offset, weights, maxit, tol)
 
 #	Check error condition
 	if(is.character(output)) stop(output)

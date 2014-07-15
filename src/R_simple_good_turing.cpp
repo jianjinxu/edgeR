@@ -8,16 +8,14 @@
 
 #include "utils.h"
 
-extern "C" {
-	
 SEXP R_simple_good_turing (SEXP obs, SEXP freq, SEXP conf) try {
-	const double confid_factor=NUMERIC_VALUE(conf);
-	if (!IS_INTEGER(obs)) { throw std::runtime_error("observations vector must be integral"); }
-	if (!IS_INTEGER(freq)) { throw std::runtime_error("frequencies vector must be integral"); }
+	const double confid_factor=asReal(conf);
+	if (!isInteger(obs)) { throw std::runtime_error("observations vector must be integral"); }
+	if (!isInteger(freq)) { throw std::runtime_error("frequencies vector must be integral"); }
 	const int rows=LENGTH(obs);
 	if (rows!=LENGTH(freq)) { throw std::runtime_error("length of vectors must match"); }
-	int* optr=INTEGER_POINTER(obs);
-    int* fptr=INTEGER_POINTER(freq);
+	int* optr=INTEGER(obs);
+    int* fptr=INTEGER(freq);
 
 	// Prefilling various data structures.
 	double bigN=0;
@@ -51,10 +49,10 @@ SEXP R_simple_good_turing (SEXP obs, SEXP freq, SEXP conf) try {
 	const double& PZero = ((rows==0 || optr[0]!=1) ? 0 : (fptr[0] / double(bigN)));
 
 	// Setting up the output vector.
-	SEXP output=PROTECT(NEW_LIST(2));
+	SEXP output=PROTECT(allocVector(VECSXP, 2));
 	SET_VECTOR_ELT(output, 0, ScalarReal(PZero));
-	SET_VECTOR_ELT(output, 1, NEW_NUMERIC(rows));
-	double* out_ptr=NUMERIC_POINTER(VECTOR_ELT(output, 1));
+	SET_VECTOR_ELT(output, 1, allocVector(REALSXP, rows));
+	double* out_ptr=REAL(VECTOR_ELT(output, 1));
 	try{ 
 
 		// Collecting results.
@@ -97,6 +95,4 @@ SEXP R_simple_good_turing (SEXP obs, SEXP freq, SEXP conf) try {
 	return output;
 } catch (std::exception& e) {
 	return mkString(e.what());
-}
-
 }

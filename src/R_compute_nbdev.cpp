@@ -1,26 +1,23 @@
 #include "utils.h"
 #include "glm.h"
-#include <iostream>
-
-extern "C" {
 
 SEXP R_compute_nbdev (SEXP y, SEXP mu, SEXP phi) try {
-	if (!IS_NUMERIC(phi)) { throw std::runtime_error("dispersion vector should be double-precision"); }
+	if (!isNumeric(phi)) { throw std::runtime_error("dispersion vector should be double-precision"); }
 	const int ntags=LENGTH(phi);
-	if (!IS_NUMERIC(y)) { throw std::runtime_error("count matrix should be double-precision"); }
-	if (!IS_NUMERIC(mu)) { throw std::runtime_error("matrix of means should be double-precision"); }
+	if (!isNumeric(y)) { throw std::runtime_error("count matrix should be double-precision"); }
+	if (!isNumeric(mu)) { throw std::runtime_error("matrix of means should be double-precision"); }
 	const int nlib=LENGTH(mu)/ntags;
 	if (nlib*ntags !=LENGTH(mu)) { throw std::runtime_error("mean matrix has inconsistent dimensions"); }
 	if (LENGTH(mu)!=LENGTH(y)) { throw std::runtime_error("count and mean matrices should have same dimensions"); }
 
-	const double* yptr=NUMERIC_POINTER(y);
-	const double* mptr=NUMERIC_POINTER(mu);
-	const double* dptr=NUMERIC_POINTER(phi);
+	const double* yptr=REAL(y);
+	const double* mptr=REAL(mu);
+	const double* dptr=REAL(phi);
 
 	// Running through each row and computing the unit deviance, and then that sum.
 	SEXP output=PROTECT(allocMatrix(REALSXP, ntags, nlib));
 	try {
-		double* optr=NUMERIC_POINTER(output);
+		double* optr=REAL(output);
 		int counter;
 		for (int i=0; i<ntags; ++i) {
 			counter=0;
@@ -40,6 +37,4 @@ SEXP R_compute_nbdev (SEXP y, SEXP mu, SEXP phi) try {
 	return output;
 } catch(std::exception& e) {
 	return mkString(e.what());
-}
-
 }

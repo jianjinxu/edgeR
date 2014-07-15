@@ -94,7 +94,7 @@ processHairpinReads = function(readfile, barcodefile, hairpinfile,
   } 
   tempoutfile <- paste("ReadcountSummary", as.character(Sys.getpid()), "output.txt", sep = "_")
 
-  .C("processHairpinReads", readfile, as.integer(length(readfile)), as.character(tempbarcodefile), as.character(temphairpinfile),
+  .C(.cprocessHairpinReads, readfile, as.integer(length(readfile)), as.character(tempbarcodefile), as.character(temphairpinfile),
      as.integer(barcodeStart), as.integer(barcodeEnd), as.integer(hairpinStart), as.integer(hairpinEnd),
      as.integer(allowShifting), as.integer(shiftingBase),
      as.integer(allowMismatch), as.integer(barcodeMismatchBase), as.integer(hairpinMismatchBase),

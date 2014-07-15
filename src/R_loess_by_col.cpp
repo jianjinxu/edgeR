@@ -1,7 +1,5 @@
 #include "utils.h"
 
-extern "C" {
-
 /* 'y' is a m by n matrix where each column corresponds to a different
  * dataset and each row corresponds to a point in 'x'. 'x' is a 'm'-long
  * vector containing sorted x-coordinates. 's' describes the span.
@@ -9,32 +7,32 @@ extern "C" {
 
 SEXP R_loess_by_col(SEXP x, SEXP y, SEXP n_cols, SEXP s) try {
     // Setting up input data structures.
-    if (!IS_NUMERIC(x)) { throw std::runtime_error("vector of covariates must be double precision"); }
-	if (!IS_NUMERIC(y)) { throw std::runtime_error("vector of reponses must be double precision"); }
+    if (!isNumeric(x)) { throw std::runtime_error("vector of covariates must be double precision"); }
+	if (!isNumeric(y)) { throw std::runtime_error("vector of reponses must be double precision"); }
 
     const int total=LENGTH(x);
-    const int span=INTEGER_VALUE(s);
+    const int span=asInteger(s);
     if (span>total) {
         throw std::runtime_error("number of smoothing points should less than the total number of points");
     } else if (span<=0) {
         throw std::runtime_error("number of smoothing points should be positive");
     }
-    const double* x_ptr=NUMERIC_POINTER(x);
-    const int ncols=INTEGER_VALUE(n_cols);
+    const double* x_ptr=REAL(x);
+    const int ncols=asInteger(n_cols);
     if (LENGTH(y)!=ncols*total) {
         throw std::runtime_error("supplied dimensions for matrix 'y' are not consistent");
     }
 	std::deque<const double*> y_ptrs;
-    for (int i=0; i<ncols; ++i) { y_ptrs.push_back(i==0 ? NUMERIC_POINTER(y) : y_ptrs[i-1]+total); }
+    for (int i=0; i<ncols; ++i) { y_ptrs.push_back(i==0 ? REAL(y) : y_ptrs[i-1]+total); }
 
     // Setting up output vectors.
     SEXP output;
-    PROTECT(output=NEW_LIST(2));
+    PROTECT(output=allocVector(VECSXP, 2));
     SET_VECTOR_ELT(output, 0, allocMatrix(REALSXP, total, ncols));
-    SET_VECTOR_ELT(output, 1, NEW_NUMERIC(total));
+    SET_VECTOR_ELT(output, 1, allocVector(REALSXP, total));
 	std::deque<double*> f_ptrs;
-    for (int i=0; i<ncols; ++i) { f_ptrs.push_back(i==0 ? NUMERIC_POINTER(VECTOR_ELT(output, 0)) : f_ptrs[i-1]+total); }
-    double* w_ptr=NUMERIC_POINTER(VECTOR_ELT(output, 1));
+    for (int i=0; i<ncols; ++i) { f_ptrs.push_back(i==0 ? REAL(VECTOR_ELT(output, 0)) : f_ptrs[i-1]+total); }
+    double* w_ptr=REAL(VECTOR_ELT(output, 1));
 
     /* First we determine which of the x-axis values are closest together. This means
      * that we go through all points to determine which 'frame' brings gets the closest
@@ -134,6 +132,4 @@ SEXP R_loess_by_col(SEXP x, SEXP y, SEXP n_cols, SEXP s) try {
     return output;
 } catch (std::exception& e) {
 	return mkString(e.what());
-}
-
 }

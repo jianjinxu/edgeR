@@ -1,27 +1,25 @@
 #include "glm.h"
 #include "matvec_check.h"
 
-extern "C" {
-
 SEXP R_levenberg (SEXP nlib, SEXP ntag, SEXP design, SEXP counts, SEXP disp, SEXP offset, SEXP weights,
 		SEXP beta, SEXP fitted, SEXP tol, SEXP maxit) try {
-	if (!IS_NUMERIC(design)) { throw  std::runtime_error("design matrix should be double precision"); }
-	if (!IS_NUMERIC(disp)) { throw std::runtime_error("dispersion vector should be double precision"); }
-	if (!IS_NUMERIC(beta)) { throw std::runtime_error("matrix of start values for coefficients should be double precision"); }
-	if (!IS_NUMERIC(fitted)) { throw std::runtime_error("matrix of starting fitted values should be double precision"); }
-    const int num_tags=INTEGER_VALUE(ntag);
-    const int num_libs=INTEGER_VALUE(nlib);
+	if (!isNumeric(design)) { throw  std::runtime_error("design matrix should be double precision"); }
+	if (!isNumeric(disp)) { throw std::runtime_error("dispersion vector should be double precision"); }
+	if (!isNumeric(beta)) { throw std::runtime_error("matrix of start values for coefficients should be double precision"); }
+	if (!isNumeric(fitted)) { throw std::runtime_error("matrix of starting fitted values should be double precision"); }
+    const int num_tags=asInteger(ntag);
+    const int num_libs=asInteger(nlib);
 
 	// Checking the count matrix.
     const double *cdptr=NULL;
     const int* ciptr=NULL;
     double* count_ptr=(double*)R_alloc(num_libs, sizeof(double));
-    bool is_integer=IS_INTEGER(counts);
+    bool is_integer=isInteger(counts);
     if (is_integer) {
-        ciptr=INTEGER_POINTER(counts);
+        ciptr=INTEGER(counts);
     } else {
-        if (!IS_NUMERIC(counts)) { throw std::runtime_error("count matrix must be integer or double-precision"); }
-        cdptr=NUMERIC_POINTER(counts); 
+        if (!isNumeric(counts)) { throw std::runtime_error("count matrix must be integer or double-precision"); }
+        cdptr=REAL(counts); 
     }
 	
     // Getting and checking the dimensions of the arguments.    
@@ -40,30 +38,30 @@ SEXP R_levenberg (SEXP nlib, SEXP ntag, SEXP design, SEXP counts, SEXP disp, SEX
 	} 
 
     // Initializing pointers to the assorted features.
-    const double* beta_ptr=NUMERIC_POINTER(beta), 
-		  *design_ptr=NUMERIC_POINTER(design), 
-	  	  *fitted_ptr=NUMERIC_POINTER(fitted), 
-		  *disp_ptr=NUMERIC_POINTER(disp);
+    const double* beta_ptr=REAL(beta), 
+		  *design_ptr=REAL(design), 
+	  	  *fitted_ptr=REAL(fitted), 
+		  *disp_ptr=REAL(disp);
     matvec_check allo(num_libs, num_tags, offset, true, "offset", false);
     const double* const* optr2=allo.access();
     matvec_check allw(num_libs, num_tags, weights, true, "weight", true);
     const double* const* wptr2=allw.access();
 
     // Initializing output cages.
-    SEXP output=PROTECT(NEW_LIST(5));
+    SEXP output=PROTECT(allocVector(VECSXP, 5));
    	SET_VECTOR_ELT(output, 0, allocMatrix(REALSXP, num_coefs, num_tags)); // beta (transposed)
    	SET_VECTOR_ELT(output, 1, allocMatrix(REALSXP, num_libs, num_tags)); // new fitted (transposed)
-	SET_VECTOR_ELT(output, 2, NEW_NUMERIC(num_tags));
-	SET_VECTOR_ELT(output, 3, NEW_INTEGER(num_tags));
-	SET_VECTOR_ELT(output, 4, NEW_LOGICAL(num_tags));
-	double* new_beta_ptr=NUMERIC_POINTER(VECTOR_ELT(output, 0));
-	double* new_fitted_ptr=NUMERIC_POINTER(VECTOR_ELT(output, 1));
-    double* dev_ptr=NUMERIC_POINTER(VECTOR_ELT(output, 2));
-    int* iter_ptr=INTEGER_POINTER(VECTOR_ELT(output, 3));
-    int* fail_ptr=LOGICAL_POINTER(VECTOR_ELT(output, 4));
+	SET_VECTOR_ELT(output, 2, allocVector(REALSXP, num_tags));
+	SET_VECTOR_ELT(output, 3, allocVector(INTSXP, num_tags));
+	SET_VECTOR_ELT(output, 4, allocVector(LGLSXP, num_tags));
+	double* new_beta_ptr=REAL(VECTOR_ELT(output, 0));
+	double* new_fitted_ptr=REAL(VECTOR_ELT(output, 1));
+    double* dev_ptr=REAL(VECTOR_ELT(output, 2));
+    int* iter_ptr=INTEGER(VECTOR_ELT(output, 3));
+    int* fail_ptr=LOGICAL(VECTOR_ELT(output, 4));
 	try {
        	// Running through each tag and fitting the NB GLM.
-		glm_levenberg glbg(num_libs, num_coefs, design_ptr, INTEGER_VALUE(maxit), NUMERIC_VALUE(tol));
+		glm_levenberg glbg(num_libs, num_coefs, design_ptr, asInteger(maxit), asReal(tol));
     	for (int tag=0; tag<num_tags; ++tag) {
 
 			// Copying integer/double counts to a new vector.
@@ -108,6 +106,3 @@ SEXP R_levenberg (SEXP nlib, SEXP ntag, SEXP design, SEXP counts, SEXP disp, SEX
     UNPROTECT(1);
     return output;   
 } catch (std::exception& e) { return mkString(e.what()); }
-
-}
-

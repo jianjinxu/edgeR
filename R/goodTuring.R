@@ -34,7 +34,7 @@ goodTuring <- function(x, conf=1.96)
 	}
 
 #	SGT algorithm (no type checking, as that's enforced above)
-	out <- .Call("R_simple_good_turing", r, n, conf, PACKAGE="edgeR")
+	out <- .Call(.cR_simple_good_turing, r, n, conf)
 	if (is.character(out)) { stop(out) }
 	names(out) <- c("P0","proportion")
 

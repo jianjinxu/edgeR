@@ -1,5 +1,5 @@
 #  Calling the dynamic library.
-useDynLib(edgeR)
+useDynLib(edgeR, .registration=TRUE, .fixes=".c")
 
 #  All functions exported other than those starting with "."
 exportPattern("^[^\\.]")
