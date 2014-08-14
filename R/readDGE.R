@@ -8,7 +8,7 @@ readDGE <- function(files,path=NULL,columns=c(1,2),group=NULL,labels=NULL,...)
 		if(is.null(labels)) labels <- row.names(files)
 		files <- files$files
 	} else {
-		x$samples <- data.frame(files=as.character(files),stringsAsFactors=FALSE)
+                x$samples <- data.frame(files=as.character(files),group=1,stringsAsFactors=FALSE)
 	}
 	if(!is.null(group)) x$samples$group <- group
 	if(!is.null(x$samples$group)) x$samples$group <- as.factor(x$samples$group)
