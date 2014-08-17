@@ -1,6 +1,6 @@
 readDGE <- function(files,path=NULL,columns=c(1,2),group=NULL,labels=NULL,...) 
-#	Read and collate a set of DGE data files, one library per file
-#	Last modified 16 October 2010.
+#	Read and collate a set of count data files, each file containing counts for one library
+#	Created 2006.  Last modified 15 August 2014.
 {
 	x <- list()
 	if(is.data.frame(files)) {
@@ -8,7 +8,7 @@ readDGE <- function(files,path=NULL,columns=c(1,2),group=NULL,labels=NULL,...)
 		if(is.null(labels)) labels <- row.names(files)
 		files <- files$files
 	} else {
-                x$samples <- data.frame(files=as.character(files),group=1,stringsAsFactors=FALSE)
+		x$samples <- data.frame(files=as.character(files),group=1,stringsAsFactors=FALSE)
 	}
 	if(!is.null(group)) x$samples$group <- group
 	if(!is.null(x$samples$group)) x$samples$group <- as.factor(x$samples$group)

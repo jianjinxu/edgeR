@@ -16,7 +16,7 @@ static const R_CallMethodDef all_call_entries[] = {
 	{NULL, NULL, 0}
 };
 
-R_CMethodDef all_c_entries[] = {
+static const R_CMethodDef all_c_entries[] = {
    	{"processHairpinReads", (DL_FUNC) &processHairpinReads, 16},
 	{NULL, NULL, 0}
 };

@@ -8,8 +8,8 @@ Maximizes the negative binomial likelihood to give the estimate of the common, t
 }
 
 \usage{
-estimateDisp(y, design=NULL, prior.df=NULL, trend.method="locfit", span=NULL,
-             grid.length=21, grid.range=c(-10,10), robust=FALSE,
+estimateDisp(y, design=NULL, prior.df=NULL, trend.method="locfit", span=NULL, 
+             min.row.sum=5, grid.length=21, grid.range=c(-10,10), robust=FALSE,
              winsor.tail.p=c(0.05,0.1), tol=1e-06)
 }
 
@@ -23,6 +23,8 @@ estimateDisp(y, design=NULL, prior.df=NULL, trend.method="locfit", span=NULL,
 \item{trend.method}{method for estimating dispersion trend. Possible values are \code{"none"}, \code{"movingave"}, \code{"loess"} and \code{"locfit"}.}
 
 \item{span}{width of the smoothing window, as a proportion of the data set.}
+
+\item{min.row.sum}{numeric scalar giving a value for the filtering out of low abundance tags. Only tags with total sum of counts above this value are used. Low abundance tags can adversely affect the dispersion estimation, so this argument allows the user to select an appropriate filter threshold for the tag abundance.}
 
 \item{grid.length}{the number of points on which the interpolation is applied for each tag.}
 
