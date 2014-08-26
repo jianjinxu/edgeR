@@ -2,6 +2,12 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.7.15}{\itemize{
+\item
+goana() method for DGELRT objects.
+Performs Gene Ontology analysis of differentially expressed genes using Entrez Gene IDs.
+}}
+
 \section{Version 3.7.7}{\itemize{
 \item
 The SAGE datasets from Zhang et al (1997) are no longer included with the edgeR package.
