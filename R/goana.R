@@ -1,10 +1,10 @@
 goana.DGELRT <- function(de, geneid = rownames(de), FDR = 0.05, species = "Hs", trend = FALSE, ...)
 #  Gene ontology analysis of DE genes from linear model fit
 #  Gordon Smyth and Yifang Hu
-#  Created 25 August 2014.
+#  Created 25 August 2014.  Last modified 26 August 2014.
 {
-# Check fit
-	if(is.null(de$table$PValue)) stop("p value not found in fit object (from eBayes).")	
+	# Check fit
+	if(is.null(de$table$PValue)) stop("p values not found in fit object")	
 	ngenes <- nrow(de)
 
 	# Check geneid
@@ -24,7 +24,7 @@ goana.DGELRT <- function(de, geneid = rownames(de), FDR = 0.05, species = "Hs", 
 	if(is.logical(trend)) {
 		if(trend) {
 			covariate <- de$table$logCPM
-			if(is.null(covariate)) stop("Amean not found in fit")
+			if(is.null(covariate)) stop("logCPM not found in fit object")
 		}
 	} else
 		if(is.numeric(trend)) {
@@ -60,5 +60,7 @@ goana.DGELRT <- function(de, geneid = rownames(de), FDR = 0.05, species = "Hs", 
 	}
 	if(!trend) PW <- NULL
 
-	NextMethod(de = de.gene, universe = universe, species = species, weights = PW, ...)
+	NextMethod(de = de.gene, universe = universe, species = species, prior.prob = PW, ...)
 }
+
+goana.DGEExact <- goana.DGELRT

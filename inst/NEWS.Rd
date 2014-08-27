@@ -2,6 +2,11 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.7.16}{\itemize{
+\item
+goana() method for DGEExact objects.
+}}
+
 \section{Version 3.7.15}{\itemize{
 \item
 goana() method for DGELRT objects.
