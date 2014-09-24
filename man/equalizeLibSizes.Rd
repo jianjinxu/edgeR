@@ -6,13 +6,14 @@
 \description{Adjusts counts so that the effective library sizes are equal, preserving fold-changes between groups and preserving biological variability within each group.}
 
 \usage{
-equalizeLibSizes(object, dispersion=0, common.lib.size)
+equalizeLibSizes(object, dispersion=NULL, common.lib.size)
 }
 
 \arguments{
 \item{object}{\code{\link[edgeR:DGEList-class]{DGEList}} object}
 
-\item{dispersion}{numeric scalar or vector of \code{dispersion} parameters; if a scalar, then a common dispersion parameter is used for all tags}
+\item{dispersion}{numeric vector of dispersion parameters.
+By default, is extracted from \code{object} or, if \code{object} contains no dispersion information, is set to \code{0.05}.}
 
 \item{common.lib.size}{numeric scalar, the library size to normalize to; default is the geometric mean of the original effective library sizes}
 }
@@ -31,11 +32,18 @@ The column sums of the normalized counts, while to be exactly equal, nor are the
 However, the expected counts for each tag are equal under the null hypothesis of no differential expression.
 }
 
+\note{
+This function is intended mainly for internal edgeR use.
+It is not normally called directly by users.
+}
+
 \author{Mark Robinson, Davis McCarthy, Gordon Smyth}
 
 \references{
-Robinson MD and Smyth GK (2008). Small-sample estimation of negative binomial dispersion, with applications to SAGE data.
+Robinson MD and Smyth GK (2008).
+Small-sample estimation of negative binomial dispersion, with applications to SAGE data.
 \emph{Biostatistics}, 9, 321-332.
+\url{http://biostatistics.oxfordjournals.org/content/9/2/321}
 }
 
 \seealso{
