@@ -33,7 +33,7 @@ An average value of \code{prior.count} is added to the counts before running \co
 
 This function is similar to
 
-\code{rowMeans(cpm(y, log=TRUE, \dots))},
+\code{log2(rowMeans(cpm(y, \dots)))},
 
 but with the refinement that larger library sizes are given more weight in the average.
 The two versions will agree for large values of the dispersion.

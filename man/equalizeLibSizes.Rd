@@ -27,9 +27,11 @@ By default, is extracted from \code{object} or, if \code{object} contains no dis
 Thus function implements the quantile-quantile normalization method of Robinson and Smyth (2008).
 It computes normalized counts, or pseudo-counts, used by \code{exactTest} and \code{estimateCommonDisp}.
 
-Note that the output common library size is a theoretical quantity.
-The column sums of the normalized counts, while to be exactly equal, nor are they intended to be.
-However, the expected counts for each tag are equal under the null hypothesis of no differential expression.
+The output pseudo-counts are the counts that would have theoretically arisen had the effective library sizes been equal for all samples.
+The pseudo-counts are computed in such as way as to preserve fold-change differences beween the groups defined by \code{object$samples$group} as well as biological variability within each group.
+Consequently, the results will depend on how the groups are defined.
+
+Note that the column sums of the \code{pseudo.counts} matrix will not generally be equal, because the effective library sizes are not necessarily the same as actual library sizes and because the normalized pseudo counts are not equal to expected counts.
 }
 
 \note{

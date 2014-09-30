@@ -1,5 +1,7 @@
 .residDF <- function(zero, design)
-#	6 Jan 2014
+#	Effective residual degrees of freedom after adjusting for exact zeros
+#	Gordon Smyth and Aaron Lun
+#	Created 6 Jan 2014.  Last modified 2 Sep 2014
 {
 	nlib <- ncol(zero)
 	ncoef <- ncol(design)
@@ -16,7 +18,7 @@
 	if(any(somezero)) {
 		zero2 <- zero[somezero,,drop=FALSE]
 
-# Integer packing will only work for 31 libraries at a time.	
+#		Integer packing will only work for 31 libraries at a time.	
 		assembly <- list()	
 		collected <- 0L
 		step <- 31L
@@ -28,7 +30,7 @@
 			collected <- collected + step
 		}
 
-# Figuring out the unique components.
+#		Figuring out the unique components.
 		o <- do.call(order, assembly)
 		nzeros <- sum(somezero)
 		is.different <- logical(nzeros)
@@ -38,7 +40,7 @@
 		first.of.each <- which(is.different)
 		last.of.each <- c(first.of.each[-1]-1L, nzeros)
 
-# Identifying the true residual d.f. for each of these rows.			
+#		Identifying the true residual d.f. for each of these rows.			
 		DF2 <- nlib-nzero[somezero]
 		for (u in 1:length(first.of.each)) {
 			i <- o[first.of.each[u]:last.of.each[u]]

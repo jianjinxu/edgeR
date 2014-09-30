@@ -37,11 +37,12 @@ aveLogCPM.DGEGLM <- function(y, prior.count=2, dispersion=NULL, ...)
 aveLogCPM.default <- function(y,lib.size=NULL,offset=NULL,prior.count=2,dispersion=NULL,weights=NULL, ...)
 #	log2(AveCPM)
 #	Gordon Smyth
-#	Created 25 Aug 2012. Last modified 12 Nov 2013.
+#	Created 25 Aug 2012. Last modified 25 Sep 2014.
 {
 #	Check y
 	y <- as.matrix(y)
-	if(any(y<0)) stop("y must be non-negative")
+	if(any(is.na(y))) stop("NA counts not allowed")
+	if(any(y<0)) stop("counts must be non-negative")
 
 #	Check prior.count
 	if(prior.count<0) prior.count <- 0
