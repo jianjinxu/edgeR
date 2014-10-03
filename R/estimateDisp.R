@@ -6,7 +6,7 @@ estimateDisp <- function(y, design=NULL, prior.df=NULL, trend.method="locfit", s
 #  Estimating dispersion using weighted conditional likelihood empirical Bayes.
 #  Use GLM approach if a design matrix is given, and classic approach otherwise.
 #  It calculates a matrix of likelihoods for each gene at a set of dispersion grid points, and then calls WLEB() to do the shrinkage.
-#  Yunshun Chen, Gordon Smyth. Created July 2012. Last modified 11 Aug 2014.
+#  Yunshun Chen, Gordon Smyth. Created July 2012. Last modified 11 Sep 2014.
 {
 	if( !is(y,"DGEList") ) stop("y must be a DGEList")
 	group <- y$samples$group <- as.factor(y$samples$group)
@@ -27,7 +27,6 @@ estimateDisp <- function(y, design=NULL, prior.df=NULL, trend.method="locfit", s
 	spline.disp <- 0.1 * 2^spline.pts
 	grid.vals <- spline.disp/(1+spline.disp)
 	l0 <- matrix(0, sum(sel), grid.length)
-
 
 	# Classic edgeR
 	if(is.null(design)){
@@ -57,7 +56,7 @@ estimateDisp <- function(y, design=NULL, prior.df=NULL, trend.method="locfit", s
 		for(j in 1:grid.length) for(i in 1:length(ysplit)) 
 			l0[,j] <- condLogLikDerDelta(ysplit[[i]], grid.vals[j], der=0) + l0[,j]
 	}
-	# GLM edgeR
+	# GLM edgeR (using the last fit to hot-start the next fit).
 	else {
 		design <- as.matrix(design)
 		if(ncol(design) >= ncol(y$counts)) {
@@ -65,9 +64,12 @@ estimateDisp <- function(y, design=NULL, prior.df=NULL, trend.method="locfit", s
 			y$common.dispersion <- NA
 			return(y)
 		}
-		for(i in 1:grid.length)
-			l0[,i] <- adjustedProfileLik(spline.disp[i], y=y$counts[sel, ], design=design, offset=offset[sel,])
-
+		last.beta <- NULL
+		for(i in 1:grid.length) {
+			out <- adjustedProfileLik(spline.disp[i], y=y$counts[sel, ], design=design, offset=offset[sel,], start=last.beta, get.coef=TRUE)
+			l0[,i] <- out$apl
+			last.beta <- out$beta
+		}
 	}
 
 	out.1 <- WLEB(theta=spline.pts, loglik=l0, covariate=AveLogCPM[sel], trend.method=trend.method, span=span, individual=FALSE, m0.out=TRUE)
@@ -107,26 +109,32 @@ estimateDisp <- function(y, design=NULL, prior.df=NULL, trend.method="locfit", s
 	} else {
 		y$tagwise.dispersion <- rep(y$common.dispersion, ntags)
 	}
-	
-	# Protecting against infinite prior.n's; otherwise, interpolation of a matrix of Inf values will give the smallest value.
-	if(!robust){
-	# scalar prior.n
-		if (prior.n < 1e6) {
-			out.2 <- WLEB(theta=spline.pts, loglik=l0, prior.n=prior.n, covariate=AveLogCPM[sel], 
-				trend.method=trend.method, span=span, overall=FALSE, trend=FALSE, m0=out.1$shared.loglik)
-			y$tagwise.dispersion[sel] <- 0.1 * 2^out.2$individual
+
+	# Checking if the shrinkage is near-infinite.
+	too.large <- prior.n > 1e6
+	if (!all(too.large)) { 
+		temp.n <- prior.n
+		if (any(too.large)) { 
+			temp.n[too.large] <- 1e6 
 		}
+
+		# Estimating tagwise dispersions	
+		out.2 <- WLEB(theta=spline.pts, loglik=l0, prior.n=temp.n, covariate=AveLogCPM[sel], 
+			trend.method=trend.method, span=span, overall=FALSE, trend=FALSE, m0=out.1$shared.loglik)
+
+		if (!robust) { 
+			y$tagwise.dispersion[sel] <- 0.1 * 2^out.2$individual
+		} else {
+			y$tagwise.dispersion[sel][!too.large] <- 0.1 * 2^out.2$individual[!too.large]
+		}
+	}
+
+	if(!robust){
+		# scalar prior.n
 		y$prior.df <- prior.df
 		y$prior.n <- prior.n
 	} else {
-	# vector prior.n
-		i <- prior.n > 1e6
-		if(sum(!i)!=0){
-		# Make sure that there are still some genes with finite prior.df
-			out.2 <- WLEB(theta=spline.pts, loglik=l0, prior.n=pmin(prior.n, 1e6), covariate=AveLogCPM[sel], 
-				trend.method=trend.method, span=span, overall=FALSE, trend=FALSE, m0=out.1$shared.loglik)
-			y$tagwise.dispersion[sel][!i] <- 0.1 * 2^out.2$individual[!i]	
-		}
+		# vector prior.n
 		y$prior.df <- y$prior.n <- rep(Inf, ntags)
 		y$prior.df[sel] <- prior.df
 		y$prior.n[sel] <- prior.n
@@ -183,7 +191,7 @@ WLEB <- function(theta, loglik, prior.n=5, covariate=NULL, trend.method="locfit"
 
 #	weighted empirical Bayes posterior estimates
 	if(individual){
-		prior.n <- expandAsMatrix(as.vector(prior.n), dim(m0))
+		stopifnot(all(is.finite(prior.n)))
 		l0a <- loglik + prior.n*m0
 		out$individual <- maximizeInterpolant(theta, l0a)
 	}
