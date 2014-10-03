@@ -23,7 +23,7 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.siz
 #	Fit negative binomial generalized linear model for each transcript
 #	to a series of digital expression libraries
 #	Davis McCarthy and Gordon Smyth
-#	Created 17 August 2010. Last modified 26 Nov 2013.
+#	Created 17 August 2010. Last modified 11 Sep 2014.
 {
 #	Check y
 	y <- as.matrix(y)
@@ -57,7 +57,7 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.siz
 #	If the design is equivalent to a oneway layout, use a shortcut algorithm
 	group <- designAsFactor(design)
 	if(nlevels(group)==ncol(design)) {
-		fit <- mglmOneWay(y,design=design,dispersion=dispersion,offset=offset,weights=weights)
+		fit <- mglmOneWay(y,design=design,dispersion=dispersion,offset=offset,weights=weights,coef.start=start)
 		fit$deviance <- nbinomDeviance(y=y,mean=fit$fitted.values,dispersion=dispersion,weights=weights)
 		fit$method <- "oneway"
 	} else {
@@ -67,7 +67,12 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.siz
 
 #	Prepare output
 	fit$counts <- y
-	if(prior.count>0) fit$coefficients <- predFC(y,design,offset=offset,dispersion=dispersion,prior.count=prior.count,weights=weights,...)*log(2)
+	if(prior.count>0) {
+		fit$unshrunk.coefficients <- fit$coefficients
+		colnames(fit$unshrunk.coefficients) <- colnames(design)
+		rownames(fit$unshrunk.coefficients) <- rownames(y)
+		fit$coefficients <- predFC(y,design,offset=offset,dispersion=dispersion,prior.count=prior.count,weights=weights,...)*log(2)
+	}
 	colnames(fit$coefficients) <- colnames(design)
 	rownames(fit$coefficients) <- rownames(y)
 	dimnames(fit$fitted.values) <- dimnames(y)
