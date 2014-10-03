@@ -4,36 +4,46 @@ std::pair<double,bool> glm_one_group(const int& nlibs, const int& maxit, const d
 #ifdef WEIGHTED		
 		const double* weights,	
 #endif		
-		const double* y, 
-		const double& disp) {
+		const double* y, const double& disp, double cur_beta) {
     /* Setting up initial values for beta as the log of the mean of the ratio of counts to offsets.
  	 * This is the exact solution for the gamma distribution (which is the limit of the NB as
- 	 * the dispersion goes to infinity.
+ 	 * the dispersion goes to infinity. However, if cur_beta is not NA, then we assume it's good. 
  	 */
 	bool nonzero=false;
-	double cur_beta=0, totweight=0;
-	for (int j=0; j<nlibs; ++j) {
-		const double& cur_val=y[j];
-		if (cur_val>low_value) {
+	if (ISNA(cur_beta)) {
+		cur_beta=0;
+#ifdef WEIGHTED 	   	
+ 	   	double totweight=0;
+#else 
+		double totweight=nlibs;
+#endif
+		for (int j=0; j<nlibs; ++j) {
+			const double& cur_val=y[j];
+			if (cur_val>low_value) {
 #ifdef WEIGHTED			
-			cur_beta+=cur_val/std::exp(offset[j]) * weights[j];
+				cur_beta+=cur_val/std::exp(offset[j]) * weights[j];
 #else			
-			cur_beta+=cur_val/std::exp(offset[j]);
+				cur_beta+=cur_val/std::exp(offset[j]);
 #endif			
-			nonzero=true;
-		}
+				nonzero=true;
+			}
 #ifdef WEIGHTED		
-		totweight+=weights[j];
-#else
-		++totweight;
-#endif		
+			totweight+=weights[j];
+#endif			
+		}
+		cur_beta=std::log(cur_beta/totweight);
+	} else {
+		for (int j=0; j<nlibs; ++j) { 
+			if (y[j] > low_value) { nonzero=true; break; }
+		}
 	}
+
+	// Skipping to a result for all-zero rows.
 	if (!nonzero) { return std::make_pair(R_NegInf, true); }
 
-	// If we can't cop out of it, we'll do Newton-Raphson iterations instead.
+	// Newton-Raphson iterations to converge to mean.
     bool has_converged=false;
 	double dl, info;
-	cur_beta=std::log(cur_beta/totweight);
 	for (int i=0; i<maxit; ++i) {
 		dl=0;
  	    info=0;

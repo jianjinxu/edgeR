@@ -1,16 +1,23 @@
 #include "glm.h"
 #include "matvec_check.h"
 
-SEXP R_one_group (SEXP nt, SEXP nl, SEXP y, SEXP disp, SEXP offsets, SEXP weights, SEXP max_iterations, SEXP tolerance) try {
-	const int num_tags=asInteger(nt);
-	const int num_libs=asInteger(nl);
+SEXP R_one_group (SEXP y, SEXP disp, SEXP offsets, SEXP weights, SEXP max_iterations, SEXP tolerance, SEXP beta) try {
+	if (!isNumeric(disp)) { throw std::runtime_error("dispersion vector must be double precision"); }
+	const int num_tags=LENGTH(disp);
+	const int num_libs=LENGTH(y)/num_tags;
 	if (num_tags*num_libs != LENGTH(y) ) { throw std::runtime_error("dimensions of the count table are not as specified"); }  // Checking that it is an exact division.
   
+	if (!isNumeric(beta)) { throw std::runtime_error("beta start vector must be double precision"); }
+	const int blen=LENGTH(beta);
+	const bool use_old_start=(blen!=0);
+	if (use_old_start && blen!=num_tags) { 
+		throw std::runtime_error("non-empty start vector must have length equal to the number of tags"); 		
+	}
+	const double* bsptr=REAL(beta);
+   
 	const int maxit=asInteger(max_iterations);
 	const double tol=asReal(tolerance);
-	if (!isNumeric(disp)) { throw std::runtime_error("dispersion vector must be double precision"); }
-	if (LENGTH(disp)!=num_tags) { throw std::runtime_error("length of dispersion vector must be 1 or equal to the number of tags"); }
-    
+ 
     // Setting up some iterators. We provide some flexibility to detecting numeric-ness.
 	double *ydptr=NULL;
 	int* yiptr=NULL;
@@ -51,13 +58,10 @@ SEXP R_one_group (SEXP nt, SEXP nl, SEXP y, SEXP disp, SEXP offsets, SEXP weight
 #ifdef WEIGHTED					
 					*wptr2,
 #endif					
-					yptr, *dptr);
+					yptr, dptr[tag], (use_old_start ? bsptr[tag] : R_NaReal));
 
-			(*bptr)=out.first;
-			(*cptr)=out.second;
-			++bptr;
-			++cptr;
-			++dptr;
+			bptr[tag]=out.first;
+			cptr[tag]=out.second;
 			allo.advance();
 			allw.advance();
     	}
