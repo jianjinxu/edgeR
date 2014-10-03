@@ -21,13 +21,13 @@ function(object, i, j, keep.lib.sizes=TRUE)
 assign("[.DGEGLM",
 function(object, i, j)
 #  Subsetting for DGEGLM objects
-#  11 May 2011.  Last modified 11 Dec 2013.
+#  11 May 2011.  Last modified 09 May 2014.
 {
 	if(!missing(j)) stop("Subsetting columns not allowed for DGEGLM object.",call.=FALSE)
 
 #	Recognized components
 	IJ <- character(0)
-	IX <- c("counts","offset","weights","genes","coefficients","fitted.values")
+	IX <- c("counts","offset","weights","genes","coefficients","fitted.values","unshrunk.coefficients")
 	I  <- c("AveLogCPM","trended.dispersion","tagwise.dispersion","prior.n","prior.df","dispersion","df.residual","deviance","iter","failed")
 	JX <- c("samples","design")
 
@@ -53,13 +53,13 @@ function(object, i, j)
 assign("[.DGELRT",
 function(object, i, j)
 #  Subsetting for DGELRT objects
-#  6 April 2011.  Last modified 11 Dec 2013.
+#  6 April 2011.  Last modified 09 May 2014.
 {
 	if(!missing(j)) stop("Subsetting columns not allowed for DGELRT object.",call.=FALSE)
 
 #	Recognized components
 	IJ <- character(0)
-	IX <- c("counts","offset","weights","genes","coefficients","fitted.values","table")
+	IX <- c("counts","offset","weights","genes","coefficients","fitted.values","table","unshrunk.coefficients")
 	I  <- c("AveLogCPM","trended.dispersion","tagwise.dispersion","prior.n","prior.df","dispersion","df.residual","deviance","iter","failed","df.test")
 	JX <- character(0)
 
