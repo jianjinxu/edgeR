@@ -8,7 +8,8 @@ Compute adjusted profile-likelihoods for estimating the dispersion parameters of
 }
 
 \usage{
-adjustedProfileLik(dispersion, y, design, offset, weights=NULL, adjust=TRUE)
+adjustedProfileLik(dispersion, y, design, offset, weights=NULL, adjust=TRUE, 
+            start=NULL, get.coef=FALSE)
 }
 
 \arguments{
@@ -16,12 +17,16 @@ adjustedProfileLik(dispersion, y, design, offset, weights=NULL, adjust=TRUE)
 \item{y}{numeric matrix of counts.}
 \item{design}{numeric matrix giving the design matrix.}
 \item{offset}{numeric matrix of same size as \code{y} giving offsets for the log-linear models.  Can be a scalor or a vector of length \code{ncol(y)}, in which case it is expanded out to a matrix.}
-\item{weights}{optional numeric matrix giving observation weights}
+\item{weights}{optional numeric matrix giving observation weights.}
 \item{adjust}{logical, if \code{TRUE} then Cox-Reid adjustment is made to the log-likelihood, if \code{FALSE} then the log-likelihood is returned without adjustment.}
+\item{start}{numeric matrix of starting values for the GLM coefficients, to be passed to \code{\link{glmFit}}.}
+\item{get.coef}{logical, specifying whether fitted GLM coefficients should be returned.}
 }
 
 \value{
-vector of adjusted profile log-likelihood values, one for each row of \code{y}.
+If \code{get.coef==FALSE}, a vector of adjusted profile log-likelihood values is returned containing one element for each row of \code{y}.
+
+Otherwise, a list is returned containing \code{apl}, the aforementioned vector of adjusted profile likelihoods; and \code{beta}, a numeric matrix of fitted GLM coefficients.
 }
 
 \details{
@@ -33,6 +38,9 @@ The conditional likelihood approach is a technique for adjusting the likelihood 
 When estimating the dispersion, the nuisance parameters are the coefficients in the linear model.
 
 This implementation calls the LAPACK library to perform the Cholesky decomposition during adjustment estimation.
+
+The purpose of \code{start} and \code{get.coef} is to allow hot-starting for multiple calls to \code{adjustedProfileLik}, when only the \code{dispersion} is altered.
+Specifically, the returned GLM coefficients from one call with \code{get.coef==TRUE} can be used as the \code{start} values for the next call.
 }
 
 \references{
