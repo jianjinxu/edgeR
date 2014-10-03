@@ -3,9 +3,8 @@
 \alias{glmFit.DGEList}
 \alias{glmFit.default}
 \alias{glmLRT}
-\alias{glmQLFTest}
 
-\title{Genewise Negative Binomial Generalized Linear Mdels}
+\title{Genewise Negative Binomial Generalized Linear Models}
 
 \description{Fit a negative binomial generalized log-linear model to the read counts for each gene or transcript.
 Conduct genewise statistical tests for a given coefficient or coefficient contrast.}
@@ -15,8 +14,6 @@ Conduct genewise statistical tests for a given coefficient or coefficient contra
 \method{glmFit}{default}(y, design=NULL, dispersion=NULL, offset=NULL, lib.size=NULL, weights=NULL,
        prior.count=0.125, start=NULL, \dots)
 glmLRT(glmfit, coef=ncol(glmfit$design), contrast=NULL, test="chisq")
-glmQLFTest(y, design=NULL, dispersion=NULL, coef=ncol(glmfit$design), contrast=NULL, 
-       abundance.trend=TRUE, robust=FALSE, winsor.tail.p=c(0.05,0.1), plot=FALSE)
 }
 
 \arguments{
@@ -47,14 +44,6 @@ Defaults to a single column of ones, equivalent to treating the columns as repli
 \item{contrast}{numeric vector or matrix specifying one or more contrasts of the linear model coefficients to be tested equal to zero. Number of rows must equal to the number of columns of \code{design}. If specified, then takes precedence over \code{coef}.}
 
 \item{test}{which test (distribution) to use in calculating the p-values. Possible values are \code{"F"} or \code{"chisq"}.}
-
-\item{abundance.trend}{logical, whether to allow an abundance-dependent trend when estimating the prior values for the quasi-likelihood multiplicative dispersion parameter.}
-
-\item{robust}{logical, whether to estimate the prior.df robustly.}
-
-\item{winsor.tail.p}{numeric vector of length 2 giving proportion to trim (Winsorize) from lower and upper tail of the distribution of genewise deviances when estimating the hyperparameters. Positive values produce robust empirical Bayes ignoring outlier small or large deviances. Only used when \code{robust=TRUE}.} 
-
-\item{plot}{logical, whether to plot the quasi-likelihood dispersion estimates vs abundance}
 }
 
 \value{
@@ -68,15 +57,14 @@ Defaults to a single column of ones, equivalent to treating the columns as repli
 	\item{fitted.values}{matrix of fitted values from glm fits, same number of rows and columns as \code{y}.}
 	\item{deviance}{numeric vector of deviances, one for each tag.}
 
-\code{glmLRT} and \code{glmQFTest} produce objects of class \code{DGELRT} with the same components as for \code{glmfit} plus the following:
-	\item{table}{data frame with the same rows as \code{y} containing the log2-fold changes, test statistics and p-values, ready to be displayed by \code{topTags.}.}
+\code{glmLRT} produces objects of class \code{DGELRT} with the same components as for \code{glmfit} plus the following:
+	\item{table}{data frame with the same rows as \code{y} containing the log2-fold changes, likelhood ratio statistics and p-values, ready to be displayed by \code{topTags.}.}
 	\item{comparison}{character string describing the coefficient or the contrast being tested.}
 
 The data frame \code{table} contains the following columns:
 	\item{logFC}{log2-fold change of expression between conditions being tested.}
 	\item{logCPM}{average log2-counts per million, the average taken over all libraries in \code{y}.}
-	\item{LR}{likelihood ratio statistics (only for \code{glmLRT}).}
-	\item{F}{F-statistics (only for \code{glmQFTest}).}
+	\item{LR}{likelihood ratio statistics.}
 	\item{PValue}{p-values.}
 }
 
@@ -96,24 +84,12 @@ The returned coefficients are affected but not the likelihood ratio tests or p-v
 If \code{coef} is used, the null hypothesis is that all the coefficients indicated by \code{coef} are equal to zero.
 If \code{contrast} is non-null, then the null hypothesis is that the specified contrasts of the coefficients are equal to zero.
 For example, a contrast of \code{c(0,1,-1)}, assuming there are three coefficients, would test the hypothesis that the second and third coefficients are equal.
-
-\code{glmQLFTest} implements the quasi-likelihood method of Lund et al (2012).
-It behaves the same as \code{glmLRT} except that it replaces likelihood ratio tests with
-quasi-likelihood F-tests for coefficients in the linear model.
-This function calls the limma function \code{\link{squeezeVar}} to conduct empirical Bayes smoothing of the genewise multiplicative dispersions.
-Note that the \code{QuasiSeq} package provides a alternative implementation of Lund et al (2012),
-with slightly different glm, trend and FDR methods.
 }
 
 \references{
 McCarthy, DJ, Chen, Y, Smyth, GK (2012). Differential expression analysis of multifactor RNA-Seq experiments with respect to biological variation.
 \emph{Nucleic Acids Research} 40, 4288-4297.
 \url{http://nar.oxfordjournals.org/content/40/10/4288}
-
-Lund, SP, Nettleton, D, McCarthy, DJ, and Smyth, GK (2012).
-Detecting differential expression in RNA-sequence data using quasi-likelihood with shrunken dispersion estimates.
-\emph{Statistical Applications in Genetics and Molecular Biology} Volume 11, Issue 5, Article 8.
-\url{http://www.statsci.org/smyth/pubs/QuasiSeqPreprint.pdf}
 }
 
 \author{Davis McCarthy and Gordon Smyth}
@@ -153,9 +129,7 @@ d <- estimateGLMCommonDisp(d, design, verbose=TRUE)
 \seealso{
 Low-level computations are done by \code{\link{mglmOneGroup}} or \code{\link{mglmLevenberg}}.
 
-\code{\link{topTags}} displays results from \code{glmLRT} or \code{glmQLFTest}.
-
-The \code{QuasiSeq} package gives an alternative implementation of \code{glmQLFTest} based on the same statistical ideas.
+\code{\link{topTags}} displays results from \code{glmLRT}.
 }
 
 \keyword{models}
