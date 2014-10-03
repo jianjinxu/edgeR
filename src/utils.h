@@ -36,13 +36,14 @@ SEXP R_loess_by_col(SEXP, SEXP, SEXP, SEXP);
 
 SEXP R_maximize_interpolant(SEXP, SEXP);
 
-SEXP R_one_group (SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+SEXP R_one_group (SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 SEXP R_simple_good_turing (SEXP, SEXP, SEXP);
 
-void processHairpinReads(char**, int*, char**, char**,
-		int*, int*, int*, int*, int*, int*,
-		int*, int*, int*, int*, char**, int*);
+void processHairpinReads(int *, char**, char**, int*, 
+                char**, char**, int*, int*, int*, int*, 
+                int*, int*, int*, int*, int*, int*, 
+                int *, int *, char**, int*);
 }
 
 #endif

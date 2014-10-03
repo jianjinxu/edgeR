@@ -11,15 +11,15 @@ static const R_CallMethodDef all_call_entries[] = {
 	CALLDEF(R_levenberg, 11),
 	CALLDEF(R_loess_by_col, 4),
 	CALLDEF(R_maximize_interpolant, 2),
-	CALLDEF(R_one_group, 8),
+	CALLDEF(R_one_group, 7),
 	CALLDEF(R_simple_good_turing, 3),
 	{NULL, NULL, 0}
 };
 
-static const R_CMethodDef all_c_entries[] = {
-   	{"processHairpinReads", (DL_FUNC) &processHairpinReads, 16},
-	{NULL, NULL, 0}
-};
+R_CMethodDef all_c_entries[] = {
+    {"processHairpinReads", (DL_FUNC) &processHairpinReads, 20},
+    {NULL, NULL, 0}
+  };
 
 void attribute_visible R_init_edgeR(DllInfo *dll) {
 	R_registerRoutines(dll, all_c_entries, all_call_entries, NULL, NULL);
