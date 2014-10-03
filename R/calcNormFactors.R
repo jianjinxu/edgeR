@@ -1,18 +1,36 @@
-calcNormFactors <- function(object, method=c("TMM","RLE","upperquartile","none"), refColumn=NULL, logratioTrim=.3, sumTrim=0.05, doWeighting=TRUE, Acutoff=-1e10, p=0.75)
+calcNormFactors <- function(object, ...)
+UseMethod("calcNormFactors")
+
+calcNormFactors.DGEList <- function(object, method=c("TMM","RLE","upperquartile","none"), refColumn=NULL, logratioTrim=.3, sumTrim=0.05, doWeighting=TRUE, Acutoff=-1e10, p=0.75, ...)
 #	Scale normalization of RNA-Seq data.
 #	Mark Robinson.  Edits by Gordon Smyth.
-#	Created October 22 October 2009.  Last modified 16 Apr 2013.
+#	Created October 22 October 2009.  Last modified 2 Oct 2014.
 {
 #	Check object
-	if(is(object,"DGEList")) {
-		x <- as.matrix(object$counts)
-		lib.size <- object$samples$lib.size
-	} else {
-		x <- as.matrix(object)
-		lib.size <- colSums(x)
-	}
+	x <- as.matrix(object$counts)
+	lib.size <- object$samples$lib.size
 
-#	Check method	
+	f <- NextMethod(object=x, lib.size=lib.size, method=method, refColumn=refColumn, logratioTrim=logratioTrim, sumTrim=sumTrim, doWeighting=doWeighting, Acutoff=Acutoff, p=p)
+
+#	Output
+	object$samples$norm.factors <- f
+	return(object)
+
+}
+
+calcNormFactors.default <- function(object, lib.size=NULL, method=c("TMM","RLE","upperquartile","none"), refColumn=NULL, logratioTrim=.3, sumTrim=0.05, doWeighting=TRUE, Acutoff=-1e10, p=0.75, ...)
+#	Scale normalization of RNA-Seq data.
+#	Mark Robinson.  Edits by Gordon Smyth.
+#	Created October 22 October 2009.  Last modified 2 Oct 2014.
+{
+#	Check object
+	x <- as.matrix(object)
+	if(any(is.na(x))) stop("NAs not permitted")
+
+#	Check lib.size
+	if(is.null(lib.size)) lib.size <- colSums(x)
+
+#	Check method
 	method <- match.arg(method)
 
 #	Remove all zero rows
@@ -42,12 +60,7 @@ calcNormFactors <- function(object, method=c("TMM","RLE","upperquartile","none")
 	f <- f/exp(mean(log(f)))
 
 #	Output
-	if(is(object, "DGEList")) {
-		object$samples$norm.factors <- f
-		return(object)
-	} else {
-		return(f)
-	}
+	f
 }
 
 
