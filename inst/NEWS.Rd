@@ -2,24 +2,42 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
-\section{Version 3.7.16}{\itemize{
-\item
-goana() method for DGEExact objects.
-}}
+\section{Version 3.8.0}{\itemize{
 
-\section{Version 3.7.15}{\itemize{
 \item
-goana() method for DGELRT objects.
-Performs Gene Ontology analysis of differentially expressed genes using Entrez Gene IDs.
-}}
+New function goana() available for DGEExact and DGELRT objects to perform Gene Ontology analysis of differentially expressed genes using Entrez Gene IDs.
 
-\section{Version 3.7.7}{\itemize{
+\item
+New functions diffSpliceDGE(), topSpliceDGE() and plotSpliceDGE() for detecting differential exon usage and displaying results.
+
+\item
+New function treatDGE() that tests for DE relative to a specified log2-FC threshold.
+
+\item
+glmQLFTest() is split into three functions: glmQLFit() for fitting quasi-likelihood GLMs, glmQLFTest() for performing quasi-likelihood F-tests and plotQLDisp() for plotting quasi-likelihood dispersions.
+
+\item
+processHairpinReads() renamed to processAmplicons() and allows for paired end data.
+
+\item
+glmFit() now stores unshrunk.coefficients from prior.count=0 as well as shrunk coefficients.
+
+\item
+estimateDisp() now has a min.row.sum argument to protect against all zero counts.
+
+\item 
+APL calculations in estimateDisp() are hot-started using fitted values from previous dispersions, to avoid discontinuous APL landscapes. 
+
+\item
+adjustedProfileLik() is modified to accept starting coefficients. glmFit() now passes starting coefficients to mglmOneGroup().
+
+\item
+calcNormFactors() is now a S3 generic function.
+
 \item
 The SAGE datasets from Zhang et al (1997) are no longer included with the edgeR package.
-
-\item
-A variety of minor code improvements and bug fixes have been implemented.
 }}
+
 
 \section{Version 3.6.0}{\itemize{
 
