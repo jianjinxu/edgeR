@@ -12,8 +12,10 @@ Fit the same log-link negative binomial or Poisson generalized linear model (GLM
 }
 
 \usage{
-mglmOneGroup(y, dispersion=0, offset=0, weights=NULL, maxit=50, tol=1e-10, verbose=FALSE)
-mglmOneWay(y, design=NULL, dispersion=0, offset=0, weights=NULL, maxit=50, tol=1e-10)
+mglmOneGroup(y, dispersion=0, offset=0, weights=NULL, maxit=50, tol=1e-10, 
+              verbose=FALSE, coef.start=NULL)
+mglmOneWay(y, design=NULL, dispersion=0, offset=0, weights=NULL, maxit=50, 
+              tol=1e-10, coef.start=NULL)
 mglmLevenberg(y, design, dispersion=0, offset=0, weights=NULL,
               coef.start=NULL, start.method="null", maxit=200, tol=1e-06)
 designAsFactor(design)
