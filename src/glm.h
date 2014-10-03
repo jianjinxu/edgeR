@@ -8,7 +8,7 @@ std::pair<double,bool> glm_one_group(const int&, const int&, const double&, cons
 #ifdef WEIGHTED
 		const double*, 
 #endif
-		const double*, const double&);
+		const double*, const double&, double);
 
 class glm_levenberg {
 public:
