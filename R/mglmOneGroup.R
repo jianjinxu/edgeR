@@ -1,7 +1,7 @@
-mglmOneGroup <- function(y,dispersion=0,offset=0,weights=NULL,maxit=50,tol=1e-10,verbose=FALSE)
+mglmOneGroup <- function(y,dispersion=0,offset=0,weights=NULL,maxit=50,tol=1e-10,verbose=FALSE,coef.start=NULL)
 #	Fit single-group negative-binomial glm
 #	Aaron Lun and Gordon Smyth
-#	18 Aug 2010. Last modified 22 Nov 2013.
+#	18 Aug 2010. Last modified 11 Sep 2014.
 {
 #	Check y
 	y <- as.matrix(y)
@@ -17,6 +17,9 @@ mglmOneGroup <- function(y,dispersion=0,offset=0,weights=NULL,maxit=50,tol=1e-10
 
 #	Check offset
 	if(typeof(offset) != "double") stop("offset not floating point number")
+
+#	Check starting values
+	if (typeof(coef.start) != "double") storage.mode(coef.start) <- "double"
 
 #	All-Poisson special case
 	if(all(dispersion==0) && is.null(weights)) {
@@ -39,8 +42,7 @@ mglmOneGroup <- function(y,dispersion=0,offset=0,weights=NULL,maxit=50,tol=1e-10
 	weights <- expandAsMatrix(weights,dim(y))
 
 #	Fisher scoring iteration.
-#	Matrices are transposed so that values for each tag are in consecutive memory locations in C
-	output <- .Call(.cR_one_group, ntags, nlibs, y, dispersion, offset, weights, maxit, tol)
+	output <- .Call(.cR_one_group, y, dispersion, offset, weights, maxit, tol, coef.start)
 
 #	Check error condition
 	if(is.character(output)) stop(output)

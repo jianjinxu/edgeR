@@ -10,12 +10,12 @@ designAsFactor <- function(design)
 	g
 }
 
-mglmOneWay <- function(y,design=NULL,dispersion=0,offset=0,weights=NULL,maxit=50,tol=1e-10)
+mglmOneWay <- function(y,design=NULL,dispersion=0,offset=0,weights=NULL,maxit=50,tol=1e-10,coef.start=NULL)
 #	Fit multiple negative binomial glms with log link
 #	by Fisher scoring with
 #	only a single explanatory factor in the model
 #	Gordon Smyth
-#	11 March 2011.  Last modified 21 Nov 2013.
+#	11 March 2011.  Last modified 11 Sep 2014.
 {
 	y <- as.matrix(y)
 	ntags <- nrow(y)
@@ -32,12 +32,17 @@ mglmOneWay <- function(y,design=NULL,dispersion=0,offset=0,weights=NULL,maxit=50
 	mu <- matrix(0,ntags,ngroups)
 	offset <- expandAsMatrix(offset,dim(y))
 	if(!is.null(weights)) weights <- expandAsMatrix(weights,dim(y))
+	
 	firstjofgroup <- rep(0,ngroups)
+	new.start <- NULL
 	for (g in 1:ngroups) {
 		j <- which(group==(levels(group)[g]))
 		firstjofgroup[g] <- j[1]
-		mu[,g] <- mglmOneGroup(y[,j,drop=FALSE],dispersion=dispersion,offset=offset[,j,drop=FALSE],weights=weights[,j,drop=FALSE],maxit=maxit,tol=tol)
+		if (!is.null(coef.start)) { new.start <- coef.start %*% design[firstjofgroup[g],] }
+		mu[,g] <- mglmOneGroup(y[,j,drop=FALSE],dispersion=dispersion,offset=offset[,j,drop=FALSE],weights=weights[,j,drop=FALSE],maxit=maxit,tol=tol,
+			coef.start=new.start)
 	}
+
 	designunique <- design[firstjofgroup,,drop=FALSE]
 	mu1 <- pmax(mu,-1e8)
 	beta <- t(solve(designunique,t(mu1)))
