@@ -1,15 +1,25 @@
 \name{calcNormFactors}
 \alias{calcNormFactors}
+\alias{calcNormFactors.DGEList}
+\alias{calcNormFactors.default}
+
 \title{Calculate Normalization Factors to Align Columns of a Count Matrix}
 \description{
 Calculate normalization factors to scale the raw library sizes.
 }
 \usage{
-calcNormFactors(object, method=c("TMM","RLE","upperquartile","none"), refColumn = NULL,
-      logratioTrim = .3, sumTrim = 0.05, doWeighting=TRUE, Acutoff=-1e10, p=0.75)
+\method{calcNormFactors}{DGEList}(object, method=c("TMM","RLE","upperquartile","none"),
+                refColumn=NULL, logratioTrim=.3, sumTrim=0.05, doWeighting=TRUE,
+                Acutoff=-1e10, p=0.75, \dots)
+\method{calcNormFactors}{default}(object, lib.size=NULL, method=c("TMM","RLE",
+                "upperquartile","none"), refColumn=NULL, logratioTrim=.3,
+                sumTrim=0.05, doWeighting=TRUE, Acutoff=-1e10, p=0.75, \dots)
 }
+
+
 \arguments{
   \item{object}{either a \code{matrix} of raw (read) counts or a \code{DGEList} object}
+  \item{lib.size}{numeric vector of library sizes of the \code{object}.}
   \item{method}{normalization method to be used}
   \item{refColumn}{column to use as reference for \code{method="TMM"}. Can be a column number or a numeric vector of length \code{nrow(object))}.}
   \item{logratioTrim}{amount of trim to use on log-ratios ("M" values) for \code{method="TMM"}}
@@ -17,6 +27,7 @@ calcNormFactors(object, method=c("TMM","RLE","upperquartile","none"), refColumn 
   \item{doWeighting}{logical, whether to compute (asymptotic binomial precision) weights for \code{method="TMM"}}
   \item{Acutoff}{cutoff on "A" values to use before trimming for \code{method="TMM"}}
   \item{p}{percentile (between 0 and 1) of the counts that is aligned when \code{method="upperquartile"}}
+  \item{\dots}{further arguments that are not currently used.}
 }
 
 \details{
