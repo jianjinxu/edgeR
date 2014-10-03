@@ -75,6 +75,13 @@ summary(dglm$trended.dispersion)
 dglm <- estimateGLMTagwiseDisp(dglm,design,prior.df=20)
 summary(dglm$tagwise.dispersion)
 
+dglm2 <- estimateDisp(dglm, design)
+summary(dglm2$tagwise.dispersion)
+dglm2 <- estimateDisp(dglm, design, prior.df=20)
+summary(dglm2$tagwise.dispersion)
+dglm2 <- estimateDisp(dglm, design, robust=TRUE)
+summary(dglm2$tagwise.dispersion)
+
 # Continuous trend
 nlibs <- 3
 ntags <- 1000
@@ -96,6 +103,13 @@ results <- glmLRT(fit, coef=2)
 topTags(results)
 d <- estimateGLMCommonDisp(d, design, verbose=TRUE)
 glmFit(d,design,dispersion=dispersion.true, prior.count=0.5/3)
+
+d2 <- estimateDisp(d, design)
+summary(d2$tagwise.dispersion)
+d2 <- estimateDisp(d, design, prior.df=20)
+summary(d2$tagwise.dispersion)
+d2 <- estimateDisp(d, design, robust=TRUE)
+summary(d2$tagwise.dispersion)
 
 # Exact tests
 y <- matrix(rnbinom(20,mu=10,size=3/2),5,4)
