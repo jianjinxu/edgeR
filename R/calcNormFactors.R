@@ -9,6 +9,7 @@ calcNormFactors.DGEList <- function(object, method=c("TMM","RLE","upperquartile"
 #	Check object
 	x <- as.matrix(object$counts)
 	lib.size <- object$samples$lib.size
+	if(any(is.na(x))) stop("NAs not permitted")
 
 	f <- NextMethod(object=x, lib.size=lib.size, method=method, refColumn=refColumn, logratioTrim=logratioTrim, sumTrim=sumTrim, doWeighting=doWeighting, Acutoff=Acutoff, p=p)
 

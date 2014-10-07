@@ -9,7 +9,10 @@ nbinomDeviance <- function(y,mean,dispersion=0,weights=NULL)
 	if(!is.matrix(y)) y <- array(y, c(1L,length(y)), if(!is.null(names(y))) list(NULL,names(y)))
 
 	d <- nbinomUnitDeviance(y=y,mean=mean,dispersion=dispersion)
-	if(!is.null(weights)) d <- weights*d
+	if(!is.null(weights)) {
+		weights <- expandAsMatrix(weights, dim(d)) 
+		d <- weights*d
+	}
 	rowSums(d)
 }
 
