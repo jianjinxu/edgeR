@@ -5,7 +5,7 @@
 \section{Version 3.8.0}{\itemize{
 
 \item
-New function goana() available for DGEExact and DGELRT objects to perform Gene Ontology analysis of differentially expressed genes using Entrez Gene IDs.
+New goana() methods for DGEExact and DGELRT objects to perform Gene Ontology analysis of differentially expressed genes using Entrez Gene IDs.
 
 \item
 New functions diffSpliceDGE(), topSpliceDGE() and plotSpliceDGE() for detecting differential exon usage and displaying results.

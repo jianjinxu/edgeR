@@ -14,10 +14,10 @@
 \begin{document}
 
 \title{edgeR Package Introduction}
-\author{Mark Robinson, Davis McCarthy, Yunshun Chen,\\
-Aaron Lun, Gordon K.\ Smyth}
+\author{Yunshun Chen, Davis McCarthy, Aaron Lun,\\
+Xiaobei Zhou, Mark Robinson, Gordon K.\ Smyth}
 \date{10 October 2012\\
-Revised 10 November 2013}
+Revised 8 October 2014}
 \maketitle
 
 
