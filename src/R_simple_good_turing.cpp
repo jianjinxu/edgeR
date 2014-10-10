@@ -29,7 +29,7 @@ SEXP R_simple_good_turing (SEXP obs, SEXP freq, SEXP conf) try {
 
 		// Computing log data.
 		const int& x=(i==0 ? 0 : optr[i-1]);
-		const double& logO=(log_obs[i]=std::log(optr[i]));
+		const double& logO=(log_obs[i]=std::log(double(optr[i])));
 		const double logZ=std::log(2*fptr[i]/double(i==last ? 2*(optr[i]-x) : optr[i+1]-x));
 		meanX+=logO;
 		meanY+=logZ;
@@ -60,7 +60,7 @@ SEXP R_simple_good_turing (SEXP obs, SEXP freq, SEXP conf) try {
 		bool indiffValsSeen=false;
 		for (long i=0; i<rows; ++i) {
 			const int next_obs=optr[i]+1;
-			const double y = next_obs*std::exp(slope*(std::log(next_obs)-log_obs[i])); // don't need intercept, cancels out.
+			const double y = next_obs*std::exp(slope*(std::log(double(next_obs))-log_obs[i])); // don't need intercept, cancels out.
 	//		std::cout << "y for " << i << " is " << y << std::endl;
 			if (i==last || optr[i+1]!=next_obs) { indiffValsSeen=true; }
 			if (!indiffValsSeen) {
