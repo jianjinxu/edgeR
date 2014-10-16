@@ -44,3 +44,16 @@ citEntry(
    year = 2008,
    textVersion = "Robinson MD and Smyth GK (2008). Small-sample estimation of negative binomial dispersion, with applications to SAGE data. Biostatistics, 9, 321-332"
 )
+
+
+citEntry(
+   entry="article",
+   title = "Robustly detecting differential expression in RNA sequencing data using observation weights",
+   author = "Xiaobei Zhou and Helen Lindsay and Mark D Robinson",
+   journal = "Nucleic Acids Research",
+   volume = 42,
+   pages = e91,
+   year = 2014,
+   textVersion = "Zhou X, Lindsay H, Robinson MD (2014). Robustly detecting differential expression in RNA sequencing data using observation weights. Nucleic Acids Research, 42(11), e91."
+)
+

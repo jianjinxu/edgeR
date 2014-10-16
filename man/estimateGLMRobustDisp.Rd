@@ -40,7 +40,7 @@ Note: it is not necessary to first calculate the common, trended and tagwise dis
 }
 
 \references{
-Zhou X, Lindsay H and Robinson MD (2013) Robustly detecting differential expression in RNA sequencing data using observation weights \emph{in preparation}.
+Zhou X, Lindsay H, Robinson MD (2014). Robustly detecting differential expression in RNA sequencing data using observation weights. Nucleic Acids Research, 42(11), e91.
 }
 
 \author{Xiaobei Zhou, Mark D. Robinson}
