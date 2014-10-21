@@ -16,7 +16,7 @@ Rotation gene set testing for Negative Binomial generalized linear models.
   \item{index}{index vector specifying which rows (genes) of \code{y} are in the test set.  This can be a vector of indices, or a logical vector of the same length as \code{statistics}, or any vector such as \code{y[iset,]} contains the values for the gene set to be tested. Defaults to all genes. For \code{mroast} a list of index vectors.}
   \item{design}{design matrix}
   \item{contrast}{contrast for which the test is required. Can be an integer specifying a column of \code{design}, or else a contrast vector of length equal to the number of columns of \code{design}.}
-  \item{\dots}{other arguments are passed to \code{link{roast.default}} or \code{link{mroast.default}}.}
+  \item{\dots}{other arguments are passed to \code{\link{roast.default}} or \code{\link{mroast.default}}.}
 }
 
 \value{
