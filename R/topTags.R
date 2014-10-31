@@ -1,7 +1,7 @@
-topTags <- function(object,n=10,adjust.method="BH",sort.by="PValue") 
+topTags <- function(object,n=10,adjust.method="BH",sort.by="PValue",p.value=1) 
 #	Summary table of the n most differentially expressed tags
 #	Mark Robinson, Davis McCarthy, Gordon Smyth
-#	Created September 2008.  Last modified 25 Oct 2012.
+#	Created September 2008.  Last modified 31 Oct 2014.
 {
 #	Check object
 	if(is.null(object$table)) stop("Need to run exactTest or glmLRT first")
@@ -31,9 +31,9 @@ topTags <- function(object,n=10,adjust.method="BH",sort.by="PValue")
 
 #	Choose top genes
 	o <- switch(sort.by,
-		"logFC" = order(alfc,decreasing=TRUE)[1:n],
-		"PValue" = order(object$table$PValue,-alfc)[1:n],
-		"none" = 1:n
+		"logFC" = order(alfc,decreasing=TRUE),
+		"PValue" = order(object$table$PValue,-alfc),
+		"none" = 1:nrow(object$table)
 	)
 	tab <- object$table[o,]
 
@@ -50,10 +50,21 @@ topTags <- function(object,n=10,adjust.method="BH",sort.by="PValue")
 		if(is.null(dim(object$genes))) object$genes <- data.frame(ID=object$genes,stringsAsFactors=FALSE)
 		tab <- cbind(object$genes[o,,drop=FALSE], tab)
 	}
+	
+#	Thin out fit p.value threshold
+	if(p.value < 1) {
+		sig <- adj.p.val[o] <= p.value
+		sig[is.na(sig)] <- FALSE
+		tab <- tab[sig,]
+	}
 
+#	Enough rows left?
+	if(nrow(tab) < n) n <- nrow(tab)
+	if(n < 1) return(data.frame())
+		
 #	Output object
 	new("TopTags",list(
-		table=tab,
+		table=tab[1:n,],
 		adjust.method=adjust.method,
 		comparison=as.character(object$comparison),
 		test=test

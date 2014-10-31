@@ -27,7 +27,7 @@ Defaults to a single column of ones, equivalent to treating the columns as repli
 
 \item{offset}{numeric matrix of same size as \code{y} giving offsets for the log-linear models.  Can be a scalor or a vector of length \code{ncol{y}}, in which case it is expanded out to a matrix.}
 
-\item{weights}{optional numeric matrix giving prior weights for the observations (for each library and transcript) to be used in the GLM calculations.  Not supported by methods \code{"linesearch"} or \code{"levenberg"}.}
+\item{weights}{optional numeric matrix giving prior weights for the observations (for each library and transcript) to be used in the GLM calculations.}
 
 \item{lib.size}{numeric vector of length \code{ncol(y)} giving library sizes. Only used if \code{offset=NULL}, in which case \code{offset} is set to \code{log(lib.size}). Defaults to \code{colSums(y)}.}
 
@@ -73,7 +73,7 @@ The data frame \code{table} contains the following columns:
 
 \code{glmFit} fits genewise negative binomial glms, all with the same design matrix but possibly different dispersions, offsets and weights.
 When the design matrix defines a one-way layout, or can be re-parametrized to a one-way layout, the glms are fitting very quickly using \code{\link{mglmOneGroup}}.
-Otherwise the default fitting method, implemented in \code{\link{mglmLevenberg}} a Fisher scoring algorithm with Levenberg-style damping.
+Otherwise the default fitting method, implemented in \code{\link{mglmLevenberg}}, uses a Fisher scoring algorithm with Levenberg-style damping.
 
 Positive \code{prior.count} cause the returned coefficients to be shrunk in such a way that fold-changes between the treatment conditions are decreased.
 In particular, infinite fold-changes are avoided.

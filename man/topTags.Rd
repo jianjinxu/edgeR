@@ -8,7 +8,7 @@
 \description{Extracts the top DE tags in a data frame for a given pair of groups, ranked by p-value or absolute log-fold change.}
 
 \usage{
-topTags(object, n=10, adjust.method="BH", sort.by="PValue")
+topTags(object, n=10, adjust.method="BH", sort.by="PValue", p.value=1)
 }
 
 \arguments{ 
@@ -19,6 +19,8 @@ topTags(object, n=10, adjust.method="BH", sort.by="PValue")
 \item{adjust.method}{character string stating the method used to adjust p-values for multiple testing, passed on to \code{p.adjust}}
 
 \item{sort.by}{character string, should the top tags be sorted by p-value (\code{"PValue"}), by absolute log-fold change (\code{"logFC"}), or not sorted (\code{"none"}).}
+
+\item{p.value}{cutoff value for adjusted p-values. Only genes with lower p-values are listed.}
 }
 
 \value{

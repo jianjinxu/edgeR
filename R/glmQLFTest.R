@@ -34,7 +34,7 @@ glmQLFit <- function(y, design=NULL, dispersion=NULL, abundance.trend=TRUE, robu
 	s2.fit <- squeezeVar(s2,df=df.residual,covariate=A,robust=robust,winsor.tail.p=winsor.tail.p)
 
 #	Storing results
-	glmfit$df.residual <- df.residual
+	glmfit$df.residual.zeros <- df.residual
 	glmfit$s2.fit <- s2.fit
 	glmfit$df.prior <- s2.fit$df.prior
 	glmfit
@@ -50,13 +50,13 @@ glmQLFTest <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL)
 	out <- glmLRT(glmfit, coef=coef, contrast=contrast)
 
 #	Compute the QL F-statistic
-	F <- out$table$LR / out$df.test / glmfit$s2.fit$var.post
-	df.total <- glmfit$s2.fit$df.prior + glmfit$df.residual
+	F.stat <- out$table$LR / out$df.test / glmfit$s2.fit$var.post
+	df.total <- glmfit$s2.fit$df.prior + glmfit$df.residual.zeros
 	max.df.residual <- ncol(glmfit$counts)-ncol(glmfit$design)
 	df.total <- pmin(df.total, nrow(glmfit)*max.df.residual)
 
 #	Compute p-values from the QL F-statistic
-	F.pvalue <- pf(F, df1=out$df.test, df2=df.total, lower.tail=FALSE, log.p=FALSE)
+	F.pvalue <- pf(F.stat, df1=out$df.test, df2=df.total, lower.tail=FALSE, log.p=FALSE)
 
 #	Ensure is not more significant than chisquare test
 	i <- glmfit$s2.fit$var.post < 1
@@ -66,7 +66,7 @@ glmQLFTest <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL)
 	}
 
 	out$table$LR <- out$table$PValue <- NULL
-	out$table$F <- F
+	out$table$F <- F.stat
 	out$table$PValue <- F.pvalue
 	out$df.total <- df.total
 
@@ -81,7 +81,7 @@ plotQLDisp <- function(glmfit, xlab="Average Log2 CPM", ylab="Quarter-Root Mean 
 {
 	A <- glmfit$AveLogCPM
 	if(is.null(A)) A <- aveLogCPM(glmfit)
-	s2 <- glmfit$deviance / glmfit$df.residual
+	s2 <- glmfit$deviance / glmfit$df.residual.zeros
 	if(is.null(glmfit$s2.fit)) { stop("need to run glmQLFit before plotQLDisp") }
 
 	plot(A, sqrt(sqrt(s2)),xlab=xlab, ylab=ylab, pch=pch, cex=cex, col=col.raw, ...)
