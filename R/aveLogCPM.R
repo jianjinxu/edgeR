@@ -45,7 +45,8 @@ aveLogCPM.default <- function(y,lib.size=NULL,offset=NULL,prior.count=2,dispersi
 	if(any(y<0)) stop("counts must be non-negative")
 
 #	Check prior.count
-	if(prior.count<0) prior.count <- 0
+	neg.prior <- prior.count < 0
+	if(any(neg.prior)) prior.count[neg.prior] <- 0
 
 #	Check dispersion
 	if(is.null(dispersion)) dispersion <- 0.05
@@ -70,14 +71,20 @@ aveLogCPM.default <- function(y,lib.size=NULL,offset=NULL,prior.count=2,dispersi
 		return( (abundance+log(1e6)) / log(2) )
 	}
 
+#	Ensuring lib.size has appropriate dimensions for prior.count
+	if(length(prior.count)>1L) {
+		if(nrow(y)!=length(prior.count)) stop("length of prior count vector should be equal to the number of rows")
+		lib.size <- expandAsMatrix(lib.size, dim(y)) 
+	}
+
 #	Scale prior counts to preserve fold changes
-	prior.count.scaled <- lib.size/mean.lib.size * prior.count
+	prior.count.scaled <- lib.size/mean.lib.size*prior.count
 
 #	Add double prior counts to library sizes
 	offset <- log(lib.size+2*prior.count.scaled)
 
 #	Add prior counts to y
-	if(is.null(dim(prior.count.scaled))) prior.count.scaled <- matrix(1,nrow(y),1) %*% prior.count.scaled
+	if (is.null(dim(prior.count.scaled))) prior.count.scaled <- expandAsMatrix(prior.count.scaled, dim(y))
 	y <- y+prior.count.scaled
 
 	abundance <- mglmOneGroup(y,dispersion=dispersion,offset=offset,weights=weights)

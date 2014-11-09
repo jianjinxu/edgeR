@@ -19,7 +19,7 @@ Compute average log2 counts-per-million for each row of counts.
 \arguments{
 \item{y}{numeric matrix containing counts.  Rows for tags and columns for libraries.}
 \item{normalized.lib.sizes}{logical, use normalized library sizes?}
-\item{prior.count}{average value to be added to each count, to avoid infinite values on the log-scale.}
+\item{prior.count}{numeric scalar or vector of length \code{nrow(y)}, containing the average value(s) to be added to each count to avoid infinite values on the log-scale.}
 \item{dispersion}{numeric scalar or vector of negative-binomial dispersions. Defaults to 0.05.}
 \item{lib.size}{numeric vector of library sizes. Defaults to \code{colSums(y)}. Ignored if \code{offset} is not \code{NULL}.}
 \item{offset}{numeric matrix of offsets for the log-linear models.}
@@ -30,6 +30,7 @@ Compute average log2 counts-per-million for each row of counts.
 \details{
 This function uses \code{mglmOneGroup} to compute average counts-per-million (AveCPM) for each row of counts, and returns log2(AveCPM).
 An average value of \code{prior.count} is added to the counts before running \code{mglmOneGroup}.
+If \code{prior.count} is a vector, each entry will be added to all counts in the corresponding row of \code{y}.
 
 This function is similar to
 
@@ -57,6 +58,10 @@ cpm(y, log=TRUE, prior.count=2)
 aveLogCPM(y,prior.count=0,dispersion=0)
 cpms <- rowSums(y)/sum(lib.size)*1e6
 log2(cpms)
+
+# The function works perfectly with prior.count or dispersion vectors:
+aveLogCPM(y, prior.count=runif(nrow(y), 1, 5))
+aveLogCPM(y, dispersion=runif(nrow(y), 0, 0.2))
 }
 
 \seealso{
