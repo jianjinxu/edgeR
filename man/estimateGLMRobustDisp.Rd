@@ -47,6 +47,7 @@ Zhou X, Lindsay H, Robinson MD (2014). Robustly detecting differential expressio
 \examples{
 y <- matrix(rnbinom(100*6,mu=10,size=1/0.1),ncol=6)
 d <- DGEList(counts=y,group=c(1,1,1,2,2,2),lib.size=c(1000:1005))
+d <- calcNormFactors(d)
 design <- model.matrix(~group, data=d$samples) # Define the design matrix for the full model
 d <- estimateGLMRobustDisp(d, design)
 summary(d$tagwise.dispersion)
