@@ -1,54 +1,51 @@
-\title{Multidimensional scaling plot of digital gene expression profiles}
+\title{Multidimensional scaling plot of distances between digital gene expression profiles}
 \name{plotMDS.DGEList}
 \alias{plotMDS.DGEList}
 \description{
-Calculate distances between RNA-seq or DGE libraries, then produce a multidimensional scaling plot.
-Distances on the plot represent coefficient of variation of expression between samples
-for the top genes that best distinguish the samples.
+Plot samples on a two-dimensional scatterplot so that distances on the plot approximate the expression differences between the samples.
 }
 \usage{
-\method{plotMDS}{DGEList}(x, top=500, labels=colnames(x), col=NULL, cex=1,
-	        dim.plot=c(1,2), ndim=max(dim.plot), xlab=NULL,
-	        ylab=NULL, method="logFC", prior.count=2,
-	        gene.selection="pairwise", \dots)
+\method{plotMDS}{DGEList}(x, top = 500, labels = NULL, pch = NULL, cex = 1,
+	        dim.plot = c(1,2), ndim = max(dim.plot), gene.selection = "pairwise",
+	        xlab = NULL, ylab = NULL, method = "logFC", prior.count = 2,
+	         \dots)
 }
 \arguments{
-  \item{x}{an \code{DGEList} object.}
+  \item{x}{a \code{DGEList} object.}
   \item{top}{number of top genes used to calculate pairwise distances.}
   \item{labels}{character vector of sample names or labels. If \code{x} has no column names, then defaults the index of the samples.}
-  \item{col}{numeric or character vector of colors for the plotting characters. See \code{\link[graphics]{text}} for possible values.}
+  \item{pch}{plotting symbol or symbols. See \code{\link{points}} for possible values. Ignored if \code{labels} is non-\code{NULL}.}
   \item{cex}{numeric vector of plot symbol expansions. See \code{\link[graphics]{text}} for possible values.}
   \item{dim.plot}{which two dimensions should be plotted, numeric vector of length two.}
   \item{ndim}{number of dimensions in which data is to be represented}
+  \item{gene.selection}{character, \code{"pairwise"} to choose the top genes separately for each pairwise comparison between the samples or \code{"common"} to select the same genes for all comparisons. Only used when \code{method="logFC"}.}
   \item{xlab}{x-axis label}
   \item{ylab}{y-axis label}
-  \item{method}{how to compute distances.  Possible values are "logFC" or \code{"bcv"}.}
+  \item{method}{method used to compute distances.  Possible values are "logFC" or \code{"bcv"}.}
   \item{prior.count}{average prior count to be added to observation to shrink the estimated log-fold-changes towards zero. Only used when \code{method="logFC"}.}
-  \item{gene.selection}{character, \code{"pairwise"} to choose the top genes separately for each pairwise comparison between the samples or \code{"common"} to select the same genes for all comparisons. Only used when \code{method="logFC"}.}
   \item{\dots}{any other arguments are passed to \code{plot}.}
 }
 
 \details{
-This function is a variation on the usual multdimensional scaling (or principle coordinate) plot, in that a distance measure particularly appropriate for the digital gene expression (DGE) context is used.
+The default method (\code{method="logFC"}) is to convert the counts to log-counts-per-million using \code{cpm} and to pass these to the limma \code{plotMDS} function.
+This method calculates distances between samples based on log2 fold changes.
+See the \code{\link[limma:plotMDS]{plotMDS help page}} for details.
+
+The alternative method (\code{method="bcv"}) calculates distances based on biological coefficient of variation.
 A set of top genes are chosen that have largest biological variation between the libraries
 (those with largest tagwise dispersion treating all libraries as one group).
 Then the distance between each pair of libraries (columns) is the biological coefficient of variation (square root of the common dispersion) between those two libraries alone, using
 the top genes.
 
-If \code{x} is a \code{DGEList}, then the library sizes and normalization factors found in the object are used.
-If \code{x} is a matrix, then library sizes are computed from the column sums, but no other normalization is done.
-
-The number \code{top} of top genes chosen for this exercise should roughly correspond to the number of differentially expressed genes with materially large fold-changes.
+The number of genes (\code{top}) chosen for this exercise should roughly correspond to the number of differentially expressed genes with materially large fold-changes.
 The default setting of 500 genes is widely effective and suitable for routine use, but a smaller value might be chosen for when the samples are distinguished by a specific focused molecular pathway.
 Very large values (greater than 1000) are not usually so effective.
 
-This function can be slow when there are many libraries.
+Note that the \code{"bcv"} method is slower than the \code{"logFC"} method when there are many libraries.
 }
 
 \value{
-A plot is created on the current graphics device.
-
-An object of class \code{\link[limma:plotMDS]{MDS}} is invisibly returned.
+An object of class \code{\link[limma:plotMDS]{MDS}} is invisibly returned and a plot is created on the current graphics device.
 }
 
 \author{Yunshun Chen, Mark Robinson and Gordon Smyth}

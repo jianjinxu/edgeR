@@ -1,6 +1,6 @@
 Package: edgeR
-Version: 3.9.6
-Date: 2014/11/10
+Version: 3.9.7
+Date: 2014/11/20
 Title: Empirical analysis of digital gene expression data in R
 Author: Yunshun Chen <yuchen@wehi.edu.au>, Davis McCarthy <dmccarthy@wehi.edu.au>, Aaron Lun <alun@wehi.edu.au>, Xiaobei Zhou <xiaobei.zhou@uzh.ch>, Mark Robinson <mark.robinson@imls.uzh.ch>, Gordon Smyth <smyth@wehi.edu.au>
 Maintainer: Yunshun Chen <yuchen@wehi.edu.au>, Mark Robinson <mark.robinson@imls.uzh.ch>, Davis McCarthy <dmccarthy@wehi.edu.au>, Gordon Smyth <smyth@wehi.edu.au>

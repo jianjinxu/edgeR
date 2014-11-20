@@ -25,11 +25,11 @@ Defaults to a single column of ones, equivalent to treating the columns as repli
 
 \item{dispersion}{numeric scalar or vector of negative binomial dispersions. Can be a common value for all tags, or a vector of values can provide a unique dispersion value for each tag. If \code{NULL} will be extracted from \code{y}, with order of precedence: tagwise dispersion, trended dispersions, common dispersion.}
 
-\item{offset}{numeric matrix of same size as \code{y} giving offsets for the log-linear models.  Can be a scalor or a vector of length \code{ncol{y}}, in which case it is expanded out to a matrix.}
+\item{offset}{numeric matrix of same size as \code{y} giving offsets for the log-linear models.  Can be a scalor or a vector of length \code{ncol(y)}, in which case it is expanded out to a matrix.}
 
 \item{weights}{optional numeric matrix giving prior weights for the observations (for each library and transcript) to be used in the GLM calculations.}
 
-\item{lib.size}{numeric vector of length \code{ncol(y)} giving library sizes. Only used if \code{offset=NULL}, in which case \code{offset} is set to \code{log(lib.size}). Defaults to \code{colSums(y)}.}
+\item{lib.size}{numeric vector of length \code{ncol(y)} giving library sizes. Only used if \code{offset=NULL}, in which case \code{offset} is set to \code{log(lib.size)}. Defaults to \code{colSums(y)}.}
 
 \item{prior.count}{average prior count to be added to observation to shrink the estimated log-fold-changes towards zero.}
 
