@@ -9,8 +9,6 @@ plotMDS.DGEList <- function (x,top=500,labels=NULL,pch=NULL,cex=1,dim.plot=c(1,2
 
 #	Default method is to convert to moderated logCPM and call limma plotMDS
 	if(method=="logFC") {
-		if(is.null(xlab)) xlab <- paste("Leading logFC dim",dim.plot[1])
-		if(is.null(ylab)) ylab <- paste("Leading logFC dim",dim.plot[2])
 		y <- cpm(x,log=TRUE,prior.count=prior.count)
 		return(plotMDS(y,top=top,labels=labels,pch=pch,cex=cex,dim.plot=dim.plot,ndim=ndim,gene.selection=gene.selection,xlab=xlab,ylab=ylab,...))
 	}
@@ -51,9 +49,9 @@ plotMDS.DGEList <- function (x,top=500,labels=NULL,pch=NULL,cex=1,dim.plot=c(1,2
 		subdata <- x$counts
 	}
 
+#	Compute pairwise BCV values
 	lib.size <- x$samples$lib.size * x$samples$norm.factors
 	myFun <- function(delta, y, ...) sum(condLogLikDerDelta(y, delta, ...))
-
 	for (i in 2:(nsamples)) {
 		for (j in 1:(i - 1))  {
 			mm <- subdata[,c(i,j)]
@@ -65,15 +63,17 @@ plotMDS.DGEList <- function (x,top=500,labels=NULL,pch=NULL,cex=1,dim.plot=c(1,2
 		}
 	}
 
-#	Securing against negative eigenvalues with non-Euclidian distance matrices.
+#	Multidim scaling
 	a1 <- cmdscale(as.dist(dd), k = ndim)
+
+#	Check whether dimensions have been removed (because of negative eigenvalues)
+#	Add random variate if necessary
 	ndiff <- ndim-ncol(a1)
 	if(ndiff > 0) a1 <- cbind(a1, matrix(runif(ndiff*nsamples, -1e-6, 1e-6), ncol=ndiff, nrow=nsamples))
 
 	mds <- new("MDS",list(dim.plot=dim.plot,distance.matrix=dd,cmdscale.out=a1,top=top))
 	mds$x <- a1[,dim.plot[1]]
 	mds$y <- a1[,dim.plot[2]]
-	if(is.null(xlab)) xlab <- paste("BCV distance",dim.plot[1])
-	if(is.null(ylab)) ylab <- paste("BCV distance",dim.plot[2])
+	mds$axislabel <- "BCV distance"
 	plotMDS(mds,labels=labels,pch=pch,cex=cex,xlab=xlab,ylab=ylab,...)
 }
