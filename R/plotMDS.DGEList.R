@@ -1,9 +1,11 @@
 plotMDS.DGEList <- function (x,top=500,labels=NULL,pch=NULL,cex=1,dim.plot=c(1,2),ndim=max(dim.plot),gene.selection="pairwise",xlab=NULL,ylab=NULL,method="logFC",prior.count=2,...)
 #	Multidimensional scaling plot of digital gene expression profiles
 #	Yunshun Chen, Mark Robinson and Gordon Smyth
-#	23 May 2011.  Last modified 20 Nov 2014.
+#	23 May 2011.  Last modified 25 Nov 2014.
 {
-	method <- match.arg(tolower(method), c("logfc","bcv"))
+	method <- match.arg(method, c("logfc","logFC","bcv","BCV"))
+	if(method=="logfc") method <- "logFC"
+	if(method=="BCV") method <- "bcv"
 
 #	Default method is to convert to moderated logCPM and call limma plotMDS
 	if(method=="logFC") {

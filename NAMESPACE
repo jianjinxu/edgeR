@@ -8,7 +8,7 @@ exportClasses("DGEList","DGEExact","DGEGLM","DGELRT","TopTags")
 exportMethods("show")
 
 import(methods)
-importFrom("limma",camera,goana,is.fullrank,loessFit,mroast,nonEstimable,plotMDS,roast,squeezeVar,subsetListOfArrays)
+importFrom("limma",camera,contrastAsCoef,decideTests,goana,is.fullrank,lmFit,loessFit,mroast,nonEstimable,plotMDS,removeExt,roast,romer,squeezeVar,subsetListOfArrays,tricubeMovingAverage,zscoreGamma)
 importClassesFrom("limma","LargeDataObject","Roast","MDS")
 
 S3method(as.data.frame,TopTags)
