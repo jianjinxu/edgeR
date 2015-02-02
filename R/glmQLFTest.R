@@ -1,26 +1,57 @@
-glmQLFit <- function(y, design=NULL, dispersion=NULL, abundance.trend=TRUE, robust=FALSE, winsor.tail.p=c(0.05, 0.1), ...)
-# 	Fits a GLM and computes quasi-likelihood dispersions for each gene.
-# 	Written by Aaron Lun, based on code by Davis McCarthy and Gordon Smyth
-# 	Created 15 September 2014. Last modified 17 September 2014.
+#  FIT QUASI-LIKELIHOOD GENERALIZED LINEAR MODELS
+
+glmQLFit <- function(y, ...)
+UseMethod("glmQLFit")
+
+glmQLFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, abundance.trend=TRUE, robust=FALSE, winsor.tail.p=c(0.05, 0.1), ...)
+# 	Written by Yunshun Chen and Aaron Lun
+#	Created 05 November 2014.
 {
-#	Initial fit with trended dispersion
-	if(!is(y,"DGEList")) { stop("y must be a DGEList") }
 	if(is.null(dispersion)) {
 		dispersion <- y$trended.dispersion
 		if(is.null(dispersion)) dispersion <- y$common.dispersion
 		if(is.null(dispersion)) dispersion <- 0.05
 	}
-	glmfit <- glmFit(y,design=design,dispersion=dispersion, ...)
-	
+	if(is.null(dispersion)) stop("No dispersion values found in DGEList object.")
+	if(is.null(offset)) offset <- getOffset(y)
+	if(is.null(y$AveLogCPM)) y$AveLogCPM <- aveLogCPM(y)
+
+	fit <- glmQLFit(y=y$counts, design=design, dispersion=dispersion, offset=offset, lib.size=NULL, abundance.trend=abundance.trend, AveLogCPM=y$AveLogCPM, robust=robust, winsor.tail.p=winsor.tail.p,...)
+	fit$samples <- y$samples
+	fit$genes <- y$genes
+	fit$prior.df <- y$prior.df
+	fit$AveLogCPM <- y$AveLogCPM
+	new("DGEGLM",fit)
+}
+
+glmQLFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.size=NULL, abundance.trend=TRUE, AveLogCPM=NULL, robust=FALSE, winsor.tail.p=c(0.05, 0.1), ...)
+# 	Fits a GLM and computes quasi-likelihood dispersions for each gene.
+# 	Written by Yunshun Chen and Aaron Lun, based on code by Davis McCarthy and Gordon Smyth
+# 	Created 15 September 2014. Last modified 05 November 2014.
+{
+#	Check y
+	y <- as.matrix(y)
+	ntag <- nrow(y)
+	nlib <- ncol(y)
+
+#	Check dispersion
+	if(is.null(dispersion)) stop("No dispersion values provided.")
+
+#	Check offset and lib.size
+	if(is.null(offset)) {
+		if(is.null(lib.size)) lib.size <- colSums(y)
+		offset <- log(lib.size)
+	}
+	offset <- expandAsMatrix(offset,dim(y))
+
+	glmfit <- glmFit(y,design=design,dispersion=dispersion,offset=offset,lib.size=lib.size,...)
+
 #	Setting up the abundances.
-	A <- NULL
 	if(abundance.trend) {
-		if(is.null(y$AveLogCPM)) {
-			A <- aveLogCPM(y) # For consistency with call from estimateDisp.
-		} else {
-			A <- y$AveLogCPM
-		}
-		glmfit$AveLogCPM <- A
+		if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y) 
+		glmfit$AveLogCPM <- AveLogCPM
+	} else {
+		AveLogCPM <- NULL
 	}
 
 #	Adjust df.residual for fitted values at zero
@@ -31,14 +62,14 @@ glmQLFit <- function(y, design=NULL, dispersion=NULL, abundance.trend=TRUE, robu
 	s2 <- glmfit$deviance / df.residual
 	s2[df.residual==0] <- 0
 	s2 <- pmax(s2,0)
-	s2.fit <- squeezeVar(s2,df=df.residual,covariate=A,robust=robust,winsor.tail.p=winsor.tail.p)
+	s2.fit <- squeezeVar(s2,df=df.residual,covariate=AveLogCPM,robust=robust,winsor.tail.p=winsor.tail.p)
 
 #	Storing results
 	glmfit$df.residual.zeros <- df.residual
 	glmfit$s2.fit <- s2.fit
-	glmfit$df.prior <- s2.fit$df.prior
 	glmfit
 }
+
 
 glmQLFTest <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL)
 #	Quasi-likelihood F-tests for DGE glms.
@@ -73,8 +104,7 @@ glmQLFTest <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL)
 	out
 }
 
-plotQLDisp <- function(glmfit, xlab="Average Log2 CPM", ylab="Quarter-Root Mean Deviance", pch=16, cex=0.2, 
-		col.shrunk="red", col.trend="blue", col.raw="black", ...)
+plotQLDisp <- function(glmfit, xlab="Average Log2 CPM", ylab="Quarter-Root Mean Deviance", pch=16, cex=0.2, col.shrunk="red", col.trend="blue", col.raw="black", ...)
 # 	Plots the result of QL-based shrinkage.
 #	written by Aaron Lun, based on code by Davis McCarthy and Gordon Smyth
 #	15 September 2014

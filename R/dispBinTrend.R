@@ -76,13 +76,13 @@ dispBinTrend <- function(y, design=NULL, offset=NULL, df=5, span=0.3, min.n=400,
 
 #	Spline smoother through binned dispersions
 	if( method.trend=="spline" ) {
-		require("splines")
+		if(!requireNamespace("splines",quietly=TRUE)) stop("splines required but is not available")
 		p1 <- (1:(df-1))/df
 		knots1 <- quantile(bin.A,p=p1)
 		r <- range(bin.A)
 		knots2 <- r[1]+p1*(r[2]-r[1])
 		knots <- 0.3*knots1+0.7*knots2
-		basisbins <- ns(bin.A,df=df,knots=knots,intercept=TRUE)
+		basisbins <- splines::ns(bin.A,df=df,knots=knots,intercept=TRUE)
 		beta <- coefficients(lm.fit(basisbins, sqrt(bin.d)))
 		basisall <- predict(basisbins,newx=AveLogCPM)
 		dispersion <- drop(basisall %*% beta)^2

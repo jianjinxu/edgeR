@@ -1,5 +1,7 @@
 \name{glmQLFit}
 \alias{glmQLFit}
+\alias{glmQLFit.DGEList}
+\alias{glmQLFit.default}
 \alias{glmQLFTest}
 
 \title{Quasi-likelihood methods with empirical Bayes shrinkage}
@@ -8,18 +10,25 @@
 Conduct genewise statistical tests for a given coefficient or coefficient contrast.}
 
 \usage{
-glmQLFit(y, design=NULL, dispersion=NULL, abundance.trend=TRUE, robust=FALSE, winsor.tail.p=c(0.05, 0.1), \dots)
+\method{glmQLFit}{DGEList}(y, design=NULL, dispersion=NULL, offset=NULL, abundance.trend=TRUE, robust=FALSE, winsor.tail.p=c(0.05, 0.1), \dots)
+\method{glmQLFit}{default}(y, design=NULL, dispersion=NULL, offset=NULL, lib.size=NULL, abundance.trend=TRUE, AveLogCPM=NULL, robust=FALSE, winsor.tail.p=c(0.05, 0.1), \dots)
 glmQLFTest(glmfit, coef=ncol(glmfit$design), contrast=NULL) 
 }
 
 \arguments{
-\item{y}{a \code{DGEList} object containing count and sample data.}
+\item{y}{a matrix of counts, or a \code{DGEList} object with (at least) elements \code{counts} (table of unadjusted counts) and \code{samples} (data frame containing information about experimental group, library size and normalization factor for the library size)}
 
 \item{design}{numeric matrix giving the design matrix for the tagwise linear models.}
 
-\item{dispersion}{numeric scalar or vector of negative binomial dispersions. Defaults to the trended dispersion, or the common dispersion (if no trend is available), or a value of 0.05 (if no common value is available).}
+\item{dispersion}{numeric scalar or vector of negative binomial dispersions. Must provide if \code{y} is a matrix of counts or a \code{DGEList} object without any dispersion component. If \code{NULL} will be extracted from the \code{DGEList} object \code{y}, with order of precedence: trended dispersions, common dispersion, a constant value of 0.05.}
+
+\item{offset}{numeric matrix of same size as \code{y} giving offsets for the log-linear models.  Can be a scalor or a vector of length \code{ncol(y)}, in which case it is expanded out to a matrix. If \code{NULL} will be computed by \code{getOffset(y)}.}
+
+\item{lib.size}{numeric vector of length \code{ncol(y)} giving library sizes. Only used if \code{offset=NULL}, in which case \code{offset} is set to \code{log(lib.size)}. Defaults to \code{colSums(y)}.}
 
 \item{abundance.trend}{logical, whether to allow an abundance-dependent trend when estimating the prior values for the quasi-likelihood multiplicative dispersion parameter.}
+
+\item{AveLogCPM}{average log2-counts per million, the average taken over all libraries in \code{y}. If \code{NULL} will be computed by \code{aveLogCPM(y)}.}
 
 \item{robust}{logical, whether to estimate the prior degrees of freedom robustly.}
 
@@ -36,15 +45,13 @@ glmQLFTest(glmfit, coef=ncol(glmfit$design), contrast=NULL)
 
 \value{
 \code{glmQLFit} produces an object of class \code{DGEGLM} with the same components as that produced by \code{\link{glmFit}}, plus:
-	\item{df.residual}{a numeric vector containing the number of residual degrees of freedom for the GLM fit of each gene.}	
-	\item{s2.fit}{a list containing \code{df.prior}, the prior degrees of fredom; and \code{var.prior}, the location of the prior distribution. Both are numeric vectors if \code{abundance.trend=TRUE} and scalars otherwise. \code{var.post} is a numeric vector containing the shrunk quasi-likelihood dispersion for each gene.}
-	\item{df.prior}{a numeric vector or scalar containing the prior degrees of freedom, same as that in \code{s2.fit}.}
+	\item{df.residual.zeros}{a numeric vector containing the number of residual degrees of freedom for the GLM fit of each gene.}	
+	\item{s2.fit}{a list containing \code{df.prior}, the prior degrees of freedom; and \code{var.prior}, the location of the prior distribution. Both are numeric vectors if \code{abundance.trend=TRUE} and scalars otherwise. \code{var.post} is a numeric vector containing the shrunk quasi-likelihood dispersion for each gene.}
 
-\code{glmQFTest} produces objects of class \code{DGELRT} with the same components as for \code{glmfit} plus the following:
-	\item{table}{data frame with the same rows as \code{y} containing the log2-fold changes, F-statistics and p-values, ready to be displayed by \code{topTags.}.}
-	\item{comparison}{character string describing the coefficient or the contrast being tested.}
-
-The data frame \code{table} contains the following columns:
+\code{glmQFTest} produces objects of class \code{DGELRT} with the same components as that produced by \code{\link{glmLRT}}.
+It also stores \code{df.total}, a numeric vector containing the total degrees of freedom for the F-test.
+The data frame of results is stored as \code{table} and can be visualized with \code{\link{topTags}}. 
+It contains the following columns:
 	\item{logFC}{log2-fold change of expression between conditions being tested.}
 	\item{logCPM}{average log2-counts per million, the average taken over all libraries in \code{y}.}
 	\item{F}{F-statistics.}

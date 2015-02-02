@@ -1,7 +1,7 @@
 dispCoxReidSplineTrend <- function(y, design, offset=NULL, df = 5, subset=10000, AveLogCPM=NULL, method.optim="Nelder-Mead", trace=0)
 #	Estimate spline trend dispersion
 #	Gordon Smyth, Yunshun Chen, Davis McCarthy
-#	Created 16 Dec 2010.  Last modified 3 Oct 2012.
+#	Created 16 Dec 2010.  Last modified 2 Feb 2015.
 {
 	y <- as.matrix(y)
 	nlibs <- ncol(y)
@@ -21,13 +21,13 @@ dispCoxReidSplineTrend <- function(y, design, offset=NULL, df = 5, subset=10000,
 	y.nonzero <- y[!all.zero,]
 	
 #	Spline basis
-	require("splines")
+	if(!requireNamespace("splines",quietly=TRUE)) stop("splines required but is not available")
 	p1 <- (1:(df-1))/df
 	knots1 <- quantile(abundance.nonzero,p=p1)
 	r <- range(abundance.nonzero)
 	knots2 <- r[1]+p1*(r[2]-r[1])
 	knots <- 0.3*knots1+0.7*knots2
-	X <- cbind(1, ns(abundance.nonzero, df, knots=knots))
+	X <- cbind(1, splines::ns(abundance.nonzero, df, knots=knots))
 	
 	fun <- function(par,y,design,offset,abundance,X) {
 		eta <- X %*% par

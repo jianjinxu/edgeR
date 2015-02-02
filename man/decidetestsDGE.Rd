@@ -9,8 +9,8 @@ A number of different multiple testing schemes are offered which adjust for mult
 decideTestsDGE(object, adjust.method="BH", p.value=0.05, lfc=0)
 }
 \arguments{
-  \item{object}{\code{deDGElist} object, output from \code{exactTest},
-  or \code{DGELRT} object, output from \code{DGELRT}, from which
+  \item{object}{\code{DGEExact} object, output from \code{exactTest},
+  or \code{DGELRT} object, output from \code{glmLRT} or \code{glmQLFTest}, from which
   p-values for differential expression and log-fold change values may be extracted.}
 
  \item{adjust.method}{character string specifying p-value adjustment method.  Possible values are \code{"none"}, \code{"BH"}, \code{"fdr"} (equivalent to \code{"BH"}), \code{"BY"} and \code{"holm"}. See \code{\link[stats]{p.adjust}} for details.}

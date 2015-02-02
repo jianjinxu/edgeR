@@ -48,7 +48,11 @@ estimateDisp(y, design=NULL, prior.df=NULL, trend.method="locfit", span=NULL,
 }
 
 \details{
-This function calculates a matrix of likelihoods for each gene at a set of dispersion grid points, and then applies weighted likelihood empirical Bayes method to obtain posterior dispersion estimates. If there is no design matrix, it calculates the quantile conditional likelihood for each gene (tag) and then maximize it. The method is same as in the function \code{estimateCommonDisp} and \code{estimateTagwiseDisp}. If a design matrix is given, it then calculates the adjusted profile log-likelihood for each gene (tag) and then maximize it. It is similar to the functions \code{estimateGLMCommonDisp}, \code{estimateGLMTrendedDisp} and \code{estimateGLMTagwiseDisp}.
+This function calculates a matrix of likelihoods for each gene at a set of dispersion grid points, and then applies weighted likelihood empirical Bayes method to obtain posterior dispersion estimates. If there is no design matrix, it calculates the quantile conditional likelihood for each gene (tag) and then maximize it. In this case, it is similar to the function \code{estimateCommonDisp} and \code{estimateTagwiseDisp}. If a design matrix is given, it then calculates the adjusted profile log-likelihood for each gene (tag) and then maximize it. In this case, it is similar to the functions \code{estimateGLMCommonDisp}, \code{estimateGLMTrendedDisp} and \code{estimateGLMTagwiseDisp}.
+}
+
+\note{
+The \code{estimateDisp} function doesn't give exactly the same estimates as the traditional calling sequences.
 }
 
 \references{

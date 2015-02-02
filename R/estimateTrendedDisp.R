@@ -24,7 +24,7 @@ estimateTrendedDisp <- function(object, method="bin.spline", df=5, span=2/3)
 	}
 
 	if( method=="bin.spline" ) {
-		require("splines")
+		if(!requireNamespace("splines",quietly=TRUE)) stop("splines required but is not available")
 		p1 <- (1:(df-1))/df
 		knots1 <- quantile(logCPM.bins,p=p1)
 		r <- range(logCPM.bins)
@@ -35,7 +35,7 @@ estimateTrendedDisp <- function(object, method="bin.spline", df=5, span=2/3)
 		ind[df+1] <- which.max(logCPM.bins)
 		for(i in 2:df)
 			ind[i] <- which.min(abs(knots[i-1]-logCPM.bins))
-		fit <- lm(disp.bins ~ ns(logCPM.bins, df=df, knots=knots))
+		fit <- lm(disp.bins ~ splines::ns(logCPM.bins, df=df, knots=knots))
 		f <- splinefun(logCPM.bins[ind], fit$fitted.value[ind], method="natural")
 		dispersion <- f(logCPM)
 	}

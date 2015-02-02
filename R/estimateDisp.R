@@ -9,8 +9,6 @@ estimateDisp <- function(y, design=NULL, prior.df=NULL, trend.method="locfit", s
 #  Yunshun Chen, Gordon Smyth. Created July 2012. Last modified 11 Sep 2014.
 {
 	if( !is(y,"DGEList") ) stop("y must be a DGEList")
-	group <- y$samples$group <- as.factor(y$samples$group)
-
 	trend.method <- match.arg(trend.method, c("none", "loess", "locfit", "movingave"))
 	ntags <- nrow(y$counts)
 	nlibs <- ncol(y$counts)
@@ -31,6 +29,7 @@ estimateDisp <- function(y, design=NULL, prior.df=NULL, trend.method="locfit", s
 	# Classic edgeR
 	if(is.null(design)){
 		# One group
+		group <- y$samples$group <- as.factor(y$samples$group)
 		if(length(levels(group))==1)
 			design <- matrix(1,nlibs,1)
 		else
