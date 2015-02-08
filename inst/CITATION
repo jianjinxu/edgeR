@@ -31,7 +31,7 @@ citEntry(
    volume = 23,
    pages = 2881-2887,
    year = 2007,
-	textVersion = "Robinson MD and Smyth GK (2007). Moderated statistical tests for assessing differences in tag abundance. Bioinformatics 23, 2881-2887"
+   textVersion = "Robinson MD and Smyth GK (2007). Moderated statistical tests for assessing differences in tag abundance. Bioinformatics 23, 2881-2887"
 )
 
 citEntry(

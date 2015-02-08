@@ -3,7 +3,7 @@
 assign("[.DGEList",
 function(object, i, j, keep.lib.sizes=TRUE)
 #  Subsetting for DGEList objects
-#  24 September 2009.  Last modified 5 June 2014.
+#  24 September 2009.  Last modified 8 Feb 2015.
 {  
 #	Recognized components
 	IJ <- c("counts","pseudo.counts","offset","weights")
@@ -14,7 +14,7 @@ function(object, i, j, keep.lib.sizes=TRUE)
 
 	out <- subsetListOfArrays(object,i,j,IJ=IJ,IX=IX,I=I,JX=JX)
 	if(!(missing(i) || keep.lib.sizes)) out$samples$lib.size <- colSums(out$counts)
-	if(!missing(j)) out$samples$group <- .check.factor(out$samples$group)
+	if(!missing(j)) out$samples$group <- dropEmptyLevels(out$samples$group)
 	out
 })
 

@@ -1,13 +1,13 @@
 DGEList <- function(counts=matrix(0,0,0), lib.size=colSums(counts), norm.factors=rep(1,ncol(counts)), group=rep(1,ncol(counts)), genes=NULL, remove.zeros=FALSE) 
 #	Construct DGEList object from components, with some checking
-#	Last modified 5 June 2014
+#	Last modified 8 Feb 2015
 {
 #	Check counts
 	counts <- as.matrix(counts)
 	nlib <- ncol(counts)
 	ntags <- nrow(counts)
-	if(nlib>0 && is.null(colnames(counts))) colnames(counts) <- paste("Sample",1:ncol(counts),sep="")
-	if(ntags>0 && is.null(rownames(counts))) rownames(counts) <- 1:ntags
+	if(nlib>0L && is.null(colnames(counts))) colnames(counts) <- paste0("Sample",1L:nlib)
+	if(ntags>0L && is.null(rownames(counts))) rownames(counts) <- 1L:ntags
 
 #	Check lib.size
 	if(is.null(lib.size)) lib.size <- colSums(counts)
@@ -19,24 +19,33 @@ DGEList <- function(counts=matrix(0,0,0), lib.size=colSums(counts), norm.factors
 
 #	Check group
 	if(is.null(group)) group <- rep(1,ncol(counts))
-	group <- .check.factor(group)
+	group <- dropEmptyLevels(group)
 	if(nlib != length(group)) stop("Length of 'group' must equal number of columns in 'counts'")
 
+#	Make data frame of sample information
 	samples <- data.frame(group=group,lib.size=lib.size,norm.factors=norm.factors)
-	row.names(samples) <- colnames(counts)
+	if(anyDuplicated(colnames(counts))) {
+		message("Repeated column names found in count matrix")
+		row.names(samples) <- 1L:nlib
+	} else 
+		row.names(samples) <- colnames(counts)
+
+#	Make object
 	x <- new("DGEList",list(counts=counts,samples=samples))
 
+#	Add data frame of gene information
 	if(!is.null(genes)) {
 		genes <- as.data.frame(genes, stringsAsFactors=FALSE)
-		if(nrow(genes) != ntags) stop("counts and genes have different numbers of rows")
+		if(nrow(genes) != ntags) stop("Counts and genes have different numbers of rows")
 		x$genes <- genes
 	}
 
+#	Remove rows with all zeros
 	if(remove.zeros) {
-		all.zeros <- rowSums(counts,na.rm=TRUE)==0
+		all.zeros <- rowSums(counts>0,na.rm=TRUE)==0
 		if(any(all.zeros)) {
 			x <- x[!all.zeros,]
-			message("Removing ",sum(all.zeros)," rows with all zero counts.")
+			message("Removing ",sum(all.zeros)," rows with all zero counts")
 		}
 	}
 
@@ -46,13 +55,3 @@ DGEList <- function(counts=matrix(0,0,0), lib.size=colSums(counts), norm.factors
 	x
 }
 
-.check.factor <- function(x)
-{
-	if(is.factor(x)) {
-		i <- table(x)>0
-		if(!all(i)) x <- factor(x,levels=levels(x)[i])
-	} else {
-		x <- factor(x)
-	}
-	x
-}

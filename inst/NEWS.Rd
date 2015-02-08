@@ -2,6 +2,18 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.9.0}{\itemize{
+
+\item
+New function dropEmptyLevels() to remove unused levels from a factor.
+
+\item
+DGEList() now gives a message rather than an error when the count matrix has non-unique column names.
+
+\item
+requireNamespace() is now used instead of require() to access functions in suggested packages.
+}}
+
 \section{Version 3.8.0}{\itemize{
 
 \item
