@@ -42,7 +42,7 @@ mglmOneGroup <- function(y,dispersion=0,offset=0,weights=NULL,maxit=50,tol=1e-10
 	weights <- expandAsMatrix(weights,dim(y))
 
 #	Fisher scoring iteration.
-	output <- .Call(.cR_one_group, y, dispersion, offset, weights, maxit, tol, coef.start)
+	output <- .Call(.cR_one_group, nlibs, ntags, t(y), dispersion, offset, weights, maxit, tol, coef.start)
 
 #	Check error condition
 	if(is.character(output)) stop(output)

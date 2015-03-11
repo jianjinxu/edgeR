@@ -11,7 +11,7 @@ static const R_CallMethodDef all_call_entries[] = {
 	CALLDEF(R_levenberg, 11),
 	CALLDEF(R_loess_by_col, 4),
 	CALLDEF(R_maximize_interpolant, 2),
-	CALLDEF(R_one_group, 7),
+	CALLDEF(R_one_group, 9),
 	CALLDEF(R_simple_good_turing, 3),
 	{NULL, NULL, 0}
 };

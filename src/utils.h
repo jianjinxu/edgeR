@@ -36,7 +36,7 @@ SEXP R_loess_by_col(SEXP, SEXP, SEXP, SEXP);
 
 SEXP R_maximize_interpolant(SEXP, SEXP);
 
-SEXP R_one_group (SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
+SEXP R_one_group (SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 SEXP R_simple_good_turing (SEXP, SEXP, SEXP);
 

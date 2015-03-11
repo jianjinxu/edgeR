@@ -1,10 +1,11 @@
 #include "glm.h"
 #include "matvec_check.h"
 
-SEXP R_one_group (SEXP y, SEXP disp, SEXP offsets, SEXP weights, SEXP max_iterations, SEXP tolerance, SEXP beta) try {
+SEXP R_one_group (SEXP nlib, SEXP ntag, SEXP y, SEXP disp, SEXP offsets, SEXP weights, SEXP max_iterations, SEXP tolerance, SEXP beta) try {
+    const int num_tags=asInteger(ntag);
+    const int num_libs=asInteger(nlib);
 	if (!isNumeric(disp)) { throw std::runtime_error("dispersion vector must be double precision"); }
-	const int num_tags=LENGTH(disp);
-	const int num_libs=LENGTH(y)/num_tags;
+	if (num_tags!=LENGTH(disp)) { throw std::runtime_error("length of dispersion vector is not equal to number of tags"); }
 	if (num_tags*num_libs != LENGTH(y) ) { throw std::runtime_error("dimensions of the count table are not as specified"); }  // Checking that it is an exact division.
   
 	if (!isNumeric(beta)) { throw std::runtime_error("beta start vector must be double precision"); }
@@ -33,7 +34,7 @@ SEXP R_one_group (SEXP y, SEXP disp, SEXP offsets, SEXP weights, SEXP max_iterat
 	const double* const* optr2=allo.access();
 	matvec_check allw(num_libs, num_tags, weights, false, "weight", true);
 	const double* const* wptr2=allw.access();
-	double* dptr=REAL(disp);
+	const double* dptr=REAL(disp);
 
     // Setting up beta for output. 
 	SEXP output=PROTECT(allocVector(VECSXP, 2));
@@ -44,15 +45,14 @@ SEXP R_one_group (SEXP y, SEXP disp, SEXP offsets, SEXP weights, SEXP max_iterat
 	try {
         
     	// Iterating through tags and fitting.
-    	int counter=0;
+    	int lib=0;
     	for (int tag=0; tag<num_tags; ++tag) {
-			counter=0;
 			if (is_integer) { 
-				for (int i=0; i<num_libs; ++i, counter+=num_tags) { yptr[i]=double(yiptr[counter]); }	
-				++yiptr;
+				for (lib=0; lib<num_libs; ++lib) { yptr[lib]=double(yiptr[lib]); }	
+				yiptr+=num_libs;
 			} else {
-				for (int i=0; i<num_libs; ++i, counter+=num_tags) { yptr[i]=ydptr[counter]; }
-				++ydptr;
+				yptr=ydptr;
+				ydptr+=num_libs;
 			}
 			std::pair<double, bool> out=glm_one_group(num_libs, maxit, tol, *optr2,
 #ifdef WEIGHTED					
