@@ -1,16 +1,16 @@
-\name{treatDGE}
-\alias{treatDGE}
+\name{glmTreat}
+\alias{glmTreat}
 
 \title{Testing for Differential Expression Relative to a Threshold}
 
 \description{Conduct genewise statistical tests for a given coefficient or coefficient contrast relative to a specified threshold.}
 
 \usage{
-treatDGE(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
+glmTreat(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
 }
 
 \arguments{
-\item{glmfit}{a \code{DGEGLM} object, usually output from \code{glmFit}.}
+\item{glmfit}{a \code{DGEGLM} object, usually output from \code{glmFit} or \code{glmQLFit}.}
 
 \item{coef}{integer or character vector indicating which coefficients of the linear model are to be tested equal to zero.  Values must be columns or column names of \code{design}. Defaults to the last coefficient.  Ignored if \code{contrast} is specified.}
 
@@ -20,7 +20,7 @@ treatDGE(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
 }
 
 \value{
-\code{treatDGE} produces an object of class \code{DGELRT} with the same components as for \code{glmfit} plus the following:
+\code{glmTreat} produces an object of class \code{DGELRT} with the same components as for \code{glmfit} plus the following:
 	\item{lfc}{absolute value of the specified log2-fold change threshold.}
 	\item{table}{data frame with the same rows as \code{glmfit} containing the log2-fold changes, average log2-counts per million and p-values, ready to be displayed by \code{topTags.}.}
 	\item{comparison}{character string describing the coefficient or the contrast being tested.}
@@ -32,7 +32,7 @@ The data frame \code{table} contains the following columns:
 }
 
 \details{
-\code{treatDGE} implements a two-sided modified likelihood ratio test.
+\code{glmTreat} implements a two-sided modified likelihood ratio test.
 }
 
 \author{Yunshun Chen and Gordon Smyth}
@@ -57,6 +57,6 @@ counts <- matrix(rnbinom(ngenes*nlibs, mu=mu, size=1/phi), ngenes, nlibs)
 d <- DGEList(counts=counts,lib.size=rep(1e6, nlibs), group=group)
 
 gfit <- glmFit(d, design, dispersion=phi)
-tr <- treatDGE(gfit, coef=2, lfc=1)
+tr <- glmTreat(gfit, coef=2, lfc=1)
 topTags(tr)
 }

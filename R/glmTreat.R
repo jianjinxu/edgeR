@@ -1,7 +1,7 @@
-treatDGE <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
-#	Likelihood ratio test with threshold
+glmTreat <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
+#	Likelihood ratio test or quasi-likelihood F-test with threshold
 #	Yunshun Chen and Gordon Smyth
-#	05 May 2014.
+#	Created on 05 May 2014. Last modified on 02 Mar 2015
 {
 	if(lfc < 0) stop("lfc has to be non-negative")
 #	Check glmfit
@@ -9,11 +9,15 @@ treatDGE <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
 		if(is(glmfit,"DGEList") && is(coef,"DGEGLM")) {
 			stop("First argument is no longer required. Rerun with just the glmfit and coef/contrast arguments.")
 		}
-		stop("glmfit must be an DGEGLM object (usually produced by glmFit).")
+		stop("glmfit must be an DGEGLM object (usually produced by glmFit or glmQLFit).")
 	}
 	if(is.null(glmfit$AveLogCPM)) glmfit$AveLogCPM <- aveLogCPM(glmfit)
 	nlibs <- ncol(glmfit)
 	ngenes <- nrow(glmfit)
+	
+#	Check if glmfit is from glmFit() or glmQLFit()
+	isLRT <- is.null(glmfit$df.prior)
+	if(isLRT) fun <- glmFit else fun <- glmQLFit
 
 #	Check design matrix
 	design <- as.matrix(glmfit$design)
@@ -56,24 +60,34 @@ treatDGE <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
 #	Null design matrix
 	design0 <- design[, -coef, drop=FALSE]
 
-#	LRT of beta_0 = zero
-	fit0.zero <- glmFit(glmfit$counts, design=design0, offset=glmfit$offset, weights=glmfit$weights, dispersion=glmfit$dispersion, prior.count=0)
+#	Test statistics at beta_0 = zero
+	fit0.zero <- fun(glmfit$counts, design=design0, offset=glmfit$offset, weights=glmfit$weights, dispersion=glmfit$dispersion, prior.count=0)
 	X2.zero <- pmax(0, fit0.zero$deviance - glmfit$deviance)
 
-#	LRT of beta_0 = tau
+#	Test statistics at beta_0 = tau
 	offset.adj <- matrix(-lfc*log(2), ngenes, 1)
 	up <- logFC >= 0
 	offset.adj[up, ] <- lfc*log(2)
 	offset.new <- glmfit$offset + offset.adj %*% t(design[, coef, drop=FALSE])
-	fit0.tau <- glmFit(glmfit$counts, design=design0, offset=offset.new, weights=glmfit$weights, dispersion=glmfit$dispersion, prior.count=0)
-	fit1.tau <- glmFit(glmfit$counts, design=design, offset=offset.new, weights=glmfit$weights, dispersion=glmfit$dispersion, prior.count=0)
+	fit0.tau <- fun(glmfit$counts, design=design0, offset=offset.new, weights=glmfit$weights, dispersion=glmfit$dispersion, prior.count=0)
+	fit1.tau <- fun(glmfit$counts, design=design, offset=offset.new, weights=glmfit$weights, dispersion=glmfit$dispersion, prior.count=0)
 	X2.tau <- pmax(0, fit0.tau$deviance - fit1.tau$deviance)
-	
-	z.zero <- sqrt(X2.zero)
-	z.tau <- sqrt(X2.tau)
+
 	within <- abs(logFC) <= lfc
 	sgn <- 2*within - 1
-	p.value <- pnorm( z.tau*sgn ) + pnorm( -z.tau*sgn-2*z.zero )
+
+	if(isLRT){
+		z.zero <- sqrt(X2.zero)
+		z.tau <- sqrt(X2.tau)
+		p.value <- pnorm( z.tau*sgn ) + pnorm( -z.tau*sgn-2*z.zero )
+	} else {
+		t.zero <- sqrt(X2.zero/glmfit$var.post)
+		t.tau <- sqrt(X2.tau/glmfit$var.post)
+		df.total <- glmfit$df.prior + glmfit$df.residual.zeros
+		max.df.residual <- ncol(glmfit$counts)-ncol(glmfit$design)
+		df.total <- pmin(df.total, nrow(glmfit)*max.df.residual)
+		p.value <- pt( t.tau*sgn, df=df.total ) + pt( -t.tau*sgn-2*t.zero, df=df.total )
+	}
 
 	tab <- data.frame(
 		logFC=logFC,
