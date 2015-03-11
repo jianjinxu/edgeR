@@ -6,7 +6,7 @@ estimateDisp <- function(y, design=NULL, prior.df=NULL, trend.method="locfit", s
 #  Estimating dispersion using weighted conditional likelihood empirical Bayes.
 #  Use GLM approach if a design matrix is given, and classic approach otherwise.
 #  It calculates a matrix of likelihoods for each gene at a set of dispersion grid points, and then calls WLEB() to do the shrinkage.
-#  Yunshun Chen, Gordon Smyth. Created July 2012. Last modified 11 Sep 2014.
+#  Yunshun Chen, Gordon Smyth. Created July 2012. Last modified 03 Feb 2015.
 {
 	if( !is(y,"DGEList") ) stop("y must be a DGEList")
 	trend.method <- match.arg(trend.method, c("none", "loess", "locfit", "movingave"))
@@ -55,7 +55,7 @@ estimateDisp <- function(y, design=NULL, prior.df=NULL, trend.method="locfit", s
 		for(j in 1:grid.length) for(i in 1:length(ysplit)) 
 			l0[,j] <- condLogLikDerDelta(ysplit[[i]], grid.vals[j], der=0) + l0[,j]
 	}
-	# GLM edgeR (using the last fit to hot-start the next fit).
+	# GLM edgeR 
 	else {
 		design <- as.matrix(design)
 		if(ncol(design) >= ncol(y$counts)) {
@@ -63,11 +63,32 @@ estimateDisp <- function(y, design=NULL, prior.df=NULL, trend.method="locfit", s
 			y$common.dispersion <- NA
 			return(y)
 		}
-		last.beta <- NULL
-		for(i in 1:grid.length) {
-			out <- adjustedProfileLik(spline.disp[i], y=y$counts[sel, ], design=design, offset=offset[sel,], start=last.beta, get.coef=TRUE)
-			l0[,i] <- out$apl
-			last.beta <- out$beta
+		
+		# Protect against zeros.
+		glmfit <- glmFit(y$counts[sel,], design, offset=offset[sel,], dispersion=0.05, prior.count=0)
+		zerofit <- (glmfit$fitted.values < 1e-4) & (glmfit$counts < 1e-4)
+		by.group <- .comboGroups(zerofit)
+
+		for (subg in by.group) { 
+			cur.nzero <- !zerofit[subg[1],]
+			if (!any(cur.nzero)) { next } 
+			if (all(cur.nzero)) { 
+				redesign <- design
+			} else {
+				redesign <- design[cur.nzero,,drop=FALSE]
+				QR <- qr(redesign)
+				redesign <- redesign[,QR$pivot[1:QR$rank],drop=FALSE]
+				if (nrow(redesign) == ncol(redesign)) { next }
+			}
+
+			# Using the last fit to hot-start the next fit
+			last.beta <- NULL
+			for(i in 1:grid.length) {
+				out <- adjustedProfileLik(spline.disp[i], y=y$counts[sel, ][subg,cur.nzero,drop=FALSE], design=redesign, 
+					offset=offset[sel,][subg,cur.nzero,drop=FALSE], start=last.beta, get.coef=TRUE)
+				l0[subg,i] <- out$apl
+				last.beta <- out$beta
+			}
 		}
 	}
 
