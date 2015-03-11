@@ -16,10 +16,10 @@ glmQLFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, abund
 	if(is.null(offset)) offset <- getOffset(y)
 	if(is.null(y$AveLogCPM)) y$AveLogCPM <- aveLogCPM(y)
 
-	fit <- glmQLFit(y=y$counts, design=design, dispersion=dispersion, offset=offset, lib.size=NULL, abundance.trend=abundance.trend, AveLogCPM=y$AveLogCPM, robust=robust, winsor.tail.p=winsor.tail.p,...)
+	fit <- glmQLFit(y=y$counts, design=design, dispersion=dispersion, offset=offset, lib.size=NULL, abundance.trend=abundance.trend, AveLogCPM=y$AveLogCPM, robust=robust, winsor.tail.p=winsor.tail.p, weights=y$weights, ...)
 	fit$samples <- y$samples
 	fit$genes <- y$genes
-	fit$prior.df <- y$prior.df
+#	fit$prior.df <- y$prior.df
 	fit$AveLogCPM <- y$AveLogCPM
 	new("DGEGLM",fit)
 }
@@ -66,7 +66,9 @@ glmQLFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.s
 
 #	Storing results
 	glmfit$df.residual.zeros <- df.residual
-	glmfit$s2.fit <- s2.fit
+	glmfit$df.prior <- s2.fit$df.prior
+	glmfit$var.post <- s2.fit$var.post
+	glmfit$var.prior <- s2.fit$var.prior
 	glmfit
 }
 
@@ -77,12 +79,12 @@ glmQLFTest <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL)
 #	Created 18 Feb 2011. Last modified 15 Sep 2014.
 {
     if(!is(glmfit,"DGEGLM")) stop("glmfit must be an DGEGLM object produced by glmQLFit") 
-	if(is.null(glmfit$s2.fit)) stop("need to run glmQLFit before glmQLFTest") 
+	if(is.null(glmfit$var.post)) stop("need to run glmQLFit before glmQLFTest") 
 	out <- glmLRT(glmfit, coef=coef, contrast=contrast)
 
 #	Compute the QL F-statistic
-	F.stat <- out$table$LR / out$df.test / glmfit$s2.fit$var.post
-	df.total <- glmfit$s2.fit$df.prior + glmfit$df.residual.zeros
+	F.stat <- out$table$LR / out$df.test / glmfit$var.post
+	df.total <- glmfit$df.prior + glmfit$df.residual.zeros
 	max.df.residual <- ncol(glmfit$counts)-ncol(glmfit$design)
 	df.total <- pmin(df.total, nrow(glmfit)*max.df.residual)
 
@@ -90,7 +92,7 @@ glmQLFTest <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL)
 	F.pvalue <- pf(F.stat, df1=out$df.test, df2=df.total, lower.tail=FALSE, log.p=FALSE)
 
 #	Ensure is not more significant than chisquare test
-	i <- glmfit$s2.fit$var.post < 1
+	i <- glmfit$var.post < 1
 	if(any(i)) {
 		chisq.pvalue <- pchisq(out$table$LR[i], df=out$df.test[i], lower.tail=FALSE, log.p=FALSE)
 		F.pvalue[i] <- pmax(F.pvalue[i],chisq.pvalue)
@@ -112,15 +114,15 @@ plotQLDisp <- function(glmfit, xlab="Average Log2 CPM", ylab="Quarter-Root Mean 
 	A <- glmfit$AveLogCPM
 	if(is.null(A)) A <- aveLogCPM(glmfit)
 	s2 <- glmfit$deviance / glmfit$df.residual.zeros
-	if(is.null(glmfit$s2.fit)) { stop("need to run glmQLFit before plotQLDisp") }
+	if(is.null(glmfit$var.post)) { stop("need to run glmQLFit before plotQLDisp") }
 
 	plot(A, sqrt(sqrt(s2)),xlab=xlab, ylab=ylab, pch=pch, cex=cex, col=col.raw, ...)
-	points(A,sqrt(sqrt(glmfit$s2.fit$var.post)),pch=16,cex=0.2,col=col.shrunk)
-	if (length(glmfit$s2.fit$var.prior)==1L) { 
-		abline(h=sqrt(sqrt(glmfit$s2.fit$var.prior)), col=col.trend)
+	points(A,sqrt(sqrt(glmfit$var.post)),pch=16,cex=0.2,col=col.shrunk)
+	if (length(glmfit$var.prior)==1L) { 
+		abline(h=sqrt(sqrt(glmfit$var.prior)), col=col.trend)
 	} else {
 		o <- order(A)
-		lines(A[o],sqrt(sqrt(glmfit$s2.fit$var.prior[o])),col=col.trend)
+		lines(A[o],sqrt(sqrt(glmfit$var.prior[o])),col=col.trend)
 	}
 
 	legend("topright",pch=16,col=c(col.raw,col.shrunk,col.trend),legend=c("Raw","Squeezed", "Trend"))

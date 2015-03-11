@@ -5,8 +5,8 @@
 Plot the genewise quasi-likelihood dispersion against the gene abundance (in log2 counts per million).
 }
 \usage{
-plotQLDisp(glmfit, xlab="Average Log2 CPM", ylab="Quarter-Root Mean Deviance", pch=16, cex=0.2, 
-    col.shrunk="red", col.trend="blue", col.raw="black", \dots)
+plotQLDisp(glmfit, xlab="Average Log2 CPM", ylab="Quarter-Root Mean Deviance", pch=16, 
+       cex=0.2, col.shrunk="red", col.trend="blue", col.raw="black", \dots)
 }
 \arguments{
   \item{glmfit}{a \code{DGEGLM} object produced by \code{\link{glmQLFit}}.}

@@ -10,8 +10,11 @@
 Conduct genewise statistical tests for a given coefficient or coefficient contrast.}
 
 \usage{
-\method{glmQLFit}{DGEList}(y, design=NULL, dispersion=NULL, offset=NULL, abundance.trend=TRUE, robust=FALSE, winsor.tail.p=c(0.05, 0.1), \dots)
-\method{glmQLFit}{default}(y, design=NULL, dispersion=NULL, offset=NULL, lib.size=NULL, abundance.trend=TRUE, AveLogCPM=NULL, robust=FALSE, winsor.tail.p=c(0.05, 0.1), \dots)
+\method{glmQLFit}{DGEList}(y, design=NULL, dispersion=NULL, offset=NULL, abundance.trend=TRUE, 
+        robust=FALSE, winsor.tail.p=c(0.05, 0.1), \dots)
+\method{glmQLFit}{default}(y, design=NULL, dispersion=NULL, offset=NULL, lib.size=NULL, 
+        abundance.trend=TRUE, AveLogCPM=NULL, robust=FALSE, 
+        winsor.tail.p=c(0.05, 0.1), \dots)
 glmQLFTest(glmfit, coef=ncol(glmfit$design), contrast=NULL) 
 }
 
@@ -46,7 +49,11 @@ glmQLFTest(glmfit, coef=ncol(glmfit$design), contrast=NULL)
 \value{
 \code{glmQLFit} produces an object of class \code{DGEGLM} with the same components as that produced by \code{\link{glmFit}}, plus:
 	\item{df.residual.zeros}{a numeric vector containing the number of residual degrees of freedom for the GLM fit of each gene.}	
-	\item{s2.fit}{a list containing \code{df.prior}, the prior degrees of freedom; and \code{var.prior}, the location of the prior distribution. Both are numeric vectors if \code{abundance.trend=TRUE} and scalars otherwise. \code{var.post} is a numeric vector containing the shrunk quasi-likelihood dispersion for each gene.}
+	\item{df.prior}{a numeric vector or scalar, containing the prior degrees of freedom.}
+	\item{var.prior}{a numeric vector of scalar, containing the location of the prior distribution.}
+	\item{var.post}{a numeric vector containing the shrunk quasi-likelihood dispersion for each gene.} 
+If \code{robust=TRUE}, \code{df.prior} is a vector whereby the prior d.f. is reduced for any outlier genes. Otherwise, a scalar is returned with the same prior d.f. for all genes.
+If \code{abundance.trend=FALSE}, \code{var.prior} is a vector specifying a abundance-dependent trend for the location. Otherwise, a single location is returned for allg eens.
 
 \code{glmQFTest} produces objects of class \code{DGELRT} with the same components as that produced by \code{\link{glmLRT}}.
 It also stores \code{df.total}, a numeric vector containing the total degrees of freedom for the F-test.
