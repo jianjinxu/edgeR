@@ -1,7 +1,7 @@
 glmTreat <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
 #	Likelihood ratio test or quasi-likelihood F-test with threshold
 #	Yunshun Chen and Gordon Smyth
-#	Created on 05 May 2014. Last modified on 02 Mar 2015
+#	Created on 05 May 2014. Last modified on 25 Mar 2015
 {
 	if(lfc < 0) stop("lfc has to be non-negative")
 #	Check glmfit
@@ -75,18 +75,25 @@ glmTreat <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
 
 	within <- abs(logFC) <= lfc
 	sgn <- 2*within - 1
-
+	z.zero <- sqrt(X2.zero)
+	z.tau <- sqrt(X2.tau)
+	
 	if(isLRT){
-		z.zero <- sqrt(X2.zero)
-		z.tau <- sqrt(X2.tau)
 		p.value <- pnorm( z.tau*sgn ) + pnorm( -z.tau*sgn-2*z.zero )
 	} else {
-		t.zero <- sqrt(X2.zero/glmfit$var.post)
-		t.tau <- sqrt(X2.tau/glmfit$var.post)
+		t.zero <- z.zero/sqrt(glmfit$var.post)
+		t.tau <- z.tau/sqrt(glmfit$var.post)
 		df.total <- glmfit$df.prior + glmfit$df.residual.zeros
 		max.df.residual <- ncol(glmfit$counts)-ncol(glmfit$design)
 		df.total <- pmin(df.total, nrow(glmfit)*max.df.residual)
 		p.value <- pt( t.tau*sgn, df=df.total ) + pt( -t.tau*sgn-2*t.zero, df=df.total )
+	
+	#	Ensure is not more significant than z-test
+		i <- glmfit$var.post < 1
+		if(any(i)) {
+			z.pvalue <- pnorm( z.tau[i]*sgn[i] ) + pnorm( -z.tau[i]*sgn[i]-2*z.zero[i] )
+			p.value[i] <- pmax(p.value[i], z.pvalue)
+		}
 	}
 
 	tab <- data.frame(

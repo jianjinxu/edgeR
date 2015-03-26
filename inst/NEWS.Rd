@@ -3,6 +3,20 @@
 \encoding{UTF-8}
 
 \section{Version 3.9.0}{\itemize{
+\item
+treatDGE() is deprecated. It is replaced by a new function glmTreat() which works on a DGEGLM object, usually output from glmFit() or glmQLFit().
+
+\item
+estimateDisp() now protects against fitted values of zeros.
+
+\item
+glmQLFit() is now an S3 generic function.
+
+\item
+glmQLFit() now breaks the output component s2.fit into three separate components: df.prior, var.post and var.prior.
+
+\item
+aveLogCPM() now supports a vector of prior.count.
 
 \item
 New function dropEmptyLevels() to remove unused levels from a factor.
@@ -11,8 +25,18 @@ New function dropEmptyLevels() to remove unused levels from a factor.
 DGEList() now gives a message rather than an error when the count matrix has non-unique column names.
 
 \item
+An S3 method for DGEList object is added for romer().
+
+\item
+Add a p-value cut-off threshold for topTags().
+
+\item
+plotMDS() now allows symbols for DGEList objects.
+
+\item
 requireNamespace() is now used instead of require() to access functions in suggested packages.
 }}
+
 
 \section{Version 3.8.0}{\itemize{
 
