@@ -4,7 +4,8 @@ glmQLFit <- function(y, ...)
 UseMethod("glmQLFit")
 
 glmQLFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, abundance.trend=TRUE, robust=FALSE, winsor.tail.p=c(0.05, 0.1), ...)
-# 	Written by Yunshun Chen and Aaron Lun
+#	Quasi-likelihood F-tests for DGE glms.
+# 	Yunshun Chen and Aaron Lun
 #	Created 05 November 2014.
 {
 	if(is.null(dispersion)) {
@@ -24,9 +25,9 @@ glmQLFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, abund
 	new("DGEGLM",fit)
 }
 
-glmQLFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.size=NULL, abundance.trend=TRUE, AveLogCPM=NULL, robust=FALSE, winsor.tail.p=c(0.05, 0.1), ...)
+glmQLFit.default <- function(y, design=NULL, dispersion=0.05, offset=NULL, lib.size=NULL, abundance.trend=TRUE, AveLogCPM=NULL, robust=FALSE, winsor.tail.p=c(0.05, 0.1), ...)
 # 	Fits a GLM and computes quasi-likelihood dispersions for each gene.
-# 	Written by Yunshun Chen and Aaron Lun, based on code by Davis McCarthy and Gordon Smyth
+# 	Yunshun Chen and Aaron Lun, based on code by Davis McCarthy and Gordon Smyth
 # 	Created 15 September 2014. Last modified 05 November 2014.
 {
 #	Check y
@@ -35,7 +36,7 @@ glmQLFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.s
 	nlib <- ncol(y)
 
 #	Check dispersion
-	if(is.null(dispersion)) stop("No dispersion values provided.")
+	if(is.null(dispersion)) dispersion <- 0.05
 
 #	Check offset and lib.size
 	if(is.null(offset)) {
@@ -108,7 +109,7 @@ glmQLFTest <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL)
 
 plotQLDisp <- function(glmfit, xlab="Average Log2 CPM", ylab="Quarter-Root Mean Deviance", pch=16, cex=0.2, col.shrunk="red", col.trend="blue", col.raw="black", ...)
 # 	Plots the result of QL-based shrinkage.
-#	written by Aaron Lun, based on code by Davis McCarthy and Gordon Smyth
+#	Aaron Lun, based on code by Davis McCarthy and Gordon Smyth
 #	15 September 2014
 {
 	A <- glmfit$AveLogCPM

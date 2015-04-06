@@ -2,12 +2,27 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
-\section{Version 3.9.0}{\itemize{
+\section{Version 3.10.0}{\itemize{
 \item
-treatDGE() is deprecated. It is replaced by a new function glmTreat() which works on a DGEGLM object, usually output from glmFit() or glmQLFit().
+An DGEList method for romer() has been added, allowing access to rotation gene set enrichment analysis.
 
 \item
-estimateDisp() now protects against fitted values of zeros.
+New function dropEmptyLevels() to remove unused levels from a factor.
+
+\item
+New argument p.value for topTags(), allowing users to apply a p-value or FDR cutoff for the results.
+
+\item
+New argument prior.count for aveLogCPM().
+
+\item
+New argument pch for the plotMDS method for DGEList objects.
+Old argument col is now removed, but can be passed using ....
+Various other improvements to the plotMDS method for DGEList objects, better labelling of the axes and protection against degenerate dimensions.
+
+\item
+treatDGE() is renamed as glmTreat().
+It can now optionally work with either likelihood ratio tests or with quasi-likelihood F-tests.
 
 \item
 glmQLFit() is now an S3 generic function.
@@ -16,25 +31,16 @@ glmQLFit() is now an S3 generic function.
 glmQLFit() now breaks the output component s2.fit into three separate components: df.prior, var.post and var.prior.
 
 \item
-aveLogCPM() now supports a vector of prior.count.
-
-\item
-New function dropEmptyLevels() to remove unused levels from a factor.
+estimateDisp() now protects against fitted values of zeros, giving a more accurate estimate of prior.df.
 
 \item
 DGEList() now gives a message rather than an error when the count matrix has non-unique column names.
 
 \item
-An S3 method for DGEList object is added for romer().
+Minor corrections to User's Guide.
 
 \item
-Add a p-value cut-off threshold for topTags().
-
-\item
-plotMDS() now allows symbols for DGEList objects.
-
-\item
-requireNamespace() is now used instead of require() to access functions in suggested packages.
+requireNamespace() is now used internally instead of require() to access functions in suggested packages.
 }}
 
 

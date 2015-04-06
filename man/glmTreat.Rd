@@ -1,12 +1,14 @@
 \name{glmTreat}
 \alias{glmTreat}
+\alias{treatDGE}
 
-\title{Testing for Differential Expression Relative to a Threshold}
+\title{Test for Differential Expression Relative to a Threshold}
 
-\description{Conduct genewise statistical tests for a given coefficient or coefficient contrast relative to a specified threshold.}
+\description{Conduct genewise statistical tests for a given coefficient or contrast relative to a specified fold-change threshold.}
 
 \usage{
 glmTreat(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
+treatDGE(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
 }
 
 \arguments{
@@ -32,10 +34,28 @@ The data frame \code{table} contains the following columns:
 }
 
 \details{
-\code{glmTreat} implements a two-sided modified likelihood ratio test.
+\code{glmTreat} implements a test for differential expression relative to a minimum required fold-change threshold.
+Instead of testing for genes which have log-fold-changes different from zero, it tests whether the log2-fold-change is greater than \code{lfc} in absolute value.
+\code{glmTreat} is analogous to the TREAT approach developed by McCarthy and Smyth (2009) for microarrays.
+
+\code{glmTreat} detects whether \code{glmfit} was produced by \code{glmFit} or \code{glmQLFit}.
+In the former case, it conducts a modified likelihood ratio test (LRT) against the fold-change threshold.
+In the latter case, it conducts a quasi-likelihood (QL) F-test against the threshold.
+
+If \code{lfc=0}, then \code{glmTreat} is equivalent to \code{glmLRT} or \code{glmQLFTest}, depending on whether likelihood or quasi-likelihood is being used.
+
+\code{glmTreat} was previously called \code{treatDGE}.
+The old function name is now deprecated and will be removed in a future release of edgeR.
 }
 
 \author{Yunshun Chen and Gordon Smyth}
+
+\references{
+McCarthy, D. J., and Smyth, G. K. (2009).
+Testing significance relative to a fold-change threshold is a TREAT.
+\emph{Bioinformatics} 25, 765-771.
+\url{http://bioinformatics.oxfordjournals.org/content/25/6/765}
+}
 
 \examples{
 ngenes <- 100

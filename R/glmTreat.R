@@ -1,3 +1,9 @@
+treatDGE <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
+{
+	message("treatDGE() has been renamed to glmTreat().  Please use the latter instead.")
+	glmTreat(glmfit=glmfit,coef=coef,contrast=contrast,lfc=lfc)
+}
+
 glmTreat <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
 #	Likelihood ratio test or quasi-likelihood F-test with threshold
 #	Yunshun Chen and Gordon Smyth
@@ -109,9 +115,3 @@ glmTreat <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
 	new("DGELRT",unclass(glmfit))
 }
 
-
-
-	
-	
-	
-	
