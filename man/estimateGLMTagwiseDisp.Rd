@@ -7,15 +7,15 @@
 \title{Empirical Bayes Tagwise Dispersions for Negative Binomial GLMs}
 
 \description{
-Compute an empirical Bayes estimate of the negative binomial dispersion parameter for each tag or transcript, with expression levels specified by a log-linear model.
+Compute an empirical Bayes estimate of the negative binomial dispersion parameter for each tag, with expression levels specified by a log-linear model.
 }
 
 \usage{
 \S3method{estimateGLMTagwiseDisp}{DGEList}(y, design=NULL, prior.df=10,
-                       trend=!is.null(y$trended.dispersion), span=NULL, \dots)
+            trend=!is.null(y$trended.dispersion), span=NULL, \dots)
 \S3method{estimateGLMTagwiseDisp}{default}(y, design=NULL, offset=NULL, dispersion,
-                            prior.df=10, trend=TRUE, span=NULL, AveLogCPM=NULL,
-                            weights=NULL, \dots)
+            prior.df=10, trend=TRUE, span=NULL, AveLogCPM=NULL,
+            weights=NULL, \dots)
 }
 
 \arguments{
@@ -26,7 +26,7 @@ Compute an empirical Bayes estimate of the negative binomial dispersion paramete
 \item{dispersion}{common or trended dispersion estimates, used as an initial estimate for the tagwise estimates. By default uses values stored in the \code{DGEList} object.}
 \item{prior.df}{prior degrees of freedom.}
 \item{span}{width of the smoothing window, in terms of proportion of the data set. Default value decreases with the number of tags.}
-\item{AveLogCPM}{numeric vector giving average log2 counts per million for each gene}
+\item{AveLogCPM}{numeric vector giving average log2 counts per million for each tag}
 \item{weights}{optional numeric matrix giving observation weights}
 \item{\ldots}{other arguments are passed to \code{\link{dispCoxReidInterpolateTagwise}}.}
 }
@@ -46,6 +46,9 @@ and the conditional likelihood is computed using Cox-Reid approximate conditiona
 
 The prior degrees of freedom determines the weight given to the global dispersion trend.
 The larger the prior degrees of freedom, the more the tagwise dispersions are squeezed towards the global trend.
+
+Note that the terms `tag' and `gene' are synonymous here. 
+The function is only named `Tagwise' for historical reasons.
 
 This function calls the lower-level function \code{\link{dispCoxReidInterpolateTagwise}}.
 }
@@ -70,7 +73,7 @@ summary(d$tagwise.dispersion)
 }
 
 \seealso{
-\code{\link{estimateGLMCommonDisp}} for common dispersion and \code{\link{estimateGLMTrendedDisp}} for trended dispersion in the context of a generalized linear model.
+\code{\link{estimateGLMCommonDisp}} for common dispersion or \code{\link{estimateGLMTrendedDisp}} for trended dispersion in the context of a generalized linear model.
 
-\code{\link{estimateCommonDisp}} for common dispersion or \code{\link{estimateTagwiseDisp}} for tagwise dispersion in the context of a multiple group experiment (one-way layout).
+\code{\link{estimateCommonDisp}} for common dispersion or \code{\link{estimateTagwiseDisp}} for tagwise dispersions in the context of a multiple group experiment (one-way layout).
 }

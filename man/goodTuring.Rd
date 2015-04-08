@@ -46,7 +46,7 @@ which gives identical results to this function.
 \code{goodTuringPlot} plots log-probability (i.e., log frequencies of frequencies) versus log-frequency.
 
 \code{goodTuringProportions} runs \code{goodTuring} on each column of data, then
-uses the results to predict the proportion of each tag in each library.
+uses the results to predict the proportion of each gene in each library.
 }
 
 \references{

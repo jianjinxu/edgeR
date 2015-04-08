@@ -50,6 +50,10 @@ The old function name is now deprecated and will be removed in a future release 
 
 \author{Yunshun Chen and Gordon Smyth}
 
+\seealso{
+\code{\link{topTags}} displays results from \code{glmTreat}.
+}
+
 \references{
 McCarthy, D. J., and Smyth, G. K. (2009).
 Testing significance relative to a fold-change threshold is a TREAT.

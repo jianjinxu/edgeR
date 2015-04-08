@@ -17,7 +17,7 @@ Compute average log2 counts-per-million for each row of counts.
 }
 
 \arguments{
-\item{y}{numeric matrix containing counts.  Rows for tags and columns for libraries.}
+\item{y}{numeric matrix containing counts.  Rows for genes and columns for libraries.}
 \item{normalized.lib.sizes}{logical, use normalized library sizes?}
 \item{prior.count}{numeric scalar or vector of length \code{nrow(y)}, containing the average value(s) to be added to each count to avoid infinite values on the log-scale.}
 \item{dispersion}{numeric scalar or vector of negative-binomial dispersions. Defaults to 0.05.}
@@ -65,7 +65,7 @@ aveLogCPM(y, dispersion=runif(nrow(y), 0, 0.2))
 }
 
 \seealso{
-See \code{\link{cpm}} for individual logCPM values, rather than tagwise averages.
+See \code{\link{cpm}} for individual logCPM values, rather than genewise averages.
 
 The computations for \code{aveLogCPM} are done by \code{\link{mglmOneGroup}}.
 }

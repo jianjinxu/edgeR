@@ -17,8 +17,8 @@ maPlot(x, y, logAbundance=NULL, logFC=NULL, normalize=FALSE, plot.it=TRUE,
 \arguments{
   \item{x}{vector of counts or concentrations (group 1)}
   \item{y}{vector of counts or concentrations (group 2)}
-  \item{logAbundance}{vector providing the abundance of each tag on the log2 scale. Purely optional (default is \code{NULL}), but in combination with \code{logFC} provides a more direct way to create an MA-plot if the log-abundance and log-fold change are available.}
-  \item{logFC}{vector providing the log-fold change for each tag for a given experimental contrast. Default is \code{NULL}, only to be used together with \code{logAbundance} as both need to be non-null for their values to be used.}
+  \item{logAbundance}{vector providing the abundance of each gene on the log2 scale. Purely optional (default is \code{NULL}), but in combination with \code{logFC} provides a more direct way to create an MA-plot if the log-abundance and log-fold change are available.}
+  \item{logFC}{vector providing the log-fold change for each gene for a given experimental contrast. Default is \code{NULL}, only to be used together with \code{logAbundance} as both need to be non-null for their values to be used.}
   \item{normalize}{logical, whether to divide \code{x} and \code{y} vectors by their sum}
   \item{plot.it}{logical, whether to produce a plot}
   \item{smearWidth}{scalar, width of the smear}
@@ -26,7 +26,7 @@ maPlot(x, y, logAbundance=NULL, logFC=NULL, normalize=FALSE, plot.it=TRUE,
   \item{allCol}{colour of the non-smeared points}
   \item{lowCol}{colour of the smeared points}
   \item{deCol}{colour of the DE (differentially expressed) points}
- \item{de.tags}{indices for tags identified as being differentially expressed; use \code{exactTest} to identify DE genes}
+ \item{de.tags}{indices for genes identified as being differentially expressed; use \code{exactTest} or \code{glmLRT} to identify DE genes. Note that `tag' and `gene' are synonymous here.}
   \item{smooth.scatter}{logical, whether to produce a 'smooth scatter' plot using the KernSmooth::smoothScatter function or just a regular scatter plot; default is \code{FALSE}, i.e. produce a regular scatter plot}
   \item{lowess}{logical, indicating whether or not to add a lowess curve to the MA-plot to give an indication of any trend in the log-fold change with log-concentration}
   \item{\dots}{further arguments passed on to \code{plot}}

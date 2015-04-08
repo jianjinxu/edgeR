@@ -21,7 +21,7 @@ Calculate normalization factors to scale the raw library sizes.
   \item{object}{either a \code{matrix} of raw (read) counts or a \code{DGEList} object}
   \item{lib.size}{numeric vector of library sizes of the \code{object}.}
   \item{method}{normalization method to be used}
-  \item{refColumn}{column to use as reference for \code{method="TMM"}. Can be a column number or a numeric vector of length \code{nrow(object))}.}
+  \item{refColumn}{column to use as reference for \code{method="TMM"}. Can be a column number or a numeric vector of length \code{nrow(object)}.}
   \item{logratioTrim}{amount of trim to use on log-ratios ("M" values) for \code{method="TMM"}}
   \item{sumTrim}{amount of trim to use on the combined absolute levels ("A" values) for \code{method="TMM"}}
   \item{doWeighting}{logical, whether to compute (asymptotic binomial precision) weights for \code{method="TMM"}}
@@ -38,7 +38,7 @@ If \code{refColumn} is unspecified, the library whose upper quartile is closest 
 We call it "relative log expression", as median library is calculated from the geometric mean of all columns and the median ratio of each sample to the median library is taken as the scale factor.
 
 \code{method="upperquartile"} is the upper-quartile normalization method of Bullard et al (2010), in which the scale factors are calculated from the 75\% quantile of the counts for each library,
-after removing transcripts which are zero in all libraries.
+after removing genes which are zero in all libraries.
 This idea is generalized here to allow scaling by any quantile of the distributions.
 
 If \code{method="none"}, then the normalization factors are set to 1.

@@ -21,7 +21,7 @@ glmQLFTest(glmfit, coef=ncol(glmfit$design), contrast=NULL)
 \arguments{
 \item{y}{a matrix of counts, or a \code{DGEList} object with (at least) elements \code{counts} (table of unadjusted counts) and \code{samples} (data frame containing information about experimental group, library size and normalization factor for the library size)}
 
-\item{design}{numeric matrix giving the design matrix for the tagwise linear models.}
+\item{design}{numeric matrix giving the design matrix for the genewise linear models.}
 
 \item{dispersion}{numeric scalar or vector of negative binomial dispersions.  If \code{NULL}, then will be extracted from the \code{DGEList} object \code{y}, with order of precedence: trended dispersions, common dispersion, a constant value of 0.05.}
 
@@ -39,7 +39,7 @@ glmQLFTest(glmfit, coef=ncol(glmfit$design), contrast=NULL)
 
 \item{\dots}{other arguments are passed to \code{\link{glmFit}}.}
 
-\item{glmfit}{a \code{DGEGLM} object, usually output from \code{qlmQLFit}.}
+\item{glmfit}{a \code{DGEGLM} object, usually output from \code{glmQLFit}.}
 
 \item{coef}{integer or character index vector indicating which coefficients of the linear model are to be tested equal to zero. Ignored if \code{contrast} is not \code{NULL}.}
 
@@ -47,7 +47,7 @@ glmQLFTest(glmfit, coef=ncol(glmfit$design), contrast=NULL)
 }
 
 \details{
-\code{glmQLFit} and \code{glmQLFTest} implement the quasi-likelihood (QL) methods of Lund et al (2012), with a some enhancements and with slightly different glm, trend and FDR methods.
+\code{glmQLFit} and \code{glmQLFTest} implement the quasi-likelihood (QL) methods of Lund et al (2012), with some enhancements and with slightly different glm, trend and FDR methods.
 See Lun et al (2015) for a tutorial describing the use of \code{glmQLFit} and \code{glmQLFit} as part of a complete analysis pipeline.
 Another case study using \code{glmQLFit} and \code{glmQLFTest} is given in Section 4.7 of the edgeR User's Guide.
 
@@ -65,7 +65,7 @@ The p-values from \code{glmQLFTest} are always greater than or equal to those th
 
 \note{
 The negative binomial dispersions \code{dispersion} supplied to \code{glmQLFit} and \code{glmQLFTest} must be based on a global model, that is, they must be either trended or common dispersions.
-It is not correct to supply tagwise dispersions because \code{glmQLFTest} estimates genewise variability using the QL dispersion.
+It is not correct to supply genewise dispersions because \code{glmQLFTest} estimates genewise variability using the QL dispersion.
 }
 
 \value{
@@ -82,9 +82,10 @@ It also stores \code{df.total}, a numeric vector containing the denominator degr
 }
 
 \references{
-Lun, TL, Chen, Y, and Smyth, GK (2015).
+Lun, ATL, Chen, Y, and Smyth, GK (2015).
 It's DE-licious: a recipe for differential expression analyses of RNA-seq experiments using quasi-likelihood methods in edgeR.
 Bioinformatics Division, Walter and Eliza Hall Institute of Medical Research, Melbourne, Australia.
+\url{http://www.statsci.org/smyth/pubs/QLedgeRPreprint.pdf">Preprint 8 April 2015}
 
 Lund, SP, Nettleton, D, McCarthy, DJ, and Smyth, GK (2012).
 Detecting differential expression in RNA-sequence data using quasi-likelihood with shrunken dispersion estimates.
@@ -109,13 +110,13 @@ The \code{QuasiSeq} package gives an alternative implementation of the Lund et a
 
 \examples{
 nlibs <- 4
-ntags <- 1000
-dispersion.true <- 1/rchisq(ntags, df=10)
+ngenes <- 1000
+dispersion.true <- 1/rchisq(ngenes, df=10)
 design <- model.matrix(~factor(c(1,1,2,2)))
 
 # Generate count data
-y <- rnbinom(ntags*nlibs,mu=20,size=1/dispersion.true)
-y <- matrix(y,ntags,nlibs)
+y <- rnbinom(ngenes*nlibs,mu=20,size=1/dispersion.true)
+y <- matrix(y,ngenes,nlibs)
 d <- DGEList(y)
 d <- calcNormFactors(d)
 

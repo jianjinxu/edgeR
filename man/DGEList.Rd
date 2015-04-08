@@ -20,7 +20,7 @@ DGEList(counts = matrix(0, 0, 0), lib.size = colSums(counts),
   \item{lib.size}{numeric vector giving the total count (sequence depth) for each library.}
   \item{norm.factors}{numeric vector of normalization factors that modify the library sizes.}
   \item{group}{vector or factor giving the experimental group/condition for each sample/library.}
-  \item{genes}{data frame containing annotation information for the tags/transcripts/genes.}
+  \item{genes}{data frame containing annotation information for each gene.}
   \item{remove.zeros}{logical, whether to remove rows that have 0 total count.}
 }
 

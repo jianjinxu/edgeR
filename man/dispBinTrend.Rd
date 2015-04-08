@@ -16,7 +16,7 @@ dispBinTrend(y, design=NULL, offset=NULL, df = 5, span=0.3, min.n=400,
 \arguments{
 \item{y}{numeric matrix of counts}
 \item{design}{numeric matrix giving the design matrix for the GLM that is to be fit.}
-\item{offset}{numeric scalar, vector or matrix giving the offset (in addition to the log of the effective library size) that is to be included in the NB GLM for the transcripts. If a scalar, then this value will be used as an offset for all transcripts and libraries. If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each transcript. If a matrix, then each library for each transcript can have a unique offset, if desired. In \code{adjustedProfileLik} the \code{offset} must be a matrix with the same dimension as the table of counts.}
+\item{offset}{numeric scalar, vector or matrix giving the offset (in addition to the log of the effective library size) that is to be included in the NB GLM for the genes. If a scalar, then this value will be used as an offset for all genes and libraries. If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each gene. If a matrix, then each library for each gene can have a unique offset, if desired. In \code{adjustedProfileLik} the \code{offset} must be a matrix with the same dimension as the table of counts.}
 \item{df}{degrees of freedom for spline curve.}
 \item{span}{span used for loess curve.}
 \item{min.n}{minimim number of genes in a bins.}
@@ -51,10 +51,10 @@ McCarthy, DJ, Chen, Y, Smyth, GK (2012). Differential expression analysis of mul
 
 \author{Davis McCarthy and Gordon Smyth}
 \examples{
-ntags <- 1000
+ngenes <- 1000
 nlibs <- 4
-means <- seq(5,10000,length.out=ntags)
-y <- matrix(rnbinom(ntags*nlibs,mu=rep(means,nlibs),size=0.1*means),nrow=ntags,ncol=nlibs)
+means <- seq(5,10000,length.out=ngenes)
+y <- matrix(rnbinom(ngenes*nlibs,mu=rep(means,nlibs),size=0.1*means),nrow=ngenes,ncol=nlibs)
 keep <- rowSums(y) > 0
 y <- y[keep,]
 group <- factor(c(1,1,2,2))

@@ -43,20 +43,20 @@ McCarthy, DJ, Chen, Y, Smyth, GK (2012). Differential expression analysis of mul
 
 \examples{
 nlibs <- 3
-ntags <- 100
+ngenes <- 100
 dispersion.true <- 0.1
 
-# Make first transcript respond to covariate x
+# Make first gene respond to covariate x
 x <- 0:2
 design <- model.matrix(~x)
-beta.true <- cbind(Beta1=2,Beta2=c(2,rep(0,ntags-1)))
+beta.true <- cbind(Beta1=2,Beta2=c(2,rep(0,ngenes-1)))
 mu.true <- 2^(beta.true \%*\% t(design))
 
 # Generate count data
-y <- rnbinom(ntags*nlibs,mu=mu.true,size=1/dispersion.true)
-y <- matrix(y,ntags,nlibs)
+y <- rnbinom(ngenes*nlibs,mu=mu.true,size=1/dispersion.true)
+y <- matrix(y,ngenes,nlibs)
 colnames(y) <- c("x0","x1","x2")
-rownames(y) <- paste("Gene",1:ntags,sep="")
+rownames(y) <- paste("gene",1:ngenes,sep=".")
 d <- DGEList(y)
 
 # Normalize

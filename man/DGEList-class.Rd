@@ -12,18 +12,18 @@ For objects of this class, rows correspond to genomic features and columns to sa
 The genomic features are called genes, but in reality might correspond to transcripts, tags, exons etc.
 Objects of this class contain the following essential list components:
 \describe{
-  \item{\code{counts:}}{ numeric matrix of read counts, one row for each gene and one column for each sample.}
-  \item{\code{samples:}}{ data.frame with a row for each sample and columns \code{group}, \code{lib.size} and \code{norm.factors} containing the group labels, library sizes and normalization factors.
+  \item{\code{counts}:}{ numeric matrix of read counts, one row for each gene and one column for each sample.}
+  \item{\code{samples}:}{ data.frame with a row for each sample and columns \code{group}, \code{lib.size} and \code{norm.factors} containing the group labels, library sizes and normalization factors.
   Other columns can be optionally added to give more detailed sample information.}
 }
 Optional components include:
 \describe{
-  \item{\code{genes:}}{ data.frame giving annotation information for each gene.  Same number of rows as \code{counts}.}
-  \item{\code{AveLogCPM:}}{ numeric vector giving average log2 counts per million for each gene.}
-  \item{\code{common.dispersion:}}{ numeric scalar giving the overall dispersion estimate.}
-  \item{\code{trended.dispersion:}}{ numeric vector giving trended dispersion estimates for each gene.}
-  \item{\code{tagwise.dispersion:}}{ numeric vector giving tagwise dispersion estimates for each gene.}
-  \item{\code{offset:}}{ numeric matrix of same size as \code{counts} giving offsets for use in log-linear models.}
+  \item{\code{genes}:}{ data.frame giving annotation information for each gene.  Same number of rows as \code{counts}.}
+  \item{\code{AveLogCPM}:}{ numeric vector giving average log2 counts per million for each gene.}
+  \item{\code{common.dispersion}:}{ numeric scalar giving the overall dispersion estimate.}
+  \item{\code{trended.dispersion}:}{ numeric vector giving trended dispersion estimates for each gene.}
+  \item{\code{tagwise.dispersion}:}{ numeric vector giving tagwise dispersion estimates for each gene (note that `tag' and `gene' are synonymous here).}
+  \item{\code{offset}:}{ numeric matrix of same size as \code{counts} giving offsets for use in log-linear models.}
 }
 }
 

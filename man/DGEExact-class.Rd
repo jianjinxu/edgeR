@@ -14,9 +14,9 @@ The genomic features are called genes, but in reality might correspond to transc
 
 Objects of this class contain the following list components:
 \describe{
-  \item{\code{table:}}{ data frame containing columns for the log2-fold-change, \code{logFC}, the average log2-counts-per-million, \code{logCPM}, and the two-sided p-value \code{PValue}.}
-  \item{\code{comparison:}}{ vector giving the two experimental groups/conditions being compared.}
-  \item{\code{genes:}}{ a data frame containing information about each gene (can be \code{NULL}).}
+  \item{\code{table}:}{ data frame containing columns for the log2-fold-change, \code{logFC}, the average log2-counts-per-million, \code{logCPM}, and the two-sided p-value \code{PValue}.}
+  \item{\code{comparison}:}{ vector giving the two experimental groups/conditions being compared.}
+  \item{\code{genes}:}{ a data frame containing information about each gene (can be \code{NULL}).}
 }
 }
 

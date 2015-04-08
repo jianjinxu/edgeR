@@ -27,7 +27,7 @@ This function takes the binned common dispersion and abundance, and fits a smoot
 }
 
 \value{
-An object of class \code{DGEList} with the same components as for \code{\link{estimateCommonDisp}} plus the trended dispersion estimates for each gene or tag.
+An object of class \code{DGEList} with the same components as for \code{\link{estimateCommonDisp}} plus the trended dispersion estimates for each gene.
 }
 
 \author{Yunshun Chen and Gordon Smyth}
@@ -48,6 +48,6 @@ plotBCV(y)
 }
 
 \seealso{
-\code{\link{estimateCommonDisp}} estimates a common value for the dispersion parameter for all tags/genes - should generally be run before \code{estimateTrendedDisp}.
+\code{\link{estimateCommonDisp}} estimates a common value for the dispersion parameter for all genes - should generally be run before \code{estimateTrendedDisp}.
 }
 

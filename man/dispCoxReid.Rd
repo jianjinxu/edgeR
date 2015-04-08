@@ -64,7 +64,7 @@ Robinson and Smyth (2008) and McCarthy et al (2011) showed the Cox-Reid estimato
 
 \code{dispCoxReid} uses \code{optimize} to maximize the adjusted profile likelihood.
 \code{dispDeviance} uses \code{uniroot} to solve the estimating equation.
-The robust options use an order statistic instead the mean statistic, and have the effect that a minority of tags with very large (outlier) dispersions should have limited influence on the estimated value.
+The robust options use an order statistic instead the mean statistic, and have the effect that a minority of genes with very large (outlier) dispersions should have limited influence on the estimated value.
 \code{dispPearson} uses a globally convergent Newton iteration.
 }
 
@@ -84,9 +84,9 @@ McCarthy, DJ, Chen, Y, Smyth, GK (2012). Differential expression analysis of mul
 
 \author{Gordon Smyth}
 \examples{
-ntags <- 100
+ngenes <- 100
 nlibs <- 4
-y <- matrix(rnbinom(ntags*nlibs,mu=10,size=10),nrow=ntags,ncol=nlibs)
+y <- matrix(rnbinom(ngenes*nlibs,mu=10,size=10),nrow=ngenes,ncol=nlibs)
 group <- factor(c(1,1,2,2))
 lib.size <- rowSums(y)
 design <- model.matrix(~group)

@@ -2,7 +2,7 @@
 \name{plotBCV}
 \alias{plotBCV}
 \description{
-Plot genewise biological coefficient of variation (BCV) against gene abundance (in log2 counts per million).
+Plot the genewise biological coefficient of variation (BCV) against gene abundance (in log2 counts per million).
 }
 \usage{
 plotBCV(y, xlab="Average log CPM", ylab="Biological coefficient of variation",
@@ -16,13 +16,13 @@ plotBCV(y, xlab="Average log CPM", ylab="Biological coefficient of variation",
   \item{cex}{plot symbol expansion factor. See \code{\link{points}} for more details.}
   \item{col.common}{color of line showing common dispersion}
   \item{col.trend}{color of line showing dispersion trend}
-  \item{col.tagwise}{color of points showing tagwise dispersions}
+  \item{col.tagwise}{color of points showing genewise dispersions. Note that `tag' and `gene' are synonymous here.}
   \item{\dots}{any other arguments are passed to \code{plot}.}
 }
 
 \details{
 The BCV is the square root of the negative binomial dispersion.
-This function displays the common, trended and tagwise BCV estimates.
+This function displays the common, trended and genewise BCV estimates.
 }
 
 \value{

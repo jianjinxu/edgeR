@@ -21,7 +21,7 @@ getDispersion(y)
 \code{getOffset(y)} returns offsets for the log-linear predictor account for sequencing depth and possibly other normalization factors.
 Specifically it returns the matrix \code{y$offset} if it is non-null, otherwise it returns the log product of \code{lib.size} and \code{norm.factors} from \code{y$samples}.
 
-\code{getDispersion(y)} returns the most complex dispersion estimates (common, trended or tagwise) found in \code{y}.
+\code{getDispersion(y)} returns the most complex dispersion estimates (common, trended or genewise) found in \code{y}.
 }
 
 \value{\code{getCounts} returns the matrix of counts.

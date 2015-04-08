@@ -4,7 +4,7 @@
 \title{Empirical Robust Bayes Tagwise Dispersions for Negative Binomial GLMs using Observation Weights}
 
 \description{
-Compute a robust estimate of the negative binomial dispersion parameter for each tag or transcript, with expression levels specified by a log-linear model, using observation weights.  These observation weights will be stored and used later for estimating regression parameters.
+Compute a robust estimate of the negative binomial dispersion parameter for each gene, with expression levels specified by a log-linear model, using observation weights.  These observation weights will be stored and used later for estimating regression parameters.
 }
 
 \usage{
@@ -28,15 +28,18 @@ estimateGLMRobustDisp(y, design = NULL, prior.df = 10, update.trend = TRUE,
 }
 
 \value{
-\code{estimateGLMRobustDisp} produces a \code{DGEList} object, which contains the (robust) tagwise dispersion parameter estimate for each tag for the negative binomial model that maximizes the weighted Cox-Reid adjusted profile likelihood, as well as the observation weights.  The observation weights are calculated using residuals and the Huber function.
+\code{estimateGLMRobustDisp} produces a \code{DGEList} object, which contains the (robust) genewise dispersion parameter estimate for each gene for the negative binomial model that maximizes the weighted Cox-Reid adjusted profile likelihood, as well as the observation weights.  The observation weights are calculated using residuals and the Huber function.
 
 Note that when \code{record=TRUE}, a simple list of \code{DGEList} objects is returned, one for each iteration (this is for debugging or tracking purposes).
 }
 
 \details{
-At times, because of the moderation of dispersion estimates towards a trended values, features (typically, genes) can be sensitive to outliers and causing false positives.  That is, since the dispersion estimates are moderated downwards toward the trend and because the regression parameter estimates may be affected by the outliers, genes are deemed significantly differential expressed.  The function uses an iterative procedure where weights are calculated from residuals and estimates are made after re-weighting.
+Moderation of dispersion estimates towards a trend can be sensitive to outliers, resulting in an increase in false positives. That is, since the dispersion estimates are moderated downwards toward the trend and because the regression parameter estimates may be affected by the outliers, some genes are incorrectly deemed to be significantly differentially expressed. This function uses an iterative procedure where weights are calculated from residuals and estimates are made after re-weighting.
 
-Note: it is not necessary to first calculate the common, trended and tagwise dispersion estimates.  If these are not available, the function will first calculate this (in an unweighted) fashion.
+The robustly computed genewise estimates are reported in the \code{tagwise.dispersion} vector of the returned \code{DGEList}.
+The terms `tag' and `gene' are synonymous in this context.
+
+Note: it is not necessary to first calculate the common, trended and genewise dispersion estimates.  If these are not available, the function will first calculate this (in an unweighted) fashion.
 }
 
 \references{

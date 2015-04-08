@@ -4,7 +4,7 @@
 
 \title{Conditional Log-Likelihood of the Dispersion for a Single Group of Replicate Libraries}
 
-\description{Derivatives of the negative-binomial log-likelihood with respect to the dispersion parameter for each tag/transcript, conditional on the mean count, for a single group of replicate libraries of the same size.}
+\description{Derivatives of the negative-binomial log-likelihood with respect to the dispersion parameter for each gene, conditional on the mean count, for a single group of replicate libraries of the same size.}
 
 \usage{
 condLogLikDerSize(y, r, der=1L)
@@ -20,7 +20,7 @@ condLogLikDerDelta(y, delta, der=1L)
 
 \value{vector of row-wise derivatives with respect to \code{r} or \code{delta}}
 
-\details{The library sizes must be equalized before running this function. This function carries out the actual mathematical computations for the conditional log-likelihood and its derivatives, calculating the conditional log-likelihood for each tag/transcript.
+\details{The library sizes must be equalized before running this function. This function carries out the actual mathematical computations for the conditional log-likelihood and its derivatives, calculating the conditional log-likelihood for each gene.
 Derivatives are with respect to either the size (\code{r}) or the delta parametrization (\code{delta}) of the dispersion.
 }
 

@@ -29,7 +29,7 @@ splitIntoGroupsPseudo(pseudo, group, pair)
 # generate raw counts from NB, create list object
 y<-matrix(rnbinom(80,size=1,mu=10),nrow=20)
 d<-DGEList(counts=y,group=rep(1:2,each=2),lib.size=rep(c(1000:1001),2))
-rownames(d$counts)<-paste("tagno",1:nrow(d$counts),sep=".")
+rownames(d$counts)<-paste("gene",1:nrow(d$counts),sep=".")
 z1<-splitIntoGroups(d)
 
 z2<-splitIntoGroupsPseudo(d$counts,d$group,pair=c(1,2))

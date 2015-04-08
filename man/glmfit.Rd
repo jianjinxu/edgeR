@@ -6,7 +6,7 @@
 
 \title{Genewise Negative Binomial Generalized Linear Models}
 
-\description{Fit a negative binomial generalized log-linear model to the read counts for each gene or transcript.
+\description{Fit a negative binomial generalized log-linear model to the read counts for each gene.
 Conduct genewise statistical tests for a given coefficient or coefficient contrast.}
 
 \usage{
@@ -19,15 +19,15 @@ glmLRT(glmfit, coef=ncol(glmfit$design), contrast=NULL, test="chisq")
 \arguments{
 \item{y}{an object that contains the raw counts for each library (the measure of expression level); alternatively, a matrix of counts, or a \code{DGEList} object with (at least) elements \code{counts} (table of unadjusted counts) and \code{samples} (data frame containing information about experimental group, library size and normalization factor for the library size)}
 
-\item{design}{numeric matrix giving the design matrix for the tagwise linear models.
+\item{design}{numeric matrix giving the design matrix for the genewise linear models.
 Must be of full column rank.
 Defaults to a single column of ones, equivalent to treating the columns as replicate libraries.}
 
-\item{dispersion}{numeric scalar or vector of negative binomial dispersions. Can be a common value for all tags, or a vector of values can provide a unique dispersion value for each tag. If \code{NULL} will be extracted from \code{y}, with order of precedence: tagwise dispersion, trended dispersions, common dispersion.}
+\item{dispersion}{numeric scalar or vector of negative binomial dispersions. Can be a common value for all genes, or a vector of values can provide a unique dispersion value for each gene. If \code{NULL} will be extracted from \code{y}, with order of precedence: genewise dispersion, trended dispersions, common dispersion.}
 
 \item{offset}{numeric matrix of same size as \code{y} giving offsets for the log-linear models.  Can be a scalor or a vector of length \code{ncol(y)}, in which case it is expanded out to a matrix.}
 
-\item{weights}{optional numeric matrix giving prior weights for the observations (for each library and transcript) to be used in the GLM calculations.}
+\item{weights}{optional numeric matrix giving prior weights for the observations (for each library and gene) to be used in the GLM calculations.}
 
 \item{lib.size}{numeric vector of length \code{ncol(y)} giving library sizes. Only used if \code{offset=NULL}, in which case \code{offset} is set to \code{log(lib.size)}. Defaults to \code{colSums(y)}.}
 
@@ -50,12 +50,12 @@ Defaults to a single column of ones, equivalent to treating the columns as repli
 \code{glmFit} produces an object of class \code{DGEGLM} containing components \code{counts}, \code{samples}, \code{genes} and \code{abundance} from \code{y} plus the following new components:
 	\item{design}{design matrix as input.}
 	\item{weights}{matrix of weights as input.}
-	\item{df.residual}{numeric vector of residual degrees of freedom, one for each tag.}
+	\item{df.residual}{numeric vector of residual degrees of freedom, one for each gene.}
 	\item{offset}{numeric matrix of linear model offsets.}
 	\item{dispersion}{vector of dispersions used for the fit.}
 	\item{coefficients}{numeric matrix of estimated coefficients from the glm fits, on the natural log scale, of size \code{nrow(y)} by \code{ncol(design)}.}
 	\item{fitted.values}{matrix of fitted values from glm fits, same number of rows and columns as \code{y}.}
-	\item{deviance}{numeric vector of deviances, one for each tag.}
+	\item{deviance}{numeric vector of deviances, one for each gene.}
 
 \code{glmLRT} produces objects of class \code{DGELRT} with the same components as for \code{glmfit} plus the following:
 	\item{table}{data frame with the same rows as \code{y} containing the log2-fold changes, likelhood ratio statistics and p-values, ready to be displayed by \code{topTags.}.}
@@ -96,20 +96,20 @@ McCarthy, DJ, Chen, Y, Smyth, GK (2012). Differential expression analysis of mul
 
 \examples{
 nlibs <- 3
-ntags <- 100
+ngenes <- 100
 dispersion.true <- 0.1
 
-# Make first transcript respond to covariate x
+# Make first gene respond to covariate x
 x <- 0:2
 design <- model.matrix(~x)
-beta.true <- cbind(Beta1=2,Beta2=c(2,rep(0,ntags-1)))
+beta.true <- cbind(Beta1=2,Beta2=c(2,rep(0,ngenes-1)))
 mu.true <- 2^(beta.true \%*\% t(design))
 
 # Generate count data
-y <- rnbinom(ntags*nlibs,mu=mu.true,size=1/dispersion.true)
-y <- matrix(y,ntags,nlibs)
+y <- rnbinom(ngenes*nlibs,mu=mu.true,size=1/dispersion.true)
+y <- matrix(y,ngenes,nlibs)
 colnames(y) <- c("x0","x1","x2")
-rownames(y) <- paste("Gene",1:ntags,sep="")
+rownames(y) <- paste("gene",1:ngenes,sep=".")
 d <- DGEList(y)
 
 # Normalize
@@ -122,7 +122,7 @@ fit <- glmFit(d, design, dispersion=dispersion.true)
 results <- glmLRT(fit, coef=2)
 topTags(results)
 
-# Estimate the dispersion (may be unreliable with so few tags)
+# Estimate the dispersion (may be unreliable with so few genes)
 d <- estimateGLMCommonDisp(d, design, verbose=TRUE)
 }
 

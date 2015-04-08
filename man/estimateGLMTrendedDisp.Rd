@@ -19,7 +19,7 @@ Estimates the abundance-dispersion trend by Cox-Reid approximate profile likelih
 \item{y}{a matrix of counts or a \code{DGEList} object.)}
 \item{design}{numeric design matrix, as for \code{\link{glmFit}}.}
 \item{method}{method (low-level function) used to estimated the trended dispersions.
-Possible values are \code{"auto"} (default, switch to \code{"bin.spline"} method if the number of tags is great than 200 and \code{"power"} method otherwise),\code{"bin.spline"}, \code{"bin.loess"} (which both result in a call to \code{dispBinTrend}), \code{"power"} (call to \code{dispCoxReidPowerTrend}), or \code{"spline"} (call to \code{dispCoxReidSplineTrend}).}
+Possible values are \code{"auto"} (default, switch to \code{"bin.spline"} method if the number of genes is great than 200 and \code{"power"} method otherwise),\code{"bin.spline"}, \code{"bin.loess"} (which both result in a call to \code{dispBinTrend}), \code{"power"} (call to \code{dispCoxReidPowerTrend}), or \code{"spline"} (call to \code{dispCoxReidSplineTrend}).}
 \item{offset}{numeric scalar, vector or matrix giving the linear model offsets, as for \code{\link{glmFit}}.}
 \item{AveLogCPM}{numeric vector giving average log2 counts per million for each gene.}
 \item{weights}{optional numeric matrix giving observation weights}
@@ -33,7 +33,8 @@ When the input object is a numeric matrix, the output of one of the lower-level 
 }
 
 \details{
-Estimates the dispersion parameter for each transcript (tag) with a trend that depends on the overall level of expression for the transcript for a DGE dataset for general experimental designs by using Cox-Reid approximate conditional inference for a negative binomial generalized linear model for each transcript (tag) with the unadjusted counts and design matrix provided.
+Estimates the dispersion parameter for each gene with a trend that depends on the overall level of expression for that gene.
+This is done for a DGE dataset for general experimental designs by using Cox-Reid approximate conditional inference for a negative binomial generalized linear model for each gene with the unadjusted counts and design matrix provided.
 
 The function provides an object-orientated interface to lower-level functions.
 }
@@ -49,9 +50,9 @@ McCarthy, DJ, Chen, Y, Smyth, GK (2012). Differential expression analysis of mul
 
 \author{Gordon Smyth, Davis McCarthy, Yunshun Chen}
 \examples{
-ntags <- 250
+ngenes <- 250
 nlibs <- 4
-y <- matrix(rnbinom(ntags*nlibs,mu=10,size=10),ntags,nlibs)
+y <- matrix(rnbinom(ngenes*nlibs,mu=10,size=10),ngenes,nlibs)
 d <- DGEList(counts=y,group=c(1,1,2,2),lib.size=c(1000:1003))
 design <- model.matrix(~group, data=d$samples)
 disp <- estimateGLMTrendedDisp(d, design, min.n=25, df=3)

@@ -20,7 +20,7 @@ topTags(object, n=10, adjust.method="BH", sort.by="PValue", p.value=1)
 
 \item{sort.by}{character string, should the top tags be sorted by p-value (\code{"PValue"}), by absolute log-fold change (\code{"logFC"}), or not sorted (\code{"none"}).}
 
-\item{p.value}{cutoff value for adjusted p-values. Only genes with lower p-values are listed.}
+\item{p.value}{cutoff value for adjusted p-values. Only tags with lower p-values are listed.}
 }
 
 \value{
@@ -36,6 +36,7 @@ The dimensions, row names and column names of a \code{TopTags} object are define
 
 \code{TopTags} objects also have a \code{show} method so that printing produces a compact summary of their contents.
 
+Note that the terms `tag' and `gene' are synonymous here. The function is only named as `Tags' for historical reasons.
 }
 
 \author{Mark Robinson, Davis McCarthy, Gordon Smyth}
@@ -43,7 +44,7 @@ The dimensions, row names and column names of a \code{TopTags} object are define
 # generate raw counts from NB, create list object
 y <- matrix(rnbinom(80,size=1,mu=10),nrow=20)
 d <- DGEList(counts=y,group=rep(1:2,each=2),lib.size=rep(c(1000:1001),2))
-rownames(d$counts) <- paste("tag",1:nrow(d$counts),sep=".")
+rownames(d$counts) <- paste("gene",1:nrow(d$counts),sep=".")
 
 # estimate common dispersion and find differences in expression
 # here we demonstrate the 'exact' methods, but the use of topTags is
@@ -53,7 +54,7 @@ de <- exactTest(d)
 
 # look at top 10
 topTags(de)
-# Can specify how many tags to view
+# Can specify how many genes to view
 tp <- topTags(de, n=15)
 # Here we view top 15
 tp

@@ -11,16 +11,16 @@
 \item{files}{character vector of filenames, or alternatively a data.frame with a column containing the file names of the files containing the libraries of counts and, optionally, columns containing the \code{group} to which each library belongs, descriptions of the other samples and other information.}
 \item{path}{character string giving the directory containing the files.
 The default is the current working directory.}
-\item{columns}{numeric vector stating which two columns contain the tag names and counts, respectively}
+\item{columns}{numeric vector stating which two columns contain the gene names and counts, respectively}
 \item{group}{vector, or preferably a factor, indicating the experimental group to which each library belongs. If \code{group} is not \code{NULL}, then this argument overrides any group information included in the \code{files} argument.}
 \item{labels}{character vector giving short names to associate with the libraries. Defaults to the file names.}
 \item{\dots}{other are passed to \code{read.delim}}
 }
 
 \details{
-Each file is assumed to contained digital gene expression data for one sample (or library), with transcript identifiers in the first column and counts in the second column. Transcript identifiers are assumed to be unique and not repeated in any one file. 
+Each file is assumed to contained digital gene expression data for one sample (or library), with gene identifiers in the first column and counts in the second column. Gene identifiers are assumed to be unique and not repeated in any one file. 
 By default, the files are assumed to be tab-delimited and to contain column headings.
-The function forms the union of all transcripts and creates one big table with zeros where necessary.
+The function forms the union of all genes and creates one big table with zeros where necessary.
 }
 
 \value{DGEList object}

@@ -21,7 +21,7 @@ commonCondLogLikDerDelta(y, delta, der = 0)
 
 
 \details{
-The common conditional log-likelihood is constructed by summing over all of the individual tag conditional log-likelihoods. The common conditional log-likelihood is taken as a function of the dispersion parameter (\code{phi}), and here parameterized in terms of delta (\code{phi / (phi+1)}). The value of delta that maximizes the common conditional log-likelihood is converted back to the \code{phi} scale, and this value is the estimate of the common dispersion parameter used by all tags.
+The common conditional log-likelihood is constructed by summing over all of the individual genewise conditional log-likelihoods. The common conditional log-likelihood is taken as a function of the dispersion parameter (\code{phi}), and here parameterized in terms of delta (\code{phi / (phi+1)}). The value of delta that maximizes the common conditional log-likelihood is converted back to the \code{phi} scale, and this value is the estimate of the common dispersion parameter used by all genes.
 }
 
 \author{Davis McCarthy}

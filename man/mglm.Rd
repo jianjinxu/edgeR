@@ -22,13 +22,13 @@ designAsFactor(design)
 }
 
 \arguments{
-\item{y}{numeric matrix containing the negative binomial counts.  Rows for tags and columns for libraries.}
+\item{y}{numeric matrix containing the negative binomial counts.  Rows for genes and columns for libraries.}
 
 \item{design}{numeric matrix giving the design matrix of the GLM.
 Assumed to be full column rank.}
 
 \item{dispersion}{numeric scalar or vector giving the dispersion parameter for each GLM.
-Can be a scalar giving one value for all tags, or a vector of length equal to the number of tags giving tag-wise dispersions.}
+Can be a scalar giving one value for all genes, or a vector of length equal to the number of genes giving genewise dispersions.}
 
 \item{offset}{numeric vector or matrix giving the offset that is to be included in the log-linear model predictor.  Can be a scalar, a vector of length equal to the number of libraries, or a matrix of the same size as \code{y}.}
 
@@ -53,9 +53,9 @@ They are used as work-horses by higher-level functions in the edgeR package, esp
 
 \code{mglmOneGroup} fit the null model, with intercept term only, to each response vector.
 In other words, it treats the libraries as belonging to one group.
-It implements Fisher scoring with a score-statistic stopping criterion for each tag.
+It implements Fisher scoring with a score-statistic stopping criterion for each gene.
 Excellent starting values are available for the null model, so this function seldom has any problems with convergence.
-It is used by other edgeR functions to compute the overall abundance for each tag.
+It is used by other edgeR functions to compute the overall abundance for each gene.
 
 \code{mglmLevenberg} fits an arbitrary log-linear model to each response vector.
 It implements a Levenberg-Marquardt modification of the glm scoring algorithm to prevent divergence.
@@ -68,14 +68,14 @@ If the dispersion values are zero, then the Poisson deviance function is returne
 }
 
 \value{
-\code{mglmOneGroup} produces a vector of length equal to the number of tags/genes (number of rows of \code{y}) providing the single coefficent from the GLM fit for each tag/gene. This can be interpreted as a measure of the 'average expression' level of the tag/gene.
+\code{mglmOneGroup} produces a vector of length equal to the number of genes (number of rows of \code{y}) providing the single coefficent from the GLM fit for each gene. This can be interpreted as a measure of the 'average expression' level of the gene.
 
 \code{mglmLevenberg} produces a list with the following components: 
 	\item{coefficients}{matrix of estimated coefficients for the linear models}
 	\item{fitted.values}{matrix of fitted values}
 	\item{deviance}{residual deviances}
 	\item{iter}{number of iterations used}
-	\item{fail}{logical vector indicating tags for which the maximum damping was exceeded before convergence was achieved}
+	\item{fail}{logical vector indicating genes for which the maximum damping was exceeded before convergence was achieved}
 
 \code{deviances.function} returns a function to calculate the deviance as appropriate for the given values of the dispersion.
 

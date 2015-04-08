@@ -24,7 +24,7 @@ exactTestBetaApprox(y1, y2, dispersion=0)
 \item{pair}{vector of length two, either numeric or character, providing the pair of groups to be compared; if a character vector, then should be the names of two groups (e.g. two levels of \code{object$samples$group}); if numeric, then groups to be compared are chosen by finding the levels of \code{object$samples$group} corresponding to those numeric values and using those levels as the groups to be compared; if \code{NULL}, then first two levels of \code{object$samples$group} (a factor) are used. Note that the first group listed in the pair is the baseline for the comparison---so if the pair is \code{c("A","B")} then the comparison is \code{B - A}, so genes with positive log-fold change are up-regulated in group B compared with group A (and vice versa for genes with negative log-fold change).}
 
 \item{dispersion}{either a numeric vector of dispersions or a character string indicating that dispersions should be taken from the data object.
-If a numeric vector, then can be either of length one or of length equal to the number of tags.
+If a numeric vector, then can be either of length one or of length equal to the number of genes.
 Allowable character values are \code{"common"}, \code{"trended"}, \code{"tagwise"} or \code{"auto"}.
 Default behavior (\code{"auto"} is to use most complex dispersions found in data object.}
 
@@ -35,11 +35,11 @@ Default behavior (\code{"auto"} is to use most complex dispersions found in data
 \item{prior.count}{average prior count used to shrink log-fold-changes. Larger values produce more shrinkage.}
 
 \item{y1}{numeric matrix of counts for the first the two experimental groups to be tested for differences.
-Rows correspond to genes or transcripts and columns to libraries.
+Rows correspond to genes and columns to libraries.
 Libraries are assumed to be equal in size - e.g. adjusted pseudocounts from the output of \code{\link{equalizeLibSizes}}.}
 
 \item{y2}{numeric matrix of counts for the second of the two experimental groups to be tested for differences.
-Rows correspond to genes or transcripts and columns to libraries.
+Rows correspond to genes and columns to libraries.
 Libraries are assumed to be equal in size - e.g. adjusted pseudocounts from the output of \code{\link{equalizeLibSizes}}. Must have the same number of rows as \code{y1}.}
 }
 
@@ -47,7 +47,7 @@ Libraries are assumed to be equal in size - e.g. adjusted pseudocounts from the 
 \code{exactTest} produces an object of class \code{DGEExact} containing the following components:
 \item{table}{data frame containing columns for the log2-fold-change, \code{logFC}, the average log2-counts-per-million, \code{logCPM}, and the two-sided p-value \code{PValue}}
 \item{comparison}{character vector giving the names of the two groups being compared} 
-\item{genes}{optional data frame containing annotation for transcript; taken from \code{object}}
+\item{genes}{optional data frame containing annotation for each gene; taken from \code{object}}
 
 The low-level functions, \code{exactTestDoubleTail} etc, produce a numeric vector of genewise p-values, one for each row of \code{y1} and \code{y2}.
 }

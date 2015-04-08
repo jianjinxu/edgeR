@@ -9,6 +9,9 @@ edgeR is a package for the analysis of digital gene expression data arising from
 Particular strengths of the package include the ability to estimate biological variation between replicate libraries, and to conduct exact tests of significance which are suitable for small counts.
 The package is able to make use of even minimal numbers of replicates.
 
+The supplied counts are assumed to be those of genes in a RNA-seq experiment.
+However, counts can be supplied for any genomic feature of interest, e.g., tags, transcripts, exons, or even arbitrary intervals of the genome.
+
 An extensive User's Guide is available, and can be opened by typing \code{edgeRUsersGuide()} at the R prompt.
 Detailed help pages are also provided for each individual function.
 

@@ -9,7 +9,7 @@ Estimates tagwise dispersion values by an empirical Bayes method based on weight
 
 \usage{
 estimateTagwiseDisp(object, prior.df=10, trend="movingave", span=NULL, method="grid",
-          grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
+            grid.length=11, grid.range=c(-6,6), tol=1e-06, verbose=FALSE)
 }
 
 \arguments{
@@ -52,12 +52,14 @@ Otherwise, the trend is determined by a moving average (\code{trend="movingave"}
 
 \code{method="optimize"} is not recommended for routine use as it is very slow.
 It is included for testing purposes.
+
+Note that the terms `tag' and `gene' are synonymous here. The function is only named `Tagwise' for historical reasons.
 }
 
 \value{
 An object of class \code{DGEList} with the same components as for \code{\link{estimateCommonDisp}} plus the following:
-	\item{prior.n}{estimate of the prior weight, i.e. the smoothing parameter that indicates the weight to put on the common likelihood compared to the individual tag's likelihood; prior.n of 10 means that the common likelihood is given 10 times the weight of the individual tag/gene's likelihood in the estimation of the tag/genewise dispersion}
-	\item{tagwise.dispersion}{tag- or gene-wise estimates of the dispersion parameter}
+	\item{prior.n}{estimate of the prior weight, i.e. the smoothing parameter that indicates the weight to put on the common likelihood compared to the individual tag's likelihood; prior.n of 10 means that the common likelihood is given 10 times the weight of the individual tag's likelihood in the estimation of the tagwise dispersion.}
+	\item{tagwise.dispersion}{tag-wise estimates of the dispersion parameter.}
 }
 
 \references{

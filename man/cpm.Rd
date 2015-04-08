@@ -29,7 +29,7 @@
 \value{numeric matrix of CPM or RPKM values.}
 
 \details{
-CPM or RPKM values are useful descriptive measures for the expression level of a gene or transcript.
+CPM or RPKM values are useful descriptive measures for the expression level of a gene.
 By default, the normalized library sizes are used in the computation for \code{DGEList} objects but simple column sums for matrices.
 
 If log-values are computed, then a small count, given by \code{prior.count} but scaled to be proportional to the library size, is added to \code{x} to avoid taking the log of zero.

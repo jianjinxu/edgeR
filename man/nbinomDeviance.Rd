@@ -14,12 +14,12 @@ nbinomDeviance(y, mean, dispersion=0, weights=NULL)
 }
 
 \arguments{
-\item{y}{numeric vector or matrix containing the negative binomial counts.  If a matrix, then rows for tags and columns for libraries.  \code{nbinomDeviance} treats a vector as a matrix with one row.}
+\item{y}{numeric vector or matrix containing the negative binomial counts.  If a matrix, then rows for genes and columns for libraries.  \code{nbinomDeviance} treats a vector as a matrix with one row.}
 
 \item{mean}{numeric vector matrix of expected values, of same dimension as \code{y}.}
 
 \item{dispersion}{numeric vector or matrix of negative binomial dispersions.
-Can be a scalar, or a vector of length equal to the number of tags, or a matrix of same dimensions as \code{y}.}
+Can be a scalar, or a vector of length equal to the number of genes, or a matrix of same dimensions as \code{y}.}
 
 \item{weights}{numeric vector or matrix of non-negative weights, as for \code{glmFit}.}
 }

@@ -1,8 +1,8 @@
-\title{Plot exons on differentially spliced gene}
+\title{Plot exons of a differentially spliced gene}
 \name{plotSpliceDGE}
 \alias{plotSpliceDGE}
 \description{
-Plot exons of differentially spliced gene.
+Plot the exon-level log-fold changes for a differentially spliced gene.
 }
 \usage{
 plotSpliceDGE(lrt, geneid=NULL, rank=1L, FDR = 0.05)

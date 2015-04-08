@@ -21,13 +21,13 @@ dispCoxReidPowerTrend(y, design, offset=NULL, subset=10000, AveLogCPM=NULL,
 
 \item{design}{numeric matrix giving the design matrix for the GLM that is to be fit.}
 
-\item{offset}{numeric scalar, vector or matrix giving the offset (in addition to the log of the effective library size) that is to be included in the NB GLM for the transcripts. If a scalar, then this value will be used as an offset for all transcripts and libraries. If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each transcript. If a matrix, then each library for each transcript can have a unique offset, if desired. In \code{adjustedProfileLik} the \code{offset} must be a matrix with the same dimension as the table of counts.}
+\item{offset}{numeric scalar, vector or matrix giving the offset (in addition to the log of the effective library size) that is to be included in the NB GLM for the genes. If a scalar, then this value will be used as an offset for all genes and libraries. If a vector, it should be have length equal to the number of libraries, and the same vector of offsets will be used for each gene. If a matrix, then each library for each gene can have a unique offset, if desired. In \code{adjustedProfileLik} the \code{offset} must be a matrix with the same dimension as the table of counts.}
 
 \item{df}{integer giving the degrees of freedom of the spline function, see \code{ns} in the splines package.}
 
 \item{subset}{integer, number of rows to use in the calculation.  Rows used are chosen evenly spaced by AveLogCPM using \code{\link{cutWithMinN}}.}
 
-\item{AveLogCPM}{numeric vector giving average log2 counts per million for each gene}
+\item{AveLogCPM}{numeric vector giving average log2 counts per million for each gene.}
 
 \item{method.optim}{the method to be used in \code{optim}. See \code{\link{optim}} for more detail.}
 
@@ -35,14 +35,14 @@ dispCoxReidPowerTrend(y, design, offset=NULL, subset=10000, AveLogCPM=NULL,
 }
 
 \value{
-List containing numeric vectors \code{dispersion} and \code{abundance} containing the estimated dispersion and abundance for each transcript.
+List containing numeric vectors \code{dispersion} and \code{abundance} containing the estimated dispersion and abundance for each gene.
 The vectors are of the same length as \code{nrow(y)}.
 }
 
 \details{
 In the \code{edgeR} context, these are low-level functions called by \code{estimateGLMTrendedDisp}.
 
-\code{dispCoxReidSplineTrend} and \code{dispCoxReidPowerTrend} fit abundance trends to the tagwise dispersions.
+\code{dispCoxReidSplineTrend} and \code{dispCoxReidPowerTrend} fit abundance trends to the genewise dispersions.
 \code{dispCoxReidSplineTrend} fits a regression spline whereas \code{dispCoxReidPowerTrend} fits a log-linear trend of the form \code{a*exp(abundance)^b+c}.
 In either case, \code{optim} is used to maximize the adjusted profile likelihood (Cox and Reid, 1987).
 }

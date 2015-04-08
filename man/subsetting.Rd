@@ -18,7 +18,7 @@ Extract a subset of a \code{DGEList}, \code{DGEGLM}, \code{DGEExact} or \code{DG
 }
 \arguments{
   \item{object}{object of class \code{DGEList}, \code{DGEGLM}, \code{DGEExact} or \code{DGELRT}. For \code{subsetListOfArrays}, any list of conformal matrices and vectors.}
-  \item{i,j}{elements to extract. \code{i} subsets the tags or genes while \code{j} subsets the libraries.
+  \item{i,j}{elements to extract. \code{i} subsets the genes while \code{j} subsets the libraries.
   Note that columns of \code{DGEGLM}, \code{DGEExact} and \code{DGELRT} objects cannot be subsetted.}
   \item{keep.lib.sizes}{logical, if \code{TRUE} the lib.sizes will be kept unchanged on output, otherwise they will be recomputed as the column sums of the counts of the remaining rows.}
 }

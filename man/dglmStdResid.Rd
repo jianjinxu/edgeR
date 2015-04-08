@@ -4,7 +4,7 @@
 
 \title{Visualize the mean-variance relationship in DGE data using standardized residuals}
 
-\description{Appropriate modelling of the mean-variance relationship in DGE data is important for making inferences about differential expression. However, the standard approach to visualizing the mean-variance relationship is not appropriate for general, complicated experimental designs that require generalized linear models (GLMs) for analysis. Here are functions to compute standardized residuals from a Poisson GLM and plot them for bins based on overall expression level of tags as a way to visualize the mean-variance relationship. A rough estimate of the dispersion parameter can also be obtained from the standardized residuals.}
+\description{Appropriate modelling of the mean-variance relationship in DGE data is important for making inferences about differential expression. However, the standard approach to visualizing the mean-variance relationship is not appropriate for general, complicated experimental designs that require generalized linear models (GLMs) for analysis. Here are functions to compute standardized residuals from a Poisson GLM and plot them for bins based on overall expression level of genes as a way to visualize the mean-variance relationship. A rough estimate of the dispersion parameter can also be obtained from the standardized residuals.}
 
 
 \usage{
@@ -14,11 +14,11 @@ getDispersions(binned.object)
 }
 
 \arguments{ 
-\item{y}{numeric matrix of counts, each row represents one tag, each column represents one DGE library.}
+\item{y}{numeric matrix of counts, each row represents one genes, each column represents one DGE library.}
 
 \item{design}{numeric matrix giving the design matrix of the GLM. Assumed to be full column rank.}
 
-\item{dispersion}{numeric scalar or vector giving the dispersion parameter for each GLM. Can be a scalar giving one value for all tags, or a vector of length equal to the number of tags giving tag-wise dispersions.}
+\item{dispersion}{numeric scalar or vector giving the dispersion parameter for each GLM. Can be a scalar giving one value for all genes, or a vector of length equal to the number of genes giving genewise dispersions.}
 
 \item{offset}{numeric vector or matrix giving the offset that is to be included in teh log-linear model predictor. Can be a vector of length equal to the number of libraries, or a matrix of the same size as \code{y}.}
 
@@ -36,16 +36,16 @@ getDispersions(binned.object)
 
 }
 
-\value{ \code{dglmStdResid} produces a mean-variance plot based on standardized residuals from a Poisson model fitfor each tag for the DGE data. \code{dglmStdResid} returns a list with the following elements:
+\value{ \code{dglmStdResid} produces a mean-variance plot based on standardized residuals from a Poisson model fit for each gene for the DGE data. \code{dglmStdResid} returns a list with the following elements:
 	\item{ave.means}{vector of the average expression level within each bin of observations}
-	\item{ave.std.resid}{vector of the average standardized Poisson residual within each bin of tags}
+	\item{ave.std.resid}{vector of the average standardized Poisson residual within each bin of genes}
 	\item{bin.means}{list containing the average (mean) expression level (given by the fitted value from the given Poisson model) for observations divided into bins based on amount of expression}
 	\item{bin.std.resid}{list containing the standardized residual from the given Poisson model for observations divided into bins based on amount of expression}
 	\item{means}{vector giving the fitted value for each observed count}
 	\item{standardized.residuals}{vector giving approximate standardized residual for each observed count}
 	\item{bins}{list containing the indices for the observations, assigning them to bins}
 	\item{nbins}{scalar giving the number of bins used to split up the observed counts}
-	\item{ngenes}{scalar giving the number of genes/tags in the dataset}
+	\item{ngenes}{scalar giving the number of genes in the dataset}
 	\item{nlibs}{scalar giving the number of libraries in the dataset}
 
 \code{getDispersions} computes the dispersion from the standardized residuals and returns a list with the following components:
@@ -56,9 +56,9 @@ getDispersions(binned.object)
 }
 
 \details{
-This function is useful for exploring the mean-variance relationship in the data. Raw or pooled variances cannot be used for complex experimental designs, so instead we can fit a Poisson model using the appropriate design matrix to each tag and use the standardized residuals in place of the pooled variance (as in \code{plotMeanVar}) to visualize the mean-variance relationship in the data. The function will plot the average standardized residual for observations split into \code{nbins} bins by overall expression level. This provides a useful summary of how the variance of the counts change with respect to average expression level (abundance). A line showing the Poisson mean-variance relationship (mean equals variance) is always shown to illustrate how the genewise variances may differ from a Poisson mean-variance relationship. A log-log scale is used for the plot.
+This function is useful for exploring the mean-variance relationship in the data. Raw or pooled variances cannot be used for complex experimental designs, so instead we can fit a Poisson model using the appropriate design matrix to each gene and use the standardized residuals in place of the pooled variance (as in \code{plotMeanVar}) to visualize the mean-variance relationship in the data. The function will plot the average standardized residual for observations split into \code{nbins} bins by overall expression level. This provides a useful summary of how the variance of the counts change with respect to average expression level (abundance). A line showing the Poisson mean-variance relationship (mean equals variance) is always shown to illustrate how the genewise variances may differ from a Poisson mean-variance relationship. A log-log scale is used for the plot.
 
-The function \code{mglmLS} is used to fit the Poisson models to the data. This code is fast for fitting models, but does not compute the value for the leverage, technically required to compute the standardized residuals. Here, we approximate the standardized residuals by replacing the usual denominator of \code{ ( 1 - leverage )} by \code{ ( 1 - p/n ) }, where n is the number of observations per tag (i.e. number of libraries) and p is the number of parameters in the model (i.e. number of columns in the full-rank design matrix.
+The function \code{mglmLS} is used to fit the Poisson models to the data. This code is fast for fitting models, but does not compute the value for the leverage, technically required to compute the standardized residuals. Here, we approximate the standardized residuals by replacing the usual denominator of \code{ ( 1 - leverage )} by \code{ ( 1 - p/n ) }, where n is the number of observations per gene (i.e. number of libraries) and p is the number of parameters in the model (i.e. number of columns in the full-rank design matrix.
 
 }
 

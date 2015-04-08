@@ -29,7 +29,7 @@ Possible values are \code{"CoxReid"}, \code{"Pearson"} or \code{"deviance"}.}
 
 \item{subset}{maximum number of rows of \code{y} to use in the calculation.  Rows used are chosen evenly spaced by AveLogCPM using \code{\link{systematicSubset}}.}
 
-\item{AveLogCPM}{numeric vector giving average log2 counts per million for each gene}
+\item{AveLogCPM}{numeric vector giving average log2 counts per million for each gene.}
 
 \item{verbose}{logical, if \code{TRUE} estimated dispersion and BCV will be printed to standard output.}
 \item{weights}{optional numeric matrix giving observation weights}
@@ -74,9 +74,9 @@ d2 <- estimateCommonDisp(d, verbose=TRUE)
 \seealso{
 \code{\link{dispCoxReid}}, \code{\link{dispPearson}}, \code{\link{dispDeviance}}
 
-\code{\link{estimateGLMTrendedDisp}} for trended dispersion and \code{\link{estimateGLMTagwiseDisp}} for tagwise dispersions in the context of a generalized linear model.
+\code{\link{estimateGLMTrendedDisp}} for trended dispersions or \code{\link{estimateGLMTagwiseDisp}} for genewise dispersions in the context of a generalized linear model.
 
-\code{\link{estimateCommonDisp}} for common dispersion or \code{\link{estimateTagwiseDisp}} for tagwise dispersion in the context of a multiple group experiment (one-way layout).
+\code{\link{estimateCommonDisp}} for the common dispersion or \code{\link{estimateTagwiseDisp}} for genewise dispersions in the context of a multiple group experiment (one-way layout).
 }
 
 \keyword{models}

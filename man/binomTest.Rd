@@ -3,8 +3,8 @@
 
 \title{Exact Binomial Tests for Comparing Two Digital Libraries}
 \description{
-Computes p-values for differential abundance for each tag between two digital libraries,
-conditioning on the total count for each tag.
+Computes p-values for differential abundance for each gene between two digital libraries,
+conditioning on the total count for each gene.
 The counts in each group as a proportion of the whole are assumed to follow a binomial distribution.
 }
 
@@ -13,23 +13,23 @@ binomTest(y1, y2, n1=sum(y1), n2=sum(y2), p=n1/(n1+n2))
 }
 
 \arguments{
-\item{y1}{integer vector giving counts in first library.
+\item{y1}{integer vector giving the count for each gene in the first library.
 Non-integer values are rounded to the nearest integer.}
-\item{y2}{integer vector giving counts in second library.
-Of same length as \code{x}.
+\item{y2}{integer vector giving the count for each gene in the second library.
+Of same length as \code{y1}.
 Non-integer values are rounded to the nearest integer.}
-\item{n1}{total number of tags in first library.
+\item{n1}{total number of counts in the first library, across all genes.
 Non-integer values are rounded to the nearest integer. Not required if \code{p} is supplied.}
-\item{n2}{total number of tags in second library.
+\item{n2}{total number of counts in the second library, across all genes.
 Non-integer values are rounded to the nearest integer. Not required if \code{p} is supplied.}
-\item{p}{expected proportion of y1 to the total under the null hypothesis.}
+\item{p}{expected proportion of \code{y1} to the total for each gene under the null hypothesis.}
 }
 
 \details{
 This function can be used to compare two libraries from SAGE, RNA-Seq, ChIP-Seq or other sequencing technologies with respect to technical variation.
 
-An exact two-sided binomial test is computed for each tag.
-This test is closely related to Fisher's exact test for 2x2 contingency tables but, unlike Fisher's test, it conditions on the total number of counts for each tag.
+An exact two-sided binomial test is computed for each gene.
+This test is closely related to Fisher's exact test for 2x2 contingency tables but, unlike Fisher's test, it conditions on the total number of counts for each gene.
 The null hypothesis is that the expected counts are in the same proportions as the library sizes, i.e., that the binomial probability for the first library is \code{n1/(n1+n2)}.
 
 The two-sided rejection region is chosen analogously to Fisher's test.

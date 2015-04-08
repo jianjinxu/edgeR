@@ -4,7 +4,7 @@
 \title{Estimate Common Negative Binomial Dispersion by Conditional Maximum Likelihood}
 
 \description{
-Maximizes the negative binomial conditional common likelihood to give the estimate of the common dispersion across all tags.
+Maximizes the negative binomial conditional common likelihood to give the estimate of the common dispersion across all genes.
 }
 
 \usage{
@@ -16,8 +16,8 @@ estimateCommonDisp(object, tol=1e-06, rowsum.filter=5, verbose=FALSE)
 
 \item{tol}{the desired accuracy, passed to \code{\link{optimize}}}
 
-\item{rowsum.filter}{numeric scalar giving a value for the filtering out of low abundance tags in the estimation of the common dispersion.
-Only tags with total sum of counts above this value are used in the estimation of the common dispersion.}
+\item{rowsum.filter}{numeric scalar giving a value for the filtering out of low abundance genes in the estimation of the common dispersion.
+Only genes with total sum of counts above this value are used in the estimation of the common dispersion.}
 
 \item{verbose}{logical, if \code{TRUE} estimated dispersion and BCV will be printed to standard output.}
 }

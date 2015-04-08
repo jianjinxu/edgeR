@@ -40,15 +40,17 @@ estimateDisp(y, design=NULL, prior.df=NULL, trend.method="locfit", span=NULL,
 \value{Returns \code{object} with the following added components:
 	\item{common.dispersion}{estimate of the common dispersion.}
 	\item{trended.dispersion}{estimates of the trended dispersions.}
-	\item{tagwise.dispersion}{tag- or gene-wise estimates of the dispersion parameter.}
-	\item{logCPM}{the tag abundance in log average counts per million.}
+	\item{tagwise.dispersion}{tagwise estimates of the dispersion parameter.}
+	\item{logCPM}{the average abundance of each tag, in log average counts per million.}
 	\item{prior.df}{prior degrees of freedom. It is a vector when robust method is used.}
 	\item{prior.n}{estimate of the prior weight, i.e. the smoothing parameter that indicates the weight to put on the common likelihood compared to the individual tag's likelihood.}
 	\item{span}{width of the smoothing window used in estimating dispersions.}
 }
 
 \details{
-This function calculates a matrix of likelihoods for each gene at a set of dispersion grid points, and then applies weighted likelihood empirical Bayes method to obtain posterior dispersion estimates. If there is no design matrix, it calculates the quantile conditional likelihood for each gene (tag) and then maximize it. In this case, it is similar to the function \code{estimateCommonDisp} and \code{estimateTagwiseDisp}. If a design matrix is given, it then calculates the adjusted profile log-likelihood for each gene (tag) and then maximize it. In this case, it is similar to the functions \code{estimateGLMCommonDisp}, \code{estimateGLMTrendedDisp} and \code{estimateGLMTagwiseDisp}.
+This function calculates a matrix of likelihoods for each tag at a set of dispersion grid points, and then applies weighted likelihood empirical Bayes method to obtain posterior dispersion estimates. If there is no design matrix, it calculates the quantile conditional likelihood for each tag and then maximizes it. In this case, it is similar to the function \code{estimateCommonDisp} and \code{estimateTagwiseDisp}. If a design matrix is given, it calculates the adjusted profile log-likelihood for each tag and then maximizes it. In this case, it is similar to the functions \code{estimateGLMCommonDisp}, \code{estimateGLMTrendedDisp} and \code{estimateGLMTagwiseDisp}.
+
+Note that the terms `tag' and `gene' are synonymous here.
 }
 
 \note{

@@ -18,7 +18,7 @@ Plot samples on a two-dimensional scatterplot so that distances on the plot appr
   \item{cex}{numeric vector of plot symbol expansions. See \code{\link[graphics]{text}} for possible values.}
   \item{dim.plot}{which two dimensions should be plotted, numeric vector of length two.}
   \item{ndim}{number of dimensions in which data is to be represented}
-  \item{gene.selection}{character, \code{"pairwise"} to choose the top genes separately for each pairwise comparison between the samples or \code{"common"} to select the same genes for all comparisons. Only used when \code{method="logFC"}.}
+  \item{gene.selection}{character, \code{"pairwise"} to choose the top genes separately for each pairwise comparison between the samples, or \code{"common"} to select the same genes for all comparisons. Only used when \code{method="logFC"}.}
   \item{xlab}{x-axis label}
   \item{ylab}{y-axis label}
   \item{method}{method used to compute distances.  Possible values are "logFC" or \code{"bcv"}.}
@@ -33,7 +33,7 @@ See the \code{\link[limma:plotMDS]{plotMDS help page}} for details.
 
 The alternative method (\code{method="bcv"}) calculates distances based on biological coefficient of variation.
 A set of top genes are chosen that have largest biological variation between the libraries
-(those with largest tagwise dispersion treating all libraries as one group).
+(those with largest genewise dispersion treating all libraries as one group).
 Then the distance between each pair of libraries (columns) is the biological coefficient of variation (square root of the common dispersion) between those two libraries alone, using
 the top genes.
 
@@ -55,14 +55,14 @@ An object of class \code{\link[limma:plotMDS]{MDS}} is invisibly returned and a 
 }
 
 \examples{
-# Simulate DGE data for 1000 genes(tags) and 6 samples.
+# Simulate DGE data for 1000 genes and 6 samples.
 # Samples are in two groups
 # First 200 genes are differentially expressed in second group
 
 ngenes <- 1000
 nlib <- 6
 counts <- matrix(rnbinom(ngenes*nlib, size=1/10, mu=20),ngenes,nlib)
-rownames(counts) <- paste("Gene",1:ngenes)
+rownames(counts) <- paste("gene",1:ngenes, sep=".")
 group <- gl(2,3,labels=c("Grp1","Grp2"))
 counts[1:200,group=="Grp2"] <- counts[1:200,group=="Grp2"] + 10
 y <- DGEList(counts,group=group)

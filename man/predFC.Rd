@@ -40,7 +40,7 @@ This has the effect that any log-fold-change that was zero prior to augmentation
 The prior counts can be viewed as equivalent to a prior belief that the log-fold changes are small, and the output can be viewed as posterior log-fold-changes from this Bayesian viewpoint.
 The output coefficients are called \emph{predictive} log fold-changes because, depending on the prior, they may be a better prediction of the true log fold-changes than the raw estimates.
 
-Log-fold changes for transcripts with low counts are shrunk more than transcript with high counts.
+Log-fold changes for genes with low counts are shrunk more than those for genes with high counts.
 In particular, infinite log-fold-changes arising from zero counts are avoided.
 The exact degree to which this is done depends on the negative binomail dispersion.
 
