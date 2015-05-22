@@ -40,10 +40,12 @@ SEXP R_one_group (SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP, SEXP);
 
 SEXP R_simple_good_turing (SEXP, SEXP, SEXP);
 
-void processHairpinReads(int *, char**, char**, int*, 
-                char**, char**, int*, int*, int*, int*, 
-                int*, int*, int*, int*, int*, int*, 
-                int *, int *, char**, int*);
+
+void processHairpinReads(int *, int *, char**, char**, int*,
+		char**, char**, int*, int*, int*, int*, int*, int*,
+		int*, int*, int*, int*, int*, int*, int *,
+		int *, char**, int*);
+
 }
 
 #endif

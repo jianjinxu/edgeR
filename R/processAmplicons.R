@@ -1,15 +1,22 @@
 #  Code to process hairpin reads from Illumina sequencer
-#  Assume fixed structure of read:
+#  Assume basic fixed structure of read:
 #  Barcode + Common sequence + Hairpin sequence
+#  If barcode2Start and barcode2End are not NULL, forward read sequences contain a second barcode
 #  If readfile2, barcodeStartRev and barcodeEndRev are not NULL, reverse read sequences contain reverse barcodes
 
 processAmplicons = function(readfile, readfile2=NULL, barcodefile, hairpinfile,
-                    barcodeStart=1, barcodeEnd=5, barcodeStartRev=NULL, barcodeEndRev=NULL, hairpinStart=37, hairpinEnd=57,
+                    barcodeStart=1, barcodeEnd=5, barcode2Start=NULL, barcode2End=NULL, barcodeStartRev=NULL, barcodeEndRev=NULL,
+                    hairpinStart=37, hairpinEnd=57,
                     allowShifting=FALSE, shiftingBase = 3,
                     allowMismatch=FALSE, barcodeMismatchBase = 1, hairpinMismatchBase = 2,
                     allowShiftedMismatch = FALSE, 
                     verbose = FALSE) {
-     
+    
+  # Maximum number of barcodes/hairpins supported is 10000/300000 respectively
+  # This should match the constants in C code
+  C_MaxNum_Barcode = 10000;
+  C_MaxNum_Hairpin = 300000;
+  
   checkFileExistence = function(readfilenames){
     if ((length(readfilenames) == 1) && (!file.exists(readfilenames)))
       stop("Read file doesn't exist.\n")
@@ -22,6 +29,7 @@ processAmplicons = function(readfile, readfile2=NULL, barcodefile, hairpinfile,
   }
   
   # Check file existence
+  numfiles = length(readfile)
   checkFileExistence(readfile);
   if (is.null(readfile2)) {
     IsPairedReads = FALSE;
@@ -31,7 +39,8 @@ processAmplicons = function(readfile, readfile2=NULL, barcodefile, hairpinfile,
       stop("readfile and readfile2 should match each other.")
     checkFileExistence(readfile2);
   } 
-  
+  IsDualIndexingOnForwardRead = !is.null(barcode2Start) && !is.null(barcode2End)
+      
   if (!file.exists(barcodefile))
     stop("Barcode file doesn't exist.\n")
   if (!file.exists(hairpinfile))
@@ -54,7 +63,16 @@ processAmplicons = function(readfile, readfile2=NULL, barcodefile, hairpinfile,
     stop("Invalid hairpin end position!")
   if (hairpinEnd <= hairpinStart)
     stop("Hairpin end position should be greater than hairpin start position. \n")
-
+  
+  if (IsDualIndexingOnForwardRead){
+    if ((barcode2Start < 1) || (barcode2Start > readlength))
+      stop("Invalid barcode2 start position!\n")
+    if ((barcode2End < 1) || (barcode2End > readlength))
+      stop("Invalid barcode2 end position!\n")
+    if (barcode2End <= barcode2Start)
+      stop("Barcode2 end position should be greater than barcode2 start position. \n")
+  }
+      
   close(reads)
   
   if (IsPairedReads) {
@@ -77,6 +95,8 @@ processAmplicons = function(readfile, readfile2=NULL, barcodefile, hairpinfile,
   barcodelength <- barcodeEnd - barcodeStart + 1;
   barcodes <- read.table(barcodefile, header=TRUE, sep="\t");
   numbc <- nrow(barcodes) 
+  if (numbc > C_MaxNum_Barcode)
+    stop("Number of barcodes listed in ", barcodefile, " exceeds the limit: ", C_MaxNum_Barcode)
   barcodeIDIndex = which(colnames(barcodes) == 'ID')
   if (length(barcodeIDIndex) < 1) 
     stop("Can't find column ID in ", barcodefile)
@@ -89,17 +109,30 @@ processAmplicons = function(readfile, readfile2=NULL, barcodefile, hairpinfile,
     stop("There are duplicate barcode IDs.\n")
   if ((min(nchar(barcodeseqs)) != barcodelength) || (max(nchar(barcodeseqs)) != barcodelength))
     stop(paste("Barcode sequence length is set to ", barcodelength, ", there are barcode sequence not with specified length.\n", sep=""))
+
   if (IsPairedReads) {
     barcodeseqRevIndex = which(colnames(barcodes) == 'SequencesReverse')
     if (length(barcodeseqRevIndex) < 1) 
       stop("Can't find column SequencesReverse in ", barcodefile)
     barcodeseqsReverse <- as.character(barcodes[, barcodeseqRevIndex])
-	barcodelengthReverse <- barcodeEndRev - barcodeStartRev + 1;	
+    barcodelengthReverse <- barcodeEndRev - barcodeStartRev + 1;	
     if ((min(nchar(barcodeseqsReverse)) != barcodelengthReverse) || (max(nchar(barcodeseqsReverse)) != barcodelengthReverse))
       stop(paste("Reverse barcode sequence length is set to ", barcodelength, ", there are reverse barcode sequence not in specified length.\n", sep=""))  
-	concatenatedBarcodeseqs = paste(barcodeseqs, barcodeseqsReverse, sep="")
+    concatenatedBarcodeseqs = paste(barcodeseqs, barcodeseqsReverse, sep="")
     if (length(unique(concatenatedBarcodeseqs)) != numbc)
       stop("There are duplicate forward/reverse barcode sequences.\n")
+  } else if (IsDualIndexingOnForwardRead) {
+    barcodeseq2Index = which(colnames(barcodes) == 'Sequences2')
+    if (length(barcodeseq2Index) < 1) 
+      stop("Can't find column Sequences2 in ", barcodefile)
+    barcode2seqs <- as.character(barcodes[, barcodeseq2Index])
+    barcode2length <- barcode2End - barcode2Start + 1;
+
+    if ((min(nchar(barcode2seqs)) != barcode2length) || (max(nchar(barcode2seqs)) != barcode2length))
+      stop(paste("Forward barcode2 sequence length is set to ", barcode2length, ", there are barcode2 sequence not in specified length.\n", sep=""))  
+    concatenatedBarcodeseqs = paste(barcodeseqs, barcode2seqs, sep="")
+    if (length(unique(concatenatedBarcodeseqs)) != numbc)
+      stop("There are duplicate barcode/barcode2 sequences.\n") 
   } else {
     if (length(unique(barcodeseqs)) != numbc)
       stop("There are duplicate barcode sequences.\n")
@@ -109,7 +142,8 @@ processAmplicons = function(readfile, readfile2=NULL, barcodefile, hairpinfile,
   hairpinlength <- hairpinEnd - hairpinStart + 1;
   hairpins <- read.table(hairpinfile, header=TRUE, sep="\t");
   numhp <- nrow(hairpins) 
-
+  if (numbc > C_MaxNum_Hairpin)
+    stop("Number of hairpins listed in ", hairpinfile, " exceeds the limit: ", C_MaxNum_Hairpin)
   hairpinIDIndex = which(colnames(hairpins) == 'ID')
   if (length(hairpinIDIndex) < 1) 
     stop("Can't find column ID in ", hairpinfile)
@@ -148,6 +182,9 @@ processAmplicons = function(readfile, readfile2=NULL, barcodefile, hairpinfile,
   if (IsPairedReads) {
     bothBarcodeSeqs = cbind(barcodeseqs, barcodeseqsReverse)
     write.table(bothBarcodeSeqs, file=tempbarcodefile, sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE);
+  } else if (IsDualIndexingOnForwardRead) {
+    bothBarcodeSeqs = cbind(barcodeseqs, barcode2seqs)
+    write.table(bothBarcodeSeqs, file=tempbarcodefile, sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE);
   } else {
     write.table(barcodeseqs, file=tempbarcodefile, sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE);
   }
@@ -159,13 +196,20 @@ processAmplicons = function(readfile, readfile2=NULL, barcodefile, hairpinfile,
 
   tryCatch({
     if (!IsPairedReads) {
-       readfile2 = "DummyReadfile.fastq"
+       readfile2 = rep("DummyReadfile.fastq", numfiles)
        barcodeStartRev = 0;
        barcodeEndRev = 0;
     }
-    .C(.cprocessHairpinReads, IsPairedReads, readfile, readfile2, as.integer(length(readfile)),
+    if (!IsDualIndexingOnForwardRead) {
+       barcode2Start = 0;
+       barcode2End = 0;
+    }
+    
+    .C(.cprocessHairpinReads, as.integer(IsPairedReads), as.integer(IsDualIndexingOnForwardRead), 
+	   as.character(readfile), as.character(readfile2), as.integer(numfiles),
        as.character(tempbarcodefile), as.character(temphairpinfile),
-       as.integer(barcodeStart), as.integer(barcodeEnd), as.integer(barcodeStartRev), as.integer(barcodeEndRev), as.integer(hairpinStart), as.integer(hairpinEnd),
+       as.integer(barcodeStart), as.integer(barcodeEnd), as.integer(barcode2Start), as.integer(barcode2End), as.integer(barcodeStartRev), as.integer(barcodeEndRev),
+       as.integer(hairpinStart), as.integer(hairpinEnd),
        as.integer(allowShifting), as.integer(shiftingBase),
        as.integer(allowMismatch), as.integer(barcodeMismatchBase), as.integer(hairpinMismatchBase),
        as.integer(allowShiftedMismatch),
