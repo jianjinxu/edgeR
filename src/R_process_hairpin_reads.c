@@ -54,7 +54,8 @@ long bchpcount;
 
 int Get_Lines_In_File(FILE* fin) {
   int N=0, ch, last_ch='\n';
-  while (ch=fgetc(fin)) { 
+  while (1) { 
+    ch=fgetc(fin);
     if (ch=='\n') { ++N; }
     else if (ch==EOF) { 
       if (last_ch!='\n') { ++N; } // Capture non-newline-terminated last line.

@@ -12,11 +12,6 @@ processAmplicons = function(readfile, readfile2=NULL, barcodefile, hairpinfile,
                     allowShiftedMismatch = FALSE, 
                     verbose = FALSE) {
     
-  # Maximum number of barcodes/hairpins supported is 10000/300000 respectively
-  # This should match the constants in C code
-  C_MaxNum_Barcode = 10000;
-  C_MaxNum_Hairpin = 300000;
-  
   checkFileExistence = function(readfilenames){
     if ((length(readfilenames) == 1) && (!file.exists(readfilenames)))
       stop("Read file doesn't exist.\n")
@@ -94,9 +89,6 @@ processAmplicons = function(readfile, readfile2=NULL, barcodefile, hairpinfile,
   # Validate barcodes
   barcodelength <- barcodeEnd - barcodeStart + 1;
   barcodes <- read.table(barcodefile, header=TRUE, sep="\t");
-  numbc <- nrow(barcodes) 
-  if (numbc > C_MaxNum_Barcode)
-    stop("Number of barcodes listed in ", barcodefile, " exceeds the limit: ", C_MaxNum_Barcode)
   barcodeIDIndex = which(colnames(barcodes) == 'ID')
   if (length(barcodeIDIndex) < 1) 
     stop("Can't find column ID in ", barcodefile)
@@ -105,7 +97,7 @@ processAmplicons = function(readfile, readfile2=NULL, barcodefile, hairpinfile,
     stop("Can't find column Sequences in ", barcodefile)
   barcodeIDs <- as.character(barcodes[, barcodeIDIndex]) 
   barcodeseqs <- as.character(barcodes[, barcodeseqIndex]) 
-  if (length(unique(barcodeIDs)) != numbc)
+  if (anyDuplicated(barcodeIDs))
     stop("There are duplicate barcode IDs.\n")
   if ((min(nchar(barcodeseqs)) != barcodelength) || (max(nchar(barcodeseqs)) != barcodelength))
     stop(paste("Barcode sequence length is set to ", barcodelength, ", there are barcode sequence not with specified length.\n", sep=""))
@@ -119,7 +111,7 @@ processAmplicons = function(readfile, readfile2=NULL, barcodefile, hairpinfile,
     if ((min(nchar(barcodeseqsReverse)) != barcodelengthReverse) || (max(nchar(barcodeseqsReverse)) != barcodelengthReverse))
       stop(paste("Reverse barcode sequence length is set to ", barcodelength, ", there are reverse barcode sequence not in specified length.\n", sep=""))  
     concatenatedBarcodeseqs = paste(barcodeseqs, barcodeseqsReverse, sep="")
-    if (length(unique(concatenatedBarcodeseqs)) != numbc)
+    if (anyDuplicated(concatenatedBarcodeseqs)) 
       stop("There are duplicate forward/reverse barcode sequences.\n")
   } else if (IsDualIndexingOnForwardRead) {
     barcodeseq2Index = which(colnames(barcodes) == 'Sequences2')
@@ -131,19 +123,16 @@ processAmplicons = function(readfile, readfile2=NULL, barcodefile, hairpinfile,
     if ((min(nchar(barcode2seqs)) != barcode2length) || (max(nchar(barcode2seqs)) != barcode2length))
       stop(paste("Forward barcode2 sequence length is set to ", barcode2length, ", there are barcode2 sequence not in specified length.\n", sep=""))  
     concatenatedBarcodeseqs = paste(barcodeseqs, barcode2seqs, sep="")
-    if (length(unique(concatenatedBarcodeseqs)) != numbc)
+    if (anyDuplicated(concatenatedBarcodeseqs)) 
       stop("There are duplicate barcode/barcode2 sequences.\n") 
   } else {
-    if (length(unique(barcodeseqs)) != numbc)
+    if (anyDuplicated(barcodeseqs)) 
       stop("There are duplicate barcode sequences.\n")
   }
   
   # Validate hairpins
   hairpinlength <- hairpinEnd - hairpinStart + 1;
   hairpins <- read.table(hairpinfile, header=TRUE, sep="\t");
-  numhp <- nrow(hairpins) 
-  if (numbc > C_MaxNum_Hairpin)
-    stop("Number of hairpins listed in ", hairpinfile, " exceeds the limit: ", C_MaxNum_Hairpin)
   hairpinIDIndex = which(colnames(hairpins) == 'ID')
   if (length(hairpinIDIndex) < 1) 
     stop("Can't find column ID in ", hairpinfile)
@@ -155,9 +144,9 @@ processAmplicons = function(readfile, readfile2=NULL, barcodefile, hairpinfile,
 
   if ((min(nchar(hairpinseqs)) != hairpinlength) || (max(nchar(hairpinseqs)) != hairpinlength))
     stop(paste("Hairpin sequence length is set to ", hairpinlength, ", there are hairpin sequences not with specified length.\n", sep=""))
-  if (length(unique(hairpinseqs)) != numhp)
+  if (anyDuplicated(hairpinseqs)) 
     stop("There are duplicate hairpin sequences.\n")
-  if (length(unique(hairpinIDs)) != numhp)
+  if (anyDuplicated(hairpinIDs)) 
     stop("There are duplicate hairpin IDs.\n")
  
   # validate mismatch/shifting input parameters
@@ -179,6 +168,7 @@ processAmplicons = function(readfile, readfile2=NULL, barcodefile, hairpinfile,
 
   # passing only barcode/hairpin sequences to C function
   tempbarcodefile <- paste("Barcode", as.character(Sys.getpid()), "temp.txt", sep = "_")
+  on.exit({ if (file.exists(tempbarcodefile)) { file.remove(tempbarcodefile) }}, add=TRUE)
   if (IsPairedReads) {
     bothBarcodeSeqs = cbind(barcodeseqs, barcodeseqsReverse)
     write.table(bothBarcodeSeqs, file=tempbarcodefile, sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE);
@@ -190,9 +180,11 @@ processAmplicons = function(readfile, readfile2=NULL, barcodefile, hairpinfile,
   }
   
   temphairpinfile <- paste("Hairpin", as.character(Sys.getpid()), "temp.txt", sep = "_")
+  on.exit({ if (file.exists(temphairpinfile)) { file.remove(temphairpinfile) }}, add=TRUE)
   write.table(hairpinseqs, file=temphairpinfile, sep="\t", quote=FALSE, row.names=FALSE, col.names=FALSE);
 
   tempoutfile <- paste("ReadcountSummary", as.character(Sys.getpid()), "output.txt", sep = "_")
+  on.exit({ if (file.exists(tempoutfile)) { file.remove(tempoutfile) }}, add=TRUE)
 
   tryCatch({
     if (!IsPairedReads) {
@@ -219,14 +211,6 @@ processAmplicons = function(readfile, readfile2=NULL, barcodefile, hairpinfile,
   },
   error = function(err) {
     print(paste("ERROR MESSAGE:  ",err))
-  },
-  finally = {
-    if (file.exists(tempbarcodefile))
-      file.remove(tempbarcodefile)
-    if (file.exists(temphairpinfile))
-      file.remove(temphairpinfile)
-    if (file.exists(tempoutfile))
-      file.remove(tempoutfile)
   }
   )
 
