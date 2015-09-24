@@ -4,8 +4,8 @@
 SEXP R_one_group (SEXP nlib, SEXP ntag, SEXP y, SEXP disp, SEXP offsets, SEXP weights, SEXP max_iterations, SEXP tolerance, SEXP beta) try {
     const int num_tags=asInteger(ntag);
     const int num_libs=asInteger(nlib);
-	if (!isNumeric(disp)) { throw std::runtime_error("dispersion vector must be double precision"); }
-	if (num_tags!=LENGTH(disp)) { throw std::runtime_error("length of dispersion vector is not equal to number of tags"); }
+    if (!isNumeric(disp)) { throw std::runtime_error("dispersion matrix must be double precision"); }
+    if (num_tags*num_libs !=LENGTH(disp)) { throw std::runtime_error("dimensions of dispersion vector is not equal to number of tags"); }
 	if (num_tags*num_libs != LENGTH(y) ) { throw std::runtime_error("dimensions of the count table are not as specified"); }  // Checking that it is an exact division.
   
 	if (!isNumeric(beta)) { throw std::runtime_error("beta start vector must be double precision"); }
@@ -30,9 +30,9 @@ SEXP R_one_group (SEXP nlib, SEXP ntag, SEXP y, SEXP disp, SEXP offsets, SEXP we
 		if (!isNumeric(y)) { throw std::runtime_error("count matrix must be integer or double-precision"); }
 		ydptr=REAL(y); 
 	}
-    matvec_check allo(num_libs, num_tags, offsets, false, "offset", false);
+    matvec_check allo(num_libs, num_tags, offsets, false, "offset");
 	const double* const* optr2=allo.access();
-	matvec_check allw(num_libs, num_tags, weights, false, "weight", true);
+	matvec_check allw(num_libs, num_tags, weights, false, "weight", 1);
 	const double* const* wptr2=allw.access();
 	const double* dptr=REAL(disp);
 
@@ -58,10 +58,11 @@ SEXP R_one_group (SEXP nlib, SEXP ntag, SEXP y, SEXP disp, SEXP offsets, SEXP we
 #ifdef WEIGHTED					
 					*wptr2,
 #endif					
-					yptr, dptr[tag], (use_old_start ? bsptr[tag] : R_NaReal));
+					yptr, dptr, (use_old_start ? bsptr[tag] : R_NaReal));
 
 			bptr[tag]=out.first;
 			cptr[tag]=out.second;
+			dptr+=num_libs;
 			allo.advance();
 			allw.advance();
     	}

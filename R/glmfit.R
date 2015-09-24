@@ -23,7 +23,7 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.siz
 #	Fit negative binomial generalized linear model for each transcript
 #	to a series of digital expression libraries
 #	Davis McCarthy and Gordon Smyth
-#	Created 17 August 2010. Last modified 11 Sep 2014.
+#	Created 17 August 2010. Last modified 18 May 2015.
 {
 #	Check y
 	y <- as.matrix(y)
@@ -43,6 +43,7 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.siz
 
 #	Check dispersion
 	if(is.null(dispersion)) stop("No dispersion values provided.")
+	dispersion.mat <- expandAsMatrix(dispersion, dim(y), byrow=FALSE)
 
 #	Check offset and lib.size
 	if(is.null(offset)) {
@@ -57,11 +58,11 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.siz
 #	If the design is equivalent to a oneway layout, use a shortcut algorithm
 	group <- designAsFactor(design)
 	if(nlevels(group)==ncol(design)) {
-		fit <- mglmOneWay(y,design=design,dispersion=dispersion,offset=offset,weights=weights,coef.start=start)
-		fit$deviance <- nbinomDeviance(y=y,mean=fit$fitted.values,dispersion=dispersion,weights=weights)
+		fit <- mglmOneWay(y,design=design,dispersion=dispersion.mat,offset=offset,weights=weights,coef.start=start)
+		fit$deviance <- nbinomDeviance(y=y,mean=fit$fitted.values,dispersion=dispersion.mat,weights=weights)
 		fit$method <- "oneway"
 	} else {
-		fit <- mglmLevenberg(y,design=design,dispersion=dispersion,offset=offset,weights=weights,coef.start=start,maxit=250)
+		fit <- mglmLevenberg(y,design=design,dispersion=dispersion.mat,offset=offset,weights=weights,coef.start=start,maxit=250)
 		fit$method <- "levenberg"
 	}
 
@@ -71,7 +72,7 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.siz
 		fit$unshrunk.coefficients <- fit$coefficients
 		colnames(fit$unshrunk.coefficients) <- colnames(design)
 		rownames(fit$unshrunk.coefficients) <- rownames(y)
-		fit$coefficients <- predFC(y,design,offset=offset,dispersion=dispersion,prior.count=prior.count,weights=weights,...)*log(2)
+		fit$coefficients <- predFC(y,design,offset=offset,dispersion=dispersion.mat,prior.count=prior.count,weights=weights,...)*log(2)
 	}
 	colnames(fit$coefficients) <- colnames(design)
 	rownames(fit$coefficients) <- rownames(y)
@@ -87,10 +88,10 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.siz
 }
 
 
-glmLRT <- function(glmfit,coef=ncol(glmfit$design),contrast=NULL,test="chisq")
+glmLRT <- function(glmfit,coef=ncol(glmfit$design),contrast=NULL)
 #	Tagwise likelihood ratio tests for DGEGLM
 #	Gordon Smyth, Davis McCarthy and Yunshun Chen.
-#	Created 1 July 2010.  Last modified 22 Nov 2013.
+#	Created 1 July 2010.  Last modified 11 June 2015.
 {
 #	Check glmfit
 	if(!is(glmfit,"DGEGLM")) {
@@ -101,10 +102,6 @@ glmLRT <- function(glmfit,coef=ncol(glmfit$design),contrast=NULL,test="chisq")
 	}
 	if(is.null(glmfit$AveLogCPM)) glmfit$AveLogCPM <- aveLogCPM(glmfit)
 	nlibs <- ncol(glmfit)
-
-#	Check test
-	test <- match.arg(test,c("F","f","chisq"))
-	if(test=="f") test <- "F"
 	
 #	Check design matrix
 	design <- as.matrix(glmfit$design)
@@ -157,20 +154,7 @@ glmLRT <- function(glmfit,coef=ncol(glmfit$design),contrast=NULL,test="chisq")
 #	Likelihood ratio statistic
 	LR <- fit.null$deviance - glmfit$deviance
 	df.test <- fit.null$df.residual - glmfit$df.residual
-
-#	Chisquare or F-test	
-	LRT.pvalue <- switch(test,
-		"F" = {
-			phi <- quantile(glmfit$dispersion,p=0.5)
-			mu <- quantile(glmfit$fitted.values,p=0.5)
-			gamma.prop <- (phi*mu/(1 + phi*mu))^2
-			prior.df <- glmfit$prior.df
-			if(is.null(prior.df)) prior.df <- 20
-			glmfit$df.total <- glmfit$df.residual + prior.df/gamma.prop
-			pf(LR/df.test, df1=df.test, df2=glmfit$df.total, lower.tail = FALSE, log.p = FALSE)
-		},
-		"chisq" = pchisq(LR, df=df.test, lower.tail = FALSE, log.p = FALSE)
-	)
+	LRT.pvalue <-  pchisq(LR, df=df.test, lower.tail = FALSE, log.p = FALSE)
 
 	rn <- rownames(glmfit)
 	if(is.null(rn))

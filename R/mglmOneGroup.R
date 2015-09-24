@@ -11,7 +11,7 @@ mglmOneGroup <- function(y,dispersion=0,offset=0,weights=NULL,maxit=50,tol=1e-10
 	nlibs <- ncol(y)
 
 #	Check dispersion
-	dispersion <- as.vector(dispersion)
+	dispersion <- expandAsMatrix(dispersion, dim(y), byrow=FALSE)
 	if(typeof(dispersion) != "double") stop("dispersion not floating point number")
 	if(any(dispersion<0)) stop("dispersion must be non-negative")
 
@@ -37,12 +37,11 @@ mglmOneGroup <- function(y,dispersion=0,offset=0,weights=NULL,maxit=50,tol=1e-10
 	if(typeof(weights) != "double") stop("weights is non-numeric")
 
 #	Expansions to full dimensions
-	dispersion <- rep(dispersion,length=ntags)
 	offset <- expandAsMatrix(offset,dim(y))
 	weights <- expandAsMatrix(weights,dim(y))
 
 #	Fisher scoring iteration.
-	output <- .Call(.cR_one_group, nlibs, ntags, t(y), dispersion, offset, weights, maxit, tol, coef.start)
+	output <- .Call(.cR_one_group, nlibs, ntags, t(y), t(dispersion), offset, weights, maxit, tol, coef.start)
 
 #	Check error condition
 	if(is.character(output)) stop(output)

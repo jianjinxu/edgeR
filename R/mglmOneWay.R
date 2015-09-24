@@ -31,6 +31,7 @@ mglmOneWay <- function(y,design=NULL,dispersion=0,offset=0,weights=NULL,maxit=50
 	stopifnot(ncol(design)==ngroups)
 	mu <- matrix(0,ntags,ngroups)
 	offset <- expandAsMatrix(offset,dim(y))
+	dispersion <- expandAsMatrix(dispersion, dim(y), byrow=FALSE)
 	if(!is.null(weights)) weights <- expandAsMatrix(weights,dim(y))
 	
 	firstjofgroup <- rep(0,ngroups)
@@ -39,7 +40,7 @@ mglmOneWay <- function(y,design=NULL,dispersion=0,offset=0,weights=NULL,maxit=50
 		j <- which(group==(levels(group)[g]))
 		firstjofgroup[g] <- j[1]
 		if (!is.null(coef.start)) { new.start <- coef.start %*% design[firstjofgroup[g],] }
-		mu[,g] <- mglmOneGroup(y[,j,drop=FALSE],dispersion=dispersion,offset=offset[,j,drop=FALSE],weights=weights[,j,drop=FALSE],maxit=maxit,tol=tol,
+		mu[,g] <- mglmOneGroup(y[,j,drop=FALSE],dispersion=dispersion[,j,drop=FALSE],offset=offset[,j,drop=FALSE],weights=weights[,j,drop=FALSE],maxit=maxit,tol=tol,
 			coef.start=new.start)
 	}
 

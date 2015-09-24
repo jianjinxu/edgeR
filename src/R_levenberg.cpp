@@ -4,7 +4,7 @@
 SEXP R_levenberg (SEXP nlib, SEXP ntag, SEXP design, SEXP counts, SEXP disp, SEXP offset, SEXP weights,
 		SEXP beta, SEXP fitted, SEXP tol, SEXP maxit) try {
 	if (!isNumeric(design)) { throw  std::runtime_error("design matrix should be double precision"); }
-	if (!isNumeric(disp)) { throw std::runtime_error("dispersion vector should be double precision"); }
+	if (!isNumeric(disp)) { throw std::runtime_error("dispersion matrix should be double precision"); }
 	if (!isNumeric(beta)) { throw std::runtime_error("matrix of start values for coefficients should be double precision"); }
 	if (!isNumeric(fitted)) { throw std::runtime_error("matrix of starting fitted values should be double precision"); }
     const int num_tags=asInteger(ntag);
@@ -33,8 +33,8 @@ SEXP R_levenberg (SEXP nlib, SEXP ntag, SEXP design, SEXP counts, SEXP disp, SEX
         throw std::runtime_error("dimensions of the beta matrix do not match to the number of tags and coefficients");
     } else if (LENGTH(fitted)!=clen) {
         throw std::runtime_error("dimensions of the fitted matrix do not match those of the count matrix");
-    } else if (LENGTH(disp)!=num_tags) { 
-		throw std::runtime_error("length of dispersion vector must be equal to the number of tags"); 
+    } else if (LENGTH(disp)!=clen) { 
+		throw std::runtime_error("dimensions of dispersion matrix is not as specified"); 
 	} 
 
     // Initializing pointers to the assorted features.
@@ -42,9 +42,9 @@ SEXP R_levenberg (SEXP nlib, SEXP ntag, SEXP design, SEXP counts, SEXP disp, SEX
 		  *design_ptr=REAL(design), 
 	  	  *fitted_ptr=REAL(fitted), 
 		  *disp_ptr=REAL(disp);
-    matvec_check allo(num_libs, num_tags, offset, true, "offset", false);
+    matvec_check allo(num_libs, num_tags, offset, true, "offset");
     const double* const* optr2=allo.access();
-    matvec_check allw(num_libs, num_tags, weights, true, "weight", true);
+    matvec_check allw(num_libs, num_tags, weights, true, "weight", 1);
     const double* const* wptr2=allw.access();
 
     // Initializing output cages.
@@ -80,7 +80,7 @@ SEXP R_levenberg (SEXP nlib, SEXP ntag, SEXP design, SEXP counts, SEXP disp, SEX
 #ifdef WEIGHTED
 						*wptr2,
 #endif
-						*disp_ptr, new_fitted_ptr, new_beta_ptr)) {
+						disp_ptr, new_fitted_ptr, new_beta_ptr)) {
 				std::stringstream errout;
 				errout<< "solution using Cholesky decomposition failed for tag " << tag+1;
 				throw std::runtime_error(errout.str());
@@ -88,7 +88,7 @@ SEXP R_levenberg (SEXP nlib, SEXP ntag, SEXP design, SEXP counts, SEXP disp, SEX
 			allo.advance();
 			allw.advance();
 			
-			++disp_ptr;
+			disp_ptr+=num_libs;
 			fitted_ptr+=num_libs;
 			new_fitted_ptr+=num_libs;
 			beta_ptr+=num_coefs;

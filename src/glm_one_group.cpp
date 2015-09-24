@@ -4,7 +4,7 @@ std::pair<double,bool> glm_one_group(const int& nlibs, const int& maxit, const d
 #ifdef WEIGHTED		
 		const double* weights,	
 #endif		
-		const double* y, const double& disp, double cur_beta) {
+		const double* y, const double* disp, double cur_beta) {
     /* Setting up initial values for beta as the log of the mean of the ratio of counts to offsets.
  	 * This is the exact solution for the gamma distribution (which is the limit of the NB as
  	 * the dispersion goes to infinity. However, if cur_beta is not NA, then we assume it's good. 
@@ -48,7 +48,7 @@ std::pair<double,bool> glm_one_group(const int& nlibs, const int& maxit, const d
 		dl=0;
  	    info=0;
 		for (int j=0; j<nlibs; ++j) {
-			const double mu=std::exp(cur_beta+offset[j]), denominator=1+mu*disp;
+			const double mu=std::exp(cur_beta+offset[j]), denominator=1+mu*disp[j];
 #ifdef WEIGHTED			
 			dl+=(y[j]-mu)/denominator * weights[j];
 			info+=mu/denominator * weights[j];
