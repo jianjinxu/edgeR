@@ -1,8 +1,8 @@
-diffSpliceDGE <- function(fit.exon, coef=ncol(fit.exon$design), geneid, exonid=NULL, verbose=TRUE)
+diffSpliceDGE <- function(fit.exon, coef=ncol(fit.exon$design), contrast=NULL, geneid, exonid=NULL, verbose=TRUE)
 {
 # Identify exons and genes with splice variants using negative binomial GLMs
 # Yunshun Chen and Gordon Smyth
-# Created 29 March 2014.  Last modified 25 Aug 2014. 
+# Created 29 March 2014.  Last modified 13 May 2015. 
 
 #	Check input (from diffSplice in limma)
 	exon.genes <- fit.exon$genes
@@ -35,8 +35,48 @@ diffSpliceDGE <- function(fit.exon, coef=ncol(fit.exon$design), geneid, exonid=N
 		o <- order(geneid,exonid)
 	geneid <- geneid[o]
 	exon.genes <- exon.genes[o,,drop=FALSE]
-
 	fit.exon <- fit.exon[o, ]
+
+#	Check design matrix
+	design <- as.matrix(fit.exon$design)
+	nbeta <- ncol(design)
+	if(nbeta < 2) stop("Need at least two columns for design, usually the first is the intercept column")
+	coef.names <- colnames(design)
+
+	if(fit.exon$prior.count!=0){
+		coefficients.mle <- fit.exon$unshrunk.coefficients
+	} else {
+		coefficients.mle <- fit.exon$coefficients
+	}
+
+#	Evaluate beta to be tested
+#	Note that contrast takes precedence over coef: if contrast is given
+#	then reform design matrix so that contrast of interest is the first column
+	if(is.null(contrast)) {
+		if(length(coef) > 1) coef <- unique(coef)
+		if(is.character(coef)) {
+			check.coef <- coef %in% colnames(design)
+			if(any(!check.coef)) stop("One or more named coef arguments do not match a column of the design matrix.")
+			coef.name <- coef
+			coef <- match(coef, colnames(design))
+		}
+		else
+			coef.name <- coef.names[coef]
+		beta <- coefficients.mle[, coef, drop=FALSE]
+	} else {
+		contrast <- as.matrix(contrast)
+		reform <- contrastAsCoef(design, contrast=contrast, first=TRUE)
+		coef <- 1
+		beta <- drop(coefficients.mle %*% contrast)
+		contrast <- drop(contrast)
+		i <- contrast!=0
+		coef.name <- paste(paste(contrast[i],coef.names[i],sep="*"),collapse=" ")
+		design <- reform$design
+	}
+	beta <- as.vector(beta)	
+	
+#	Null design matrix
+	design0 <- design[, -coef, drop=FALSE]
 
 #	Gene level information
 	gene.counts <- rowsum(fit.exon$counts, geneid, reorder=FALSE)
@@ -72,6 +112,7 @@ diffSpliceDGE <- function(fit.exon, coef=ncol(fit.exon$design), geneid, exonid=N
 	geneid <- geneid[exon.keep]
 	exon.genes <- exon.genes[exon.keep, , drop=FALSE]
 	fit.exon <- fit.exon[exon.keep, ]
+	beta <- beta[exon.keep]
 
 	fit.gene <- fit.gene[gene.keep, ]
 	gene.nexons <- gene.nexons[gene.keep]
@@ -85,7 +126,7 @@ diffSpliceDGE <- function(fit.exon, coef=ncol(fit.exon$design), geneid, exonid=N
 	gene.fit.exon <- glmFit(gene.counts.exon, design=design, dispersion=gene.dispersion.exon, lib.size=gene.dge$samples$lib.size)
 	gene.betabar <- gene.fit.exon$coefficients[, coef, drop=FALSE]
 	offset.new <- fit.exon$offset + gene.betabar %*% t(design[, coef, drop=FALSE])
-	coefficients <- fit.exon$coefficients[, coef, drop=FALSE] - gene.betabar
+	coefficients <- beta - gene.betabar
 
 #	Testing
 	design0 <- design[, -coef, drop=FALSE]
@@ -101,14 +142,12 @@ diffSpliceDGE <- function(fit.exon, coef=ncol(fit.exon$design), geneid, exonid=N
 	gene.df.total <- pmin(gene.df.total, ngenes*max.df.residual)
 	exon.p.value <- pf(exon.F, df1=exon.df.test, df2=gene.df.total[g], lower.tail=FALSE, log.p=FALSE)
 
-	#Ensure is not more significant than chisquare test
+#	Ensure is not more significant than chisquare test
 	i <- s2.fit$var.post[gene.keep][g] < 1
 	if(any(i)) {
 		chisq.pvalue <- pchisq(exon.LR[i], df=exon.df.test[i], lower.tail=FALSE, log.p=FALSE)
 		exon.p.value[i] <- pmax(exon.p.value[i], chisq.pvalue)
 	}
-
-#	Gene p-values
 
 #	Gene Simes' p-values
 	o <- order(g, exon.p.value, decreasing=FALSE)
@@ -240,14 +279,3 @@ plotSpliceDGE <- function(lrt, geneid=NULL, rank=1L, FDR = 0.05)
 	}
 	abline(h=0,lty=2)
 }
-
-
-
-
-
-
-
-
-
-
-
