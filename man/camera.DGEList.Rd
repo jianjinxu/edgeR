@@ -12,7 +12,7 @@ Test whether a set of genes is highly ranked relative to other genes in terms of
   \item{y}{a \code{DGEList} object containing dispersion estimates.}
   \item{index}{an index vector or a list of index vectors.  Can be any vector such that \code{y[indices,]} selects the rows corresponding to the test set.}
   \item{design}{the design matrix.}
-  \item{contrast}{the contrast of the linear model coefficients for which the test is required. Can be an integer specifying a column of \code{design}, or else a numeric vector of same length as the number of columns of \code{design}.}
+  \item{contrast}{the contrast of the linear model coefficients for which the test is required. Can be an integer specifying a column of \code{design}, or the name of a column of \code{design}, or else a numeric vector of same length as the number of columns of \code{design}.}
   \item{\dots}{other arguments are passed to \code{\link{camera.default}}.}
 }
 

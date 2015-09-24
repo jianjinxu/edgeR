@@ -13,7 +13,7 @@ Rotation gene set testing for Negative Binomial generalized linear models.
   \item{y}{\code{DGEList} object.}
   \item{index}{list of indices specifying the rows of \code{y} in the gene sets. The list can be made using \link{ids2indices}.}
   \item{design}{design matrix}
-  \item{contrast}{contrast for which the test is required. Can be an integer specifying a column of \code{design}, or else a contrast vector of length equal to the number of columns of \code{design}.}
+  \item{contrast}{contrast for which the test is required. Can be an integer specifying a column of \code{design}, or the name of a column of \code{design}, or else a contrast vector of length equal to the number of columns of \code{design}.}
   \item{\dots}{other arguments passed to \code{\link{romer.default}}.}
 }
 
