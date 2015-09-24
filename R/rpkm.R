@@ -27,7 +27,7 @@ rpkm.DGEList <- function(x, gene.length=NULL, normalized.lib.sizes=TRUE, log=FAL
 	lib.size <- x$samples$lib.size
 	if(normalized.lib.sizes) lib.size <- lib.size*x$samples$norm.factors
 
-	rpkm.default(x=x$counts,gene.length=gene.length,lib.size=lib.size,log=log,prior.count=prior.count,...)
+	rpkm.default(x=x$counts,gene.length=gene.length,lib.size=lib.size,log=log,prior.count=prior.count, ...)
 }
 
 rpkm.default <- function(x, gene.length, lib.size=NULL, log=FALSE, prior.count=0.25, ...)
@@ -35,7 +35,7 @@ rpkm.default <- function(x, gene.length, lib.size=NULL, log=FALSE, prior.count=0
 #	Gordon Smyth
 #	Created 1 November 2012. Last modified 18 March 2014.
 {
-	y <- cpm.default(x=x,lib.size=lib.size,log=log,prior.count=prior.count)
+	y <- cpm.default(x=x,lib.size=lib.size,log=log,prior.count=prior.count, ...)
 	gene.length.kb <- gene.length/1000
 	if(log)
 		y-log2(gene.length.kb)

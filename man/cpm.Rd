@@ -23,7 +23,7 @@
 \item{log}{logical, if \code{TRUE} then \code{log2} values are returned.}
 \item{prior.count}{average count to be added to each observation to avoid taking log of zero. Used only if \code{log=TRUE}.}
 \item{gene.length}{vector of length \code{nrow(x)} giving gene length in bases, or the name of the column \code{x$genes} containing the gene lengths.}
-\item{\ldots}{other arguments are not currently used}
+\item{\dots}{other arguments that are not currently used.}
 }
 
 \value{numeric matrix of CPM or RPKM values.}
