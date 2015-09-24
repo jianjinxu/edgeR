@@ -4,12 +4,13 @@
 \title{Test for Differential Exon Usage}
 \description{Given a negative binomial generalized log-linear model fit at the exon level, test for differential exon usage between experimental conditions.}
 \usage{
-diffSpliceDGE(fit.exon, coef=ncol(fit.exon$design), geneid, exonid=NULL, verbose=TRUE)
+diffSpliceDGE(fit.exon, coef=ncol(fit.exon$design), contrast=NULL, geneid, exonid=NULL, verbose=TRUE)
 }
 
 \arguments{
   \item{fit.exon}{an \code{DGEGLM} fitted model object produced by \code{glmFit}. Rows should correspond to exons.}
   \item{coef}{integer indicating which coefficient of the generalized linear model is to be tested for differential exon usage. Defaults to the last coefficient.}
+  \item{contrast}{numeric vector specifying the contrast of the linear model coefficients to be tested for differential exon usage. Length must equal to the number of columns of \code{design}. If specified, then takes precedence over \code{coef}.}
   \item{geneid}{gene identifiers. Either a vector of length \code{nrow(fit.exon)} or the name of the column of \code{fit.exon$genes} containing the gene identifiers. Rows with the same ID are assumed to belong to the same gene.}
   \item{exonid}{exon identifiers. Either a vector of length \code{nrow(fit.exon)} or the name of the column of \code{fit.exon$genes} containing the exon identifiers.}
   \item{verbose}{logical, if \code{TRUE} some diagnostic information about the number of genes and exons is output.}
