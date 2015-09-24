@@ -5,11 +5,12 @@
 Expand scalar or vector to a matrix.
 }
 \usage{
-expandAsMatrix(x, dim)
+expandAsMatrix(x, dim=NULL, byrow=TRUE)
 }
 \arguments{
   \item{x}{scalar, vector or matrix. If a vector, length must match one of the output dimensions.}
   \item{dim}{required dimension for the output matrix.}
+  \item{byrow}{logical. Should the matrix be filled by columns or by rows (the default) if the length of the input vector is equal to both dimensions?}
 }
 
 \details{
