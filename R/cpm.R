@@ -4,7 +4,7 @@ UseMethod("cpm")
 cpm.DGEList <- function(x, normalized.lib.sizes=TRUE, log=FALSE, prior.count=0.25, ...)
 #	Counts per million for a DGEList
 #	Davis McCarthy and Gordon Smyth.
-#	Created 20 June 2011. Last modified 1 November 2012
+#	Created 20 June 2011. Last modified 6 July 2015
 {
 	lib.size <- x$samples$lib.size
 	if(normalized.lib.sizes) lib.size <- lib.size*x$samples$norm.factors
@@ -14,7 +14,7 @@ cpm.DGEList <- function(x, normalized.lib.sizes=TRUE, log=FALSE, prior.count=0.2
 cpm.default <- function(x, lib.size=NULL, log=FALSE, prior.count=0.25, ...)
 #	Counts per million for a matrix
 #	Davis McCarthy and Gordon Smyth.
-#	Created 20 June 2011. Last modified 1 November 2012
+#	Created 20 June 2011. Last modified 6 July 2015
 {
 	x <- as.matrix(x)
 	if(is.null(lib.size)) lib.size <- colSums(x)
