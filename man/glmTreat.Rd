@@ -14,21 +14,22 @@ treatDGE(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
 \arguments{
 \item{glmfit}{a \code{DGEGLM} object, usually output from \code{glmFit} or \code{glmQLFit}.}
 
-\item{coef}{integer or character vector indicating which coefficients of the linear model are to be tested equal to zero.  Values must be columns or column names of \code{design}. Defaults to the last coefficient.  Ignored if \code{contrast} is specified.}
+\item{coef}{integer or character vector indicating which coefficients of the linear model are to be tested equal to zero.  Values must be columns or column names of \code{design}. Defaults to the last coefficient. Ignored if \code{contrast} is specified.}
 
-\item{contrast}{numeric vector specifying the contrast of the linear model coefficients to be tested against the log2-fold change threshold. Length must equal to the number of columns of \code{design}. If specified, then takes precedence over \code{coef}.}
+\item{contrast}{numeric vector specifying the contrast of the linear model coefficients to be tested against the log2-fold-change threshold. Length must equal to the number of columns of \code{design}. If specified, then takes precedence over \code{coef}.}
 
 \item{lfc}{numeric scalar specifying the absolute value of the log2-fold change threshold above which differential expression is to be considered.}
 }
 
 \value{
 \code{glmTreat} produces an object of class \code{DGELRT} with the same components as for \code{glmfit} plus the following:
-	\item{lfc}{absolute value of the specified log2-fold change threshold.}
-	\item{table}{data frame with the same rows as \code{glmfit} containing the log2-fold changes, average log2-counts per million and p-values, ready to be displayed by \code{topTags.}.}
+	\item{lfc}{absolute value of the specified log2-fold-change threshold.}
+	\item{table}{data frame with the same rows as \code{glmfit} containing the log2-fold-changes, average log2-counts per million and p-values, ready to be displayed by \code{topTags}.}
 	\item{comparison}{character string describing the coefficient or the contrast being tested.}
 
 The data frame \code{table} contains the following columns:
-	\item{logFC}{log2-fold change of expression between conditions being tested.}
+	\item{logFC}{shrunk log2-fold-change of expression between conditions being tested.}
+	\item{unshrunk.logFC}{unshrunk log2-fold-change of expression between conditions being tested. Exists only when \code{prior.count} is not equal to 0 for \code{glmfit}.}
 	\item{logCPM}{average log2-counts per million, the average taken over all libraries.}
 	\item{PValue}{p-values.}
 }
@@ -43,6 +44,9 @@ In the former case, it conducts a modified likelihood ratio test (LRT) against t
 In the latter case, it conducts a quasi-likelihood (QL) F-test against the threshold.
 
 If \code{lfc=0}, then \code{glmTreat} is equivalent to \code{glmLRT} or \code{glmQLFTest}, depending on whether likelihood or quasi-likelihood is being used.
+
+If there is no shrinkage on log-fold-changes, i.e., fitting glms with \code{prior.count=0}, then \code{unshrunk.logFC} and \code{logFC} are essentially the same. Hence they are merged into one column of \code{logFC} in \code{table}.
+Note that \code{glmTreat} constructs test statistics using \code{unshrunk.logFC} rather than \code{logFC}.
 
 \code{glmTreat} was previously called \code{treatDGE}.
 The old function name is now deprecated and will be removed in a future release of edgeR.
