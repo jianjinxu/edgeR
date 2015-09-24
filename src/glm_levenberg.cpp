@@ -15,13 +15,13 @@ double glm_levenberg::nb_deviance (const double* y, const double* mu,
 #ifdef WEIGHTED
 		const double* w, 
 #endif		
-		const double& phi) const {
+		const double* phi) const {
     double tempdev=0;
     for (int i=0; i<nlibs; ++i) {
 #ifdef WEIGHTED
-        tempdev+=w[i]*compute_unit_nb_deviance(y[i], mu[i], phi);
+        tempdev+=w[i]*compute_unit_nb_deviance(y[i], mu[i], phi[i]);
 #else
-		tempdev+=compute_unit_nb_deviance(y[i], mu[i], phi);
+		tempdev+=compute_unit_nb_deviance(y[i], mu[i], phi[i]);
 #endif
     }
     return tempdev;
@@ -77,7 +77,7 @@ int glm_levenberg::fit(const double* offset, const double* y,
 #ifdef WEIGHTED
 		const double* w, 
 #endif
-		const double& disp, double* mu, double* beta) {
+		const double* disp, double* mu, double* beta) {
 	// We expect 'mu' and 'beta' to be supplied. We then check the maximum value of the counts.
     double ymax=0;
     for (int lib=0; lib<nlibs; ++lib) { 
@@ -124,7 +124,7 @@ int glm_levenberg::fit(const double* offset, const double* y,
  		 */
         for (int row=0; row<nlibs; ++row) {
             const double& cur_mu=mu[row];
-			const double denom=(1+cur_mu*disp);
+			const double denom=(1+cur_mu*disp[row]);
 #ifdef WEIGHTED
             const double weight=cur_mu/denom*w[row];
 			const double deriv=(y[row]-cur_mu)/denom*w[row];

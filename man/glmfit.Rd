@@ -13,7 +13,7 @@ Conduct genewise statistical tests for a given coefficient or coefficient contra
 \method{glmFit}{DGEList}(y, design=NULL, dispersion=NULL, prior.count=0.125, start=NULL, \dots)
 \method{glmFit}{default}(y, design=NULL, dispersion=NULL, offset=NULL, lib.size=NULL, weights=NULL,
        prior.count=0.125, start=NULL, \dots)
-glmLRT(glmfit, coef=ncol(glmfit$design), contrast=NULL, test="chisq")
+glmLRT(glmfit, coef=ncol(glmfit$design), contrast=NULL)
 }
 
 \arguments{
@@ -23,7 +23,7 @@ glmLRT(glmfit, coef=ncol(glmfit$design), contrast=NULL, test="chisq")
 Must be of full column rank.
 Defaults to a single column of ones, equivalent to treating the columns as replicate libraries.}
 
-\item{dispersion}{numeric scalar or vector of negative binomial dispersions. Can be a common value for all genes, or a vector of values can provide a unique dispersion value for each gene. If \code{NULL} will be extracted from \code{y}, with order of precedence: genewise dispersion, trended dispersions, common dispersion.}
+\item{dispersion}{numeric scalar, vector or matrix of negative binomial dispersions. Can be a common value for all genes, a vector of dispersion values with one for each gene, or a matrix of dispersion values with one for each observation. If \code{NULL} will be extracted from \code{y}, with order of precedence: genewise dispersion, trended dispersions, common dispersion.}
 
 \item{offset}{numeric matrix of same size as \code{y} giving offsets for the log-linear models.  Can be a scalor or a vector of length \code{ncol(y)}, in which case it is expanded out to a matrix.}
 
@@ -42,8 +42,6 @@ Defaults to a single column of ones, equivalent to treating the columns as repli
 \item{coef}{integer or character vector indicating which coefficients of the linear model are to be tested equal to zero.  Values must be columns or column names of \code{design}. Defaults to the last coefficient.  Ignored if \code{contrast} is specified.}
 
 \item{contrast}{numeric vector or matrix specifying one or more contrasts of the linear model coefficients to be tested equal to zero. Number of rows must equal to the number of columns of \code{design}. If specified, then takes precedence over \code{coef}.}
-
-\item{test}{which test (distribution) to use in calculating the p-values. Possible values are \code{"F"} or \code{"chisq"}.}
 }
 
 \value{
@@ -54,11 +52,12 @@ Defaults to a single column of ones, equivalent to treating the columns as repli
 	\item{offset}{numeric matrix of linear model offsets.}
 	\item{dispersion}{vector of dispersions used for the fit.}
 	\item{coefficients}{numeric matrix of estimated coefficients from the glm fits, on the natural log scale, of size \code{nrow(y)} by \code{ncol(design)}.}
+	\item{unshrunk.coefficients}{numeric matrix of estimated coefficients from the glm fits when no log-fold-changes shrinkage is applied, on the natural log scale, of size \code{nrow(y)} by \code{ncol(design)}. It exists only when \code{prior.count} is not 0.}
 	\item{fitted.values}{matrix of fitted values from glm fits, same number of rows and columns as \code{y}.}
 	\item{deviance}{numeric vector of deviances, one for each gene.}
 
 \code{glmLRT} produces objects of class \code{DGELRT} with the same components as for \code{glmfit} plus the following:
-	\item{table}{data frame with the same rows as \code{y} containing the log2-fold changes, likelhood ratio statistics and p-values, ready to be displayed by \code{topTags.}.}
+	\item{table}{data frame with the same rows as \code{y} containing the log2-fold-changes, likelhood ratio statistics and p-values, ready to be displayed by \code{topTags}.}
 	\item{comparison}{character string describing the coefficient or the contrast being tested.}
 
 The data frame \code{table} contains the following columns:

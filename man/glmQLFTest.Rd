@@ -12,7 +12,7 @@ Conduct genewise statistical tests for a given coefficient or contrast.}
 \usage{
 \method{glmQLFit}{DGEList}(y, design=NULL, dispersion=NULL, offset=NULL, abundance.trend=TRUE, 
         robust=FALSE, winsor.tail.p=c(0.05, 0.1), \dots)
-\method{glmQLFit}{default}(y, design=NULL, dispersion=0.05, offset=NULL, lib.size=NULL, 
+\method{glmQLFit}{default}(y, design=NULL, dispersion=NULL, offset=NULL, lib.size=NULL, 
         abundance.trend=TRUE, AveLogCPM=NULL, robust=FALSE, 
         winsor.tail.p=c(0.05, 0.1), \dots)
 glmQLFTest(glmfit, coef=ncol(glmfit$design), contrast=NULL) 
@@ -23,7 +23,7 @@ glmQLFTest(glmfit, coef=ncol(glmfit$design), contrast=NULL)
 
 \item{design}{numeric matrix giving the design matrix for the genewise linear models.}
 
-\item{dispersion}{numeric scalar or vector of negative binomial dispersions.  If \code{NULL}, then will be extracted from the \code{DGEList} object \code{y}, with order of precedence: trended dispersions, common dispersion, a constant value of 0.05.}
+\item{dispersion}{numeric scalar, vector or matrix of negative binomial dispersions. If \code{NULL}, then will be extracted from the \code{DGEList} object \code{y}, with order of precedence: trended dispersions, common dispersion, a constant value of 0.05.}
 
 \item{offset}{numeric matrix of same size as \code{y} giving offsets for the log-linear models.  Can be a scalor or a vector of length \code{ncol(y)}, in which case it is expanded out to a matrix. If \code{NULL} will be computed by \code{getOffset(y)}.}
 

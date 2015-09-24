@@ -16,7 +16,7 @@ mglmLevenberg <- function(y, design, dispersion=0, offset=0, weights=NULL, coef.
 
 	if(!( all(is.finite(y)) || all(is.finite(design)) )) stop("All values must be finite and non-missing")
 	design <- as.matrix(design)
-	if(length(dispersion)<ngenes) dispersion <- rep(dispersion,length.out=ngenes)
+	dispersion <- expandAsMatrix(dispersion, dim(y), byrow=FALSE)
 
 	if(is.null(coef.start)) {
 		start.method <- match.arg(start.method, c("null","y"))
@@ -59,7 +59,7 @@ mglmLevenberg <- function(y, design, dispersion=0, offset=0, weights=NULL, coef.
 	if (!is.double(weights)) storage.mode(weights) <- "double"
 	if (!is.double(beta)) storage.mode(beta) <- "double"
 	if (!is.double(mu)) storage.mode(mu) <- "double"
-	output <- .Call(.cR_levenberg, nlibs, ngenes, design, t(y), dispersion, offset, weights, beta, mu, tol, maxit)
+	output <- .Call(.cR_levenberg, nlibs, ngenes, design, t(y), t(dispersion), offset, weights, beta, mu, tol, maxit)
 
 #	Check for error condition
 	if (is.character(output)) { stop(output) }
