@@ -1,40 +1,54 @@
 readDGE <- function(files,path=NULL,columns=c(1,2),group=NULL,labels=NULL,...) 
 #	Read and collate a set of count data files, each file containing counts for one library
-#	Created 2006.  Last modified 15 August 2014.
+#	Created 2006.  Last modified 15 June 2015.
 {
+#	Create data.frame to hold sample information
 	x <- list()
 	if(is.data.frame(files)) {
 		x$samples <- files
-		if(is.null(labels)) labels <- row.names(files)
-		files <- files$files
+		if(!is.null(labels)) row.names(x$samples) <- labels
+		if(is.null(x$samples$files)) stop("file names not found")
+		x$samples$files <- as.character(x$samples$files)
 	} else {
-		x$samples <- data.frame(files=as.character(files),group=1,stringsAsFactors=FALSE)
+		files <- as.character(files)
+		if(is.null(labels)) labels <- removeExt(files)
+		x$samples <- data.frame(files=files,row.names=labels,stringsAsFactors=FALSE)
 	}
+	nfiles <- nrow(x$samples)
+
+#	Set group factor
 	if(!is.null(group)) x$samples$group <- group
-	if(!is.null(x$samples$group)) x$samples$group <- as.factor(x$samples$group)
+	if(is.null(x$samples$group)) x$samples$group <- rep(1,nfiles)
+	x$samples$group <- as.factor(x$samples$group)
+
+#	Read files
 	d <- taglist <- list()
-	for (fn in files) {
+	for (fn in x$samples$files) {
 		if(!is.null(path)) fn <- file.path(path,fn)
 		d[[fn]] <- read.delim(fn,...,stringsAsFactors=FALSE)
 		taglist[[fn]] <- as.character(d[[fn]][,columns[1]])
-		if(any(duplicated(taglist[[fn]]))) {
+		if(anyDuplicated(taglist[[fn]])) {
 			stop(paste("Repeated tag sequences in",fn)) 
 		}
 	}
+
+#	Collate counts for unique tags
 	tags <- unique(unlist(taglist))
 	ntags <- length(tags)
-	nfiles <- length(files)
 	x$counts <- matrix(0,ntags,nfiles)
-	rownames(x$counts) <- tags
-	colnames(x$counts) <- labels
-	if(is.null(colnames(x$counts))) colnames(x$counts) <- removeExt(files)
+	dimnames(x$counts) <- list(Tags=tags,Samples=row.names(x$samples))
 	for (i in 1:nfiles) {
 		aa <- match(taglist[[i]],tags)
 		x$counts[aa,i] <- d[[i]][,columns[2]]
 	}
+
+#	Enter library sizes and norm factors
 	x$samples$lib.size <- colSums(x$counts)
 	x$samples$norm.factors <- 1
-	row.names(x$samples) <- colnames(x$counts)
-	x$genes <- NULL
+
+#	Alert user if htseq style meta genes found
+	MetaTags <- grep("^__",tags,value=TRUE)
+	if(length(MetaTags)) message("Meta tags detected: ",paste(MetaTags,collapse=", "))
+
 	new("DGEList",x)
 }
