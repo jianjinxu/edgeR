@@ -2,40 +2,32 @@ calcNormFactors <- function(object, ...)
 UseMethod("calcNormFactors")
 
 calcNormFactors.DGEList <- function(object, method=c("TMM","RLE","upperquartile","none"), refColumn=NULL, logratioTrim=.3, sumTrim=0.05, doWeighting=TRUE, Acutoff=-1e10, p=0.75, ...)
-#	Scale normalization of RNA-Seq data.
-#	Mark Robinson.  Edits by Gordon Smyth.
-#	Created October 22 October 2009.  Last modified 2 Oct 2014.
+#	Scale normalization of RNA-Seq data, for DGEList objects
+#	Created 2 October 2014.  Last modified 27 August 2015.
 {
-#	Check object
-	x <- as.matrix(object$counts)
-	lib.size <- object$samples$lib.size
-	if(any(is.na(x))) stop("NAs not permitted")
-
-	f <- NextMethod(object=x, lib.size=lib.size, method=method, refColumn=refColumn, logratioTrim=logratioTrim, sumTrim=sumTrim, doWeighting=doWeighting, Acutoff=Acutoff, p=p)
-
-#	Output
-	object$samples$norm.factors <- f
-	return(object)
-
+	object$samples$norm.factors <- calcNormFactors(object=object$counts, lib.size=object$samples$lib.size, method=method, refColumn=refColumn, logratioTrim=logratioTrim, sumTrim=sumTrim, doWeighting=doWeighting, Acutoff=Acutoff, p=p)
+	object
 }
 
 calcNormFactors.default <- function(object, lib.size=NULL, method=c("TMM","RLE","upperquartile","none"), refColumn=NULL, logratioTrim=.3, sumTrim=0.05, doWeighting=TRUE, Acutoff=-1e10, p=0.75, ...)
-#	Scale normalization of RNA-Seq data.
+#	Scale normalization of RNA-Seq data, for count matrices
 #	Mark Robinson.  Edits by Gordon Smyth.
-#	Created October 22 October 2009.  Last modified 2 Oct 2014.
+#	Created October 22 October 2009 by Mark Robinson.
+#	Last modified 31 July 2015.
 {
 #	Check object
 	x <- as.matrix(object)
-	if(any(is.na(x))) stop("NAs not permitted")
+	if(any(is.na(x))) stop("NA counts not permitted")
 
 #	Check lib.size
 	if(is.null(lib.size)) lib.size <- colSums(x)
+	if(any(is.na(lib.size))) stop("NA lib.sizes not permitted")
 
 #	Check method
 	method <- match.arg(method)
 
 #	Remove all zero rows
-	allzero <- rowSums(x>0) == 0
+	allzero <- .rowSums(x>0, nrow(x), ncol(x)) == 0
 	if(any(allzero)) x <- x[!allzero,,drop=FALSE]
 
 #	Degenerate cases
@@ -102,7 +94,8 @@ calcNormFactors.default <- function(object, lib.size=NULL, method=c("TMM","RLE",
 	v <- v[fin]
 
 #	taken from the original mean() function
-	n <- sum(fin)
+	n <- length(logR)
+
 	loL <- floor(n * logratioTrim) + 1
 	hiL <- n + 1 - loL
 	loS <- floor(n * sumTrim) + 1
@@ -114,8 +107,13 @@ calcNormFactors.default <- function(object, lib.size=NULL, method=c("TMM","RLE",
 	keep <- (rank(logR)>=loL & rank(logR)<=hiL) & (rank(absE)>=loS & rank(absE)<=hiS)
 
 	if(doWeighting)
-		2^( sum(logR[keep]/v[keep], na.rm=TRUE) / sum(1/v[keep], na.rm=TRUE) )
+		f <- sum(logR[keep]/v[keep], na.rm=TRUE) / sum(1/v[keep], na.rm=TRUE)
 	else
-		2^( mean(logR[keep], na.rm=TRUE) )
+		f <- mean(logR[keep], na.rm=TRUE)
+
+#	Results will be missing if the two libraries share no features with positive counts
+#	In this case, return unity
+	if(is.na(f)) f <- 0
+	2^f
 }
 
