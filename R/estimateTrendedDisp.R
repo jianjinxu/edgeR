@@ -1,6 +1,6 @@
 estimateTrendedDisp <- function(object, method="bin.spline", df=5, span=2/3)
 # Yunshun Chen, Gordon Smyth.
-# Created 2 Feb 2012, last modified on 4 Oct 2012.
+# Created 2 Feb 2012, last modified on 24 Sep 2015.
 {
 	if( !is(object,"DGEList") ) stop("object must be a DGEList")
 	if( is.null(object$pseudo.counts) ) {
@@ -19,7 +19,7 @@ estimateTrendedDisp <- function(object, method="bin.spline", df=5, span=2/3)
 	
 	for(i in 1:nbins) {
 		tagsinbin <- bins$group==i
-		disp.bins[i] <- estimateCommonDisp(object[tagsinbin,])$common.dispersion
+		disp.bins[i] <- estimateCommonDisp(object[tagsinbin,],rowsum.filter=0)$common.dispersion
 		logCPM.bins[i] <- mean(logCPM[tagsinbin])
 	}
 
@@ -30,19 +30,16 @@ estimateTrendedDisp <- function(object, method="bin.spline", df=5, span=2/3)
 		r <- range(logCPM.bins)
 		knots2 <- r[1]+p1*(r[2]-r[1])
 		knots <- 0.3*knots1+0.7*knots2
-		ind <- rep(NA, df+1)
-		ind[1] <- which.min(logCPM.bins)
-		ind[df+1] <- which.max(logCPM.bins)
-		for(i in 2:df)
-			ind[i] <- which.min(abs(knots[i-1]-logCPM.bins))
-		fit <- lm(disp.bins ~ splines::ns(logCPM.bins, df=df, knots=knots))
-		f <- splinefun(logCPM.bins[ind], fit$fitted.value[ind], method="natural")
-		dispersion <- f(logCPM)
+		basisbins <- splines::ns(logCPM.bins,df=df,knots=knots,intercept=TRUE)
+		beta <- coefficients(lm.fit(basisbins, sqrt(disp.bins)))
+		basisall <- predict(basisbins,newx=logCPM)
+		dispersion <- drop(basisall %*% beta)^2
 	}
+	
 	if( method=="bin.loess" ) {
-		fit <- loessFit(disp.bins, logCPM.bins, span=span)
-		f <- approxfun(logCPM.bins, fit$fitted, method="linear", rule=2)
-		dispersion <- f(logCPM)
+		fit <- loessFit(sqrt(disp.bins), logCPM.bins, span=span, iterations=1)
+		f <- approxfun(logCPM.bins, fit$fitted, rule=2)
+		dispersion <- f(logCPM)^2
 	}
 
 	object$trended.dispersion <- dispersion
