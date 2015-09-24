@@ -1,21 +1,10 @@
 #include "matvec_check.h"
 
 matvec_check::matvec_check(const int nlib, const int nlen, SEXP incoming, const bool transposed, 
-		const char* err, const bool nullok) : mycheck(NULL), temp(NULL), isvec(true), istran(transposed), 
+		const char* err, const double nullfill) : mycheck(NULL), temp(NULL), isvec(true), istran(transposed), 
 		nl(nlib), nt(nlen), tagdex(0), libdex(0) {
-	// Checking if NULL (and whether it's allowed). If it is, it becomes a vector of 1's.
-	std::stringstream failed;
-	if (incoming==R_NilValue) {
-		if (!nullok) { 
-			failed << err << " vector or matrix cannot be null";
-			throw std::runtime_error(failed.str());
-		}
-		temp=new double[nl];
-		for (int i=0; i<nl; ++i) { temp[i]=1; }
-		mycheck=temp;
-		return;
-	}
 	
+	std::stringstream failed;
 	if (!isNumeric(incoming)) {
 		failed << err << " vector or matrix should be double precision";
 		throw std::runtime_error(failed.str());
@@ -25,13 +14,8 @@ matvec_check::matvec_check(const int nlib, const int nlen, SEXP incoming, const 
 	mycheck=REAL(incoming);
 	const int curlen=LENGTH(incoming);
 	if (curlen==0) {
-		// If it's empty, it's treated as a null.
-		if (!nullok) { 
-			failed << err << " vector or matrix cannot be empty";
-			throw std::runtime_error(failed.str());
-		}
 		temp=new double[nl];
-		for (int i=0; i<nl; ++i) { temp[i]=1; }
+		for (int i=0; i<nl; ++i) { temp[i]=nullfill; }
 		mycheck=temp;
 	} else if (curlen!=nl) { 
 		isvec=false;

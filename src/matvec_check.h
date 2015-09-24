@@ -4,7 +4,7 @@
 
 class matvec_check {
 public:
-	matvec_check(const int, const int, SEXP, const bool, const char*, const bool);
+	matvec_check(const int, const int, SEXP, const bool, const char*, const double=0);
 	~matvec_check();
 	void advance();
 	const double* const* access() const;
