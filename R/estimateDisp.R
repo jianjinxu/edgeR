@@ -29,6 +29,7 @@ estimateDisp <- function(y, design=NULL, prior.df=NULL, trend.method="locfit", s
 	# Classic edgeR
 	if(is.null(design)){
 		# One group
+		cat("Design matrix not provided. Switch to the classic mode.\n")
 		group <- y$samples$group <- as.factor(y$samples$group)
 		if(length(levels(group))==1)
 			design <- matrix(1,nlibs,1)
