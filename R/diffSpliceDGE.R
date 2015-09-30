@@ -1,15 +1,18 @@
-diffSpliceDGE <- function(fit.exon, coef=ncol(fit.exon$design), contrast=NULL, geneid, exonid=NULL, verbose=TRUE)
+diffSpliceDGE <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, geneid, exonid=NULL, prior.count=0.125, verbose=TRUE)
 {
 # Identify exons and genes with splice variants using negative binomial GLMs
 # Yunshun Chen and Gordon Smyth
-# Created 29 March 2014.  Last modified 13 May 2015. 
+# Created 29 March 2014.  Last modified 25 September 2015. 
 
+#	Check if glmfit is from glmFit() or glmQLFit()
+	isLRT <- is.null(glmfit$df.prior)
+	
 #	Check input (from diffSplice in limma)
-	exon.genes <- fit.exon$genes
-	nexons <- nrow(fit.exon)
-	design <- fit.exon$design
+	exon.genes <- glmfit$genes
+	nexons <- nrow(glmfit)
+	design <- glmfit$design
 
-	if(is.null(exon.genes)) exon.genes <- data.frame(ExonID=1:nrow(fit.exon))
+	if(is.null(exon.genes)) exon.genes <- data.frame(ExonID=1:nrow(glmfit))
 	if(length(geneid)==1) {
 		genecolname <- as.character(geneid)
 		geneid <- exon.genes[[genecolname]]
@@ -28,25 +31,25 @@ diffSpliceDGE <- function(fit.exon, coef=ncol(fit.exon$design), contrast=NULL, g
 	else
 		exoncolname <- NULL
 
-#	Sort by geneid (from diffSplice in limma)
+#	Sort by geneid
 	if(is.null(exonid))
 		o <- order(geneid)
 	else
 		o <- order(geneid,exonid)
 	geneid <- geneid[o]
 	exon.genes <- exon.genes[o,,drop=FALSE]
-	fit.exon <- fit.exon[o, ]
+	glmfit <- glmfit[o, ]
 
 #	Check design matrix
-	design <- as.matrix(fit.exon$design)
+	design <- as.matrix(glmfit$design)
 	nbeta <- ncol(design)
 	if(nbeta < 2) stop("Need at least two columns for design, usually the first is the intercept column")
 	coef.names <- colnames(design)
 
-	if(fit.exon$prior.count!=0){
-		coefficients.mle <- fit.exon$unshrunk.coefficients
+	if(glmfit$prior.count!=0){
+		coefficients.mle <- glmfit$unshrunk.coefficients
 	} else {
-		coefficients.mle <- fit.exon$coefficients
+		coefficients.mle <- glmfit$coefficients
 	}
 
 #	Evaluate beta to be tested
@@ -78,12 +81,6 @@ diffSpliceDGE <- function(fit.exon, coef=ncol(fit.exon$design), contrast=NULL, g
 #	Null design matrix
 	design0 <- design[, -coef, drop=FALSE]
 
-#	Gene level information
-	gene.counts <- rowsum(fit.exon$counts, geneid, reorder=FALSE)
-	gene.dge <- DGEList(counts=gene.counts, genes=unique(geneid))
-	gene.dge <- estimateDisp(gene.dge, design, robust=FALSE)
-	fit.gene <- glmFit(gene.dge, design)
-
 # 	Count exons and get genewise variances
 	gene.nexons <- rowsum(rep(1,nexons), geneid, reorder=FALSE)
 	if(verbose) {
@@ -94,15 +91,6 @@ diffSpliceDGE <- function(fit.exon, coef=ncol(fit.exon$design), contrast=NULL, g
 		cat("Max number of exons in a gene: ", max(gene.nexons), "\n")
 	}
 
-#	Squeeze
-	fit.gene.trend <- glmFit(gene.dge, design=design, dispersion=gene.dge$trended.dispersion)
-	zerofit <- (fit.gene.trend$fitted.values < 1e-4) & (fit.gene.trend$counts < 1e-4)
-	gene.df.residual <- .residDF(zerofit, design)
-	s2 <- fit.gene.trend$deviance / gene.df.residual
-	s2[gene.df.residual==0] <- 0
-	s2 <- pmax(s2,0)
-	s2.fit <- squeezeVar(s2, df=gene.df.residual, covariate=fit.gene.trend$AveLogCPM, robust=FALSE)
-
 #	Remove genes with only 1 exon
 	gene.keep <- gene.nexons > 1
 	ngenes <- sum(gene.keep)
@@ -111,43 +99,58 @@ diffSpliceDGE <- function(fit.exon, coef=ncol(fit.exon$design), contrast=NULL, g
 	exon.keep <- rep(gene.keep, gene.nexons)
 	geneid <- geneid[exon.keep]
 	exon.genes <- exon.genes[exon.keep, , drop=FALSE]
-	fit.exon <- fit.exon[exon.keep, ]
 	beta <- beta[exon.keep]
-
-	fit.gene <- fit.gene[gene.keep, ]
 	gene.nexons <- gene.nexons[gene.keep]
-	gene.df.test <- gene.nexons-1
-	gene.df.residual <- gene.df.residual[gene.keep]
 	
-# 	Genewise betas
+#	Gene level information
 	g <- rep(1:ngenes, times=gene.nexons)
-	gene.counts.exon <- fit.gene$counts[g, , drop=FALSE]
-	gene.dispersion.exon <- fit.gene$dispersion[g]
-	gene.fit.exon <- glmFit(gene.counts.exon, design=design, dispersion=gene.dispersion.exon, lib.size=gene.dge$samples$lib.size)
-	gene.betabar <- gene.fit.exon$coefficients[, coef, drop=FALSE]
-	offset.new <- fit.exon$offset + gene.betabar %*% t(design[, coef, drop=FALSE])
+	glmfit <- glmfit[exon.keep, ]
+	gene.counts <- rowsum(glmfit$counts, geneid, reorder=FALSE)
+	fit.gene <- glmFit(gene.counts, design, dispersion=0.05, offset=as.vector(glmfit$offset[1,]), prior.count=prior.count)
+	gene.betabar <- fit.gene$coefficients[g, coef, drop=FALSE]
+
+#	New offset
+	offset.new <- glmfit$offset + gene.betabar %*% t(design[, coef, drop=FALSE])
 	coefficients <- beta - gene.betabar
 
 #	Testing
 	design0 <- design[, -coef, drop=FALSE]
-	fit.null <- glmFit(fit.exon$counts, design=design0, offset=offset.new, dispersion=fit.exon$dispersion)
-	fit.alt <- glmFit(fit.exon$counts, design=design, offset=offset.new, dispersion=fit.exon$dispersion)
+	if(isLRT){
+		fit0 <- glmFit(glmfit$counts, design=design0, offset=offset.new, dispersion=glmfit$dispersion)
+		fit1 <- glmFit(glmfit$counts, design=design, offset=offset.new, dispersion=glmfit$dispersion)
+		exon.LR <- fit0$deviance - fit1$deviance
+		gene.LR <- rowsum(exon.LR, geneid, reorder=FALSE)
+		exon.df.test <- fit0$df.residual - fit1$df.residual
+		gene.df.test <- rowsum(exon.df.test, geneid, reorder=FALSE) - 1
+		exon.p.value <- pchisq(exon.LR, df=exon.df.test, lower.tail=FALSE, log.p=FALSE)
+		gene.p.value <- pchisq(gene.LR, df=gene.df.test, lower.tail=FALSE, log.p=FALSE)
+	} else {
+		fit0 <- glmQLFit(glmfit$counts, design=design0, offset=offset.new, dispersion=glmfit$dispersion)
+		fit1 <- glmQLFit(glmfit$counts, design=design, offset=offset.new, dispersion=glmfit$dispersion)
+		exon.s2 <- fit1$deviance / fit1$df.residual.zeros
+		gene.s2 <- rowsum(exon.s2, geneid, reorder=FALSE) / gene.nexons
+		gene.df.residual <- rowsum(fit1$df.residual.zeros, geneid, reorder=FALSE)
+		squeeze <- squeezeVar(var=gene.s2, df=gene.df.residual, robust=TRUE)	
 
-# 	Exon p-values
-	exon.LR <- fit.null$deviance - fit.alt$deviance
-	exon.df.test <- fit.null$df.residual - fit.alt$df.residual	
-	exon.F <- exon.LR / exon.df.test / s2.fit$var.post[gene.keep][g]
-	gene.df.total <- s2.fit$df.prior + gene.df.residual
-	max.df.residual <- ncol(fit.exon$counts)-ncol(design)
-	gene.df.total <- pmin(gene.df.total, ngenes*max.df.residual)
-	exon.p.value <- pf(exon.F, df1=exon.df.test, df2=gene.df.total[g], lower.tail=FALSE, log.p=FALSE)
+		exon.df.test <- fit0$df.residual - fit1$df.residual
+		gene.df.test <- rowsum(exon.df.test, geneid, reorder=FALSE) - 1
+		gene.df.total <- gene.df.residual + squeeze$df.prior
+		gene.df.total <- pmin(gene.df.total, sum(gene.df.residual))
+		gene.s2.post <- squeeze$var.post
+		
+		exon.LR <- fit0$deviance - fit1$deviance
+		exon.F <- exon.LR / exon.df.test / gene.s2.post[g]
+		gene.F <- rowsum(exon.LR, geneid, reorder=FALSE) / gene.df.test / gene.s2.post
+		exon.p.value <- pf(exon.F, df1=exon.df.test, df2=gene.df.total[g], lower.tail=FALSE, log.p=FALSE)
 
-#	Ensure is not more significant than chisquare test
-	i <- s2.fit$var.post[gene.keep][g] < 1
-	if(any(i)) {
-		chisq.pvalue <- pchisq(exon.LR[i], df=exon.df.test[i], lower.tail=FALSE, log.p=FALSE)
-		exon.p.value[i] <- pmax(exon.p.value[i], chisq.pvalue)
-	}
+#		Ensure is not more significant than chisquare test
+		i <- gene.s2.post[g] < 1
+		if(any(i)) {
+			chisq.pvalue <- pchisq(exon.LR[i], df=exon.df.test[i], lower.tail=FALSE, log.p=FALSE)
+			exon.p.value[i] <- pmax(exon.p.value[i], chisq.pvalue)
+		}
+		gene.p.value <- pf(gene.F, df1=gene.df.test, df2=gene.df.total, lower.tail=FALSE, log.p=FALSE)		
+	}	
 
 #	Gene Simes' p-values
 	o <- order(g, exon.p.value, decreasing=FALSE)
@@ -159,33 +162,35 @@ diffSpliceDGE <- function(fit.exon, coef=ncol(fit.exon$design), contrast=NULL, g
 	oo <- order(-g, pmin(pp,1), decreasing=TRUE)
 	gene.Simes.p.value <- pp[oo][cumsum(gene.nexons)]
 
-#	Gene F p-values
-	gene.F <- rowsum(exon.F, geneid, reorder=FALSE) / (gene.df.test)
-	gene.F.p.value <- pf(gene.F, df1=(gene.df.test), df2=gene.df.total, lower.tail=FALSE)
-
 #	Output
 	out <- new("DGELRT",list())
 	out$comparison <- colnames(design)[coef]
 	out$design <- design
 	out$coefficients <- as.vector(coefficients)
-	
-#	Exon level output
-	out$exon.df.test <- exon.df.test
-	out$exon.df.prior <- s2.fit$df.prior[g]
-	out$exon.df.residual <- gene.df.residual[g]
-	out$exon.F <- exon.F
-	out$exon.p.value <- exon.p.value
 	out$genes <- exon.genes
 	out$genecolname <- genecolname
 	out$exoncolname <- exoncolname
 	
+#	Exon level output
+	out$exon.df.test <- exon.df.test
+	if(isLRT){
+		out$exon.LR <- exon.LR
+	} else {
+		out$exon.F <- exon.F
+	}
+	out$exon.p.value <- exon.p.value
+
 #	Gene level output
 	out$gene.df.test <- gene.df.test
-	out$gene.df.prior <- s2.fit$df.prior
-	out$gene.df.residual <- gene.df.residual
+	if(isLRT){
+		out$gene.LR <- gene.LR
+	} else {
+		out$gene.df.prior <- squeeze$df.prior
+		out$gene.df.residual <- gene.df.residual
+		out$gene.F <- gene.F
+	}
+	out$gene.p.value <- gene.p.value
 	out$gene.Simes.p.value <- gene.Simes.p.value
-	out$gene.F <- gene.F
-	out$gene.F.p.value <- gene.F.p.value
 
 #	Which columns of exon.genes contain gene level annotation? (from diffSplice in limma)
 	exon.lastexon <- cumsum(gene.nexons)
@@ -195,34 +200,43 @@ diffSpliceDGE <- function(fit.exon, coef=ncol(fit.exon$design), contrast=NULL, g
 	isgenelevel <- apply(isdup,2,all)
 	out$gene.genes <- exon.genes[exon.lastexon,isgenelevel, drop=FALSE]
 	out$gene.genes$NExons <- gene.nexons
-	
+
 	out
 }
 
 
-topSpliceDGE <- function(lrt, level="gene", gene.test="Simes", number=10, FDR=1)
+topSpliceDGE <- function(lrt, test="Simes", number=10, FDR=1)
 # Yunshun Chen and Gordon Smyth
-# Created 29 March 2014.  Last modified 24 September 2014. 
+# Created 29 March 2014.  Last modified 25 September 2015. 
 {
-	level <- match.arg(level,c("exon","gene"))
-	gene.test <- match.arg(gene.test,c("Simes","F","f"))
-	if(level=="exon") {
+	test <- match.arg(test,c("Simes","simes","gene","exon"))
+	if(test=="simes") test <- "Simes"
+	if(test=="exon") {
 		number <- min(number, nrow(lrt$genes))
 		P <- lrt$exon.p.value
 		BH <- p.adjust(P, method="BH")
 		if(FDR<1) number <- min(number, sum(BH<FDR))
 		o <- order(P)[1:number]
-		data.frame(lrt$genes[o,,drop=FALSE],logFC=lrt$coefficients[o],F=lrt$exon.F[o],P.Value=P[o],FDR=BH[o])
+		if(is.null(lrt$exon.F)){
+			data.frame(lrt$genes[o,,drop=FALSE],logFC=lrt$coefficients[o],exon.LR=lrt$exon.LR[o],P.Value=P[o],FDR=BH[o])
+		} else {
+			data.frame(lrt$genes[o,,drop=FALSE],logFC=lrt$coefficients[o],exon.F=lrt$exon.F[o],P.Value=P[o],FDR=BH[o])
+		}
 	} else {
 		number <- min(number, nrow(lrt$gene.genes))
-		if(gene.test == "Simes") P <- lrt$gene.Simes.p.value else P <- lrt$gene.F.p.value 
+		if(test=="Simes") P <- lrt$gene.Simes.p.value else P <- lrt$gene.p.value 
 		BH <- p.adjust(P, method="BH")
 		if(FDR<1) number <- min(number,sum(BH<FDR))
 		o <- order(P)[1:number]
-		if(gene.test=="Simes")
+		if(test=="Simes"){
 			data.frame(lrt$gene.genes[o,,drop=FALSE],P.Value=P[o],FDR=BH[o])
-		else
-			data.frame(lrt$gene.genes[o,,drop=FALSE],F=lrt$gene.F[o],P.Value=P[o],FDR=BH[o])
+		} else {
+			if(is.null(lrt$gene.F)){
+				data.frame(lrt$gene.genes[o,,drop=FALSE],gene.LR=lrt$gene.LR[o],P.Value=P[o],FDR=BH[o])
+			} else {
+				data.frame(lrt$gene.genes[o,,drop=FALSE],gene.F=lrt$gene.F[o],P.Value=P[o],FDR=BH[o])
+			}
+		}
 	}
 }
 
@@ -230,7 +244,7 @@ topSpliceDGE <- function(lrt, level="gene", gene.test="Simes", number=10, FDR=1)
 plotSpliceDGE <- function(lrt, geneid=NULL, rank=1L, FDR = 0.05)
 # Plot exons of most differentially spliced gene
 # Yunshun Chen and Gordon Smyth
-# Created 29 March 2014.  Last modified 24 September 2014.
+# Created 29 March 2014.  Last modified 25 September 2015.
 {
 	# Gene labelling including gene symbol
 	genecolname <- lrt$genecolname
@@ -263,7 +277,7 @@ plotSpliceDGE <- function(lrt, geneid=NULL, rank=1L, FDR = 0.05)
 		mtext(xlab, side = 1, padj = 5.2)
 
 		# Mark the topSpliced exons
-		top <- topSpliceDGE(lrt, number = Inf, level = "exon", FDR = FDR)
+		top <- topSpliceDGE(lrt, number = Inf, test = "exon", FDR = FDR)
 		m <- which(top[,genecolname] %in% lrt$gene.genes[i,genecolname])
 
 		if(length(m) > 0){
