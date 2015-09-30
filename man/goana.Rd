@@ -18,7 +18,7 @@ Test for over-representation of gene ontology (GO) terms or KEGG pathways in the
   \item{trend}{adjust analysis for gene length or abundance?
   Can be logical, or a numeric vector of covariate values, or the name of the column of \code{de$genes} containing the covariate values.
   If \code{TRUE}, then \code{de$AveLogCPM} is used as the covariate.}
-  \item{\dots}{any other arguments are passed to \code{\link{goana.default}}.}
+  \item{\dots}{any other arguments are passed to \code{\link{goana.default}} or \code{\link{kegga.default}}.}
 }
 \details{
 \code{goana} performs Gene Ontology enrichment analyses for the up and down differentially expressed genes from a linear model analysis.

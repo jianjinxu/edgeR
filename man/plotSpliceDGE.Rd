@@ -21,6 +21,5 @@ Plots interaction log-fold-change by exon for the specified gene.
 \value{A plot is created on the current graphics device.}
 \author{Yunshun Chen, Yifang Hu and Gordon Smyth}
 \seealso{
-\code{\link{diffSpliceDGE}}
+\code{\link{diffSpliceDGE}.}
 }
-\examples{# See \code{\link{diffSpliceDGE}}}
