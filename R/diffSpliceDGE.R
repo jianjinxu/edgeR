@@ -46,11 +46,7 @@ diffSpliceDGE <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, genei
 	if(nbeta < 2) stop("Need at least two columns for design, usually the first is the intercept column")
 	coef.names <- colnames(design)
 
-	if(glmfit$prior.count!=0){
-		coefficients.mle <- glmfit$unshrunk.coefficients
-	} else {
-		coefficients.mle <- glmfit$coefficients
-	}
+	coefficients <- glmfit$coefficients
 
 #	Evaluate beta to be tested
 #	Note that contrast takes precedence over coef: if contrast is given
@@ -65,12 +61,12 @@ diffSpliceDGE <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, genei
 		}
 		else
 			coef.name <- coef.names[coef]
-		beta <- coefficients.mle[, coef, drop=FALSE]
+		beta <- coefficients[, coef, drop=FALSE]
 	} else {
 		contrast <- as.matrix(contrast)
 		reform <- contrastAsCoef(design, contrast=contrast, first=TRUE)
 		coef <- 1
-		beta <- drop(coefficients.mle %*% contrast)
+		beta <- drop(coefficients %*% contrast)
 		contrast <- drop(contrast)
 		i <- contrast!=0
 		coef.name <- paste(paste(contrast[i],coef.names[i],sep="*"),collapse=" ")
@@ -241,43 +237,46 @@ topSpliceDGE <- function(lrt, test="Simes", number=10, FDR=1)
 }
 
 
-plotSpliceDGE <- function(lrt, geneid=NULL, rank=1L, FDR = 0.05)
+plotSpliceDGE <- function(lrt, geneid=NULL, genecolname=NULL, rank=1L, FDR = 0.05)
 # Plot exons of most differentially spliced gene
 # Yunshun Chen and Gordon Smyth
-# Created 29 March 2014.  Last modified 25 September 2015.
+# Created 29 March 2014.  Last modified 5 October 2015.
 {
-	# Gene labelling including gene symbol
-	genecolname <- lrt$genecolname
-	genelab <- grep(paste0(genecolname,"|Symbol|symbol"), colnames(lrt$gene.genes), value = T)
+	if(is.null(genecolname)) 
+		genecolname <- lrt$genecolname
+	else
+		genecolname <- as.character(genecolname)
 	
 	if(is.null(geneid)) {
 		if(rank==1L)
 			i <- which.min(lrt$gene.Simes.p.value)
 		else
 			i <- order(lrt$gene.Simes.p.value)[rank]
-		geneid <- paste(lrt$gene.genes[i,genelab], collapse = ".")
+		geneid <- paste(lrt$gene.genes[i, genecolname], collapse = ".")
 	} else {
-		i <- which(lrt$gene.genes[,lrt$genecolname]==geneid)
-		geneid <- paste(lrt$gene.genes[i,genelab], collapse = ".")
+		geneid <- as.character(geneid)
+		i <- which(lrt$gene.genes[, genecolname]==geneid)[1]
 		if(!length(i)) stop(paste("geneid",geneid,"not found"))
 	}
+
 	exon.lastexon <- cumsum(lrt$gene.genes$NExons[1:i])
 	j <- (exon.lastexon[i]-lrt$gene.genes$NExons[i]+1):exon.lastexon[i]
+
 	exoncolname <- lrt$exoncolname
 	if(is.null(exoncolname)){
-		plot(lrt$coefficients[j], xlab = "Exon", ylab = "logFC (this exon vs the average)", main = geneid, type = "b")
+		plot(lrt$coefficients[j], xlab="Exon", ylab="logFC (this exon vs the average)", main=geneid, type="b")
 	}
 	# Plot exons and mark exon ids on the axis
 	if(!is.null(exoncolname)) {
 		exon.id <- lrt$genes[j, exoncolname]
-		xlab <- paste("Exon", exoncolname, sep = " ")
+		xlab <- paste("Exon", exoncolname, sep=" ")
 		
-		plot(lrt$coefficients[j], xlab = "", ylab = "logFC (this exon vs the average)", main = geneid,type = "b", xaxt = "n")
-		axis(1, at = 1:length(j), labels = exon.id, las = 2, cex.axis = 0.6)
-		mtext(xlab, side = 1, padj = 5.2)
+		plot(lrt$coefficients[j], xlab="", ylab="logFC (this exon vs the average)", main=geneid, type="b", xaxt="n")
+		axis(1, at=1:length(j), labels=exon.id, las=2, cex.axis=0.6)
+		mtext(xlab, side=1, padj=5.2)
 
 		# Mark the topSpliced exons
-		top <- topSpliceDGE(lrt, number = Inf, test = "exon", FDR = FDR)
+		top <- topSpliceDGE(lrt, number=Inf, test="exon", FDR=FDR)
 		m <- which(top[,genecolname] %in% lrt$gene.genes[i,genecolname])
 
 		if(length(m) > 0){
@@ -292,4 +291,5 @@ plotSpliceDGE <- function(lrt, geneid=NULL, rank=1L, FDR = 0.05)
 		}
 	}
 	abline(h=0,lty=2)
+	invisible()
 }
