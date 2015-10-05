@@ -5,10 +5,10 @@
 Plot relative log-fold changes by exons for the specified gene and highlight the significantly spliced exons.
 }
 \usage{
-plotSpliceDGE(lrt, geneid=NULL, genecolname=NULL, rank=1L, FDR = 0.05)
+plotSpliceDGE(lrt, geneid=NULL, genecolname=NULL, rank=1L, FDR=0.05)
 }
 \arguments{
-  \item{lrt}{\code{GLMLRT} object produced by \code{diffSpliceDGE}.}
+  \item{lrt}{\code{DGELRT} object produced by \code{diffSpliceDGE}.}
   \item{geneid}{character string, ID of the gene to plot.}
   \item{genecolname}{column name of \code{lrt$genes} containing gene IDs. Defaults to \code{lrt$genecolname}.}
   \item{rank}{integer, if \code{geneid=NULL} then this ranked gene will be plotted.}
