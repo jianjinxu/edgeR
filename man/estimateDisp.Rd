@@ -22,6 +22,8 @@ estimateDisp(y, design=NULL, prior.df=NULL, trend.method="locfit", span=NULL,
 
 \item{trend.method}{method for estimating dispersion trend. Possible values are \code{"none"}, \code{"movingave"}, \code{"loess"} and \code{"locfit"}.}
 
+\item{tagwise}{logical, should the tagwise dispersions be estimated?}
+
 \item{span}{width of the smoothing window, as a proportion of the data set.}
 
 \item{min.row.sum}{numeric scalar giving a value for the filtering out of low abundance tags. Only tags with total sum of counts above this value are used. Low abundance tags can adversely affect the dispersion estimation, so this argument allows the user to select an appropriate filter threshold for the tag abundance.}
@@ -40,7 +42,7 @@ estimateDisp(y, design=NULL, prior.df=NULL, trend.method="locfit", span=NULL,
 \value{Returns \code{object} with the following added components:
 	\item{common.dispersion}{estimate of the common dispersion.}
 	\item{trended.dispersion}{estimates of the trended dispersions.}
-	\item{tagwise.dispersion}{tagwise estimates of the dispersion parameter.}
+	\item{tagwise.dispersion}{tagwise estimates of the dispersion parameter if \code{tagwise=TRUE}.}
 	\item{logCPM}{the average abundance of each tag, in log average counts per million.}
 	\item{prior.df}{prior degrees of freedom. It is a vector when robust method is used.}
 	\item{prior.n}{estimate of the prior weight, i.e. the smoothing parameter that indicates the weight to put on the common likelihood compared to the individual tag's likelihood.}

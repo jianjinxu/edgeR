@@ -2,7 +2,7 @@
 ########### Weighted Likelihood Empirical Bayes ##############
 ##############################################################
 
-estimateDisp <- function(y, design=NULL, prior.df=NULL, trend.method="locfit", span=NULL, min.row.sum=5, grid.length=21, grid.range=c(-10,10), robust=FALSE, winsor.tail.p=c(0.05,0.1), tol=1e-06)
+estimateDisp <- function(y, design=NULL, prior.df=NULL, trend.method="locfit", tagwise=TRUE, span=NULL, min.row.sum=5, grid.length=21, grid.range=c(-10,10), robust=FALSE, winsor.tail.p=c(0.05,0.1), tol=1e-06)
 #  Estimating dispersion using weighted conditional likelihood empirical Bayes.
 #  Use GLM approach if a design matrix is given, and classic approach otherwise.
 #  It calculates a matrix of likelihoods for each gene at a set of dispersion grid points, and then calls WLEB() to do the shrinkage.
@@ -102,6 +102,8 @@ estimateDisp <- function(y, design=NULL, prior.df=NULL, trend.method="locfit", s
 	y$trend.method <- trend.method
 	y$AveLogCPM <- AveLogCPM
 	y$span <- out.1$span
+
+	if(!tagwise) return(y)
 
 	# Calculate prior.df
 	if(is.null(prior.df)){
