@@ -2,6 +2,45 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.12.0}{\itemize{
+\item
+New argument tagwise for estimateDisp(), allowing users not to estimate tagwise dispersions. 
+
+\item
+estimateTrendedDisp() has more stable performance and does not return negative trended dispersion estimates.
+
+\item
+New plotMD methods for DGEList, DGEGLM, DGEExact and DGELRT objects to make a mean-difference plot (aka MA plot).
+
+\item
+readDGE() now recognizes HTSeq style meta genes.
+
+\item
+Remove the F-test in glmLRT().
+
+\item
+New argument contrast for diffSpliceDGE(), allowing users to specify the testing contrast. 
+
+\item
+glmTreat() returns both logFC and unshrunk.logFC in the output table.
+
+\item
+New method implemented in glmTreat() to increase the power of the test.
+
+\item
+New kegga methods for DGEExact and DGELRT objects to perform KEGG pathway analysis of differentially expressed genes using Entrez Gene IDs.
+
+\item
+New dimnames<- methods for DGEExact and DGELRT objects.
+
+\item
+Bug fix to dimnames<- method for DGEGLM objects.
+
+\item
+User's Guide updated. Three old case studies are replaced by two new comprehensive case studies.
+}}
+
+
 \section{Version 3.10.0}{\itemize{
 \item
 An DGEList method for romer() has been added, allowing access to rotation gene set enrichment analysis.
@@ -31,7 +70,7 @@ glmQLFit() is now an S3 generic function.
 glmQLFit() now breaks the output component s2.fit into three separate components: df.prior, var.post and var.prior.
 
 \item
-estimateDisp() now protects against fitted values of zeros, giving a more accurate estimate of prior.df.
+estimateDisp() now protects against fitted values of zeros, giving more accurate dispersion estimates.
 
 \item
 DGEList() now gives a message rather than an error when the count matrix has non-unique column names.
