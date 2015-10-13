@@ -1,0 +1,30 @@
+cpm <- function(x, ...)
+UseMethod("cpm")
+
+cpm.DGEList <- function(x, normalized.lib.sizes=TRUE, log=FALSE, prior.count=0.25, ...)
+#	Counts per million for a DGEList
+#	Davis McCarthy and Gordon Smyth.
+#	Created 20 June 2011. Last modified 6 July 2015
+{
+	lib.size <- x$samples$lib.size
+	if(normalized.lib.sizes) lib.size <- lib.size*x$samples$norm.factors
+	cpm.default(x$counts,lib.size=lib.size,log=log,prior.count=prior.count)
+}
+
+cpm.default <- function(x, lib.size=NULL, log=FALSE, prior.count=0.25, ...)
+#	Counts per million for a matrix
+#	Davis McCarthy and Gordon Smyth.
+#	Created 20 June 2011. Last modified 6 July 2015
+{
+	x <- as.matrix(x)
+	if(is.null(lib.size)) lib.size <- colSums(x)
+	if(log) {
+		prior.count.scaled <- lib.size/mean(lib.size)*prior.count
+		lib.size <- lib.size+2*prior.count.scaled
+	}
+	lib.size <- 1e-6*lib.size
+	if(log)
+		log2(t( (t(x)+prior.count.scaled) / lib.size ))
+	else
+		t(t(x)/lib.size)
+}
