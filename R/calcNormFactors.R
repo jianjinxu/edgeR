@@ -73,9 +73,8 @@ calcNormFactors.default <- function(object, lib.size=NULL, method=c("TMM","RLE",
 }
 
 .calcFactorWeighted <- function(obs, ref, libsize.obs=NULL, libsize.ref=NULL, logratioTrim=.3, sumTrim=0.05, doWeighting=TRUE, Acutoff=-1e10)
+#	TMM between two libraries
 {
-	if( all(obs==ref) ) return(1)
-
 	obs <- as.numeric(obs)
 	ref <- as.numeric(ref)
 
@@ -93,9 +92,10 @@ calcNormFactors.default <- function(object, lib.size=NULL, method=c("TMM","RLE",
 	absE <- absE[fin]
 	v <- v[fin]
 
+	if(max(abs(logR)) < 1e-6) return(1)
+
 #	taken from the original mean() function
 	n <- length(logR)
-
 	loL <- floor(n * logratioTrim) + 1
 	hiL <- n + 1 - loL
 	loS <- floor(n * sumTrim) + 1

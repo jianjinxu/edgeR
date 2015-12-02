@@ -33,7 +33,18 @@ glmQLFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.s
 	y <- as.matrix(y)
 	ntag <- nrow(y)
 	nlib <- ncol(y)
-
+	
+#	Check design
+	if(is.null(design)) {
+		design <- matrix(1,ncol(y),1)
+		rownames(design) <- colnames(y)
+		colnames(design) <- "Intercept"
+	} else {
+		design <- as.matrix(design)
+		ne <- nonEstimable(design)
+		if(!is.null(ne)) stop(paste("Design matrix not of full rank.  The following coefficients not estimable:\n", paste(ne, collapse = " ")))
+	}
+	
 #	Check dispersion
 	if(is.null(dispersion)) stop("No dispersion values provided.")
 
@@ -117,15 +128,15 @@ plotQLDisp <- function(glmfit, xlab="Average Log2 CPM", ylab="Quarter-Root Mean 
 	if(is.null(glmfit$var.post)) { stop("need to run glmQLFit before plotQLDisp") }
 
 	plot(A, sqrt(sqrt(s2)),xlab=xlab, ylab=ylab, pch=pch, cex=cex, col=col.raw, ...)
-	points(A,sqrt(sqrt(glmfit$var.post)),pch=16,cex=0.2,col=col.shrunk)
+	points(A, sqrt(sqrt(glmfit$var.post)), pch=pch, cex=cex, col=col.shrunk)
 	if (length(glmfit$var.prior)==1L) { 
 		abline(h=sqrt(sqrt(glmfit$var.prior)), col=col.trend)
 	} else {
 		o <- order(A)
-		lines(A[o],sqrt(sqrt(glmfit$var.prior[o])),col=col.trend)
+		lines(A[o], sqrt(sqrt(glmfit$var.prior[o])), col=col.trend, lwd=2)
 	}
-
-	legend("topright",pch=16,col=c(col.raw,col.shrunk,col.trend),legend=c("Raw","Squeezed", "Trend"))
+	
+	legend("topright", lty=c(-1,-1,1), pch=c(pch,pch,-1), col=c(col.raw,col.shrunk,col.trend), pt.cex=0.7, lwd=2, legend=c("Raw","Squeezed", "Trend"))
 	invisible(NULL)
 }
 
