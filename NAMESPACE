@@ -8,7 +8,9 @@ exportClasses("DGEList","DGEExact","DGEGLM","DGELRT","TopTags")
 exportMethods("show")
 
 import(methods)
-importFrom("limma",camera,contrastAsCoef,decideTests,goana,kegga,is.fullrank,lmFit,loessFit,mroast,nonEstimable,plotMD,plotMDS,plotWithHighlights,removeExt,roast,romer,squeezeVar,subsetListOfArrays,zscoreGamma)
+importFrom("limma",camera,contrastAsCoef,decideTests,fry,goana,kegga,is.fullrank,
+     lmFit,loessFit,mroast,nonEstimable,plotMD,plotMDS,plotWithHighlights,removeExt,
+     roast,romer,squeezeVar,subsetListOfArrays,zscoreGamma)
 importClassesFrom("limma","LargeDataObject","Roast","MDS")
 
 S3method(as.data.frame,TopTags)
@@ -39,6 +41,7 @@ S3method(estimateGLMTrendedDisp,default)
 S3method(estimateGLMTrendedDisp,DGEList)
 S3method(estimateGLMTagwiseDisp,default)
 S3method(estimateGLMTagwiseDisp,DGEList)
+S3method(fry,DGEList)
 S3method(glmFit,default)
 S3method(glmFit,DGEList)
 S3method(glmQLFit,default)

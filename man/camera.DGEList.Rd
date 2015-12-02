@@ -32,7 +32,7 @@ A data.frame. See \code{\link{camera}} for details.
 \author{Yunshun Chen, Gordon Smyth}
 
 \references{
-Dunn, K. P., and Smyth, G. K. (1996).
+Dunn, PK, and Smyth, GK (1996).
 Randomized quantile residuals.
 \emph{J. Comput. Graph. Statist.}, 5, 236-244. 
 \url{http://www.statsci.org/smyth/pubs/residual.html}

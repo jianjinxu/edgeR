@@ -1,6 +1,7 @@
 \name{roast.DGEList}
 \alias{roast.DGEList}
 \alias{mroast.DGEList}
+\alias{fry.DGEList}
 \title{Rotation Gene Set Tests for Digital Gene Expression Data}
 \description{
 Rotation gene set testing for Negative Binomial generalized linear models.
@@ -9,6 +10,7 @@ Rotation gene set testing for Negative Binomial generalized linear models.
 \usage{
 \method{roast}{DGEList}(y, index=NULL, design=NULL, contrast=ncol(design), \dots)
 \method{mroast}{DGEList}(y, index=NULL, design=NULL, contrast=ncol(design), \dots)
+\method{fry}{DGEList}(y, index=NULL, design=NULL, contrast=ncol(design), \dots)
 }
 
 \arguments{
@@ -22,7 +24,7 @@ Rotation gene set testing for Negative Binomial generalized linear models.
 \value{
 \code{roast} produces an object of class \code{\link[limma:roast]{Roast}}. See \code{\link{roast}} for details.
 
-\code{mroast} produces a data.frame. See \code{\link{mroast}} for details.
+\code{mroast} and \code{fry} produce a data.frame. See \code{\link{mroast}} for details.
 }
 
 \details{
@@ -43,7 +45,7 @@ The design matrix defaults to the \code{model.matrix(~y$samples$group)}.
 \author{Yunshun Chen and Gordon Smyth}
 
 \references{
-Dunn, K. P., and Smyth, G. K. (1996).
+Dunn, PK, and Smyth, GK (1996).
 Randomized quantile residuals.
 \emph{J. Comput. Graph. Statist.}, 5, 236-244. 
 \url{http://www.statsci.org/smyth/pubs/residual.html}

@@ -45,7 +45,7 @@ Opposing roles of polycomb repressive complexes in hematopoietic stem and progen
 \emph{Blood}, published online 5 May 2010.
 \url{http://www.ncbi.nlm.nih.gov/pubmed/20445021}
 
-Dunn, K. P., and Smyth, G. K. (1996).
+Dunn, PK, and Smyth, GK (1996).
 Randomized quantile residuals.
 \emph{J. Comput. Graph. Statist.}, 5, 236-244. 
 \url{http://www.statsci.org/smyth/pubs/residual.html}
