@@ -48,8 +48,10 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.siz
 #	Check offset and lib.size
 	if(is.null(offset)) {
 		if(is.null(lib.size)) lib.size <- colSums(y)
+		if(any(lib.size==0L)) stop("Zero library size detected. Remove the empty libraries before proceeding to the next step.")
 		offset <- log(lib.size)
 	}
+	if(any(is.infinite(offset))) stop("Infinite offset value detected. Check the input offset.")
 	offset <- expandAsMatrix(offset,dim(y))
 
 #	weights are checked in lower-level functions

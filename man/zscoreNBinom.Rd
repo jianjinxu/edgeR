@@ -32,6 +32,6 @@ Care is taken to do the computations accurately in both tails of the distributio
 \code{\link{pnbinom}}, \code{\link{qnorm}} in the stats package.
 }
 \examples{
-zscoreNBinom(c(0,10,100), mu=10, size=1/10)
+zscoreNBinom(c(0,10,100), mu=10, size=10)
 }
 \keyword{distribution}
