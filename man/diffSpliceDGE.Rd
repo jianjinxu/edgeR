@@ -4,7 +4,8 @@
 \title{Test for Differential Exon Usage}
 \description{Given a negative binomial generalized log-linear model fit at the exon level, test for differential exon usage between experimental conditions.}
 \usage{
-diffSpliceDGE(glmfit, coef=ncol(glmfit$design), contrast=NULL, geneid, exonid=NULL, prior.count=0.125, verbose=TRUE)
+diffSpliceDGE(glmfit, coef=ncol(glmfit$design), contrast=NULL, geneid, exonid=NULL,
+              prior.count=0.125, verbose=TRUE)
 }
 
 \arguments{

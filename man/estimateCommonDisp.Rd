@@ -1,5 +1,8 @@
 \name{estimateCommonDisp}
 \alias{estimateCommonDisp}
+\alias{estimateCommonDisp.DGEList}
+\alias{estimateCommonDisp.default}
+
 
 \title{Estimate Common Negative Binomial Dispersion by Conditional Maximum Likelihood}
 
@@ -8,23 +11,28 @@ Maximizes the negative binomial conditional common likelihood to estimate a comm
 }
 
 \usage{
-estimateCommonDisp(object, tol=1e-06, rowsum.filter=5, verbose=FALSE)
+\method{estimateCommonDisp}{DGEList}(y, tol=1e-06, rowsum.filter=5, verbose=FALSE, ...)
+\method{estimateCommonDisp}{default}(y, group=NULL, lib.size=NULL, tol=1e-06, 
+          rowsum.filter=5, verbose=FALSE, ...)
 }
 
 \arguments{
-\item{object}{a \code{DGEList} object.}
-
+\item{y}{matrix of counts or a \code{DGEList} object.}
 \item{tol}{the desired accuracy, passed to \code{\link{optimize}}.}
-
 \item{rowsum.filter}{genes with total count (across all samples) below this value will be filtered out before estimating the dispersion.}
-
 \item{verbose}{logical, if \code{TRUE} then the estimated dispersion and BCV will be printed to standard output.}
+\item{group}{vector or factor giving the experimental group/condition for each library.}
+\item{lib.size}{numeric vector giving the total count (sequence depth) for each library.}
+\item{\dots}{other arguments that are not currently used.}
 }
 
-\value{Returns \code{object} with the following added components:
+\value{
+\code{estimateCommonDisp.DGEList} adds the following components to the input \code{DGEList} object:
 	\item{common.dispersion}{estimate of the common dispersion.}
 	\item{pseudo.counts}{numeric matrix of pseudo-counts.}
-	\item{pseudo.lib.size}{the common library size to which the pseudo-counts have been adjusted}
+	\item{pseudo.lib.size}{the common library size to which the pseudo-counts have been adjusted.}
+	\item{AveLogCPM}{numeric vector giving log2(AveCPM) for each row of \code{y}.}
+\code{estimateCommonDisp.default} returns a numeric scalar of the common dispersion estimate.
 }
 
 \details{

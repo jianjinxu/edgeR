@@ -8,37 +8,39 @@ plotBCV <- function(y, xlab="Average log CPM", ylab="Biological coefficient of v
 
 #	Compute AveLogCPM if not found in y
 	A <- y$AveLogCPM
-	if(is.null(A)) A <- aveLogCPM(y$counts,offset=getOffset(y))
+	if(is.null(A)) A <- aveLogCPM(y$counts, offset=getOffset(y))
 
 #	Points to determine y axis limits
 	disp <- getDispersion(y)
 	if(is.null(disp)) stop("No dispersions to plot")
-	if(attr(disp,"type")=="common") disp <- rep(disp,length=length(A))
+	if(attr(disp,"type")=="common") disp <- rep(disp, length=length(A))
 
 #	Make plot
 	plot(A, sqrt(disp), xlab=xlab, ylab=ylab, type="n", ...)
-	labels <- cols <- NULL
+	labels <- cols <- lty <- pt <- NULL
 	if(!is.null(y$tagwise.dispersion)) {
 		points(A, sqrt(y$tagwise.dispersion), pch=pch, cex=cex, col=col.tagwise)
-		labels <- c(labels,"Tagwise")
-		cols <- c(cols,col.tagwise)
+		labels <- c(labels, "Tagwise")
+		cols <- c(cols, col.tagwise)
+		lty <- c(lty, -1)
+		pt <- c(pt, pch)
 	}
 	if(!is.null(y$common.dispersion)) {
 		abline(h=sqrt(y$common.dispersion), col=col.common, lwd=2)
-		labels <- c(labels,"Common")
-		cols <- c(cols,col.common)
+		labels <- c(labels, "Common")
+		cols <- c(cols, col.common)
+		lty <- c(lty, 1)
+		pt <- c(pt, -1)		
 	}
 	if(!is.null(y$trended.dispersion)) {
 		o <- order(A)
 		lines(A[o], sqrt(y$trended.dispersion)[o], col=col.trend, lwd=2)
-		labels <- c(labels,"Trend")
-		cols <- c(cols,col.trend)
+		labels <- c(labels, "Trend")
+		cols <- c(cols, col.trend)
+		lty <- c(lty, 1)
+		pt <- c(pt, -1)		
 	}
-	legend("topright",legend=labels,lty=c(-1,1,1),pch=c(pch,-1,-1),pt.cex=cex,lwd=2,col=cols)
-
-#	Add binned dispersions if appropriate
-#	if(!is.null(y$trend.method)) if(y$trend.method %in% c("bin.spline","bin.loess")) if(!is.null(y$bin.dispersion)) if(!is.null(y$bin.AveLogCPM))
-#		points(y$bin.AveLogCPM, sqrt(y$bin.dispersion), pch=16, cex=1, col="lightblue")
+	legend("topright", legend=labels, lty=lty, pch=pt, pt.cex=cex, lwd=2, col=cols)
 
 	invisible()
 }

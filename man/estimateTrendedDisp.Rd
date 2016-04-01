@@ -1,5 +1,7 @@
 \name{estimateTrendedDisp}
 \alias{estimateTrendedDisp}
+\alias{estimateTrendedDisp.DGEList}
+\alias{estimateTrendedDisp.default}
 
 \title{Estimate Empirical Bayes Trended Dispersion Values}
 
@@ -8,18 +10,20 @@ Estimates trended dispersion values by an empirical Bayes method.
 }
 
 \usage{
-estimateTrendedDisp(object, method="bin.spline", df=5, span=2/3)
+\S3method{estimateTrendedDisp}{DGEList}(y, method="bin.spline", df=5, span=2/3, ...)
+\S3method{estimateTrendedDisp}{default}(y, group=NULL, lib.size=NULL, AveLogCPM=NULL, 
+            method="bin.spline", df=5, span=2/3, ...)
 }
 
 \arguments{ 
-
-\item{object}{object of class \code{DGEList} containing (at least) the elements \code{counts} (table of raw counts), \code{group} (factor indicating group), \code{lib.size} (numeric vector of library sizes) and \code{pseudo.alt} (numeric matrix of quantile-adjusted pseudocounts calculated under the alternative hypothesis of a true difference between groups; recommended to use the \code{DGEList} object provided as the output of \code{estimateCommonDisp}}
-
-\item{method}{method used to estimated the trended dispersions. Possible values are \code{"spline"}, and \code{"loess"}.}
-
-\item{df}{integer giving the degrees of freedom of the spline function if \code{"spline"} method is used, see \code{ns} in the splines package. Default is 5.}
-
+\item{y}{matrix of counts or a \code{DGEList} object.}
+\item{method}{method used to estimated the trended dispersions. Possible values are \code{"bin.spline"}, and \code{"bin.loess"}.}
+\item{df}{integer giving the degrees of freedom of the spline function if \code{"bin.spline"} method is used, see \code{ns} in the splines package. Default is 5.}
 \item{span}{scalar, passed to \code{loess} to determine the amount of smoothing for the loess fit when \code{"loess"} method is used. Default is \code{2/3}.}
+\item{group}{vector or factor giving the experimental group/condition for each library.}
+\item{lib.size}{numeric vector giving the total count (sequence depth) for each library.}
+\item{AveLogCPM}{numeric vector giving average log2 counts per million for each tag}
+\item{\dots}{other arguments that are not currently used.}
 }
 
 \details{
@@ -43,8 +47,6 @@ counts <- matrix(counts,ngenes,nlib)
 y <- DGEList(counts,lib.size=rep(lib.size,nlib))
 y <- estimateCommonDisp(y)
 y <- estimateTrendedDisp(y)
-y <- estimateTagwiseDisp(y)
-plotBCV(y)
 }
 
 \seealso{

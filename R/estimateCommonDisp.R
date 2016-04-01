@@ -1,43 +1,62 @@
-estimateCommonDisp <- function(object,tol=1e-06,rowsum.filter=5,verbose=FALSE)
-#	Estimate common dispersion using exact conditional likelihood
-#	Davis McCarthy, Mark Robinson, Gordon Smyth.
-#	Created 2009. Last modified 20 Nov 2013.
-{
-	if(!is(object,"DGEList")) stop("Currently supports DGEList objects")
-	object <- validDGEList(object)
-	group <- object$samples$group <- as.factor(object$samples$group)
+# Estimate common dispersion using exact conditional likelihood
 
+estimateCommonDisp <- function(y, ...)
+UseMethod("estimateCommonDisp")
+
+estimateCommonDisp.DGEList <- function(y, tol=1e-06, rowsum.filter=5, verbose=FALSE, ...)
+# Yunshun Chen. Created 18 March 2016.
+{
+	y <- validDGEList(y)
+	group <- y$samples$group
+	lib.size <- y$samples$lib.size * y$samples$norm.factors
+	
 	if( all(tabulate(group)<=1) ) {
 		warning("There is no replication, setting dispersion to NA.")
 		object$common.dispersion <- NA
 		return(object)
 	}
 
-	tags.used <- rowSums(object$counts) > rowsum.filter
-	pseudo.obj <- object[tags.used,]
+	out <- estimateCommonDisp(y$counts, group=group, lib.size=lib.size, tol=tol, rowsum.filter=rowsum.filter, verbose=verbose, ...)	
+	y$common.dispersion <- out
+	y <- equalizeLibSizes(y, dispersion=y$common.dispersion)
+	y$AveLogCPM <- aveLogCPM(y)
+	y
+}
 
+
+estimateCommonDisp.default <- function(y, group=NULL, lib.size=NULL, tol=1e-06, rowsum.filter=5, verbose=FALSE, ...)
+#	Davis McCarthy, Mark Robinson, Gordon Smyth.
+#	Created 2009. Last modified 18 March 2016.
+{
+#	Check y
+	y <- as.matrix(y)
+	ntags <- nrow(y)
+	nlibs <- ncol(y)
+
+#	Check group
+	if(is.null(group)) group <- rep(1, nlibs)
+	if(length(group)!=nlibs) stop("Incorrect length of group.")
+	group <- dropEmptyLevels(group)
+
+#	Check lib.size
+	if(is.null(lib.size)) lib.size <- colSums(y)
+	if(length(lib.size)!=nlibs) stop("Incorrect length of lib.size.")
+
+	sel <- rowSums(y) > rowsum.filter
+	
 #	Start from small dispersion
 	disp <- 0.01
 	for(i in 1:2) {
-		out <- equalizeLibSizes(object,dispersion=disp)
-		pseudo.obj$counts <- out$pseudo.counts[tags.used,,drop=FALSE]
-		y <- splitIntoGroups(pseudo.obj)
-		delta <- optimize(commonCondLogLikDerDelta, interval=c(1e-4,100/(100+1)), tol=tol, maximum=TRUE, y=y, der=0)
+		out <- equalizeLibSizes(y, group=group, dispersion=disp, lib.size=lib.size)
+		y.pseudo <- out$pseudo.counts[sel, , drop=FALSE]
+		y.split <- splitIntoGroups(y.pseudo, group=group)
+		delta <- optimize(commonCondLogLikDerDelta, interval=c(1e-4,100/(100+1)), tol=tol, maximum=TRUE, y=y.split, der=0)
 		delta <- delta$maximum
 		disp <- delta/(1-delta)
 	}
 	if(verbose) cat("Disp =",round(disp,5),", BCV =",round(sqrt(disp),4),"\n")
-	object$common.dispersion <- disp
-	object$pseudo.counts <- out$pseudo.counts
-	object$pseudo.lib.size <- out$common.lib.size
-
-#	Average logCPM
-#	Note different behaviour to estimateGLMCommonDisp:
-#	Here the estimated common.dispersion is used to compute AveLogCPM whereas
-#	estimateGLMCommonDisp calculates AveLogCPM prior to estimating the common
-#	dispersion using a pre-set dispersion of 0.05
-	object$AveLogCPM <- aveLogCPM(object)
-
-	object
+	
+	common.dispersion <- disp
+	common.dispersion
 }
 

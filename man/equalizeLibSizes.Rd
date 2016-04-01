@@ -1,26 +1,32 @@
 \name{equalizeLibSizes}
 \alias{equalizeLibSizes}
+\alias{equalizeLibSizes.DGEList}
+\alias{equalizeLibSizes.default}
 
 \title{Equalize Library Sizes by Quantile-to-Quantile Normalization}
 
 \description{Adjusts counts so that the effective library sizes are equal, preserving fold-changes between groups and preserving biological variability within each group.}
 
 \usage{
-equalizeLibSizes(object, dispersion=NULL, common.lib.size)
+\S3method{equalizeLibSizes}{DGEList}(y, dispersion=NULL, \dots)
+\S3method{equalizeLibSizes}{default}(y, group=NULL, dispersion=NULL, 
+            lib.size=NULL, \dots)
 }
 
 \arguments{
-\item{object}{\code{\link[edgeR:DGEList-class]{DGEList}} object}
-
-\item{dispersion}{numeric vector of dispersion parameters.
-By default, is extracted from \code{object} or, if \code{object} contains no dispersion information, is set to \code{0.05}.}
-
-\item{common.lib.size}{numeric scalar, the library size to normalize to; default is the geometric mean of the original effective library sizes}
+\item{y}{matrix of counts or a \code{DGEList} object.}
+\item{dispersion}{numeric scalar or vector of dispersion parameters.
+By default, is extracted from \code{y} or, if \code{y} contains no dispersion information, is set to \code{0.05}.}
+\item{group}{vector or factor giving the experimental group/condition for each library.}
+\item{lib.size}{numeric vector giving the total count (sequence depth) for each library.}
+\item{\dots}{other arguments that are not currently used.}
 }
 
-\value{A list with components
+\value{
+\code{equalizeLibSizes.DGEList} returns a \code{DGEList} object with the following new components:
 	\item{pseudo.counts}{numeric matrix of normalized pseudo-counts}
-	\item{common.lib.size}{normalized library size}
+	\item{pseudo.lib.size}{normalized library size}
+\code{equalizeLibSizes.default} returns a list with components {pseudo.counts} and {pseudo.lib.size}.
 }
 
 \details{
@@ -28,7 +34,7 @@ Thus function implements the quantile-quantile normalization method of Robinson 
 It computes normalized counts, or pseudo-counts, used by \code{exactTest} and \code{estimateCommonDisp}.
 
 The output pseudo-counts are the counts that would have theoretically arisen had the effective library sizes been equal for all samples.
-The pseudo-counts are computed in such as way as to preserve fold-change differences beween the groups defined by \code{object$samples$group} as well as biological variability within each group.
+The pseudo-counts are computed in such as way as to preserve fold-change differences beween the groups defined by \code{y$samples$group} as well as biological variability within each group.
 Consequently, the results will depend on how the groups are defined.
 
 Note that the column sums of the \code{pseudo.counts} matrix will not generally be equal, because the effective library sizes are not necessarily the same as actual library sizes and because the normalized pseudo counts are not equal to expected counts.

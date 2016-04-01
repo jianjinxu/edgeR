@@ -38,7 +38,7 @@ dispCoxReidInterpolateTagwise <- function(y, design, offset=NULL, dispersion, tr
 #	Apply min.row.sum and use input dispersion for small count tags
 	i <- (rowSums(y) >= min.row.sum)
 	if(any(!i)) {
-		if(any(i)) dispersion[i] <- Recall(y=y[i,],design=design,offset=offset[i,],dispersion=dispersion[i],AveLogCPM=AveLogCPM[i],grid.npts=grid.npts,min.row.sum=0,prior.df=prior.df,span=span,trend=trend,weights=weights[i,])
+		if(any(i)) dispersion[i] <- Recall(y=y[i,,drop=FALSE],design=design,offset=offset[i,,drop=FALSE],dispersion=dispersion[i],AveLogCPM=AveLogCPM[i],grid.npts=grid.npts,min.row.sum=0,prior.df=prior.df,span=span,trend=trend,weights=weights[i,,drop=FALSE])
 		return(dispersion)
 	}
 

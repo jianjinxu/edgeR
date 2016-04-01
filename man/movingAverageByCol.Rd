@@ -1,6 +1,5 @@
 \name{movingAverageByCol}
 \alias{movingAverageByCol}
-\alias{movingAverageByCol}
 \title{Moving Average Smoother of Matrix Columns}
 \description{
 Apply a moving average smoother to the columns of a matrix.

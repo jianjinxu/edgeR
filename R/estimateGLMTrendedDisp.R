@@ -5,12 +5,20 @@ estimateGLMTrendedDisp.DGEList <- function(y, design=NULL, method="auto", ...)
 {
 	if(is.null(y$AveLogCPM)) y$AveLogCPM <- aveLogCPM(y)
 
-	d <- estimateGLMTrendedDisp(y=y$counts, design=design, offset=getOffset(y), AveLogCPM=y$AveLogCPM, method=method, weights=y$weights, ...)
+#	Check method
+	method <- match.arg(method, c("auto", "bin.spline", "bin.loess", "power", "spline"))
+	ntags <- nrow(y$counts)
+	if(method=="auto"){
+		if(ntags < 200) {
+			method <- "power"
+		} else {
+			method <- "bin.spline"
+		}
+	}
+	y$trend.method <- method
 
-	y$trended.dispersion <- d$dispersion
-	y$trend.method <- d$trend.method
-	y$bin.dispersion <- d$bin.dispersion
-	y$bin.AveLogCPM <- d$bin.AveLogCPM
+	d <- estimateGLMTrendedDisp(y=y$counts, design=design, offset=getOffset(y), AveLogCPM=y$AveLogCPM, method=method, weights=y$weights, ...)
+	y$trended.dispersion <- d
 	y
 }
 
@@ -59,8 +67,6 @@ estimateGLMTrendedDisp.default <- function(y, design=NULL, offset=NULL, AveLogCP
 		spline=dispCoxReidSplineTrend(y, design, offset=offset, AveLogCPM=AveLogCPM, ...)
 	)
 
-	trend$AveLogCPM <- AveLogCPM
-	trend$trend.method <- method
-	trend
+	trend$dispersion
 }
 

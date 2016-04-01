@@ -23,7 +23,7 @@ Compute an empirical Bayes estimate of the negative binomial dispersion paramete
 \item{design}{numeric design matrix, as for \code{\link{glmFit}}.}
 \item{trend}{logical. Should the prior be the trended dispersion (\code{TRUE}) or the common dispersion (\code{FALSE})?}
 \item{offset}{offset matrix for the log-linear model, as for \code{\link{glmFit}}.  Defaults to the log-effective library sizes.}
-\item{dispersion}{common or trended dispersion estimates, used as an initial estimate for the tagwise estimates. By default uses values stored in the \code{DGEList} object.}
+\item{dispersion}{common or trended dispersion estimates, used as an initial estimate for the tagwise estimates.}
 \item{prior.df}{prior degrees of freedom.}
 \item{span}{width of the smoothing window, in terms of proportion of the data set. Default value decreases with the number of tags.}
 \item{AveLogCPM}{numeric vector giving average log2 counts per million for each tag}

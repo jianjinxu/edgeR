@@ -29,7 +29,7 @@ Possible values are \code{"auto"} (default, switch to \code{"bin.spline"} method
 \value{
 When the input object is a \code{DGEList}, \code{estimateGLMTrendedDisp} produces a \code{DGEList} object, which contains the estimates of the trended dispersion parameter for the negative binomial model according to the method applied.
 
-When the input object is a numeric matrix, the output of one of the lower-level functions \code{dispBinTrend}, \code{dispCoxReidPowerTrend} of \code{dispCoxReidSplineTrend} is returned.
+When the input object is a numeric matrix, it returns a vector of trended dispersion estimates calculated by one of the lower-level functions \code{dispBinTrend}, \code{dispCoxReidPowerTrend} and \code{dispCoxReidSplineTrend}.
 }
 
 \details{

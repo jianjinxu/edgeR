@@ -1,5 +1,7 @@
 \name{estimateDisp}
 \alias{estimateDisp}
+\alias{estimateDisp.DGEList}
+\alias{estimateDisp.default}
 
 \title{Estimate Common, Trended and Tagwise Negative Binomial dispersions by weighted likelihood empirical Bayes}
 
@@ -8,45 +10,48 @@ Maximizes the negative binomial likelihood to give the estimate of the common, t
 }
 
 \usage{
-estimateDisp(y, design=NULL, prior.df=NULL, trend.method="locfit", tagwise=TRUE,
-             span=NULL, min.row.sum=5, grid.length=21, grid.range=c(-10,10), 
-             robust=FALSE, winsor.tail.p=c(0.05,0.1), tol=1e-06)
+\S3method{estimateDisp}{DGEList}(y, design=NULL, prior.df=NULL, trend.method="locfit", tagwise=TRUE, 
+            span=NULL, min.row.sum=5, grid.length=21, grid.range=c(-10,10), robust=FALSE, 
+            winsor.tail.p=c(0.05,0.1), tol=1e-06, ...)
+\S3method{estimateDisp}{default}(y, design=NULL, group=NULL, lib.size=NULL, offset=NULL, prior.df=NULL,
+            trend.method="locfit", tagwise=TRUE, AveLogCPM=NULL, span=NULL, min.row.sum=5, 
+            grid.length=21, grid.range=c(-10,10), robust=FALSE, winsor.tail.p=c(0.05,0.1), 
+            tol=1e-06, weights=NULL, ...)
 }
 
 \arguments{
-\item{y}{\code{DGEList} object}
-
+\item{y}{matrix of counts or a \code{DGEList} object.}
 \item{design}{numeric design matrix}
-
 \item{prior.df}{prior degrees of freedom. It is used in calculating \code{prior.n}.}
-
-\item{trend.method}{method for estimating dispersion trend. Possible values are \code{"none"}, \code{"movingave"}, \code{"loess"} and \code{"locfit"}.}
-
+\item{trend.method}{method for estimating dispersion trend. Possible values are \code{"none"}, \code{"movingave"}, \code{"loess"} and \code{"locfit"} (default).}
 \item{tagwise}{logical, should the tagwise dispersions be estimated?}
-
 \item{span}{width of the smoothing window, as a proportion of the data set.}
-
 \item{min.row.sum}{numeric scalar giving a value for the filtering out of low abundance tags. Only tags with total sum of counts above this value are used. Low abundance tags can adversely affect the dispersion estimation, so this argument allows the user to select an appropriate filter threshold for the tag abundance.}
-
 \item{grid.length}{the number of points on which the interpolation is applied for each tag.}
-
 \item{grid.range}{the range of the grid points around the trend on a log2 scale.}
-
 \item{robust}{logical, should the estimation of \code{prior.df} be robustified against outliers?}
-
 \item{winsor.tail.p}{numeric vector of length 1 or 2, giving left and right tail proportions of the deviances to Winsorize when estimating \code{prior.df}.}
-
 \item{tol}{the desired accuracy, passed to \code{\link{optimize}}}
+\item{group}{vector or factor giving the experimental group/condition for each library.}
+\item{lib.size}{numeric vector giving the total count (sequence depth) for each library.}
+\item{offset}{offset matrix for the log-linear model, as for \code{\link{glmFit}}.  Defaults to the log-effective library sizes.}
+\item{AveLogCPM}{numeric vector giving average log2 counts per million for each tag}
+\item{weights}{optional numeric matrix giving observation weights}
+\item{\dots}{other arguments that are not currently used.}
 }
 
-\value{Returns \code{object} with the following added components:
+\value{
+\code{estimateDisp.DGEList} adds the following components to the input \code{DGEList} object:
 	\item{common.dispersion}{estimate of the common dispersion.}
 	\item{trended.dispersion}{estimates of the trended dispersions.}
 	\item{tagwise.dispersion}{tagwise estimates of the dispersion parameter if \code{tagwise=TRUE}.}
-	\item{logCPM}{the average abundance of each tag, in log average counts per million.}
+	\item{AveLogCPM}{numeric vector giving log2(AveCPM) for each row of \code{y}.}
+	\item{trend.method}{method for estimating dispersion trend as given in the input.}
 	\item{prior.df}{prior degrees of freedom. It is a vector when robust method is used.}
 	\item{prior.n}{estimate of the prior weight, i.e. the smoothing parameter that indicates the weight to put on the common likelihood compared to the individual tag's likelihood.}
 	\item{span}{width of the smoothing window used in estimating dispersions.}
+
+\code{estimateDisp.default} returns a list containing \code{common.dispersion}, \code{trended.dispersion}, \code{tagwise.dispersion} (if \code{tagwise=TRUE}), \code{span}, \code{prior.df} and \code{prior.n}.
 }
 
 \details{

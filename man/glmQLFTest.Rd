@@ -10,12 +10,12 @@
 Conduct genewise statistical tests for a given coefficient or contrast.}
 
 \usage{
-\method{glmQLFit}{DGEList}(y, design=NULL, dispersion=NULL, offset=NULL, abundance.trend=TRUE, 
+\method{glmQLFit}{DGEList}(y, design=NULL, dispersion=NULL, offset=NULL, abundance.trend=TRUE,
         robust=FALSE, winsor.tail.p=c(0.05, 0.1), \dots)
-\method{glmQLFit}{default}(y, design=NULL, dispersion=NULL, offset=NULL, lib.size=NULL, 
-        abundance.trend=TRUE, AveLogCPM=NULL, robust=FALSE, 
+\method{glmQLFit}{default}(y, design=NULL, dispersion=NULL, offset=NULL, lib.size=NULL,
+        abundance.trend=TRUE, AveLogCPM=NULL, robust=FALSE,
         winsor.tail.p=c(0.05, 0.1), \dots)
-glmQLFTest(glmfit, coef=ncol(glmfit$design), contrast=NULL) 
+glmQLFTest(glmfit, coef=ncol(glmfit$design), contrast=NULL, poisson.bound=TRUE)
 }
 
 \arguments{
@@ -44,6 +44,8 @@ glmQLFTest(glmfit, coef=ncol(glmfit$design), contrast=NULL)
 \item{coef}{integer or character index vector indicating which coefficients of the linear model are to be tested equal to zero. Ignored if \code{contrast} is not \code{NULL}.}
 
 \item{contrast}{numeric vector or matrix specifying one or more contrasts of the linear model coefficients to be tested equal to zero.}
+
+\item{poisson.bound}{logical, if \code{TRUE} then the p-value returned will never be less than would be obtained for a likelihood ratio test with NB dispersion equal to zero.}
 }
 
 \details{

@@ -14,9 +14,12 @@ cpm.DGEList <- function(x, normalized.lib.sizes=TRUE, log=FALSE, prior.count=0.2
 cpm.default <- function(x, lib.size=NULL, log=FALSE, prior.count=0.25, ...)
 #	Counts per million for a matrix
 #	Davis McCarthy and Gordon Smyth.
-#	Created 20 June 2011. Last modified 6 July 2015
+#	Created 20 June 2011. Last modified 11 March 2016
 {
 	x <- as.matrix(x)
+	if (any(dim(x)==0L)) {
+		return(x)
+	}
 	if(is.null(lib.size)) lib.size <- colSums(x)
 	if(log) {
 		prior.count.scaled <- lib.size/mean(lib.size)*prior.count

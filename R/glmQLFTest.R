@@ -4,7 +4,7 @@ glmQLFit <- function(y, ...)
 UseMethod("glmQLFit")
 
 glmQLFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, abundance.trend=TRUE, robust=FALSE, winsor.tail.p=c(0.05, 0.1), ...)
-# 	Written by Yunshun Chen and Aaron Lun
+# 	Yunshun Chen and Aaron Lun
 #	Created 05 November 2014.
 {
 	if(is.null(dispersion)) {
@@ -26,8 +26,8 @@ glmQLFit.DGEList <- function(y, design=NULL, dispersion=NULL, offset=NULL, abund
 
 glmQLFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.size=NULL, abundance.trend=TRUE, AveLogCPM=NULL, robust=FALSE, winsor.tail.p=c(0.05, 0.1), ...)
 # 	Fits a GLM and computes quasi-likelihood dispersions for each gene.
-# 	Written by Yunshun Chen and Aaron Lun, based on code by Davis McCarthy and Gordon Smyth
-# 	Created 15 September 2014. Last modified 05 November 2014.
+# 	Davis McCarthy, Gordon Smyth, Yunshun Chen, Aaron Lun.
+# 	Originally part of glmQLFTest, as separate function 15 September 2014. Last modified 05 November 2014.
 {
 #	Check y
 	y <- as.matrix(y)
@@ -84,10 +84,10 @@ glmQLFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.s
 }
 
 
-glmQLFTest <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL)
+glmQLFTest <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, poisson.bound=TRUE)
 #	Quasi-likelihood F-tests for DGE glms.
-#	Davis McCarthy and Gordon Smyth.
-#	Created 18 Feb 2011. Last modified 15 Sep 2014.
+#	Davis McCarthy, Gordon Smyth, Aaron Lun.
+#	Created 18 Feb 2011. Last modified 28 Jan 2016.
 {
     if(!is(glmfit,"DGEGLM")) stop("glmfit must be an DGEGLM object produced by glmQLFit") 
 	if(is.null(glmfit$var.post)) stop("need to run glmQLFit before glmQLFTest") 
@@ -102,11 +102,15 @@ glmQLFTest <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL)
 #	Compute p-values from the QL F-statistic
 	F.pvalue <- pf(F.stat, df1=out$df.test, df2=df.total, lower.tail=FALSE, log.p=FALSE)
 
-#	Ensure is not more significant than chisquare test
-	i <- glmfit$var.post < 1
-	if(any(i)) {
-		chisq.pvalue <- pchisq(out$table$LR[i], df=out$df.test[i], lower.tail=FALSE, log.p=FALSE)
-		F.pvalue[i] <- pmax(F.pvalue[i],chisq.pvalue)
+#	Ensure is not more significant than chisquare test with Poisson variance
+	if(poisson.bound) {
+		i <- rowSums(glmfit$var.post * (1 + glmfit$fitted.values * glmfit$dispersion) < 1) > 0L
+		if(any(i)) {
+			pois.fit <- glmfit[i,]
+			pois.fit <- glmFit(pois.fit$counts, design=pois.fit$design, offset=pois.fit$offset, weights=pois.fit$weights, start=pois.fit$unshrunk.coefficients, dispersion=0)
+			pois.res <- glmLRT(pois.fit, coef=coef, contrast=contrast) 
+			F.pvalue[i] <- pmax(F.pvalue[i], pois.res$table$PValue)
+		}
 	}
 
 	out$table$LR <- out$table$PValue <- NULL
@@ -119,8 +123,8 @@ glmQLFTest <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL)
 
 plotQLDisp <- function(glmfit, xlab="Average Log2 CPM", ylab="Quarter-Root Mean Deviance", pch=16, cex=0.2, col.shrunk="red", col.trend="blue", col.raw="black", ...)
 # 	Plots the result of QL-based shrinkage.
-#	written by Aaron Lun, based on code by Davis McCarthy and Gordon Smyth
-#	15 September 2014
+#	Davis McCarthy, Gordon Smyth, Aaron Lun, Yunshun Chen.
+#	Originally part of glmQLFTest, as separate function 15 September 2014.
 {
 	A <- glmfit$AveLogCPM
 	if(is.null(A)) A <- aveLogCPM(glmfit)
