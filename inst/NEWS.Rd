@@ -2,6 +2,49 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.14.0}{\itemize{
+\item
+estimateDisp(), estimateCommonDisp(), estimateTrendedDisp(), estimateTagwiseDisp(), splitIntoGroups() and equalizeLibSizes() are now S3 generic functions.
+
+\item
+The default method of estimateGLMTrendedDisp() and estimateGLMTagwiseDisp() now only return dispersion estimates instead of a list.
+
+\item
+Add fry method for DGEList objects.
+
+\item
+Import R core packages explicitly.
+
+\item
+New function gini() to compute Gini coefficients.
+
+\item
+New argument poisson.bound for glmQLFTest().
+If TRUE (default), the p-value returned by glmQLFTest() will never be less than what would be obtained for a likelihood ratio test with NB dispersion equal to zero.
+
+\item
+New argument samples for DGEList(). It takes a data frame containing information for each sample.
+
+\item
+glmFit() now protects against zero library sizes and infinite offset values.
+
+\item
+glmQLFit.default() now avoids passing a NULL design to .residDF().
+
+\item
+cpm.default() now outputs a matrix of the same dimensions as the input even when the input has 0 row or 0 column.
+
+\item
+DGEList() pops up a warning message when zero lib.size is detected.
+
+\item
+Bug fix to calcNormFactors(method="TMM") when two libraries have identical counts but the lib.sizes have been set unequal.
+
+\item
+Add a CRISPR-Cas9 screen case study to the users' guide and rename Nigerian case study to Yoruba.
+}}
+
+
 \section{Version 3.12.0}{\itemize{
 \item
 New argument tagwise for estimateDisp(), allowing users not to estimate tagwise dispersions. 
