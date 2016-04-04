@@ -264,8 +264,8 @@ Tag.8  -0.7917906 12.86353 0.7830377 0.37621371 0.8276702
 > topTags(lrt)
 Coefficient:  group2 
             logFC   logCPM        LR      PValue       FDR
-Tag.17  2.0450988 13.73726 6.8001118 0.009115216 0.2005348
-Tag.2   4.0861092 11.54121 4.8594088 0.027495756 0.2872068
+Tag.17  2.0450988 13.73727 6.8001118 0.009115216 0.2005348
+Tag.2   4.0861092 11.54122 4.8594088 0.027495756 0.2872068
 Tag.21 -1.7265904 13.38327 4.2537154 0.039164558 0.2872068
 Tag.6  -1.6329904 12.81479 3.1763761 0.074710253 0.4109064
 Tag.16  0.9324970 13.57074 1.4126709 0.234613512 0.8499599
@@ -298,7 +298,7 @@ Tag.8  -0.7918166 12.86353 0.7356185 0.391068049 0.8603497
 > dglm2 <- estimateDisp(dglm, design)
 > summary(dglm2$tagwise.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
- 0.1766  0.1789  0.1814  0.1846  0.1870  0.2119 
+ 0.1766  0.1788  0.1814  0.1846  0.1870  0.2119 
 > dglm2 <- estimateDisp(dglm, design, prior.df=20)
 > summary(dglm2$tagwise.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
@@ -306,7 +306,7 @@ Tag.8  -0.7918166 12.86353 0.7356185 0.391068049 0.8603497
 > dglm2 <- estimateDisp(dglm, design, robust=TRUE)
 > summary(dglm2$tagwise.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
- 0.1766  0.1789  0.1814  0.1846  0.1870  0.2119 
+ 0.1766  0.1788  0.1814  0.1846  0.1870  0.2119 
 > 
 > # Continuous trend
 > nlibs <- 3
@@ -339,7 +339,7 @@ Gene5    1.856816 10.45249  7.214238 7.232750e-03 8.334760e-01
 Gene746 -1.798331 10.53094  6.846262 8.882693e-03 8.334760e-01
 Gene110  1.623148 10.68607  6.737984 9.438120e-03 8.334760e-01
 Gene383  1.637140 10.75412  6.687530 9.708965e-03 8.334760e-01
-> d <- estimateGLMCommonDisp(d, design, verbose=TRUE)
+> d1 <- estimateGLMCommonDisp(d, design, verbose=TRUE)
 Disp = 0.10253 , BCV = 0.3202 
 > glmFit(d,design,dispersion=dispersion.true, prior.count=0.5/3)
 An object of class "DGEGLM"
@@ -435,15 +435,15 @@ $AveLogCPM
 > d2 <- estimateDisp(d, design)
 > summary(d2$tagwise.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.05596 0.09506 0.11580 0.10970 0.13300 0.16950 
+0.05597 0.09506 0.11580 0.10970 0.13300 0.16930 
 > d2 <- estimateDisp(d, design, prior.df=20)
 > summary(d2$tagwise.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.04252 0.08499 0.11120 0.10960 0.12340 0.37340 
+0.04253 0.08502 0.11120 0.10960 0.12340 0.37340 
 > d2 <- estimateDisp(d, design, robust=TRUE)
 > summary(d2$tagwise.dispersion)
    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
-0.05596 0.09506 0.11580 0.10970 0.13300 0.16950 
+0.05597 0.09506 0.11580 0.10970 0.13300 0.16930 
 > 
 > # Exact tests
 > y <- matrix(rnbinom(20,mu=10,size=3/2),5,4)
@@ -493,29 +493,6 @@ Coefficient:  LR test of 2 contrasts
 4  0.5416704 -0.6923084 17.57744  0.3958596 0.820427427 0.90967967
 3  0.2876249 -0.4884392 18.06216  0.1893255 0.909679672 0.90967967
 > 
-> # spliceVariants
-> z = matrix(c(2,0,4,6,4,3,7,1,1,0,1,1,0,3,1,2,0,1,2,1,0,3,1,0), 8, 3)
-> gz = c(1,2,2,2,2,2,2,2)
-> spliceVariants(DGEList(counts = z, group = c(1,2,2)), gz)
-An object of class "DGEExact"
-$table
-  logFC   logCPM       LR     PValue
-1    NA 19.19460  0.00000 1.00000000
-2    NA 19.34082 11.47712 0.07470331
-
-$comparison
-NULL
-
-$genes
-  GeneID
-1      1
-2      2
-
-$dispersion
-           1            2 
-6.434416e-03 1.570902e-06 
-
-> 
 > # simple Good-Turing algorithm runs.
 > test1<-1:9
 > freq1<-c(2018046, 449721, 188933, 105668, 68379, 48190, 35709, 37710, 22280)
@@ -559,4 +536,4 @@ $n0
 > 
 > proc.time()
    user  system elapsed 
-   3.63    0.03    3.65 
+   3.21    0.09    3.30 

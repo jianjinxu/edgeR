@@ -7,17 +7,16 @@ estimateDisp.DGEList <- function(y, design=NULL, prior.df=NULL, trend.method="lo
 #  Yunshun Chen. Created 16 March 2016.
 {
 	y <- validDGEList(y)
-	ntags <- nrow(y$counts)
 	group <- y$samples$group
 	lib.size <- y$samples$lib.size * y$samples$norm.factors
-	if(is.null(y$AveLogCPM)) y$AveLogCPM <- aveLogCPM(y, dispersion=NULL)
-	if(is.null(span)) if(ntags<=50) span <- 1 else span <- 0.25+0.75*(50/ntags)^0.5
+	AveLogCPM <- aveLogCPM(y, dispersion=0.05)
 	
-	d <- estimateDisp(y=y$counts, design=design, group=group, lib.size=lib.size, offset=getOffset(y), prior.df=prior.df, trend.method=trend.method, AveLogCPM=y$AveLogCPM, tagwise=tagwise, span=span, min.row.sum=min.row.sum, grid.length=grid.length, grid.range=grid.range, robust=robust, winsor.tail.p=winsor.tail.p, tol=tol, weights=y$weights, ...)
+	d <- estimateDisp(y=y$counts, design=design, group=group, lib.size=lib.size, offset=getOffset(y), prior.df=prior.df, trend.method=trend.method, AveLogCPM=AveLogCPM, tagwise=tagwise, span=span, min.row.sum=min.row.sum, grid.length=grid.length, grid.range=grid.range, robust=robust, winsor.tail.p=winsor.tail.p, tol=tol, weights=y$weights, ...)
 	
 	y$common.dispersion <- d$common.dispersion
 	y$trended.dispersion <- d$trended.dispersion
 	if(tagwise) y$tagwise.dispersion <- d$tagwise.dispersion
+	y$AveLogCPM <- aveLogCPM(y)
 	y$trend.method <- trend.method
 	y$prior.df <- d$prior.df
 	y$prior.n <- d$prior.n

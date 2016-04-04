@@ -101,7 +101,7 @@ d <- calcNormFactors(d)
 fit <- glmFit(d, design, dispersion=dispersion.true, prior.count=0.5/3)
 results <- glmLRT(fit, coef=2)
 topTags(results)
-d <- estimateGLMCommonDisp(d, design, verbose=TRUE)
+d1 <- estimateGLMCommonDisp(d, design, verbose=TRUE)
 glmFit(d,design,dispersion=dispersion.true, prior.count=0.5/3)
 
 d2 <- estimateDisp(d, design)
@@ -134,11 +134,6 @@ design <- model.matrix(~0+group)
 fit <- glmFit(y,design,dispersion=2/3,prior.count=0.5/7)
 lrt <- glmLRT(fit,contrast=cbind(c(-1,1,0),c(0,-1,1),c(-1,0,1)))
 topTags(lrt)
-
-# spliceVariants
-z = matrix(c(2,0,4,6,4,3,7,1,1,0,1,1,0,3,1,2,0,1,2,1,0,3,1,0), 8, 3)
-gz = c(1,2,2,2,2,2,2,2)
-spliceVariants(DGEList(counts = z, group = c(1,2,2)), gz)
 
 # simple Good-Turing algorithm runs.
 test1<-1:9

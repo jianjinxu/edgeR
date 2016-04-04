@@ -18,8 +18,8 @@ estimateCommonDisp.DGEList <- function(y, tol=1e-06, rowsum.filter=5, verbose=FA
 
 	out <- estimateCommonDisp(y$counts, group=group, lib.size=lib.size, tol=tol, rowsum.filter=rowsum.filter, verbose=verbose, ...)	
 	y$common.dispersion <- out
-	y <- equalizeLibSizes(y, dispersion=y$common.dispersion)
-	y$AveLogCPM <- aveLogCPM(y)
+	y <- equalizeLibSizes(y, dispersion=out)
+	y$AveLogCPM <- aveLogCPM(y, dispersion=out)
 	y
 }
 

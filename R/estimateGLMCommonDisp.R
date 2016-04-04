@@ -5,11 +5,12 @@ estimateGLMCommonDisp.DGEList <- function(y, design=NULL, method="CoxReid", subs
 {
 #	Check y
 	y <- validDGEList(y)
-	if(is.null(y$AveLogCPM)) y$AveLogCPM <- aveLogCPM(y,dispersion=NULL)
+	AveLogCPM <- aveLogCPM(y, dispersion=0.05)
 
-	disp <- estimateGLMCommonDisp(y=y$counts, design=design, offset=getOffset(y), method=method, subset=subset, AveLogCPM=y$AveLogCPM, verbose=verbose, weights=y$weights, ...)
+	disp <- estimateGLMCommonDisp(y=y$counts, design=design, offset=getOffset(y), method=method, subset=subset, AveLogCPM=AveLogCPM, verbose=verbose, weights=y$weights, ...)
 
 	y$common.dispersion <- disp
+	y$AveLogCPM <- aveLogCPM(y, dispersion=disp)
 	y
 }
 
