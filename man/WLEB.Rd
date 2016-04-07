@@ -8,31 +8,22 @@ Estimates the parameters which maximize the given log-likelihood matrix using em
 }
 
 \usage{
-WLEB(theta, loglik, prior.n, covariate, trend.method="locfit", span=NULL, overall=TRUE,
-     trend=TRUE, individual=TRUE, m0=NULL, m0.out=FALSE)
+WLEB(theta, loglik, prior.n=5, covariate=NULL, trend.method="locfit", mixed.df=FALSE, 
+     span=NULL, overall=TRUE, trend=TRUE, individual=TRUE, m0=NULL, m0.out=FALSE)
 }
 
 \arguments{
 \item{theta}{numeric vector of values of the parameter at which the log-likelihoods are calculated.}
-
 \item{loglik}{numeric matrix of log-likelihood of all the candidates at those values of parameter.}
-
 \item{prior.n}{numeric scaler, estimate of the prior weight, i.e. the smoothing parameter that indicates the weight to put on the common likelihood compared to the individual's likelihood.}
-
 \item{covariate}{numeric vector of values across which a parameter trend is fitted}
-
 \item{trend.method}{method for estimating the parameter trend. Possible values are \code{"none"}, \code{"movingave"} and \code{"loess"}.}
-
+\item{mixed.df}{logical, only used when \code{trend.method="locfit"}. If \code{FALSE}, \code{locfit} uses a polynomial of degree 0. If \code{TRUE}, \code{locfit} uses a polynomial of degree 1 for rows with small covariate values. Care is taken to smooth the curve.}
 \item{span}{width of the smoothing window, as a proportion of the data set.}
-
 \item{overall}{logical, should a single value of the parameter which maximizes the sum of all the log-likelihoods be estimated?}
-
 \item{trend}{logical, should a parameter trend (against the covariate) which maximizes the local shared log-likelihoods be estimated?}
-
 \item{individual}{logical, should individual estimates of all the candidates after applying empirical Bayes method along the trend be estimated?}
-
-\item{m0}{numeric matrix of local shared log-likelihoods. If \code{Null}, they will be calculated using the method selected by \code{trend.method}.}
-
+\item{m0}{numeric matrix of local shared log-likelihoods. If \code{Null}, it will be calculated using the method selected by \code{trend.method}.}
 \item{m0.out}{logical, should local shared log-likelihoods be included in the output?}
 }
 

@@ -10,13 +10,12 @@ Maximizes the negative binomial likelihood to give the estimate of the common, t
 }
 
 \usage{
-\S3method{estimateDisp}{DGEList}(y, design=NULL, prior.df=NULL, trend.method="locfit", tagwise=TRUE, 
-            span=NULL, min.row.sum=5, grid.length=21, grid.range=c(-10,10), robust=FALSE, 
+\S3method{estimateDisp}{DGEList}(y, design=NULL, prior.df=NULL, trend.method="locfit", mixed.df=FALSE, 
+            tagwise=TRUE, span=NULL, min.row.sum=5, grid.length=21, grid.range=c(-10,10), robust=FALSE, 
             winsor.tail.p=c(0.05,0.1), tol=1e-06, ...)
 \S3method{estimateDisp}{default}(y, design=NULL, group=NULL, lib.size=NULL, offset=NULL, prior.df=NULL,
-            trend.method="locfit", tagwise=TRUE, AveLogCPM=NULL, span=NULL, min.row.sum=5, 
-            grid.length=21, grid.range=c(-10,10), robust=FALSE, winsor.tail.p=c(0.05,0.1), 
-            tol=1e-06, weights=NULL, ...)
+            trend.method="locfit", mixed.df=FALSE, tagwise=TRUE, span=NULL, min.row.sum=5, grid.length=21, 
+            grid.range=c(-10,10), robust=FALSE, winsor.tail.p=c(0.05,0.1), tol=1e-06, weights=NULL, ...)
 }
 
 \arguments{
@@ -24,6 +23,7 @@ Maximizes the negative binomial likelihood to give the estimate of the common, t
 \item{design}{numeric design matrix}
 \item{prior.df}{prior degrees of freedom. It is used in calculating \code{prior.n}.}
 \item{trend.method}{method for estimating dispersion trend. Possible values are \code{"none"}, \code{"movingave"}, \code{"loess"} and \code{"locfit"} (default).}
+\item{mixed.df}{logical, only used when \code{trend.method="locfit"}. If \code{FALSE}, \code{locfit} uses a polynomial of degree 0. If \code{TRUE}, \code{locfit} uses a polynomial of degree 1 for lowly expressed genes. Care is taken to smooth the curve.}
 \item{tagwise}{logical, should the tagwise dispersions be estimated?}
 \item{span}{width of the smoothing window, as a proportion of the data set.}
 \item{min.row.sum}{numeric scalar giving a value for the filtering out of low abundance tags. Only tags with total sum of counts above this value are used. Low abundance tags can adversely affect the dispersion estimation, so this argument allows the user to select an appropriate filter threshold for the tag abundance.}
@@ -35,7 +35,6 @@ Maximizes the negative binomial likelihood to give the estimate of the common, t
 \item{group}{vector or factor giving the experimental group/condition for each library.}
 \item{lib.size}{numeric vector giving the total count (sequence depth) for each library.}
 \item{offset}{offset matrix for the log-linear model, as for \code{\link{glmFit}}.  Defaults to the log-effective library sizes.}
-\item{AveLogCPM}{numeric vector giving average log2 counts per million for each tag}
 \item{weights}{optional numeric matrix giving observation weights}
 \item{\dots}{other arguments that are not currently used.}
 }
