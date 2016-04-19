@@ -19,10 +19,10 @@ mroast.DGEList <- function(y, index=NULL, design=NULL, contrast=ncol(design), ..
 fry.DGEList <- function(y, index=NULL, design=NULL, contrast=ncol(design), ...)
 #	Rotation gene set testing for RNA-Seq data with multiple sets
 #	Yunshun Chen, Gordon Smyth
-#	Created 1 Dec 2015.  Last revised 1 Dec 2015.
+#	Created 1 Dec 2015.  Last revised 15 April 2016.
 {
 	y <- .zscoreDGE(y=y, design=design, contrast=contrast)
-	fry(y=y, index=index, design=design, contrast=contrast, ...)
+	fry(y=y, index=index, design=design, contrast=contrast, standardize="none", ...)
 }
 
 camera.DGEList <- function(y, index, design=NULL, contrast=ncol(design), ...)

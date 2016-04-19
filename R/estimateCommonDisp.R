@@ -12,8 +12,8 @@ estimateCommonDisp.DGEList <- function(y, tol=1e-06, rowsum.filter=5, verbose=FA
 	
 	if( all(tabulate(group)<=1) ) {
 		warning("There is no replication, setting dispersion to NA.")
-		object$common.dispersion <- NA
-		return(object)
+		y$common.dispersion <- NA
+		return(y)
 	}
 
 	out <- estimateCommonDisp(y$counts, group=group, lib.size=lib.size, tol=tol, rowsum.filter=rowsum.filter, verbose=verbose, ...)	
