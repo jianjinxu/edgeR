@@ -23,7 +23,7 @@ function(object, i, j, keep.lib.sizes=TRUE)
 assign("[.DGEGLM",
 function(object, i, j)
 #  Subsetting for DGEGLM objects
-#  11 May 2011.  Last modified 09 May 2014.
+#  11 May 2011.  Last modified 20 April 2016.
 {
 	if(nargs() != 3) stop("Two subscripts required",call.=FALSE)
 	if(!missing(j)) stop("Subsetting columns not allowed for DGEGLM object.",call.=FALSE)
@@ -31,8 +31,8 @@ function(object, i, j)
 #	Recognized components
 	IJ <- character(0)
 	IX <- c("counts","offset","weights","genes","coefficients","fitted.values","unshrunk.coefficients")
-	I  <- c("AveLogCPM","trended.dispersion","tagwise.dispersion","prior.n","prior.df","dispersion","df.residual","df.residual.zeros","deviance","iter","failed")
-	JX <- c("samples","design")
+	I  <- c("AveLogCPM","dispersion","prior.n","prior.df","var.post","var.prior","df.prior","df.residual","df.residual.zeros","deviance","iter","failed")
+	JX <- character(0)
 
 	subsetListOfArrays(object,i,j,IJ=IJ,IX=IX,I=I,JX=JX)
 })
@@ -57,7 +57,7 @@ function(object, i, j)
 assign("[.DGELRT",
 function(object, i, j)
 #  Subsetting for DGELRT objects
-#  6 April 2011.  Last modified 09 May 2014.
+#  6 April 2011.  Last modified 20 April 2016.
 {
 	if(nargs() != 3) stop("Two subscripts required",call.=FALSE)
 	if(!missing(j)) stop("Subsetting columns not allowed for DGELRT object.",call.=FALSE)
@@ -65,7 +65,7 @@ function(object, i, j)
 #	Recognized components
 	IJ <- character(0)
 	IX <- c("counts","offset","weights","genes","coefficients","fitted.values","table","unshrunk.coefficients")
-	I  <- c("AveLogCPM","trended.dispersion","tagwise.dispersion","prior.n","prior.df","dispersion","df.residual","df.residual.zeros","deviance","iter","failed","df.test")
+	I  <- c("AveLogCPM","dispersion","prior.n","prior.df","var.post","var.prior","df.prior","df.residual","df.residual.zeros","deviance","iter","failed","df.test","df.total")
 	JX <- character(0)
 
 	subsetListOfArrays(object,i,j,IJ=IJ,IX=IX,I=I,JX=JX)
