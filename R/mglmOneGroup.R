@@ -1,0 +1,53 @@
+mglmOneGroup <- function(y,dispersion=0,offset=0,weights=NULL,maxit=50,tol=1e-10,verbose=FALSE,coef.start=NULL)
+#	Fit single-group negative-binomial glm
+#	Aaron Lun and Gordon Smyth
+#	18 Aug 2010. Last modified 11 Sep 2014.
+{
+#	Check y
+	y <- as.matrix(y)
+	if(!is.numeric(y)) stop("y is non-numeric")
+	if(any(y<0)) stop("y must be non-negative")
+	ntags <- nrow(y)
+	nlibs <- ncol(y)
+
+#	Check dispersion
+	dispersion <- expandAsMatrix(dispersion, dim(y), byrow=FALSE)
+	if(typeof(dispersion) != "double") stop("dispersion not floating point number")
+	if(any(dispersion<0)) stop("dispersion must be non-negative")
+
+#	Check offset
+	if(typeof(offset) != "double") stop("offset not floating point number")
+
+#	Check starting values
+	if (typeof(coef.start) != "double") storage.mode(coef.start) <- "double"
+
+#	All-Poisson special case
+	if(all(dispersion==0) && is.null(weights)) {
+		N <- exp(offset)
+		if(is.null(dim(N)))
+			m <- mean(N)
+		else
+			m <- .rowMeans(N,ntags,nlibs)
+	    return(log(.rowMeans(y/m, ntags, nlibs)))
+	}
+
+#	Check weights
+	if(is.null(weights)) weights=1
+	if(typeof(weights) == "integer") storage.mode(weights) <- "double"
+	if(typeof(weights) != "double") stop("weights is non-numeric")
+
+#	Expansions to full dimensions
+	offset <- expandAsMatrix(offset,dim(y))
+	weights <- expandAsMatrix(weights,dim(y))
+
+#	Fisher scoring iteration.
+	output <- .Call(.cR_one_group, nlibs, ntags, t(y), t(dispersion), offset, weights, maxit, tol, coef.start)
+
+#	Check error condition
+	if(is.character(output)) stop(output)
+
+#	Convergence achieved for all tags?
+	if(verbose) if (any(!output[[2]])) warning(paste("max iteractions exceeded for", sum(!output[[2]]), "tags", sep=" "))
+
+	output[[1]]
+}
