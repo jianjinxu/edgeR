@@ -8,6 +8,7 @@ exportClasses("DGEList","DGEExact","DGEGLM","DGELRT","TopTags")
 exportMethods("show")
 
 import(methods)
+import(locfit)
 importFrom("graphics", "abline", "axis", "curve", "grid", "legend",
            "lines", "mtext", "plot", "points", "smoothScatter")
 importFrom("stats", "approxfun", "as.dist", "chisq.test", "cmdscale",

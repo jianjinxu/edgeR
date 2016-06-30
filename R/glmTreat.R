@@ -7,10 +7,10 @@ treatDGE <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
 glmTreat <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
 #	Likelihood ratio test or quasi-likelihood F-test with a threshold
 #	Yunshun Chen and Gordon Smyth
-#	Created on 05 May 2014. Last modified on 29 April 2015
+#	Created on 05 May 2014. Last modified on 16 June 2016
 {
 	if(lfc < 0) stop("lfc has to be non-negative")
-	
+
 #	Check if glmfit is from glmFit() or glmQLFit()
 	isLRT <- is.null(glmfit$df.prior)
 
@@ -32,7 +32,6 @@ glmTreat <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
 		stop("glmfit must be an DGEGLM object (usually produced by glmFit or glmQLFit).")
 	}
 	if(is.null(glmfit$AveLogCPM)) glmfit$AveLogCPM <- aveLogCPM(glmfit)
-	nlibs <- ncol(glmfit)
 	ngenes <- nrow(glmfit)
 
 #	Check design matrix
@@ -74,30 +73,35 @@ glmTreat <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
 		design <- reform$design
 	}
 	unshrunk.logFC <- as.vector(unshrunk.logFC)
-	up <- unshrunk.logFC >= 0
 
 #	Null design matrix
 	design0 <- design[, -coef, drop=FALSE]
 
 	if(isLRT) {
 #		Adjusted offset
-		offset.adj <- matrix(-lfc*log(2), ngenes, 1)
-		offset.adj[up, ] <- lfc*log(2)
-		
+		offset.adj <- matrix(lfc*log(2), ngenes, 1)
+
 #		Test statistics at beta_0 = tau
 		offset.new <- glmfit$offset + offset.adj %*% t(design[, coef, drop=FALSE])
 		fit0.tau <- glmFit(glmfit$counts, design=design0, offset=offset.new, weights=glmfit$weights, dispersion=glmfit$dispersion, prior.count=0)
 		fit1.tau <- glmFit(glmfit$counts, design=design, offset=offset.new, weights=glmfit$weights, dispersion=glmfit$dispersion, prior.count=0)
 		X2.tau <- pmax(0, fit0.tau$deviance - fit1.tau$deviance)
 		z.tau <- sqrt(X2.tau)
-		
+
 #		Test statistics at beta_0 = -tau
 		offset.new <- glmfit$offset - offset.adj %*% t(design[, coef, drop=FALSE])
 		fit0.tau <- glmFit(glmfit$counts, design=design0, offset=offset.new, weights=glmfit$weights, dispersion=glmfit$dispersion, prior.count=0)
 		fit1.tau <- glmFit(glmfit$counts, design=design, offset=offset.new, weights=glmfit$weights, dispersion=glmfit$dispersion, prior.count=0)
 		X2.tau2 <- pmax(0, fit0.tau$deviance - fit1.tau$deviance)
 		z.tau2 <- sqrt(X2.tau2)
-
+		
+		i <- z.tau > z.tau2
+		if(any(i)) {
+			tmp <- z.tau[i]
+			z.tau[i] <- z.tau2[i]
+			z.tau2[i] <- tmp
+		}
+		
 		within <- abs(unshrunk.logFC) <= lfc
 		sgn <- 2*within - 1
 
@@ -109,9 +113,8 @@ glmTreat <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
 		if(!requireNamespace("statmod",quietly=TRUE)) stop("statmod required but is not available")
 		nnodes <- 5
 		gquad <- statmod::gauss.quad.prob(nnodes, dist="uniform", l=0, u=lfc*log(2))
-	
-		offset.adj <- X2.pos <- X2.neg <- matrix(-gquad$nodes, ngenes, nnodes, byrow=TRUE)
-		offset.adj[up, ] <- -offset.adj[up, ] 
+
+		offset.adj <- X2.pos <- X2.neg <- matrix(gquad$nodes, ngenes, nnodes, byrow=TRUE)
 
 		for(k in 1:nnodes){
 #			Test statistics at beta_0 = pos_nodes (tau)
@@ -128,7 +131,14 @@ glmTreat <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
 		}
 		z.pos <- sqrt(X2.pos)
 		z.neg <- sqrt(X2.neg)
-	
+		
+		i <- z.pos > z.neg
+		if(any(i)) {
+			tmp <- z.pos[i]
+			z.pos[i] <- z.neg[i]
+			z.neg[i] <- tmp
+		}
+
 		within <- matrix(abs(unshrunk.logFC)*log(2), ngenes, nnodes) <= abs(offset.adj)
 		sgn <- 2*within - 1
 
@@ -140,12 +150,14 @@ glmTreat <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
 		df.total <- pmin(df.total, nrow(glmfit)*max.df.residual)
 		p.value <- ( pt(t.pos*sgn, df=df.total) + pt(t.neg, df=df.total, lower.tail=FALSE) ) %*% gquad$weights
 	
-#		Ensure is not more significant than z-test
-		i <- glmfit$var.post < 1
+#		Ensure it is not more significant than chisquare test with Poisson variance		
+		i <- rowSums(glmfit$var.post * (1 + glmfit$fitted.values * glmfit$dispersion) < 1) > 0L
 		if(any(i)) {
-			z.pvalue <- ( pnorm(z.pos[i,]*sgn[i,]) + pnorm(z.neg[i,], lower.tail=FALSE) ) %*% gquad$weights
-			p.value[i] <- pmax(p.value[i], z.pvalue)
-		}	
+			pois.fit <- glmfit[i,]
+			pois.fit <- glmFit(pois.fit$counts, design=pois.fit$design, offset=pois.fit$offset, weights=pois.fit$weights, start=pois.fit$unshrunk.coefficients, dispersion=0)
+			pois.res <- Recall(pois.fit, coef=coef, contrast=contrast, lfc=lfc)
+			p.value[i] <- pmax(p.value[i], pois.res$table$PValue)
+		}
 	}
 
 #	Table output

@@ -13,7 +13,7 @@ adj_coxreid::adj_coxreid (const int& nl, const int& nc, const double* d) : ncoef
      * reallocate the work pointer to this value.
      */
 	double temp_work;
-    F77_NAME(dsytrf)(&uplo, &ncoefs, working_matrix, &ncoefs, pivots, &temp_work, &lwork, &info);
+    F77_CALL(dsytrf)(&uplo, &ncoefs, working_matrix, &ncoefs, pivots, &temp_work, &lwork, &info);
 	if (info) { 
 		delete [] pivots;
 		delete [] working_matrix;
@@ -57,7 +57,7 @@ std::pair<double, bool> adj_coxreid::compute(const double* wptr) {
      * factorisation i.e. A = LDLt. This guarantees factorization for singular matrices 
      * when the actual Cholesky decomposition would fail.
      */
-    F77_NAME(dsytrf)(&uplo, &ncoefs, working_matrix, &ncoefs, pivots, work, &lwork, &info);
+    F77_CALL(dsytrf)(&uplo, &ncoefs, working_matrix, &ncoefs, pivots, work, &lwork, &info);
     if (info<0) { return std::make_pair(0, false); }
 
     /* For triangular matrices, we need the diagonal to compute the determinant. Fortunately, 

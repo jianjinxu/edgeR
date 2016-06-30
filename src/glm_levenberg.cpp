@@ -138,7 +138,7 @@ int glm_levenberg::fit(const double* offset, const double* y,
 				dl[col]+=design[index]*deriv;
             }
         }
-        F77_NAME(dgemm)(&transposed, &normal, &ncoefs, &ncoefs, &nlibs,
+        F77_CALL(dgemm)(&transposed, &normal, &ncoefs, &ncoefs, &nlibs,
                 &a, design, &nlibs, wx, &nlibs, &b, xwx, &ncoefs);
         for (int i=0; i<ncoefs; ++i) {
             const double& cur_val=xwx[i*ncoefs+i];
@@ -172,7 +172,7 @@ int glm_levenberg::fit(const double* offset, const double* y,
             	}
 
             	// Cholesky decomposition, and then use of the decomposition to solve for dbeta in (XtWX)dbeta = dl.
-                F77_NAME(dpotrf)(&uplo, &ncoefs, xwx_copy, &ncoefs, &info);
+                F77_CALL(dpotrf)(&uplo, &ncoefs, xwx_copy, &ncoefs, &info);
                 if (info!=0) {
                     /* If it fails, it MUST mean that the matrix is singular due to numerical imprecision
                      * as all the diagonal entries of the XVX matrix must be positive. This occurs because of 
@@ -189,7 +189,7 @@ int glm_levenberg::fit(const double* offset, const double* y,
                 } else { break; }
             } while (1);
 
-            F77_NAME(dpotrs)(&uplo, &ncoefs, &nrhs, xwx_copy, &ncoefs, dbeta, &ncoefs, &info);
+            F77_CALL(dpotrs)(&uplo, &ncoefs, &nrhs, xwx_copy, &ncoefs, dbeta, &ncoefs, &info);
             if (info!=0) { return 1; }
 
             // Updating beta and the means. 'dbeta' stores 'Y' from the solution of (X*VX)Y=dl, corresponding to a NR step.
