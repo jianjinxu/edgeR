@@ -1,36 +1,24 @@
 #include "glm.h"
-
-/* Function to calculate the deviance. Note the protection for very large mu*phi (where we
- * use a gamma instead) or very small mu*phi (where we use the Poisson instead). This 
- * approximation protects against numerical instability introduced by subtrackting
- * a very large log value in (log cur_mu) with another very large logarithm (log cur_mu+1/phi).
- * We need to consider the 'phi' as the approximation is only good when the product is
- * very big or very small.
- */
     
 const double one_millionth=std::pow(10, -6.0);
 const double supremely_low_value=std::pow(10, -13.0), ridiculously_low_value=std::pow(10, -100.0);
 
-double glm_levenberg::nb_deviance (const double* y, const double* mu, 
-#ifdef WEIGHTED
-		const double* w, 
-#endif		
-		const double* phi) const {
+double glm_levenberg::nb_deviance (const double* y, const double* mu, const double* w, const double* phi) const {
     double tempdev=0;
     for (int i=0; i<nlibs; ++i) {
-#ifdef WEIGHTED
         tempdev+=w[i]*compute_unit_nb_deviance(y[i], mu[i], phi[i]);
-#else
-		tempdev+=compute_unit_nb_deviance(y[i], mu[i], phi[i]);
-#endif
     }
     return tempdev;
 }
 
+const char trans='n';
+const int incx=1, incy=1;
+const double first_scaling=1, second_scaling=1;
 void glm_levenberg::autofill(const double* offset, double* mu, const double* beta) {
+    std::copy(offset, offset+nlibs, mu);
+    F77_CALL(dgemv)(&trans, &nlibs, &ncoefs, &first_scaling, design, &nlibs, beta, &incx, &second_scaling, mu, &incy);
 	for (int lib=0; lib<nlibs; ++lib) {
-		double& cur_mean=(mu[lib]=offset[lib]);
-		for (int coef=0; coef<ncoefs; ++coef) { cur_mean+=design[coef*nlibs+lib]*beta[coef]; }
+		double& cur_mean=mu[lib];
 		cur_mean=std::exp(cur_mean);
 	}
 	return;
@@ -73,12 +61,9 @@ const char normal='n', transposed='t', uplo='U';
 const double a=1, b=0;
 const int nrhs=1;
 
-int glm_levenberg::fit(const double* offset, const double* y, 
-#ifdef WEIGHTED
-		const double* w, 
-#endif
+int glm_levenberg::fit(const double* offset, const double* y, const double* w, 
 		const double* disp, double* mu, double* beta) {
-	// We expect 'mu' and 'beta' to be supplied. We then check the maximum value of the counts.
+	// We expect 'beta' to be supplied. We then check the maximum value of the counts.
     double ymax=0;
     for (int lib=0; lib<nlibs; ++lib) { 
 		const double& count=y[lib];
@@ -90,24 +75,25 @@ int glm_levenberg::fit(const double* offset, const double* y,
 
     // If we start off with all entries at zero, there's really no point continuing. 
     if (ymax<low_value) {
-        for (int coef=0; coef<ncoefs; ++coef) { beta[coef]=NA_REAL; }
-        for (int lib=0; lib<nlibs; ++lib) { mu[lib]=0; }
+        std::fill(beta, beta+ncoefs, NA_REAL);
+        std::fill(mu, mu+nlibs, 0);
         return 0;
     }
     
-	/* Otherwise, we have to make sure 'beta' and 'mu' make sense relative to one another.
- 	 * We then proceed to iterating using reweighted least squares.
- 	 */
+	// Otherwise, we compute 'mu' based on 'beta', and proceed to iterating using reweighted least squares.
 	autofill(offset, mu, beta);
-	dev=nb_deviance(y, mu, 
-#ifdef WEIGHTED
-			w, 
-#endif
-			disp);
+	dev=nb_deviance(y, mu, w, disp);
+
+    // Assorted temporary objects.
     double max_info=-1, lambda=0;
+    double denom, weight, deriv;
+    int row, col, index;
+    double divergence;
+    int lev=0;
+    bool low_dev=false;
 
     while ((++iter) <= maxit) {
-		for (int i=0; i<ncoefs; ++i) { dl[i]=0; }
+        std::fill(dl, dl+ncoefs, 0);
 
 		/* Here we set up the matrix XtWX i.e. the Fisher information matrix. X is the design matrix and W is a diagonal matrix
  		 * with the working weights for each observation (i.e. library). The working weights are part of the first derivative of
@@ -122,26 +108,23 @@ int glm_levenberg::fit(const double* offset, const double* y,
  		 * is the second derivative, and dl is the first, you can see that we are effectively performing a multivariate 
  		 * Newton-Raphson procedure with 'dbeta' as the step.
  		 */
-        for (int row=0; row<nlibs; ++row) {
+        for (row=0; row<nlibs; ++row) {
             const double& cur_mu=mu[row];
-			const double denom=(1+cur_mu*disp[row]);
-#ifdef WEIGHTED
-            const double weight=cur_mu/denom*w[row];
-			const double deriv=(y[row]-cur_mu)/denom*w[row];
-#else
-            const double weight=cur_mu/denom;
-			const double deriv=(y[row]-cur_mu)/denom;
-#endif
-            for (int col=0; col<ncoefs; ++col){ 
-				const int index=col*nlibs+row;
+			denom=(1+cur_mu*disp[row]);
+            weight=cur_mu/denom*w[row];
+			deriv=(y[row]-cur_mu)/denom*w[row];
+
+            index=row;
+            for (col=0; col<ncoefs; ++col) {
                 wx[index]=design[index]*weight;
 				dl[col]+=design[index]*deriv;
+                index+=nlibs;
             }
         }
         F77_CALL(dgemm)(&transposed, &normal, &ncoefs, &ncoefs, &nlibs,
                 &a, design, &nlibs, wx, &nlibs, &b, xwx, &ncoefs);
-        for (int i=0; i<ncoefs; ++i) {
-            const double& cur_val=xwx[i*ncoefs+i];
+        for (row=0; row<ncoefs; ++row) {
+            const double& cur_val=xwx[row*ncoefs+row];
             if (cur_val>max_info) { max_info=cur_val; }
         }
         if (iter==1) {
@@ -153,29 +136,28 @@ int glm_levenberg::fit(const double* offset, const double* y,
          * step can be found that increases the deviance. In short, increases in the deviance
          * are enforced to avoid problems with convergence.
          */ 
-        int lev=0;
-        bool low_dev=false;
+        lev=0;
+        low_dev=false;
         while (++lev) {
-			for (int col=0; col<ncoefs; ++col) { dbeta[col]=dl[col]; } // Copying dl to dbeta.
+            std::copy(dl, dl+ncoefs, dbeta);
+
 			do {
              	/* We need to set up copies as the decomposition routine overwrites the originals, and 
  				 * we want the originals in case we don't like the latest step. For efficiency, we only 
 	 			 * refer to the upper triangular for the XtWX copy (as it should be symmetrical). We also add 
 	 			 * 'lambda' to the diagonals. This reduces the step size as the second derivative is increased.
         	     */
-         		for (int col=0; col<ncoefs; ++col) {
-                	for (int row=0; row<=col; ++row) {
-                    	const int index=col*ncoefs+row;
-						xwx_copy[index]=xwx[index];
-                    	if (row==col) { xwx_copy[index]+=lambda; }
-                	}
+         		for (col=0; col<ncoefs; ++col) {
+                    index=col*ncoefs;
+                    std::copy(xwx+index, xwx+index+col+1, xwx_copy+index);
+                    xwx_copy[index+col]+=lambda; 
             	}
 
             	// Cholesky decomposition, and then use of the decomposition to solve for dbeta in (XtWX)dbeta = dl.
                 F77_CALL(dpotrf)(&uplo, &ncoefs, xwx_copy, &ncoefs, &info);
                 if (info!=0) {
                     /* If it fails, it MUST mean that the matrix is singular due to numerical imprecision
-                     * as all the diagonal entries of the XVX matrix must be positive. This occurs because of 
+                     * as all the diagonal entries of the XtWX matrix must be positive. This occurs because of 
                      * fitted values being exactly zero; thus, the coefficients attempt to converge to negative 
                      * infinity. This generally forces the step size to be larger (i.e. lambda lower) in order to 
                      * get to infinity faster (which is impossible). Low lambda leads to numerical instability 
@@ -193,7 +175,7 @@ int glm_levenberg::fit(const double* offset, const double* y,
             if (info!=0) { return 1; }
 
             // Updating beta and the means. 'dbeta' stores 'Y' from the solution of (X*VX)Y=dl, corresponding to a NR step.
-            for (int i=0; i<ncoefs; ++i) { beta_new[i]=beta[i]+dbeta[i]; }
+            for (index=0; index<ncoefs; ++index) { beta_new[index]=beta[index]+dbeta[index]; }
             autofill(offset, mu_new, beta_new);
 
             /* Checking if the deviance has decreased or if it's too small to care about. Either case is good
@@ -202,15 +184,11 @@ int glm_levenberg::fit(const double* offset, const double* y,
              * lambda up so we want to retake the step from where we were before). This is why we don't modify the values
              * in-place until we're sure we want to take the step.
              */
-            const double dev_new=nb_deviance(y, mu_new, 
-#ifdef WEIGHTED
-					w, 
-#endif
-					disp);
+            const double dev_new=nb_deviance(y, mu_new, w, disp);
             if (dev_new/ymax < supremely_low_value) { low_dev=true; }
             if (dev_new <= dev || low_dev) {
-				for (int i=0; i<ncoefs; ++i) { beta[i]=beta_new[i]; }
-                for (int i=0; i<nlibs; ++i) { mu[i]=mu_new[i]; }
+                std::copy(beta_new, beta_new+ncoefs, beta);
+                std::copy(mu_new, mu_new+nlibs, mu);
                 dev=dev_new; 
                 break; 
             }
@@ -232,8 +210,8 @@ int glm_levenberg::fit(const double* offset, const double* y,
          */
         if (failed) { break; }
 		if (low_dev) { break; }
-        double divergence=0;
-        for (int i=0; i<ncoefs; ++i) { divergence+=dl[i]*dbeta[i]; }
+        divergence=0;
+        for (index=0; index<ncoefs; ++index) { divergence+=dl[index]*dbeta[index]; }
         if (divergence < tolerance) { break; }
 
         /* If we quit the inner levenberg loop immediately and survived all the break conditions above, that means that deviance is decreasing

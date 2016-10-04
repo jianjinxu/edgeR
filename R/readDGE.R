@@ -1,6 +1,6 @@
 readDGE <- function(files,path=NULL,columns=c(1,2),group=NULL,labels=NULL,...) 
 #	Read and collate a set of count data files, each file containing counts for one library
-#	Created 2006.  Last modified 15 June 2015.
+#	Created 2006.  Last modified 29 July 2016.
 {
 #	Create data.frame to hold sample information
 	x <- list()
@@ -18,18 +18,16 @@ readDGE <- function(files,path=NULL,columns=c(1,2),group=NULL,labels=NULL,...)
 
 #	Set group factor
 	if(!is.null(group)) x$samples$group <- group
-	if(is.null(x$samples$group)) x$samples$group <- rep(1,nfiles)
+	if(is.null(x$samples$group)) x$samples$group <- rep_len(1L,nfiles)
 	x$samples$group <- as.factor(x$samples$group)
 
-#	Read files
+#	Read files into a list
 	d <- taglist <- list()
 	for (fn in x$samples$files) {
 		if(!is.null(path)) fn <- file.path(path,fn)
 		d[[fn]] <- read.delim(fn,...,stringsAsFactors=FALSE)
 		taglist[[fn]] <- as.character(d[[fn]][,columns[1]])
-		if(anyDuplicated(taglist[[fn]])) {
-			stop(paste("Repeated tag sequences in",fn)) 
-		}
+		if(anyDuplicated(taglist[[fn]])) stop("Repeated tag sequences in",fn)
 	}
 
 #	Collate counts for unique tags
@@ -42,13 +40,13 @@ readDGE <- function(files,path=NULL,columns=c(1,2),group=NULL,labels=NULL,...)
 		x$counts[aa,i] <- d[[i]][,columns[2]]
 	}
 
-#	Enter library sizes and norm factors
-	x$samples$lib.size <- colSums(x$counts)
-	x$samples$norm.factors <- 1
-
 #	Alert user if htseq style meta genes found
 	MetaTags <- grep("^__",tags,value=TRUE)
 	if(length(MetaTags)) message("Meta tags detected: ",paste(MetaTags,collapse=", "))
+
+#	Enter library sizes and norm factors
+	x$samples$lib.size <- colSums(x$counts)
+	x$samples$norm.factors <- 1
 
 	new("DGEList",x)
 }

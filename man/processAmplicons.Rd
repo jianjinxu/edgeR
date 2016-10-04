@@ -48,21 +48,41 @@ processAmplicons(readfile, readfile2=NULL, barcodefile, hairpinfile,
 	\item{lib.size}{auto-calculated column sum of the counts matrix}
 }
 
-\details{The \code{processAmplicons} function assumes the sequences in your fastq files have a fixed structure (as per Figure 1A of http://f1000research.com/articles/3-95/v2). It cannot be used if your hairpins/sgRNAs/sample index sequences are in random locations within each read. You will need to customise your own sequence processing pipeline if this is the case, but can still complete your downstream analysis using edgeR.
+\details{
+The \code{processAmplicons} function assumes the sequences in your fastq files have a fixed structure (as per Figure 1A of Dai et al, 2014).
 
-The input barcode file and hairpin/sgRNA files are tab-separated text files with at least two columns (named 'ID' and 'Sequences') containing the sample or hairpin/sgRNA ids and a second column indicating the sample index or hairpin/sgRNA sequences to be matched. If \code{barcode2Start} and \code{barcode2End} are specified, a third column 'Sequences2' is expected in the barcode file. If \code{readfile2}, \code{barcodeStartRev} and \code{barcodeEndRev} are specified, another column 'SequencesReverse' is expected in the barcode file.  The barcode file may also contain a 'group' column that indicates which experimental group a sample belongs to. Additional columns in each file will be included in the respective \code{$samples} or \code{$genes} data.frames of the final code{\link[edgeR:DGEList-class]{DGEList}} object.  These files, along with the fastq file/(s) are assumed to be in the current working directory.
+The input barcode file and hairpin/sgRNA files are tab-separated text files with at least two columns (named 'ID' and 'Sequences') containing the sample or hairpin/sgRNA ids and a second column indicating the sample index or hairpin/sgRNA sequences to be matched.
+If \code{barcode2Start} and \code{barcode2End} are specified, a third column 'Sequences2' is expected in the barcode file.
+If \code{readfile2}, \code{barcodeStartRev} and \code{barcodeEndRev} are specified, another column 'SequencesReverse' is expected in the barcode file.
+The barcode file may also contain a 'group' column that indicates which experimental group a sample belongs to.
+Additional columns in each file will be included in the respective \code{$samples} or \code{$genes} data.frames of the final code{\link[edgeR:DGEList-class]{DGEList}} object.
+These files, along with the fastq file/(s) are assumed to be in the current working directory.
 
-To compute the count matrix, matching to the given barcodes and hairpins/sgRNAs is conducted in two rounds. The first round looks for an exact sequence match for the given barcode sequences and hairpin/sgRNA sequences at the locations specified. If \code{allowShifting} is set to \code{TRUE}, the program also checks if a given hairpin/sgRNA sequence can be found at a neighbouring position in the read. If a match isn't found, the program performs a second round of matching which allows for sequence mismatches if \code{allowMismatch} is set to \code{TRUE}. The program also checks parameter \code{allowShiftedMismatch} which accommodates mismatches at the shifted positions. The maximum number of mismatch bases in barcode and hairpin/sgRNA are specified by the parameters \code{barcodeMismatchBase} and \code{hairpinMismatchBase}. 
+To compute the count matrix, matching to the given barcodes and hairpins/sgRNAs is conducted in two rounds.
+The first round looks for an exact sequence match for the given barcode sequences and hairpin/sgRNA sequences at the locations specified.
+If \code{allowShifting} is set to \code{TRUE}, the program also checks if a given hairpin/sgRNA sequence can be found at a neighbouring position in the read.
+If a match isn't found, the program performs a second round of matching which allows for sequence mismatches if \code{allowMismatch} is set to \code{TRUE}.
+The program also checks parameter \code{allowShiftedMismatch} which accommodates mismatches at the shifted positions.
+The maximum number of mismatch bases in barcode and hairpin/sgRNA are specified by the parameters \code{barcodeMismatchBase} and \code{hairpinMismatchBase}. 
 
-The program outputs a \code{\link[edgeR:DGEList-class]{DGEList}} object, with a count matrix indicating the number of times each barcode and hairpin/sgRNA combination could be matched in reads from input fastq file/(s).
+The program outputs a \code{\link[edgeR:DGEList-class]{DGEList}} object, with a count matrix indicating the number of times each barcode and hairpin/sgRNA combination could be matched in reads from input fastq file(s).
 
-For further examples and data, refer to the Case studies available from http://bioinf.wehi.edu.au/shRNAseq/.
+For further examples and data, refer to the case studies available from \url{http://bioinf.wehi.edu.au/shRNAseq}.
+}
 
-Note: The \code{processAmplicons} function supercedes the earlier \code{processHairpinReads} function.
+\note{
+This function replaced the earlier function \code{processHairpinReads} in edgeR 3.7.17.
+
+This function cannot be used if the hairpins/sgRNAs/sample index sequences are in random locations within each read.
+If that is the case, then analysts will need to customise their own sequence processing pipeline, although edgeR can still be used for downstream analysis.
+
 }
 
 \author{Zhiyin Dai and Matthew Ritchie}
 
 \references{
-Dai Z, Sheridan JM, et al. (2014). edgeR: a versatile tool for the analysis of shRNA-seq and CRISPR-Cas9 genetic screens. F1000Research, 3:95. http://f1000research.com/articles/3-95/v2. PMID: 24860646.
+Dai Z, Sheridan JM,  Gearing, LJ, Moore, DL, Su, S, Wormald, S, Wilcox, S, O'Connor, L, Dickins, RA, Blewitt, ME, Ritchie, ME(2014).
+edgeR: a versatile tool for the analysis of shRNA-seq and CRISPR-Cas9 genetic screens.
+\emph{F1000Research} 3, 95.
+\url{http://f1000research.com/articles/3-95}
 }

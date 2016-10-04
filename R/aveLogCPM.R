@@ -39,54 +39,40 @@ aveLogCPM.default <- function(y,lib.size=NULL,offset=NULL,prior.count=2,dispersi
 #	Gordon Smyth
 #	Created 25 Aug 2012. Last modified 25 Sep 2014.
 {
-#	Check y
+#	Special case when all counts and library sizes are zero
 	y <- as.matrix(y)
-	if(any(is.na(y))) stop("NA counts not allowed")
-	if(any(y<0)) stop("counts must be non-negative")
-
-#	Check prior.count
-	neg.prior <- prior.count < 0
-	if(any(neg.prior)) prior.count[neg.prior] <- 0
+	if(.isAllZero(y)) {
+		if ((is.null(lib.size) || max(lib.size)==0) && (is.null(offset) || max(offset)==-Inf)) {
+			abundance <- rep(-log(nrow(y)),nrow(y))
+			return( (abundance+log(1e6)) / log(2) )
+		}
+	}
 
 #	Check dispersion
 	if(is.null(dispersion)) dispersion <- 0.05
-	isna <- is.na(dispersion)
+	isna <- is.na(dispersion) # ???
 	if(all(isna)) dispersion <- 0.05
 	if(any(isna)) dispersion[isna] <- mean(dispersion,na.rm=TRUE)
 
-#	Check lib.size and offset.
-#	If offset is provided, it takes precedence over lib.size.
-#	However it must have a similar average to log(lib.size)
-#	for the results to be meaningful as logCPM values
-	if(is.null(offset)) {
-		if(is.null(lib.size)) lib.size <- colSums(y)
-	} else {
-		lib.size <- exp(offset)
-	}
-	mean.lib.size <- mean(lib.size)
+	dispersion <- .compressDispersions(dispersion)
 
-#	Special case when all counts are zero
-	if(mean.lib.size==0) {
-		abundance <- rep(-log(nrow(y)),nrow(y))
-		return( (abundance+log(1e6)) / log(2) )
-	}
+#   Check weights
+	weights <- .compressWeights(weights)
 
-#	Ensuring lib.size has appropriate dimensions for prior.count
-	if(length(prior.count)>1L) {
-		if(nrow(y)!=length(prior.count)) stop("length of prior count vector should be equal to the number of rows")
-		lib.size <- expandAsMatrix(lib.size, dim(y)) 
-	}
+#   Check offsets
+	offset <- .compressOffsets(y, lib.size=lib.size, offset=offset)
 
-#	Scale prior counts to preserve fold changes
-	prior.count.scaled <- lib.size/mean.lib.size*prior.count
+#   Check prior counts
+	prior.count <- .compressPrior(prior.count)
 
-#	Add double prior counts to library sizes
-	offset <- log(lib.size+2*prior.count.scaled)
+#   Retrieve GLM fitting parameters
+	maxit <- formals(mglmOneGroup)$maxit
+	tol <- formals(mglmOneGroup)$tol
 
-#	Add prior counts to y
-	if (is.null(dim(prior.count.scaled))) prior.count.scaled <- expandAsMatrix(prior.count.scaled, dim(y))
-	y <- y+prior.count.scaled
+#   Calling the C++ code
+	ab <- .Call(.cR_ave_log_cpm, y, offset, prior.count, dispersion, weights, maxit, tol)
+	if (is.character(ab)) stop(ab)
 
-	abundance <- mglmOneGroup(y,dispersion=dispersion,offset=offset,weights=weights)
-	(abundance+log(1e6)) / log(2)
+	return(ab)
 }
+

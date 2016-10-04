@@ -1,14 +1,12 @@
 \name{glmTreat}
 \alias{glmTreat}
-\alias{treatDGE}
 
 \title{Test for Differential Expression Relative to a Threshold}
 
 \description{Conduct genewise statistical tests for a given coefficient or contrast relative to a specified fold-change threshold.}
 
 \usage{
-glmTreat(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
-treatDGE(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
+glmTreat(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0, powerful=TRUE)
 }
 
 \arguments{
@@ -19,6 +17,8 @@ treatDGE(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
 \item{contrast}{numeric vector specifying the contrast of the linear model coefficients to be tested against the log2-fold-change threshold. Length must equal to the number of columns of \code{design}. If specified, then takes precedence over \code{coef}.}
 
 \item{lfc}{numeric scalar specifying the absolute value of the log2-fold change threshold above which differential expression is to be considered.}
+
+\item{powerful}{logical. If \code{TRUE} (by default), p-values are computed over a bounded interval under the null hypothesis. If \code{FALSE}, only the boundary of the null hypothesis is considered.}
 }
 
 \value{
@@ -49,7 +49,7 @@ If there is no shrinkage on log-fold-changes, i.e., fitting glms with \code{prio
 Note that \code{glmTreat} constructs test statistics using \code{unshrunk.logFC} rather than \code{logFC}.
 
 \code{glmTreat} was previously called \code{treatDGE}.
-The old function name is now deprecated and will be removed in a future release of edgeR.
+The old function name is now deprecated and is removed from edgeR.
 }
 
 \author{Yunshun Chen and Gordon Smyth}

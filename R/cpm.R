@@ -14,20 +14,29 @@ cpm.DGEList <- function(x, normalized.lib.sizes=TRUE, log=FALSE, prior.count=0.2
 cpm.default <- function(x, lib.size=NULL, log=FALSE, prior.count=0.25, ...)
 #	Counts per million for a matrix
 #	Davis McCarthy and Gordon Smyth.
-#	Created 20 June 2011. Last modified 11 March 2016
+#	Created 20 June 2011. Last modified 03 October 2016
 {
 	x <- as.matrix(x)
 	if (any(dim(x)==0L)) {
 		return(x)
 	}
+
 	if(is.null(lib.size)) lib.size <- colSums(x)
+	if(!is.double(lib.size)) storage.mode(lib.size) <- "double"
+	lib.size <- makeCompressedMatrix(lib.size, byrow=TRUE)
+	err <- .Call(.cR_check_positive, lib.size, "library sizes")
+	if (is.character(err)) stop(err)
+
+	# Calculating in C++ for max efficiency
 	if(log) {
-		prior.count.scaled <- lib.size/mean(lib.size)*prior.count
-		lib.size <- lib.size+2*prior.count.scaled
+		prior.count <- .compressPrior(prior.count)
+		out <- .Call(.cR_calculate_cpm_log, x, lib.size, prior.count)
+	} else {
+		out <- .Call(.cR_calculate_cpm_raw, x, lib.size)
 	}
-	lib.size <- 1e-6*lib.size
-	if(log)
-		log2(t( (t(x)+prior.count.scaled) / lib.size ))
-	else
-		t(t(x)/lib.size)
+	if (is.character(out)) stop(out)
+
+	# Cleaning up
+	dimnames(out) <- dimnames(x)
+	out
 }

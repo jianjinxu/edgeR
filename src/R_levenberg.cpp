@@ -1,56 +1,36 @@
 #include "glm.h"
 #include "matvec_check.h"
 
-SEXP R_levenberg (SEXP nlib, SEXP ntag, SEXP design, SEXP counts, SEXP disp, SEXP offset, SEXP weights,
-		SEXP beta, SEXP fitted, SEXP tol, SEXP maxit) try {
-	if (!isNumeric(design)) { throw  std::runtime_error("design matrix should be double precision"); }
-	if (!isNumeric(disp)) { throw std::runtime_error("dispersion matrix should be double precision"); }
-	if (!isNumeric(beta)) { throw std::runtime_error("matrix of start values for coefficients should be double precision"); }
-	if (!isNumeric(fitted)) { throw std::runtime_error("matrix of starting fitted values should be double precision"); }
-    const int num_tags=asInteger(ntag);
-    const int num_libs=asInteger(nlib);
-
-	// Checking the count matrix.
-    const double *cdptr=NULL;
-    const int* ciptr=NULL;
+SEXP R_levenberg (SEXP design, SEXP y, SEXP disp, SEXP offset, SEXP weights,
+		SEXP beta, SEXP tol, SEXP maxit) try {
+    count_holder counts(y);
+    const int num_tags=counts.get_ntags();
+    const int num_libs=counts.get_nlibs();
     double* count_ptr=(double*)R_alloc(num_libs, sizeof(double));
-    bool is_integer=isInteger(counts);
-    if (is_integer) {
-        ciptr=INTEGER(counts);
-    } else {
-        if (!isNumeric(counts)) { throw std::runtime_error("count matrix must be integer or double-precision"); }
-        cdptr=REAL(counts); 
-    }
 	
     // Getting and checking the dimensions of the arguments.    
+	if (!isReal(design)) { throw  std::runtime_error("design matrix should be double precision"); }
     const int dlen=LENGTH(design);
-	const int clen=LENGTH(counts);
     if (dlen%num_libs!=0) { throw std::runtime_error("size of design matrix is incompatible with number of libraries"); }
     const int num_coefs=dlen/num_libs;
-    if (clen!=num_tags*num_libs) { 
-        throw std::runtime_error("dimensions of the count matrix are not as specified");
-    } else if (LENGTH(beta)!=num_tags*num_coefs) {
+    if (!isReal(beta)) { throw std::runtime_error("starting coefficient values must be positive"); }
+    if (LENGTH(beta)!=num_tags*num_coefs) {
         throw std::runtime_error("dimensions of the beta matrix do not match to the number of tags and coefficients");
-    } else if (LENGTH(fitted)!=clen) {
-        throw std::runtime_error("dimensions of the fitted matrix do not match those of the count matrix");
-    } else if (LENGTH(disp)!=clen) { 
-		throw std::runtime_error("dimensions of dispersion matrix is not as specified"); 
-	} 
+    } 
 
     // Initializing pointers to the assorted features.
-    const double* beta_ptr=REAL(beta), 
-		  *design_ptr=REAL(design), 
-	  	  *fitted_ptr=REAL(fitted), 
-		  *disp_ptr=REAL(disp);
-    matvec_check allo(num_libs, num_tags, offset, true, "offset");
-    const double* const* optr2=allo.access();
-    matvec_check allw(num_libs, num_tags, weights, true, "weight", 1);
-    const double* const* wptr2=allw.access();
+    const double *design_ptr=REAL(design), *bptr=REAL(beta);
+    matvec_check allo(offset, num_tags, num_libs);
+    const double* const optr2=allo.access();
+    matvec_check allw(weights, num_tags, num_libs);
+    const double* const wptr2=allw.access();
+    matvec_check alld(disp, num_tags, num_libs);
+    const double* const dptr2=alld.access();
 
     // Initializing output cages.
     SEXP output=PROTECT(allocVector(VECSXP, 5));
-   	SET_VECTOR_ELT(output, 0, allocMatrix(REALSXP, num_coefs, num_tags)); // beta (transposed)
-   	SET_VECTOR_ELT(output, 1, allocMatrix(REALSXP, num_libs, num_tags)); // new fitted (transposed)
+   	SET_VECTOR_ELT(output, 0, allocMatrix(REALSXP, num_tags, num_coefs)); // beta 
+   	SET_VECTOR_ELT(output, 1, allocMatrix(REALSXP, num_tags, num_libs)); // new fitted 
 	SET_VECTOR_ELT(output, 2, allocVector(REALSXP, num_tags));
 	SET_VECTOR_ELT(output, 3, allocVector(INTSXP, num_tags));
 	SET_VECTOR_ELT(output, 4, allocVector(LGLSXP, num_tags));
@@ -59,41 +39,41 @@ SEXP R_levenberg (SEXP nlib, SEXP ntag, SEXP design, SEXP counts, SEXP disp, SEX
     double* dev_ptr=REAL(VECTOR_ELT(output, 2));
     int* iter_ptr=INTEGER(VECTOR_ELT(output, 3));
     int* fail_ptr=LOGICAL(VECTOR_ELT(output, 4));
+
+    double* tmp_beta_ptr=(double*)R_alloc(num_coefs, sizeof(double));
+    double* tmp_fitted_ptr=(double*)R_alloc(num_libs, sizeof(double));
+
 	try {
        	// Running through each tag and fitting the NB GLM.
 		glm_levenberg glbg(num_libs, num_coefs, design_ptr, asInteger(maxit), asReal(tol));
+        int lib, coef;
     	for (int tag=0; tag<num_tags; ++tag) {
+            counts.fill_and_next(count_ptr);
+	
+			// Copying elements to the tmp_beta as these are modified in-place.
+            for (coef=0; coef<num_coefs; ++coef) {
+                tmp_beta_ptr[coef]=bptr[coef*num_tags];
+            }
+            ++bptr;
 
-			// Copying integer/double counts to a new vector.
-            if (is_integer) {
-				for (int i=0; i<num_libs; ++i) { count_ptr[i]=double(ciptr[i]); }
-				ciptr+=num_libs;
-			} else {
-				for (int i=0; i<num_libs; ++i) { count_ptr[i]=cdptr[i]; }
-				cdptr+=num_libs;
-			}
-		
-			// Copying elements to the new_beta and new_fitted, so output is automatically stored.
-			for (int i=0; i<num_libs; ++i) { new_fitted_ptr[i]=fitted_ptr[i]; }
-			for (int i=0; i<num_coefs; ++i) { new_beta_ptr[i]=beta_ptr[i]; }
-			if (glbg.fit(*optr2, count_ptr, 
-#ifdef WEIGHTED
-						*wptr2,
-#endif
-						disp_ptr, new_fitted_ptr, new_beta_ptr)) {
-				std::stringstream errout;
+			if (glbg.fit(optr2, count_ptr, wptr2, dptr2, tmp_fitted_ptr, tmp_beta_ptr)) {
+                std::stringstream errout;
 				errout<< "solution using Cholesky decomposition failed for tag " << tag+1;
 				throw std::runtime_error(errout.str());
 			} 
 			allo.advance();
 			allw.advance();
+            alld.advance();
 			
-			disp_ptr+=num_libs;
-			fitted_ptr+=num_libs;
-			new_fitted_ptr+=num_libs;
-			beta_ptr+=num_coefs;
-			new_beta_ptr+=num_coefs;
-			
+            for (lib=0; lib<num_libs; ++lib) {
+			    new_fitted_ptr[lib*num_tags]=tmp_fitted_ptr[lib];
+            }
+            ++new_fitted_ptr;
+            for (coef=0; coef<num_coefs; ++coef) {
+                new_beta_ptr[coef*num_tags]=tmp_beta_ptr[coef];
+            }
+            ++new_beta_ptr;
+
 			*(dev_ptr++)=glbg.get_deviance();
 			*(iter_ptr++)=glbg.get_iterations();
 			*(fail_ptr++)=glbg.is_failure();
@@ -106,3 +86,4 @@ SEXP R_levenberg (SEXP nlib, SEXP ntag, SEXP design, SEXP counts, SEXP disp, SEX
     UNPROTECT(1);
     return output;   
 } catch (std::exception& e) { return mkString(e.what()); }
+

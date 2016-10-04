@@ -13,7 +13,7 @@ Conduct genewise statistical tests for a given coefficient or contrast.}
 \method{glmQLFit}{DGEList}(y, design=NULL, dispersion=NULL, offset=NULL, abundance.trend=TRUE,
         robust=FALSE, winsor.tail.p=c(0.05, 0.1), \dots)
 \method{glmQLFit}{default}(y, design=NULL, dispersion=NULL, offset=NULL, lib.size=NULL,
-        abundance.trend=TRUE, AveLogCPM=NULL, robust=FALSE,
+        weights=NULL, abundance.trend=TRUE, AveLogCPM=NULL, robust=FALSE,
         winsor.tail.p=c(0.05, 0.1), \dots)
 glmQLFTest(glmfit, coef=ncol(glmfit$design), contrast=NULL, poisson.bound=TRUE)
 }
@@ -28,6 +28,8 @@ glmQLFTest(glmfit, coef=ncol(glmfit$design), contrast=NULL, poisson.bound=TRUE)
 \item{offset}{numeric matrix of same size as \code{y} giving offsets for the log-linear models.  Can be a scalor or a vector of length \code{ncol(y)}, in which case it is expanded out to a matrix. If \code{NULL} will be computed by \code{getOffset(y)}.}
 
 \item{lib.size}{numeric vector of length \code{ncol(y)} giving library sizes. Only used if \code{offset=NULL}, in which case \code{offset} is set to \code{log(lib.size)}. Defaults to \code{colSums(y)}.}
+
+\item{weights}{numeric matrix of same size as \code{y} giving weights for the log-linear models. If \code{NULL}, will be set to unity for all observations.}
 
 \item{abundance.trend}{logical, whether to allow an abundance-dependent trend when estimating the prior values for the quasi-likelihood multiplicative dispersion parameter.}
 
@@ -84,9 +86,14 @@ It also stores \code{df.total}, a numeric vector containing the denominator degr
 }
 
 \references{
-Lun, ATL, Chen, Y, and Smyth, GK (2015).
+Chen Y, Lun ATL, and Smyth, GK (2016).
+From reads to genes to pathways: differential expression analysis of RNA-Seq experiments using Rsubread and the edgeR quasi-likelihood pipeline.
+\emph{F1000Research} 5, 1438.
+\url{http://f1000research.com/articles/5-1438}
+
+Lun, ATL, Chen, Y, and Smyth, GK (2016).
 It's DE-licious: a recipe for differential expression analyses of RNA-seq experiments using quasi-likelihood methods in edgeR.
-Bioinformatics Division, Walter and Eliza Hall Institute of Medical Research, Melbourne, Australia.
+\emph{Methods in Molecular Biology} 1418, 391-416.
 \url{http://www.statsci.org/smyth/pubs/QLedgeRPreprint.pdf">Preprint 8 April 2015}
 
 Lund, SP, Nettleton, D, McCarthy, DJ, and Smyth, GK (2012).
@@ -94,10 +101,10 @@ Detecting differential expression in RNA-sequence data using quasi-likelihood wi
 \emph{Statistical Applications in Genetics and Molecular Biology} Volume 11, Issue 5, Article 8.
 \url{http://www.statsci.org/smyth/pubs/QuasiSeqPreprint.pdf}
 
-Phipson, B, Lee, S, Majewski, IJ, Alexander, WS, and Smyth, GK (2013).
-Empirical Bayes in the presence of exceptional cases, with application to microarray data.
-Bioinformatics Division, Walter and Eliza Hall Institute of Medical Research, Melbourne, Australia.
-\url{http://www.statsci.org/smyth/pubs/RobustEBayesPreprint.pdf}
+Phipson, B, Lee, S, Majewski, IJ, Alexander, WS, and Smyth, GK (2016).
+Robust hyperparameter estimation protects against hypervariable genes and improves power to detect differential expression.
+\emph{Annals of Applied Statistics} 10, 946-963.
+\url{http://arxiv.org/abs/1602.08678}
 }
 
 \author{Yunshun Chen, Aaron Lun, Davis McCarthy and Gordon Smyth}

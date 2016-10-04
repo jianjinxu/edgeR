@@ -2,6 +2,42 @@
 \title{edgeR News}
 \encoding{UTF-8}
 
+\section{Version 3.16.0}{\itemize{
+\item 
+estimateDisp() now respects weights in calculating the APLs.
+
+\item 
+Added design matrix to the output of estimateDisp().
+
+\item 
+glmFit() constructs design matrix, if design=NULL, from y$samples$group.
+
+\item 
+New argument 'powerful' in glmTreat(), and a change in how p-values are calculated by default.
+
+\item 
+Modified the default 'main' in plotMD().
+
+\item 
+Created a new S3 class, compressedMatrix, to store offsets and weights efficiently.
+
+\item 
+Added the makeCompressedMatrix() function to make a compressedMatrix object.
+
+\item 
+Switched storage of offsets in DGEGLM objects to use the compressedMatrix class.
+
+\item 
+Added the addPriorCount() function for adding prior counts.
+
+\item 
+Modified spliceVariants() calculation of the average log-CPM.
+
+\item 
+Migrated some internal calculations and checks to C++ for greater efficiency.
+}}
+
+
 \section{Version 3.14.0}{\itemize{
 \item
 estimateDisp(), estimateCommonDisp(), estimateTrendedDisp(), estimateTagwiseDisp(), splitIntoGroups() and equalizeLibSizes() are now S3 generic functions.

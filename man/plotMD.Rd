@@ -20,6 +20,9 @@ Creates a mean-difference plot (aka MA plot) with color coding for highlighted p
 \method{plotMD}{DGELRT}(object, xlab = "Average log CPM",
        ylab = "log-fold-change", main = object$comparison,
        status=object$genes$Status, \dots)
+\method{plotMD}{DGEExact}(object, xlab = "Average log CPM",
+       ylab = "log-fold-change", main = NULL,
+       status=object$genes$Status, \dots)
 }
 
 \arguments{

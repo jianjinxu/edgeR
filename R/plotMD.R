@@ -39,10 +39,19 @@ plotMD.DGEGLM <- function(object, column=ncol(object), coef=NULL, xlab="Average 
 	plotWithHighlights(x=object$AveLogCPM,y=logFC,xlab=xlab,ylab=ylab,main=main,status=status,...)
 }
 
-plotMD.DGEExact <- plotMD.DGELRT <- function(object, xlab="Average log CPM", ylab="log-fold-change", main=object$comparison, status=object$genes$Status, ...)
+plotMD.DGELRT <- function(object, xlab="Average log CPM", ylab="log-fold-change", main=object$comparison, status=object$genes$Status, ...)
 #	Mean-difference plot with color coding for controls
 #	Gordon Smyth
-#	Last modified 24 June 2015.
+#	Created 24 June 2015.
 {
+	plotWithHighlights(x=object$table$logCPM,y=object$table$logFC,xlab=xlab,ylab=ylab,main=main,status=status,...)
+}
+
+plotMD.DGEExact <- function(object, xlab="Average log CPM", ylab="log-fold-change", main=NULL, status=object$genes$Status, ...)
+#	Mean-difference plot with color coding for controls
+#	Gordon Smyth
+#	Created 24 June 2015.  Last modified 14 Aug 2016.
+{
+	if(is.null(main)) main <- paste(object$comparison[2],"vs",object$comparison[1])
 	plotWithHighlights(x=object$table$logCPM,y=object$table$logFC,xlab=xlab,ylab=ylab,main=main,status=status,...)
 }

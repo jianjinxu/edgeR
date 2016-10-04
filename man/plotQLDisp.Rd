@@ -14,7 +14,7 @@ plotQLDisp(glmfit, xlab="Average Log2 CPM", ylab="Quarter-Root Mean Deviance", p
   \item{ylab}{label for the y-axis.}
   \item{pch}{the plotting symbol. See \code{\link{points}} for more details.}
   \item{cex}{plot symbol expansion factor. See \code{\link{points}} for more details.}
-  \item{col.shrunk}{color of the points representing the shrunk quasi-liklihood dispersions.}
+  \item{col.shrunk}{color of the points representing the squeezed quasi-likelihood dispersions.}
   \item{col.trend}{color of line showing dispersion trend.}
   \item{col.raw}{color of points showing the unshrunk dispersions.}
   \item{\dots}{any other arguments are passed to \code{plot}.}
@@ -30,7 +30,7 @@ The quarter-root transformation is applied to improve visibility for dispersions
 A plot is created on the current graphics device.
 }
 
-\author{Aaron Lun, based on code by Davis McCarthy and Gordon Smyth}
+\author{Aaron Lun, Davis McCarthy, Gordon Smyth, Yunshun Chen.}
 
 \examples{
 nbdisp <- 1/rchisq(1000, df=10)
@@ -43,6 +43,13 @@ plotQLDisp(fit)
 
 fit <- glmQLFit(y, design, abundance.trend=FALSE)
 plotQLDisp(fit)
+}
+
+\references{
+Chen Y, Lun ATL, and Smyth, GK (2016).
+From reads to genes to pathways: differential expression analysis of RNA-Seq experiments using Rsubread and the edgeR quasi-likelihood pipeline.
+\emph{F1000Research} 5, 1438.
+\url{http://f1000research.com/articles/5-1438}
 }
 
 \keyword{plot}

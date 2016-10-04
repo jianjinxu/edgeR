@@ -5,6 +5,7 @@
 \title{Empirical analysis of digital gene expression data in R}
 \description{
 edgeR is a package for the analysis of digital gene expression data arising from RNA sequencing technologies such as SAGE, CAGE, Tag-seq or RNA-seq, with emphasis on testing for differential expression.
+It can also be used for other sequencing technologies from which read counts are produced, such as ChIP-seq, Hi-C or CRISPR.
 
 Particular strengths of the package include the ability to estimate biological variation between replicate libraries, and to conduct exact tests of significance which are suitable for small counts.
 The package is able to make use of even minimal numbers of replicates.
@@ -38,8 +39,26 @@ Mark Robinson <mrobinson@wehi.edu.au>, Davis McCarthy <dmccarthy@wehi.edu.au>, Y
   Differential expression analysis of multifactor RNA-Seq experiments with respect to biological variation.
   \emph{Nucleic Acids Research} 40, 4288-4297.
 
-  Lund, SP, Nettleton, D, McCarthy, DJ, Smyth, GK (2012).
-  Detecting differential expression in RNA-sequence data using quasi-likelihood with shrunken dispersion estimates.
-  \emph{Statistical Applications in Genetics and Molecular Biology}. (Accepted 31 July 2012)
+Chen, Y, Lun, ATL, and Smyth, GK (2014).
+Differential expression analysis of complex RNA-seq experiments using edgeR.
+In: \emph{Statistical Analysis of Next Generation Sequence Data},
+Somnath Datta and Daniel S Nettleton (eds), Springer, New York, pages 51-74.
+\url{http://www.statsci.org/smyth/pubs/edgeRChapterPreprint.pdf}
+
+Dai Z, Sheridan, JM, Gearing, LJ, Moore, DL, Su, S, Wormald, S, Wilcox, S, O'Connor, L, Dickins, RA, Blewitt, ME, Ritchie, ME (2014).
+edgeR: a versatile tool for the analysis of shRNA-seq and CRISPR-Cas9 genetic screens.
+\emph{F1000Research} 3, 95.
+\url{http://f1000research.com/articles/3-95}
+
+Lun, ATL, Chen, Y, and Smyth, GK (2016).
+It's DE-licious: a recipe for differential expression analyses of RNA-seq experiments using quasi-likelihood methods in edgeR.
+\emph{Methods in Molecular Biology} 1418, 391-416.
+\url{http://www.statsci.org/smyth/pubs/QLedgeRPreprint.pdf">Preprint 8 April 2015}
+
+Chen Y, Lun ATL, and Smyth, GK (2016).
+From reads to genes to pathways: differential expression analysis of RNA-Seq experiments using Rsubread and the edgeR quasi-likelihood pipeline.
+\emph{F1000Research} 5, 1438.
+\url{http://f1000research.com/articles/5-1438}
 }
+
 \keyword{package}

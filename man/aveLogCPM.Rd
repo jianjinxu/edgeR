@@ -30,7 +30,7 @@ Compute average log2 counts-per-million for each row of counts.
 \details{
 This function uses \code{mglmOneGroup} to compute average counts-per-million (AveCPM) for each row of counts, and returns log2(AveCPM).
 An average value of \code{prior.count} is added to the counts before running \code{mglmOneGroup}.
-If \code{prior.count} is a vector, each entry will be added to all counts in the corresponding row of \code{y}.
+If \code{prior.count} is a vector, each entry will be added to all counts in the corresponding row of \code{y}, as described in \code{\link{addPriorCount}}.
 
 This function is similar to
 
@@ -66,6 +66,8 @@ aveLogCPM(y, dispersion=runif(nrow(y), 0, 0.2))
 
 \seealso{
 See \code{\link{cpm}} for individual logCPM values, rather than genewise averages.
+
+Addition of the prior count is performed using the strategy described in \code{\link{addPriorCount}}.
 
 The computations for \code{aveLogCPM} are done by \code{\link{mglmOneGroup}}.
 }

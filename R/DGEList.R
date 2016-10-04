@@ -1,6 +1,6 @@
 DGEList <- function(counts=matrix(0,0,0), lib.size=colSums(counts), norm.factors=rep(1,ncol(counts)), samples=NULL, group=NULL, genes=NULL, remove.zeros=FALSE) 
 #	Construct DGEList object from components, with some checking
-#	Last modified 3 Dec 2015
+#	Last modified 3 Oct 2016
 {
 #	Check counts
 	counts <- as.matrix(counts)
@@ -8,11 +8,12 @@ DGEList <- function(counts=matrix(0,0,0), lib.size=colSums(counts), norm.factors
 	ntags <- nrow(counts)
 	if(nlib>0L && is.null(colnames(counts))) colnames(counts) <- paste0("Sample",1L:nlib)
 	if(ntags>0L && is.null(rownames(counts))) rownames(counts) <- 1L:ntags
+	.isAllZero(counts) # don't really care about all-zeroes, but do want to protect against NA's, negative values.
 
 #	Check lib.size
 	if(is.null(lib.size)) lib.size <- colSums(counts)
-	if(nlib != length(lib.size)) stop("Length of 'lib.size' must equal number of columns in 'counts'")
-	if(any(lib.size==0L)) warning("Zero library size detected.")
+	if(nlib != length(lib.size)) stop("length of 'lib.size' must equal number of columns in 'counts'")
+	if(any(lib.size==0L)) warning("library size of zero detected")
 
 #	Check norm.factors
 	if(is.null(norm.factors)) norm.factors <- rep(1,ncol(counts))
@@ -69,3 +70,11 @@ DGEList <- function(counts=matrix(0,0,0), lib.size=colSums(counts), norm.factors
 	x
 }
 
+.isAllZero <- function(y) 
+# Function to check if all counts are zero in a memory-efficient manner.
+# Also checks and throws an error if NA or negative counts are present.
+{
+	is.zero <- .Call(.cR_check_counts, y)
+	if(is.character(is.zero)) stop(is.zero)
+	return(is.zero)
+}

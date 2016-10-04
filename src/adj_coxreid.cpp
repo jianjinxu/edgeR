@@ -37,12 +37,7 @@ adj_coxreid::~adj_coxreid () {
 }
 
 std::pair<double, bool> adj_coxreid::compute(const double* wptr) {
-    /* Setting working weight_matrix to 'A=Xt %*% diag(W) %*% X' with column-major storage.
- 	 * This represents the expected Fisher information. The overall strategy is
- 	 * to compute the determinant of the information matrix in order to compute
- 	 * the adjustment factor for the likelihood (in order to account for uncertainty
- 	 * in the nuisance parameters i.e. the fitted values).
- 	 */
+    // Setting working weight_matrix to 'A=Xt %*% diag(W) %*% X' with column-major storage.
     for (int row=0; row<ncoefs; ++row) {
         for (int col=0; col<=row; ++col) {
             double& cur_entry=(working_matrix[col*ncoefs+row]=0);
@@ -52,25 +47,11 @@ std::pair<double, bool> adj_coxreid::compute(const double* wptr) {
         }
     }   
 
-    /* We now apply the Cholesky decomposition using the appropriate routine from the 
-     * LAPACK library. Specifically, we call the routine to do a symmetric indefinite
-     * factorisation i.e. A = LDLt. This guarantees factorization for singular matrices 
-     * when the actual Cholesky decomposition would fail.
-     */
+    // LDL* decomposition.
     F77_CALL(dsytrf)(&uplo, &ncoefs, working_matrix, &ncoefs, pivots, work, &lwork, &info);
     if (info<0) { return std::make_pair(0, false); }
 
-    /* For triangular matrices, we need the diagonal to compute the determinant. Fortunately, 
- 	 * this remains the diagonal of the output matrix despite the permutations performed by 
- 	 * the pivoting. We sum over all log'd diagonal elements to get the log determinant of the 
- 	 * information matrix (valid because det(LDL*)=det(L)*det(D)*det(L*) and we're using the 
- 	 * result of the decomposition). We then have to halve the resulting value. 
- 	 *
- 	 * Note the protection against zero. This just replaces it with an appropriately small
- 	 * non-zero value, if the diagnoal element is zero or NA. This is valid because the set
- 	 * of fitted values which are zero will be constant at all dispersions. Thus, any replacement
- 	 * value will eventually cancel out during interpolation to obtain the CRAPLE.
-     */
+    // Log-determinant as sum of the log-diagonals, then halving (see below).
     double sum_log_diagonals=0;
     for (int i=0; i<ncoefs; ++i) { 
         const double& cur_val=working_matrix[i*ncoefs+i];
@@ -83,4 +64,37 @@ std::pair<double, bool> adj_coxreid::compute(const double* wptr) {
 	return std::make_pair(sum_log_diagonals*0.5, true);
 }
 
+/* EXPLANATION:
+   
+   XtWX represents the expected Fisher information. The overall strategy is to compute the 
+   log-determinant of this matrix, to compute the adjustment factor for the likelihood (in 
+   order to account for uncertainty in the nuisance parameters i.e. the fitted values).
+
+   We want to apply the Cholesky decomposition to the XtWX matrix. However, to be safe,
+   we call the routine to do a symmetric indefinite factorisation i.e. A = LDLt. This 
+   guarantees factorization for singular matrices when the actual Cholesky decomposition 
+   would fail because it would start whining about non-positive eigenvectors. 
+  
+   We then try to compute the determinant of the working_matrix. Here we use two facts:
+
+   - For triangular matrices, the determinant is the product of the diagonals.
+   - det(LDL*)=det(L)*det(D)*det(L*)
+   - All diagonal elements of 'L' are unity.
+
+   Thus, all we need to do is to we sum over all log'd diagonal elements in 'D', which - 
+   happily enough - are stored as the diagonal elements of 'working_matrix'. (And then 
+   divide by two, because that's just how the Cox-Reid adjustment works.)
+
+   'info > 0' indicates that one of the diagonals is zero. We handle this by replacing the
+   it with an appropriately small non-zero value, if the diagnoal element is zero or NA. This
+   is valid because the set of fitted values which are zero will be constant at all dispersions. 
+   Thus, any replacement value will eventually cancel out during interpolation to obtain the CRAPLE.
+
+   Note that the LAPACK routine will also do some pivoting, essentially solving PAP* = LDL* for 
+   some permutation matrix P. This shouldn't affect anything; the determinant of the permutation 
+   is either 1 or -1, but this cancels out, so det(A) = det(PAP*).
+
+   Further note that the routine can theoretically give block diagonals, but this should 
+   not occur for positive (semi)definite matrices, which is what XtWX should always be.
+*/
 

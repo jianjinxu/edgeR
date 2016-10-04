@@ -8,7 +8,7 @@
  * very big or very small.
  */
     
-const double one_million=std::pow(10, 6.0), one_tenthousandth=std::pow(10, -4.0);
+const double one_tenthousandth=std::pow(10, -4.0);
 const double mildly_low_value=std::pow(10, -8.0);
 
 double compute_unit_nb_deviance (double y, double mu, const double& phi) {

@@ -41,6 +41,7 @@ Maximizes the negative binomial likelihood to give the estimate of the common, t
 
 \value{
 \code{estimateDisp.DGEList} adds the following components to the input \code{DGEList} object:
+	\item{design}{the design matrix.}
 	\item{common.dispersion}{estimate of the common dispersion.}
 	\item{trended.dispersion}{estimates of the trended dispersions.}
 	\item{tagwise.dispersion}{tagwise estimates of the dispersion parameter if \code{tagwise=TRUE}.}
@@ -67,12 +68,12 @@ The \code{estimateDisp} function doesn't give exactly the same estimates as the 
 Chen, Y, Lun, ATL, and Smyth, GK (2014).
 Differential expression analysis of complex RNA-seq experiments using edgeR.
 In: \emph{Statistical Analysis of Next Generation Sequence Data},
-Somnath Datta and Daniel S Nettleton (eds), Springer, New York.
+Somnath Datta and Daniel S. Nettleton (eds), Springer, New York, pages 51-74.
 \url{http://www.statsci.org/smyth/pubs/edgeRChapterPreprint.pdf}
 
 Phipson, B, Lee, S, Majewski, IJ, Alexander, WS, and Smyth, GK (2016).
 Robust hyperparameter estimation protects against hypervariable genes and improves power to detect differential expression.
-\emph{Annals of Applied Statistics} 10. 
+\emph{Annals of Applied Statistics} 10, 946-963.
 \url{http://arxiv.org/abs/1602.08678}
 }
 

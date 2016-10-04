@@ -1,18 +1,13 @@
-treatDGE <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
-{
-	message("treatDGE() has been renamed to glmTreat().  Please use the latter instead.")
-	glmTreat(glmfit=glmfit,coef=coef,contrast=contrast,lfc=lfc)
-}
-
-glmTreat <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
+glmTreat <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0, powerful=TRUE)
 #	Likelihood ratio test or quasi-likelihood F-test with a threshold
 #	Yunshun Chen and Gordon Smyth
-#	Created on 05 May 2014. Last modified on 16 June 2016
+#	Created on 05 May 2014. Last modified on 03 Oct 2016
 {
 	if(lfc < 0) stop("lfc has to be non-negative")
 
 #	Check if glmfit is from glmFit() or glmQLFit()
 	isLRT <- is.null(glmfit$df.prior)
+	Fit <- ifelse(isLRT, glmFit, glmQLFit)
 
 #	Switch to glmLRT() or glmQLFTest() if lfc is zero
 	if(lfc==0) {
@@ -77,80 +72,56 @@ glmTreat <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
 #	Null design matrix
 	design0 <- design[, -coef, drop=FALSE]
 
-	if(isLRT) {
-#		Adjusted offset
-		offset.adj <- matrix(lfc*log(2), ngenes, 1)
+#	Offset adjustment
+	offset.old <- makeCompressedMatrix(glmfit$offset, byrow=TRUE)
+	offset.adj <- makeCompressedMatrix(lfc*log(2) * design[, coef], byrow=TRUE)
 
-#		Test statistics at beta_0 = tau
-		offset.new <- glmfit$offset + offset.adj %*% t(design[, coef, drop=FALSE])
-		fit0.tau <- glmFit(glmfit$counts, design=design0, offset=offset.new, weights=glmfit$weights, dispersion=glmfit$dispersion, prior.count=0)
-		fit1.tau <- glmFit(glmfit$counts, design=design, offset=offset.new, weights=glmfit$weights, dispersion=glmfit$dispersion, prior.count=0)
-		X2.tau <- pmax(0, fit0.tau$deviance - fit1.tau$deviance)
-		z.tau <- sqrt(X2.tau)
+#	Test statistics at beta_0 = tau
+	offset.new <- .addCompressedMatrices(offset.old, offset.adj)
+	fit0 <- Fit(glmfit$counts, design=design0, offset=offset.new, weights=glmfit$weights, dispersion=glmfit$dispersion, prior.count=0)
+	fit1 <- Fit(glmfit$counts, design=design, offset=offset.new, weights=glmfit$weights, dispersion=glmfit$dispersion, prior.count=0)
+	z.left <- sqrt( pmax(0, fit0$deviance - fit1$deviance) )
 
-#		Test statistics at beta_0 = -tau
-		offset.new <- glmfit$offset - offset.adj %*% t(design[, coef, drop=FALSE])
-		fit0.tau <- glmFit(glmfit$counts, design=design0, offset=offset.new, weights=glmfit$weights, dispersion=glmfit$dispersion, prior.count=0)
-		fit1.tau <- glmFit(glmfit$counts, design=design, offset=offset.new, weights=glmfit$weights, dispersion=glmfit$dispersion, prior.count=0)
-		X2.tau2 <- pmax(0, fit0.tau$deviance - fit1.tau$deviance)
-		z.tau2 <- sqrt(X2.tau2)
-		
-		i <- z.tau > z.tau2
-		if(any(i)) {
-			tmp <- z.tau[i]
-			z.tau[i] <- z.tau2[i]
-			z.tau2[i] <- tmp
-		}
-		
-		within <- abs(unshrunk.logFC) <= lfc
-		sgn <- 2*within - 1
+#	Test statistics at beta_0 = -tau
+	offset.new <- .addCompressedMatrices(offset.old, -offset.adj)
+	fit0 <- Fit(glmfit$counts, design=design0, offset=offset.new, weights=glmfit$weights, dispersion=glmfit$dispersion, prior.count=0)
+	fit1 <- Fit(glmfit$counts, design=design, offset=offset.new, weights=glmfit$weights, dispersion=glmfit$dispersion, prior.count=0)
+	z.right <- sqrt( pmax(0, fit0$deviance - fit1$deviance) )
 
-#		Integral of Normal CDF from a to b
-		fun <- function(a,b) ifelse(a==b, pnorm(a), ( b*pnorm(b)+dnorm(b) - (a*pnorm(a)+dnorm(a)) )/(b-a) )
-		p.value <- 2*fun(-z.tau2, z.tau*sgn)
-	} else {
-#		Guass quadrature
-		if(!requireNamespace("statmod",quietly=TRUE)) stop("statmod required but is not available")
-		nnodes <- 5
-		gquad <- statmod::gauss.quad.prob(nnodes, dist="uniform", l=0, u=lfc*log(2))
+#	Make sure z.left < z.right
+	i <- z.left > z.right
+	if(any(i)) {
+		tmp <- z.left[i]
+		z.left[i] <- z.right[i]
+		z.right[i] <- tmp
+	}
 
-		offset.adj <- X2.pos <- X2.neg <- matrix(gquad$nodes, ngenes, nnodes, byrow=TRUE)
-
-		for(k in 1:nnodes){
-#			Test statistics at beta_0 = pos_nodes (tau)
-			offset.new <- glmfit$offset + offset.adj[,k] %*% t(design[, coef, drop=FALSE])
-			fit0.pos <- glmQLFit(glmfit$counts, design=design0, offset=offset.new, weights=glmfit$weights, dispersion=glmfit$dispersion, prior.count=0)
-			fit1.pos <- glmQLFit(glmfit$counts, design=design, offset=offset.new, weights=glmfit$weights, dispersion=glmfit$dispersion, prior.count=0)
-			X2.pos[,k] <- pmax(0, fit0.pos$deviance - fit1.pos$deviance)
-			
-#			Test statistics at beta_0 = neg_nodes (-tau)
-			offset.new <- glmfit$offset - offset.adj[,k] %*% t(design[, coef, drop=FALSE])
-			fit0.neg <- glmQLFit(glmfit$counts, design=design0, offset=offset.new, weights=glmfit$weights, dispersion=glmfit$dispersion, prior.count=0)
-			fit1.neg <- glmQLFit(glmfit$counts, design=design, offset=offset.new, weights=glmfit$weights, dispersion=glmfit$dispersion, prior.count=0)
-			X2.neg[,k] <- pmax(0, fit0.neg$deviance - fit1.neg$deviance)
-		}
-		z.pos <- sqrt(X2.pos)
-		z.neg <- sqrt(X2.neg)
-		
-		i <- z.pos > z.neg
-		if(any(i)) {
-			tmp <- z.pos[i]
-			z.pos[i] <- z.neg[i]
-			z.neg[i] <- tmp
-		}
-
-		within <- matrix(abs(unshrunk.logFC)*log(2), ngenes, nnodes) <= abs(offset.adj)
-		sgn <- 2*within - 1
-
-#		Calculate expected p-values by Gauss quadrature
-		t.pos <- z.pos/sqrt(glmfit$var.post)
-		t.neg <- z.neg/sqrt(glmfit$var.post)
+#	Convert t to z under the QL pipeline
+	if(!isLRT){
 		df.total <- glmfit$df.prior + glmfit$df.residual.zeros
 		max.df.residual <- ncol(glmfit$counts)-ncol(glmfit$design)
 		df.total <- pmin(df.total, nrow(glmfit)*max.df.residual)
-		p.value <- ( pt(t.pos*sgn, df=df.total) + pt(t.neg, df=df.total, lower.tail=FALSE) ) %*% gquad$weights
+		z.left <- limma::zscoreT(z.left/sqrt(glmfit$var.post), df=df.total)
+		z.right <- limma::zscoreT(z.right/sqrt(glmfit$var.post), df=df.total)
+	}
+
+	within <- abs(unshrunk.logFC) <= lfc
+	sgn <- 2*within - 1
+	z.left <- z.left*sgn
+
+	if(powerful){
+#		Interval threshold
+		c <- 1.470402
+		j <- z.right + z.left > c
+		p.value <- rep(1L, ngenes)
+		p.value[j] <- .integratepnorm(-z.right[j], -z.right[j] + c) + .integratepnorm(z.left[j] - c, z.left[j])
+		p.value[!j] <- 2*.integratepnorm(-z.right[!j], z.left[!j])
+	} else {
+		p.value <- pnorm(-z.right) + pnorm(z.left)
+	}
 	
-#		Ensure it is not more significant than chisquare test with Poisson variance		
+#	Ensure it is not more significant than chisquare test with Poisson variance		
+	if(!isLRT){
 		i <- rowSums(glmfit$var.post * (1 + glmfit$fitted.values * glmfit$dispersion) < 1) > 0L
 		if(any(i)) {
 			pois.fit <- glmfit[i,]
@@ -178,3 +149,6 @@ glmTreat <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0)
 	glmfit$comparison <- coef.name
 	new("DGELRT",unclass(glmfit))
 }
+
+
+.integratepnorm <- function(a, b) ifelse(a==b, pnorm(a), ( b*pnorm(b)+dnorm(b) - (a*pnorm(a)+dnorm(a)) )/(b-a) )

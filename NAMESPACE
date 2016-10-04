@@ -23,7 +23,7 @@ if( tools:::.OStype() == "windows" ) importFrom("utils", "winMenuAddItem")
 
 importFrom("limma",camera,contrastAsCoef,decideTests,fry,goana,kegga,is.fullrank,
      lmFit,loessFit,mroast,nonEstimable,plotMD,plotMDS,plotWithHighlights,removeExt,
-     roast,romer,squeezeVar,subsetListOfArrays,zscoreGamma)
+     roast,romer,squeezeVar,subsetListOfArrays,zscoreGamma,zscoreT)
 importClassesFrom("limma","LargeDataObject","Roast","MDS")
 
 S3method(as.data.frame,TopTags)

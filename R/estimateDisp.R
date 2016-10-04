@@ -12,6 +12,7 @@ estimateDisp.DGEList <- function(y, design=NULL, prior.df=NULL, trend.method="lo
 
 	d <- estimateDisp(y=y$counts, design=design, group=group, lib.size=lib.size, offset=getOffset(y), prior.df=prior.df, trend.method=trend.method, mixed.df=mixed.df, tagwise=tagwise, span=span, min.row.sum=min.row.sum, grid.length=grid.length, grid.range=grid.range, robust=robust, winsor.tail.p=winsor.tail.p, tol=tol, weights=y$weights, ...)
 
+	if(!is.null(design)) y$design <- design
 	y$common.dispersion <- d$common.dispersion
 	y$trended.dispersion <- d$trended.dispersion
 	if(tagwise) y$tagwise.dispersion <- d$tagwise.dispersion
@@ -26,7 +27,7 @@ estimateDisp.DGEList <- function(y, design=NULL, prior.df=NULL, trend.method="lo
 estimateDisp.default <- function(y, design=NULL, group=NULL, lib.size=NULL, offset=NULL, prior.df=NULL, trend.method="locfit", mixed.df=FALSE, tagwise=TRUE, span=NULL, min.row.sum=5, grid.length=21, grid.range=c(-10,10), robust=FALSE, winsor.tail.p=c(0.05,0.1), tol=1e-06, weights=NULL, ...)
 #  Use GLM approach if a design matrix is given, and classic approach otherwise.
 #  It calculates a matrix of likelihoods for each gene at a set of dispersion grid points, and then calls WLEB() to do the shrinkage.
-#  Yunshun Chen, Gordon Smyth. Created July 2012. Last modified 18 March 2016.
+#  Yunshun Chen, Aaron Lun, Gordon Smyth. Created July 2012. Last modified 03 Oct 2016.
 {
 #	Check y
 	y <- as.matrix(y)
@@ -47,11 +48,16 @@ estimateDisp.default <- function(y, design=NULL, group=NULL, lib.size=NULL, offs
 	if(length(lib.size)!=nlibs) stop("Incorrect length of lib.size.")
 	
 #	Check offset
-	if(is.null(offset)) offset <- log(lib.size)
-	offset <- expandAsMatrix(offset, dim(y))
+	offset <- .compressOffsets(y, lib.size=lib.size, offset=offset)
+
+#	Check weights
+	weights <- .compressWeights(weights)
 
 #	Check for genes with small counts
 	sel <- rowSums(y) >= min.row.sum
+	sely <- .subsetMatrixWithoutCopying(y, i=sel)
+	seloffset <- .subsetMatrixWithoutCopying(offset, i=sel)
+	selweights <- .subsetMatrixWithoutCopying(weights, i=sel)
 	
 #	Spline points
 	spline.pts <- seq(from=grid.range[1], to=grid.range[2], length=grid.length)
@@ -94,14 +100,16 @@ estimateDisp.default <- function(y, design=NULL, group=NULL, lib.size=NULL, offs
 			return(list(common.dispersion=NA, trended.dispersion=NA, tagwise.dispersion=NA))
 		}
 
-		# Protect against zeros.
-		glmfit <- glmFit(y[sel,], design, offset=offset[sel,], dispersion=0.05, prior.count=0)
-		zerofit <- (glmfit$fitted.values < 1e-4) & (glmfit$counts < 1e-4)
+		# Identify which observations have means of zero (weights aren't needed here).
+		glmfit <- glmFit(sely, design, offset=seloffset, dispersion=0.05, prior.count=0)
+		zerofit <- .areFittedValuesZero(y=glmfit$counts, mu=glmfit$fitted.values)
 		by.group <- .comboGroups(zerofit)
 
 		for (subg in by.group) { 
 			cur.nzero <- !zerofit[subg[1],]
 			if (!any(cur.nzero)) { next } 
+
+			# Removing samples with zero means from design, to avoid attempts to converge to -Inf.
 			if (all(cur.nzero)) { 
 				redesign <- design
 			} else {
@@ -111,11 +119,15 @@ estimateDisp.default <- function(y, design=NULL, group=NULL, lib.size=NULL, offs
 				if (nrow(redesign) == ncol(redesign)) { next }
 			}
 
+			cury <- .subsetMatrixWithoutCopying(sely, i=subg, j=cur.nzero)
+			curo <- .subsetMatrixWithoutCopying(seloffset, i=subg, j=cur.nzero)
+			curw <- .subsetMatrixWithoutCopying(selweights, i=subg, j=cur.nzero)
+		   
 			# Using the last fit to hot-start the next fit
 			last.beta <- NULL
-			for(i in 1:grid.length) {
-				out <- adjustedProfileLik(spline.disp[i], y=y[sel, ][subg,cur.nzero,drop=FALSE], design=redesign, 
-					offset=offset[sel,][subg,cur.nzero,drop=FALSE], start=last.beta, get.coef=TRUE)
+			for(i in seq_len(grid.length)) {
+				out <- adjustedProfileLik(spline.disp[i], y=cury, design=redesign, 
+					offset=curo, weights=curw, start=last.beta, get.coef=TRUE)
 				l0[subg,i] <- out$apl
 				last.beta <- out$beta
 			}
@@ -136,13 +148,13 @@ estimateDisp.default <- function(y, design=NULL, group=NULL, lib.size=NULL, offs
 
 	# Calculate prior.df
 	if(is.null(prior.df)){
-		glmfit <- glmFit(y[sel,], design, offset=offset[sel,], dispersion=disp.trend, prior.count=0)
+		glmfit <- glmFit(sely, offset=seloffset, weight=selweights, design=design, dispersion=disp.trend, prior.count=0)
 
 		# Residual deviances
 		df.residual <- glmfit$df.residual
 
 		# Adjust df.residual for fitted values at zero
-		zerofit <- (glmfit$fitted.values < 1e-4) & (glmfit$counts < 1e-4)
+        zerofit <- .areFittedValuesZero(y=glmfit$counts, mu=glmfit$fitted.values)
 		df.residual <- .residDF(zerofit, design)
 
 		# Empirical Bayes squeezing of the quasi-likelihood variance factors
@@ -266,4 +278,52 @@ WLEB <- function(theta, loglik, prior.n=5, covariate=NULL, trend.method="locfit"
 	if(m0.out) out$shared.loglik <- m0
 
 	out
+}
+
+.subsetMatrixWithoutCopying <- function(x, i, j) 
+# This will attempt to subset the matrix without any copying if
+# it detects that 'i' and 'j' don't modify the ordering of the matrix.
+# This reduces the memory footprint for large matrices.
+#
+# written by Aaron Lun
+# created 29 September 2016
+{
+	if (is(x, "compressedMatrix")) {
+		# Subsetting is ignored if rows/columns are repeated.
+		if (attributes(x)$repeat.row) i <- TRUE
+		if (attributes(x)$repeat.col) j <- TRUE
+	} else if (!is.matrix(x)) {
+		stop("'x' must be a matrix for subsetting")
+	}
+
+	isokay <- TRUE
+	if (!missing(i)) {
+		# Most flexible way of handling different types of subset vectors;
+		# try it out and see if it gives the same results.
+		example <- cbind(seq_len(nrow(x)))
+		rownames(example) <- rownames(x)
+		if (!identical(example, example[i,,drop=FALSE])) isokay <- FALSE
+	}
+	if (!missing(j)) {
+		example <- rbind(seq_len(ncol(x)))
+		colnames(example) <- colnames(x)
+		if (!identical(example, example[,j,drop=FALSE])) isokay <- FALSE
+	}
+
+	if (isokay) {
+		# Avoids copying if no modification incurred.
+		return(x)
+	} else {
+		return(x[i,j,drop=FALSE])
+	}
+}
+
+.areFittedValuesZero <- function(y, mu, tol=1e-4) 
+# A slightly more efficient way to check if the fitted values are zero,
+# based on both the count and fitted value being zero for an observation.
+{
+    if (!is.double(mu)) storage.mode(mu) <- "double"
+    out <- .Call(.cR_check_zero_fitted, y, mu, as.double(tol))
+    if (is.character(out)) stop(out)
+    return(out)
 }

@@ -1,7 +1,7 @@
 
-R version 3.2.4 Revised (2016-03-16 r70336) -- "Very Secure Dishes"
+R version 3.3.1 (2016-06-21) -- "Bug in Your Hair"
 Copyright (C) 2016 The R Foundation for Statistical Computing
-Platform: x86_64-w64-mingw32/x64 (64-bit)
+Platform: x86_64-apple-darwin13.4.0 (64-bit)
 
 R is free software and comes with ABSOLUTELY NO WARRANTY.
 You are welcome to redistribute it under certain conditions.
@@ -407,13 +407,14 @@ attr(,"assign")
 [1] 0 1
 
 $offset
-         [,1]     [,2]     [,3]
-[1,] 8.295172 8.338525 8.284484
-[2,] 8.295172 8.338525 8.284484
-[3,] 8.295172 8.338525 8.284484
-[4,] 8.295172 8.338525 8.284484
-[5,] 8.295172 8.338525 8.284484
-995 more rows ...
+      [,1]     [,2]     [,3]
+x 8.295172 8.338525 8.284484
+attr(,"class")
+[1] "compressedMatrix"
+attr(,"repeat.row")
+[1] TRUE
+attr(,"repeat.col")
+[1] FALSE
 
 $dispersion
 [1] 0.1
@@ -536,4 +537,4 @@ $n0
 > 
 > proc.time()
    user  system elapsed 
-   3.58    0.03    3.61 
+  3.259   0.065   3.693 

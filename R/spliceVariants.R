@@ -2,18 +2,21 @@ spliceVariants <- function(y, geneID, dispersion=NULL, group=NULL, estimate.gene
 # Identify genes with splice variants using a negative binomial model
 # We assume that the data come in a matrix (possibly and/or a DGEList), counts summarized at exon level, with gene information available
 # Davis McCarthy and Gordon Smyth
-# Created 4 February 2011.  Last modified 2 Aug 2011. 
+# Created 4 February 2011.  Last modified 3 Oct 2016. 
 {
 	if( is(y, "DGEList") ) {
 		y.mat <- y$counts
 		if( is.null(group) )
 			group <- y$samples$group
+		lib.size <- y$samples$lib.size * y$samples$norm.factors
 	}
 	else {
 		y.mat <- as.matrix(y)
 		if( is.null(group) )
 			stop("y is a matrix and no group argument has been supplied. Please supply group argument.")
+		lib.size <- colSums(y)
 	}
+
 	geneID <- as.vector(unlist(geneID))
 	## Order genes by geneID: we need some way to reorganise the data---output cannot possibly be same dimension as input so this is a sensible way to organise things
 	o <- order(geneID)
@@ -81,8 +84,9 @@ spliceVariants <- function(y, geneID, dispersion=NULL, group=NULL, estimate.gene
 		full.index <- rownames(exons) %in% uniqIDs[this.genes]
 		if( any(this.genes) ) {
 			gene.counts.mat <- matrix(t(exons[full.index,]), nrow=sum(this.genes), ncol=ncol(exons)*i.exons, byrow=TRUE)
+			expanded.lib.size <- rep(lib.size, i.exons)
 			if(i.exons==1) {
-				abundance[this.genes] <- aveLogCPM(gene.counts.mat)
+				abundance[this.genes] <- aveLogCPM(gene.counts.mat, lib.size=expanded.lib.size)
 				splicevars.out$LR[this.genes] <- 0
 				splicevars.out$PValue[this.genes] <- 1
 			}
@@ -95,7 +99,7 @@ spliceVariants <- function(y, geneID, dispersion=NULL, group=NULL, estimate.gene
 				coef <- (ncol(X.null)+1):ncol(X.full)
 				## Fit NB GLMs to these genes
 				fit.this <- glmFit(gene.counts.mat, X.full, dispersion[this.genes], offset=0, prior.count=0)
-				abundance[this.genes] <- aveLogCPM(gene.counts.mat)
+				abundance[this.genes] <- aveLogCPM(gene.counts.mat, lib.size=expanded.lib.size)
 				results.this <- glmLRT(fit.this, coef=coef)
 				if(sum(this.genes)==1) {
 					splicevars.out$LR[this.genes] <- results.this$table$LR[1]

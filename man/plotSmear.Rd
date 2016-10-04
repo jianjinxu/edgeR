@@ -1,11 +1,12 @@
 \name{plotSmear}
 \alias{plotSmear}
 \title{
-Plots log-Fold Change versus log-Concentration (or, M versus A) for Count Data
+Smear plot
 }
 \description{
-Both of these functions plot the log-fold change (i.e. the log of the ratio of expression levels for each gene between two experimential groups) against the log-concentration (i.e. the overall average expression level for each gene across the two groups). To represent counts that were low (e.g. zero in 1 library and non-zero in the other) in one of the two conditions, a 'smear' of points at low A value is presented in \code{plotSmear}.
+Make a mean-difference plot of two libraries of count data with smearing of points with very low counts, especially those that are zero for one of the columns.
 }
+
 \usage{
 plotSmear(object, pair=NULL, de.tags=NULL, xlab="Average logCPM", ylab="logFC", pch=19,
      cex=0.2, smearWidth=0.5, panel.first=grid(), smooth.scatter=FALSE, lowess=FALSE, \dots)
@@ -25,16 +26,22 @@ plotSmear(object, pair=NULL, de.tags=NULL, xlab="Average logCPM", ylab="logFC", 
   \item{\dots}{further arguments passed on to \code{plot}}
 }
 
-\value{A plot to the current device}
+\value{
+Invisibly returns the x and y coordinates of the plotted points, and a plot is created on the current device.
+}
 
 \details{
-\code{plotSmear} is a more sophisticated and superior way to produce an 'MA plot'. \code{plotSmear} resolves the problem of plotting genes that have a total count of zero for one of the groups by adding the 'smear' of points at low A value. The points to be smeared are identified as being equal to the minimum estimated concentration in one of the two groups.  The smear is created by using random uniform numbers of width \code{smearWidth} to the left of the minimum A. \code{plotSmear} also allows easy highlighting of differentially expressed (DE) genes.
+\code{plotSmear} produces a type of mean-difference plot (or MA plot) with a special representation (smearing) of log-ratios that are infinite.
+\code{plotSmear} resolves the problem of plotting genes that have a total count of zero for one of the groups by adding the 'smear' of points at low A value.
+The points to be smeared are identified as being equal to the minimum estimated concentration in one of the two groups.
+The smear is created by using random uniform numbers of width \code{smearWidth} to the left of the minimum A.
+\code{plotSmear} also allows easy highlighting of differentially expressed (DE) genes.
 }
 
 \author{Mark Robinson, Davis McCarthy}
 
 \seealso{
-\code{\link{maPlot}}
+\code{\link{maPlot}}, \code{\link{plotMD.DGEList}}
 }
 
 \examples{

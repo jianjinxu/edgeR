@@ -4,8 +4,9 @@ glmFit <- function(y, ...)
 UseMethod("glmFit")
 
 glmFit.DGEList <- function(y, design=NULL, dispersion=NULL, prior.count=0.125, start=NULL, ...)
-#	Created 11 May 2011.  Last modified 11 March 2013.
+#	Created 11 May 2011.  Last modified 14 Aug 2016.
 {
+	if(is.null(design)) design <- model.matrix(~y$samples$group)
 	if(is.null(dispersion)) dispersion <- getDispersion(y)
 	if(is.null(dispersion)) stop("No dispersion values found in DGEList object.")
 
@@ -23,7 +24,7 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.siz
 #	Fit negative binomial generalized linear model for each transcript
 #	to a series of digital expression libraries
 #	Davis McCarthy and Gordon Smyth
-#	Created 17 August 2010. Last modified 18 May 2015.
+#	Created 17 August 2010. Last modified 03 Oct 2016.
 {
 #	Check y
 	y <- as.matrix(y)
@@ -43,16 +44,10 @@ glmFit.default <- function(y, design=NULL, dispersion=NULL, offset=NULL, lib.siz
 
 #	Check dispersion
 	if(is.null(dispersion)) stop("No dispersion values provided.")
-	dispersion.mat <- expandAsMatrix(dispersion, dim(y), byrow=FALSE)
+	dispersion.mat <- makeCompressedMatrix(dispersion, byrow=FALSE)
 
 #	Check offset and lib.size
-	if(is.null(offset)) {
-		if(is.null(lib.size)) lib.size <- colSums(y)
-		if(any(lib.size==0L)) stop("Zero library size detected. Remove the empty libraries before proceeding to the next step.")
-		offset <- log(lib.size)
-	}
-	if(any(is.infinite(offset))) stop("Infinite offset value detected. Check the input offset.")
-	offset <- expandAsMatrix(offset,dim(y))
+	offset <- .compressOffsets(y=y, lib.size=lib.size, offset=offset)
 
 #	weights are checked in lower-level functions
 

@@ -29,11 +29,11 @@
 }
 
 \details{
-This function computes predictive log-fold changes (pfc) for a NB glm.
+This function computes predictive log-fold changes (pfc) for a NB GLM.
 The pfc are posterior Bayesian estimators of the true log-fold-changes.
 They are predictive of values that might be replicated in a future experiment.
 
-Specifically the function adds a small prior count to each observation before estimating the glm.
+Specifically, the function adds a small prior count to each observation before fitting the GLM (see \code{\link{addPriorCount}} for details).
 The actual prior count that is added is proportion to the library size.
 This has the effect that any log-fold-change that was zero prior to augmentation remains zero and non-zero log-fold-changes are shrunk towards zero.
 
@@ -78,6 +78,7 @@ abline(a=0,b=1)
 }
 
 \seealso{
-\code{\link{glmFit}}, \code{\link{exactTest}}
+\code{\link{glmFit}}, \code{\link{exactTest}},
+\code{\link{addPriorCount}}
 }
 
