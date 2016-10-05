@@ -18,7 +18,7 @@ SEXP R_one_group (SEXP y, SEXP disp, SEXP offsets, SEXP weights, SEXP max_iterat
     const int num_tags=counts.get_ntags();
     const int num_libs=counts.get_nlibs();
   	double* yptr=(double*)R_alloc(num_libs, sizeof(double));
- 
+
     // Setting up assorted input matrices.
     matvec_check allo(offsets, num_tags, num_libs);
 	const double* const optr2=allo.access();
@@ -28,12 +28,12 @@ SEXP R_one_group (SEXP y, SEXP disp, SEXP offsets, SEXP weights, SEXP max_iterat
 	const double* const dptr2=alld.access();
     matvec_check allb(beta, num_tags, 1); // only one coefficient.
     const double* const bptr2=allb.access();
-    
+
     // GLM iterations.
 	const int maxit=asInteger(max_iterations);
 	const double tol=asReal(tolerance);
-   
-    // Setting up beta for output. 
+
+    // Setting up beta for output.
 	SEXP output=PROTECT(allocVector(VECSXP, 2));
 	SET_VECTOR_ELT(output, 0, allocVector(REALSXP, num_tags));
 	SET_VECTOR_ELT(output, 1, allocVector(LGLSXP, num_tags));
@@ -42,10 +42,10 @@ SEXP R_one_group (SEXP y, SEXP disp, SEXP offsets, SEXP weights, SEXP max_iterat
 	try {
 
         // Preparing for possible Poisson sums.
-        bool disp_is_zero, weight_is_one;
+        bool disp_is_zero=true, weight_is_one=true;
         double sum_counts, sum_lib=0;
         int lib;
-        if (allo.is_row_repeated()) { 
+        if (allo.is_row_repeated()) {
             for (lib=0; lib<num_libs; ++lib) {
                 sum_lib+=std::exp(optr2[lib]);
             }
@@ -56,11 +56,11 @@ SEXP R_one_group (SEXP y, SEXP disp, SEXP offsets, SEXP weights, SEXP max_iterat
         if (allw.is_row_repeated()) {
             weight_is_one=is_array_equal_to<double>(wptr2, num_libs, allw.is_col_repeated(), 1);
         }
-        
+
     	// Iterating through tags and fitting.
     	for (int tag=0; tag<num_tags; ++tag) {
             counts.fill_and_next(yptr);
-    
+
             // Checking for the Poisson special case with all-unity weights and all-zero dispersions.
             if (!alld.is_row_repeated()) {
                 disp_is_zero=is_array_equal_to<double>(dptr2, num_libs, alld.is_col_repeated(), 0);
@@ -96,13 +96,13 @@ SEXP R_one_group (SEXP y, SEXP disp, SEXP offsets, SEXP weights, SEXP max_iterat
             alld.advance();
             allb.advance();
     	}
-	} catch (std::exception& e) { 
+	} catch (std::exception& e) {
 		UNPROTECT(1);
-		throw; 
+		throw;
 	}
 
 	// Returning everything as a list.
-    UNPROTECT(1); 
+    UNPROTECT(1);
     return output;
 } catch (std::exception& e) {
 	return mkString(e.what());
