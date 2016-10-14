@@ -13,7 +13,7 @@ Added design matrix to the output of estimateDisp().
 glmFit() constructs design matrix, if design=NULL, from y$samples$group.
 
 \item 
-New argument 'powerful' in glmTreat(), and a change in how p-values are calculated by default.
+New argument 'null' in glmTreat(), and a change in how p-values are calculated by default.
 
 \item 
 Modified the default 'main' in plotMD().

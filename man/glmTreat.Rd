@@ -6,7 +6,7 @@
 \description{Conduct genewise statistical tests for a given coefficient or contrast relative to a specified fold-change threshold.}
 
 \usage{
-glmTreat(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0, powerful=TRUE)
+glmTreat(glmfit, coef = ncol(glmfit$design), contrast = NULL, lfc = 0, null = "interval")
 }
 
 \arguments{
@@ -18,7 +18,10 @@ glmTreat(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0, powerful=TRUE)
 
 \item{lfc}{numeric scalar specifying the absolute value of the log2-fold change threshold above which differential expression is to be considered.}
 
-\item{powerful}{logical. If \code{TRUE} (by default), p-values are computed over a bounded interval under the null hypothesis. If \code{FALSE}, only the boundary of the null hypothesis is considered.}
+\item{null}{character string, choices are \code{"worst.case"} or \code{"interval"}.
+If \code{"worst.case"}, then the null hypothesis asssumes that the true logFC is on the boundary of the possible values, either at \code{lfc} or \code{-lfc}, whichever gives the largest p-value.
+This gives the most conservative results.
+If \code{"interval"}, then the null hypotheses assumes the true logFC to belong to a bounded interval of possible values.}
 }
 
 \value{
@@ -48,14 +51,23 @@ If \code{lfc=0}, then \code{glmTreat} is equivalent to \code{glmLRT} or \code{gl
 If there is no shrinkage on log-fold-changes, i.e., fitting glms with \code{prior.count=0}, then \code{unshrunk.logFC} and \code{logFC} are essentially the same. Hence they are merged into one column of \code{logFC} in \code{table}.
 Note that \code{glmTreat} constructs test statistics using \code{unshrunk.logFC} rather than \code{logFC}.
 
+\code{glmTreat} with positive \code{lfc} gives larger p-values than would be obtained with \code{lfc=0}.
+If \code{null="worst.case"}, then \code{glmTreat} conducts a test closely analogous to the \code{treat} function in the limma package.
+This conducts a test if which the null hypothesis puts the true logFC on the boundary of the \code{[-lfc,lfc]} interval closest to the observed logFC.
+If \code{null="interval"}, then the null hypotheses assumes an interval of possible values for the true logFC.
+This approach is somewhat less conservative.
+}
+
+\note{
 \code{glmTreat} was previously called \code{treatDGE}.
-The old function name is now deprecated and is removed from edgeR.
 }
 
 \author{Yunshun Chen and Gordon Smyth}
 
 \seealso{
 \code{\link{topTags}} displays results from \code{glmTreat}.
+
+\code{\link[limma]{treat}} is the corresponding function in the limma package, designed on normally distributed expression data rather than negative binomial counts.
 }
 
 \references{

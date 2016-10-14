@@ -1,4 +1,4 @@
-glmTreat <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0, powerful=TRUE)
+glmTreat <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0, null="interval")
 #	Likelihood ratio test or quasi-likelihood F-test with a threshold
 #	Yunshun Chen and Gordon Smyth
 #	Created on 05 May 2014. Last modified on 03 Oct 2016
@@ -109,11 +109,12 @@ glmTreat <- function(glmfit, coef=ncol(glmfit$design), contrast=NULL, lfc=0, pow
 	sgn <- 2*within - 1
 	z.left <- z.left*sgn
 
-	if(powerful){
+	null <- match.arg(null, c("interval", "worst.case"))
+	if(null=="interval") {
 #		Interval threshold
 		c <- 1.470402
 		j <- z.right + z.left > c
-		p.value <- rep(1L, ngenes)
+		p.value <- rep_len(1L, ngenes)
 		p.value[j] <- .integratepnorm(-z.right[j], -z.right[j] + c) + .integratepnorm(z.left[j] - c, z.left[j])
 		p.value[!j] <- 2*.integratepnorm(-z.right[!j], z.left[!j])
 	} else {
