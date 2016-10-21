@@ -46,6 +46,9 @@ estimateDisp(), estimateCommonDisp(), estimateTrendedDisp(), estimateTagwiseDisp
 The default method of estimateGLMTrendedDisp() and estimateGLMTagwiseDisp() now only return dispersion estimates instead of a list.
 
 \item
+The DGEList method of estimateDisp(), estimateCommonDisp() and estimateGLMCommonDisp() now use the common dispersion estimate to compute AveLogCPM and store it in the output.
+
+\item
 Add fry method for DGEList objects.
 
 \item
