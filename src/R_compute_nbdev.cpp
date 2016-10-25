@@ -64,7 +64,7 @@ SEXP R_compute_nbdev (SEXP y, SEXP mu, SEXP phi, SEXP weights, SEXP dosum) try {
 
                 index=0;
                 for (lib=0; lib<num_libs; ++lib) {
-                    optr[index] += compute_unit_nb_deviance(count_ptr[lib], mptr[index], dptr2[lib]);
+                    optr[index] = compute_unit_nb_deviance(count_ptr[lib], mptr[index], dptr2[lib]);
                     index += num_tags;
                 }
 
