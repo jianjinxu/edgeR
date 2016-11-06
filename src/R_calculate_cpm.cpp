@@ -67,7 +67,8 @@ SEXP R_calculate_cpm_raw (SEXP y, SEXP libsize) try {
             counts.fill_and_next(count_ptr);
 
             for (lib=0; lib<num_libs; ++lib) {
-                outptr[lib*num_tags]=count_ptr[lib]/(lptr2[lib]/one_million);
+                const double& curlib=lptr2[lib];
+                outptr[lib*num_tags]=(curlib==0 ? R_NaN : count_ptr[lib]/(curlib/one_million));
             }
             ++outptr;
             allL.advance();
