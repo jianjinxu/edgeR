@@ -24,7 +24,7 @@ cpm.default <- function(x, lib.size=NULL, log=FALSE, prior.count=0.25, ...)
 	if(is.null(lib.size)) lib.size <- colSums(x)
 	if(!is.double(lib.size)) storage.mode(lib.size) <- "double"
 	lib.size <- makeCompressedMatrix(lib.size, byrow=TRUE)
-	err <- .Call(.cR_check_positive, lib.size, "library sizes")
+	err <- .Call(.cR_check_nonnegative, lib.size, "library sizes")
 	if (is.character(err)) stop(err)
 
 	# Calculating in C++ for max efficiency
