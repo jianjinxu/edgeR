@@ -21,7 +21,9 @@ addPriorCount <- function(y, lib.size=NULL, offset=NULL, prior.count=1)
 #   Adding the prior count.
 	out <- .Call(.cR_add_prior_count, y, offset, prior.count)
 	if (is.character(out)) stop(out)
+    
 	names(out) <- c("y", "offset")
+	out$offset <- makeCompressedMatrix(out$offset, byrow=TRUE)
 	return(out)
 }
 
