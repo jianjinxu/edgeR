@@ -40,7 +40,7 @@ estimateGLMCommonDisp.default <- function(y, design=NULL, offset=NULL, method="C
 	if(is.null(offset)) offset <- log(colSums(y))
 
 #	Check AveLogCPM
-	if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y,weights=weights)
+	if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y, offset=offset, weights=weights)
 
 #	Call lower-level function
 	disp <- switch(method,

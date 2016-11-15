@@ -30,7 +30,7 @@ dispBinTrend <- function(y, design=NULL, offset=NULL, df=5, span=0.3, min.n=400,
 	method.trend <- match.arg(method.trend, c("spline", "loess"))
 
 #	Check AveLogCPM
-	if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y,weights=weights)
+	if(is.null(AveLogCPM)) AveLogCPM <- aveLogCPM(y, offset=offset, weights=weights)
 
 #	Define bins of genes based on min.n in each bin
 #	All zero rows are marked as group==0
@@ -57,8 +57,9 @@ dispBinTrend <- function(y, design=NULL, offset=NULL, df=5, span=0.3, min.n=400,
 	bin.d <- bin.A <- rep(0,nbins)
 	for(i in 1:nbins) {
 		bin <- group==i
-		bin.d[i] <- estimateGLMCommonDisp(y[bin,], design, method=method.bin, offset[bin,], min.row.sum=0, weights=weights[bin,] ,...)
-		bin.A[i] <- mean(AveLogCPM[bin])
+		binAve <- AveLogCPM[bin]
+		bin.d[i] <- estimateGLMCommonDisp(y[bin,], design, method=method.bin, offset[bin,], min.row.sum=0, weights=weights[bin,], AveLogCPM=binAve, ...)
+		bin.A[i] <- mean(binAve)
 	}
 
 #	If just one bin, trended dispersion is constant
