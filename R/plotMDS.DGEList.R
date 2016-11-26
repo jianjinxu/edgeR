@@ -1,7 +1,7 @@
-plotMDS.DGEList <- function (x,top=500,labels=NULL,pch=NULL,cex=1,dim.plot=c(1,2),ndim=max(dim.plot),gene.selection="pairwise",xlab=NULL,ylab=NULL,method="logFC",prior.count=2,...)
+plotMDS.DGEList <- function (x,top=500,labels=NULL,pch=NULL,cex=1,dim.plot=c(1,2),ndim=max(dim.plot),gene.selection="pairwise",xlab=NULL,ylab=NULL,method="logFC",prior.count=2,plot=TRUE,...)
 #	Multidimensional scaling plot of digital gene expression profiles
 #	Yunshun Chen, Mark Robinson and Gordon Smyth
-#	23 May 2011.  Last modified 25 Nov 2014.
+#	23 May 2011.  Last modified 26 Nov 2016.
 {
 	method <- match.arg(method, c("logfc","logFC","bcv","BCV"))
 	if(method=="logfc") method <- "logFC"
@@ -10,7 +10,7 @@ plotMDS.DGEList <- function (x,top=500,labels=NULL,pch=NULL,cex=1,dim.plot=c(1,2
 #	Default method is to convert to moderated logCPM and call limma plotMDS
 	if(method=="logFC") {
 		y <- cpm(x,log=TRUE,prior.count=prior.count)
-		return(plotMDS(y,top=top,labels=labels,pch=pch,cex=cex,dim.plot=dim.plot,ndim=ndim,gene.selection=gene.selection,xlab=xlab,ylab=ylab,...))
+		return(plotMDS(y,top=top,labels=labels,pch=pch,cex=cex,dim.plot=dim.plot,ndim=ndim,gene.selection=gene.selection,xlab=xlab,ylab=ylab,plot=plot,...))
 	}
 
 #	From here method="bcv"
@@ -75,5 +75,8 @@ plotMDS.DGEList <- function (x,top=500,labels=NULL,pch=NULL,cex=1,dim.plot=c(1,2
 	mds$x <- a1[,dim.plot[1]]
 	mds$y <- a1[,dim.plot[2]]
 	mds$axislabel <- "BCV distance"
-	plotMDS(mds,labels=labels,pch=pch,cex=cex,xlab=xlab,ylab=ylab,...)
+	if(plot)
+		plotMDS(mds,labels=labels,pch=pch,cex=cex,xlab=xlab,ylab=ylab,...)
+	else
+		mds
 }
