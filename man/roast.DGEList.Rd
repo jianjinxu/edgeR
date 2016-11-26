@@ -8,17 +8,37 @@ Rotation gene set testing for Negative Binomial generalized linear models.
 }
 
 \usage{
-\method{roast}{DGEList}(y, index=NULL, design=NULL, contrast=ncol(design), \dots)
-\method{mroast}{DGEList}(y, index=NULL, design=NULL, contrast=ncol(design), \dots)
-\method{fry}{DGEList}(y, index=NULL, design=NULL, contrast=ncol(design), \dots)
+\method{roast}{DGEList}(y, index = NULL, design = NULL, contrast = ncol(design), geneid = NULL,
+      set.statistic = "mean", gene.weights = NULL, \dots)
+
+\method{mroast}{DGEList}(y, index = NULL, design = NULL, contrast = ncol(design), geneid = NULL,
+       set.statistic = "mean", gene.weights = NULL,
+       adjust.method = "BH", midp = TRUE, sort = "directional", ...)
+
+\method{fry}{DGEList}(y, index = NULL, design = NULL, contrast = ncol(design), geneid = NULL,
+      sort = "directional", ...)
 }
 
 \arguments{
   \item{y}{\code{DGEList} object.}
-  \item{index}{index vector specifying which rows (genes) of \code{y} are in the test set.  This can be a vector of indices, or a logical vector of the same length as \code{statistics}, or any vector such as \code{y[iset,]} contains the values for the gene set to be tested. Defaults to all genes. For \code{mroast} a list of index vectors.}
+  \item{index}{index vector specifying which rows (probes) of \code{y} are in the test set.
+        Can be a vector of integer indices, or a logical vector of length \code{nrow(y)}, or a vector of gene IDs corresponding to entries in \code{geneid}.
+        Alternatively it can be a data.frame with the first column containing the index vector and the second column containing directional gene weights.
+        For \code{mroast} or \code{fry}, \code{index} is a list of index vectors or a list of data.frames. }
   \item{design}{design matrix}
-  \item{contrast}{contrast for which the test is required. Can be an integer specifying a column of \code{design}, or the name of a column of \code{design}, or else a contrast vector of length equal to the number of columns of \code{design}.}
-  \item{\dots}{other arguments are passed to \code{\link{roast.default}} or \code{\link{mroast.default}}.}
+  \item{contrast}{contrast for which the test is required.
+        Can be an integer specifying a column of \code{design}, or the name of a column of \code{design}, or a numeric contrast vector of length equal to the number of columns of \code{design}.}
+  \item{geneid}{gene identifiers corresponding to the rows of \code{y}.
+        Can be either a vector of length \code{nrow(y)} or the name of the column of \code{y$genes} containing the gene identifiers.
+        Defaults to \code{rownames(y)}.}
+  \item{set.statistic}{summary set statistic. Possibilities are \code{"mean"},\code{"floormean"},\code{"mean50"} or \code{"msq"}.}
+  \item{gene.weights}{numeric vector of directional (positive or negative) genewise weights.
+        For \code{mroast} or \code{fry}, this vector must have length equal to \code{nrow(y)}.
+        For \code{roast}, can be of length \code{nrow(y)} or of length equal to the number of genes in the test set.} 
+  \item{adjust.method}{method used to adjust the p-values for multiple testing. See \code{\link{p.adjust}} for possible values.}
+  \item{midp}{logical, should mid-p-values be used in instead of ordinary p-values when adjusting for multiple testing?}
+  \item{sort}{character, whether to sort output table by directional p-value (\code{"directional"}), non-directional p-value (\code{"mixed"}), or not at all (\code{"none"}).}
+  \item{\dots}{other arguments are currently ignored.}
 }
 
 \value{

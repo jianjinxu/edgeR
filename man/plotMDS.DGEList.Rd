@@ -6,9 +6,8 @@ Plot samples on a two-dimensional scatterplot so that distances on the plot appr
 }
 \usage{
 \method{plotMDS}{DGEList}(x, top = 500, labels = NULL, pch = NULL, cex = 1,
-	        dim.plot = c(1,2), ndim = max(dim.plot), gene.selection = "pairwise",
-	        xlab = NULL, ylab = NULL, method = "logFC", prior.count = 2,
-	         \dots)
+        dim.plot = c(1,2), ndim = max(dim.plot), gene.selection = "pairwise",
+        xlab = NULL, ylab = NULL, method = "logFC", prior.count = 2, plot = TRUE, \dots)
 }
 \arguments{
   \item{x}{a \code{DGEList} object.}
@@ -23,6 +22,7 @@ Plot samples on a two-dimensional scatterplot so that distances on the plot appr
   \item{ylab}{y-axis label}
   \item{method}{method used to compute distances.  Possible values are "logFC" or \code{"bcv"}.}
   \item{prior.count}{average prior count to be added to observation to shrink the estimated log-fold-changes towards zero. Only used when \code{method="logFC"}.}
+  \item{plot}{logical. If \code{TRUE} then a plot is created on the current graphics device.}
   \item{\dots}{any other arguments are passed to \code{plot}.}
 }
 
@@ -45,7 +45,7 @@ Note that the \code{"bcv"} method is slower than the \code{"logFC"} method when 
 }
 
 \value{
-An object of class \code{\link[limma:plotMDS]{MDS}} is invisibly returned and a plot is created on the current graphics device.
+An object of class \code{\link[limma:plotMDS]{MDS}} is invisibly returned and (if \code{plot=TRUE}) a plot is created on the current graphics device.
 }
 
 \author{Yunshun Chen, Mark Robinson and Gordon Smyth}
