@@ -12,8 +12,6 @@ void add_prior::fill_and_next() {
     if (same_across_rows() && tagdex!=0) {
         // Skipping if all rows are the same, and we've already filled it in once.
         return;
-    } else if (tagdex>=num_tags) {
-        throw std::runtime_error("number of increments exceeds available number of tags");
     }
 
     ave_lib=0;

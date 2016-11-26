@@ -16,4 +16,3 @@ biocViews: GeneExpression, Transcription, AlternativeSplicing,
         TimeCourse, SAGE, Sequencing, ChIPSeq, RNASeq, BatchEffect,
         MultipleComparison, Normalization, QualityControl
 NeedsCompilation: yes
-Packaged: 2016-10-02 23:20:40 UTC; lun01
